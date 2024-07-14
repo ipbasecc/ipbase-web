@@ -1,0 +1,324 @@
+<template>
+  <q-layout view="lHr lpR lFr" container>
+    <q-drawer
+      v-model="uiStore.externalCardsDrawer"
+      side="left"
+      :width="338"
+      :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-1'"
+    >
+      <q-scroll-area v-if="cards" class="absolute-full q-pa-sm">
+        <q-infinite-scroll
+          @load="onLoad"
+          :offset="20"
+          :disable="!cards_hasMore"
+        >
+          <div class="column no-wrap gap-sm">
+            <CardItem
+              v-for="i in cards" :key="i.id" :card="i"
+              :viewType="'card'"
+              :uiOptions="uiOptions"
+            />
+            <div class="flex flex-center">
+              <q-chip
+                v-if="!cards_hasMore && done"
+                label="已完成全部卡片加载"
+                class="op-5"
+              />
+              <q-spinner-dots v-else color="primary" size="2em" />
+            </div>
+          </div>
+        </q-infinite-scroll>
+      </q-scroll-area>
+    </q-drawer>
+
+    <q-page-container>
+      <q-page
+        class="border-left"
+        :class="`${$q.dark.mode ? 'bg-dark' : 'bg-grey-1'} ${
+          teamStore.card ? '' : 'flex flex-center'
+        }`"
+      >
+        <!-- 这里的isExternal用来调整UI、当前模式下，要么是“外部成员”、要么是“专注模式”，都要用到此种UI，因此isExternal一定是true -->
+        <CardPage
+          v-if="teamStore.card"
+          :isExternal="teamStore.isExternal"
+          @syncCardInList="syncCardInList"
+        />
+        <BgBrand v-else />
+      </q-page>
+    </q-page-container>
+  </q-layout>
+</template>
+
+<script setup>
+import {onMounted, onUnmounted, ref, toRefs, watch, computed, onBeforeMount} from "vue";
+import { useRouter, useRoute } from "vue-router";
+
+import localforage from "localforage";
+
+import {
+  getProjectCache,
+  putProjectCache,
+} from "src/hooks/project/useProcess.js";
+import { getOneProject, getCards } from "src/api/strapi/project.js";
+
+import {
+  teamStore,
+  userStore,
+  mm_wsStore,
+  uiStore,
+} from "src/hooks/global/useStore.js";
+
+import CardPage from "./card/CardPage.vue";
+import CardItem from "./card/CardItem.vue";
+import BgBrand from "src/components/VIewComponents/BgBrand.vue";
+
+const props = defineProps({
+  team_id: {
+    type: String,
+    default: null,
+  },
+  project_id: {
+    type: String,
+    default: null,
+  },
+});
+const { team_id, project_id } = toRefs(props);
+
+const emit = defineEmits(["openLeftDrawer"]);
+const router = useRouter();
+const route = useRoute();
+onBeforeMount(() => {
+  uiStore.showMainContentList = false;
+  if(route.name === 'team_projects_external_page'){
+    teamStore.isExternal = true
+  }
+  if(route.name === 'team_projects_focus_page'){
+    uiStore.isFocusMode = true
+  }
+})
+
+const cards = ref([]);
+const cards_page = ref(1);
+const cards_per_page = ref(15);
+const total_cards = ref();
+const cards_hasMore = ref();
+
+const loading = ref(false);
+const done = ref(false)
+const getCardsFn = async () => {
+  const process = (_data) => {
+    total_cards.value = _data.total;
+    cards.value = [...cards.value, ..._data.cards];
+    cards_hasMore.value = cards.value?.length <= _data.total && _data.cards?.length > 0;
+  };
+  const res = await getCards(
+    team_id.value,
+    cards_page.value,
+    cards_per_page.value
+  );
+  if (res?.data) {
+    done.value = true;
+    process(res?.data);
+    await localforage.setItem("cards", JSON.parse(JSON.stringify(res?.data)));
+  }
+};
+const loadMore = async () => {
+  if(!cards_hasMore.value) return
+  cards_page.value++;
+  await getCardsFn(userStore.userId);
+};
+
+const project = ref();
+const isExternal = computed(() => teamStore.team?.isExternal || false);
+const getProject = async (_id) => {
+  if (loading.value) return;
+  loading.value = true;
+  const cache = await getProjectCache(_id);
+  if (cache) {
+    project.value = cache;
+    teamStore.project = cache;
+  }
+  const fetch = await getOneProject(_id);
+  if (fetch?.data) {
+    project.value = fetch.data;
+    teamStore.project = fetch.data;
+    if (isExternal.value) {
+      cards.value = project.value?.cards;
+    } else {
+      await getCardsFn();
+    }
+    await putProjectCache(fetch.data);
+  } else {
+    projectRemoved.value = true;
+    projectRemovedFn();
+  }
+  loading.value = false;
+};
+async function onLoad(index, done) {
+  await loadMore();
+  done();
+}
+
+const syncCardInList = (val) => {
+  const isSameId = (element) => {
+    return element.id === val.id;
+  };
+  const index = cards.value.findIndex(isSameId);
+  if (index !== -1) {
+    Object.keys(cards.value[index]).forEach((key) => {
+      cards.value[key] = val[key];
+    });
+  }
+};
+
+const isFocusMode = computed(() => uiStore.isFocusMode);
+onMounted(async () => {
+  emit("openLeftDrawer");
+  if (route?.name !== "team_projects_page") {
+    const id = Number(project_id.value);
+    await getProject(id);
+  }
+});
+watch(
+  [project_id, isFocusMode],
+  async () => {
+    if (project_id.value && !isFocusMode.value) {
+      const id = Number(project_id.value);
+      await getProject(id);
+    }
+  },
+  { immediate: false, deep: false }
+);
+
+const projectRemoved = ref(false);
+const projectRemovedFn = () => {
+  setTimeout(async () => {
+    teamStore.need_refecth_projects = true;
+    projectRemoved.value = false;
+    teamStore.project = null;
+    await router.push("/teams");
+  }, 3000);
+};
+
+
+const uiOptions = ref([
+  {
+    val: "hidecompletedTodo",
+    label: "隐藏已完成待办",
+    enable: true,
+    icon: "mdi-checkbox-marked-circle",
+  },
+]);
+const update_uiOptions = async (i) => {
+  i.enable = !i.enable;
+  uiOptions.value = uiOptions.value.map((ui) => (ui.val === i.val && i) || ui);
+  let res = JSON.stringify(uiOptions.value);
+  await localforage
+    .setItem(`___dilgMode_uiOptions`, res)
+    .catch(function (err) {
+      console.log(err);
+    });
+};
+const sync_uiOptions = async () => {
+  let res = await localforage.getItem(
+    `___dilgMode_uiOptions`
+  );
+  if (res) {
+    uiOptions.value = JSON.parse(res);
+  }
+};
+onBeforeMount(() => {
+  sync_uiOptions();
+});
+
+const activedCard = computed(() => teamStore.card)
+watch([cards,activedCard], () => {
+  if(cards.value?.length > 0) {
+    teamStore.all_cards = cards.value;
+    // console.log('teamStore.all_cards', teamStore.all_cards)
+  }
+  if(activedCard.value){
+    teamStore.all_todogroups = activedCard.value?.todogroups
+      ? [...teamStore.all_todogroups, ...activedCard.value?.todogroups]
+      : teamStore.all_todogroups
+    // console.log('teamStore.all_todogroups', teamStore.all_todogroups)
+    teamStore.all_todos = teamStore.all_todogroups?.length > 0 &&
+      teamStore.all_todogroups?.filter(i => i.todos?.length > 0)?.map((j) => j.todos)
+    // console.log('teamStore.all_todos', teamStore.all_todos)
+  }
+},{immediate:true,deep:true})
+
+watch(
+  mm_wsStore,
+  async () => {
+    if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
+      let post =
+        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
+      if (!post) return;
+      const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
+      if (isCurClint) return;
+      let strapi = post?.props?.strapi;
+      if (strapi) {
+        if (
+          strapi.data?.is === "project" &&
+          strapi.data?.project_id === teamStore.project?.id &&
+          (strapi.data.action === "delete" || strapi.data.action === "archive")
+        ) {
+          projectRemoved.value = true;
+          projectRemovedFn();
+        }
+        if (
+          strapi.data?.is === "project" &&
+          strapi.data.action === "projectDeleted" &&
+          strapi.data.project_id === teamStore.project?.id
+        ) {
+          teamStore.need_refecth_projects = true;
+          await localforage.removeItem("last_project_id");
+          await router.push("/teams");
+        }
+        if (
+          strapi.data?.is === "project" &&
+          strapi.data?.project_id === teamStore.project?.id &&
+          strapi.data.action === "member_removed"
+        ) {
+          teamStore.project.project_members =
+            teamStore.project.project_members.filter(
+              (i) => i.id !== strapi.data?.removedMember_id
+            );
+          if (strapi.data.removeUser_id === userStore.userId) {
+            await localforage.removeItem("last_project_id");
+            teamStore.need_refecth_projects = true;
+            await router.push("/teams");
+          }
+        }
+        if (
+          strapi.data?.is === "project" &&
+          strapi.data.action === "role_updated" &&
+          strapi.data.project_id === teamStore.project?.id
+        ) {
+          const res = await getProject(teamStore.project?.id);
+          if (res?.data) {
+            teamStore.project.member_roles = res.data.member_roles;
+          }
+        }
+        if (
+          strapi.data?.is === "card" &&
+          strapi.data.action === "cardCreated"
+        ) {
+          try {
+            await getProject(teamStore.project?.id);
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      }
+    }
+  },
+  { immediate: true, deep: true }
+);
+
+onUnmounted(() => {
+  teamStore.project = null;
+});
+</script>

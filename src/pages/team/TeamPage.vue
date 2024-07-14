@@ -1,0 +1,217 @@
+<template>
+  <NavigatorContainer>
+    <q-layout view="lHr LpR lfr" container
+      :class="dragWidth ? 'col-resize' : ''"
+      class="absolute-full"
+      @mousemove="handleMouseMove" @mouseup="handleMouseUp">
+      <ProjectHeader
+        v-if="teamStore?.project && !uiStore.activeReel && !uiStore.isFocusMode"
+        :rightDrawer="rightDrawer"
+        @toggleRightpannel="toggleRightpannel"
+        @toggleleftDrawer="toggleleftDrawer"
+      />
+      <q-drawer
+        v-if="$q.screen.gt.xs && uiStore.app === 'teams' && teamStore?.project_id && !uiStore.isFocusMode"
+        v-model="uiStore.projectLeftDrawer"
+        side="left"
+        class="column border-right"
+        :width="leftDrawerWidth"
+      >
+        <BoradsList v-if="showBoard" />
+        <ChatList v-else-if="teamStore.navigation === 'chat'" />
+        <StorageList
+          v-else-if="
+            teamStore.navigation === 'storage' && teamStore.project?.storages
+          "
+          :storages="teamStore.project?.storages"
+        />
+        <ScheduleList
+          v-else-if="teamStore.navigation === 'schedule'"
+          :schedules="teamStore.project?.schedules"
+          :by_info="byInfo"
+        />
+        <DocumentList
+          v-else-if="teamStore.navigation === 'document'"
+          :documents="teamStore.project?.project_documents"
+          :by_info="byInfo"
+        />
+        <div v-else class="absolute-full column flex-center">
+          <div class="col-4 column flex-center">
+            <span class="op-5">进入相应功能</span>
+            <span class="text-orange">请点击右侧导航内容</span>
+          </div>
+          <q-space />
+        </div>
+        <div v-if="dragWidth" class="absolute-full"></div>
+      </q-drawer>
+      <q-drawer
+        v-if="teamStore?.project_id && $q.screen.gt.xs"
+        v-model="teamStore.rightDrawerOpen"
+        side="right"
+        :width="420"
+        class="border-left"
+      >
+        <MemberManager
+          v-if="rightDrawer === 'member_manager' && teamStore?.project?.id"
+          :byInfo
+        />
+        <TodoPage
+          v-else-if="rightDrawer === 'person_todos'"
+          :kanban_id="teamStore.kanban?.id"
+        />
+        <FlagsContainder
+          v-else-if="rightDrawer === 'flaggeds'"
+          :headerless="false"
+        />
+      </q-drawer>
+
+      <q-page-container>
+        <q-page :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-3'">
+          <div
+            v-if="$q.screen.gt.xs"
+            class="absolute-left full-height hover-col-resize flex flex-center toggle-container z-max"
+            :class="dragWidth ? 'bg-primary ' : ''"
+            :style="dragWidth ? 'width: 3px' : 'width: 10px'"
+            @mousedown="handleMouseDown"
+          >
+            <q-icon
+              :name="`mdi-chevron-${uiStore.projectLeftDrawer ? 'left' : 'right'}`"
+              color="primary"
+              size="sm"
+              @click="toggleleftDrawer"
+              class="cursor-pointer toggle-btn transition z-max"
+              :style="`transform: translateX(${uiStore.projectLeftDrawer ? -16 : 12}px)`"
+            />
+          </div>
+          <div class="absolute-full">
+            <router-view v-show="!uiStore.showMainContentList" />
+            <template v-if="!$q.screen.gt.xs && uiStore.showMainContentList">
+              <BoradsList v-if="showBoard" />
+              <ChatList v-if="teamStore.navigation === 'chat'" />
+              <StorageList v-if="teamStore.navigation === 'storage' && teamStore.project?.storages" :storages="teamStore.project?.storages" />
+              <ScheduleList
+                  v-if="teamStore.navigation === 'schedule'"
+                  :schedules="teamStore.project?.schedules"
+                  :by_info="byInfo"
+              />
+              <DocumentList
+                  v-if="teamStore.navigation === 'document'"
+                  :documents="teamStore.project?.project_documents"
+                  :by_info="byInfo"
+              />
+            </template>
+          </div>
+        </q-page>
+      </q-page-container>
+    </q-layout>
+  </NavigatorContainer>
+</template>
+
+<script setup>
+import {ref, watch, computed, onBeforeMount, reactive} from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useMouse } from '@vueuse/core'
+
+import NavigatorContainer from './NavigatorContainer.vue'
+import FlagsContainder from "src/pages/team/chat/FlagsContainder.vue";
+import TodoPage from "src/pages/team/todo/TodoPage.vue";
+
+import BoradsList from "src/pages/team/kanban/BoradsList.vue";
+import ChatList from "src/pages/team/chat/ChatList.vue";
+import StorageList from "src/pages/team/storage/StorageList.vue";
+import ScheduleList from "src/pages/team/schedule/ScheduleList.vue";
+import DocumentList from "src/pages/team/document/DocumentList.vue";
+import MemberManager from "src/pages/team/settings/MemberManager.vue";
+import ProjectHeader from "./components/ProjectHeader.vue";
+
+import { uiStore, teamStore } from "src/hooks/global/useStore.js";
+
+const route = useRoute();
+const router = useRouter();
+
+const rightDrawer = ref();
+const toggleRightpannel = (val) => {
+  rightDrawer.value = val;
+};
+const toggleleftDrawer = () => {
+  uiStore.projectLeftDrawer = !uiStore.projectLeftDrawer;
+};
+const { x } = useMouse({ touch: false })
+const leftDrawerWidth = ref(180);
+const leftDrawerMinWidth = ref(140);
+const leftDrawerMaxWidth = ref(480);
+const _ori_width = ref()
+const dragWidth = ref(false)
+const position = reactive({
+  x: NaN,
+  y: NaN
+})
+const handleMouseDown = () => {
+  if(!uiStore.projectLeftDrawer){
+    uiStore.projectLeftDrawer = true
+  } else {
+    position.x = x.value;
+    dragWidth.value = true
+    _ori_width.value = leftDrawerWidth.value
+    uiStore.draging = true
+  }
+}
+const handleMouseUp = () => {
+  dragWidth.value = false
+  uiStore.draging = false
+}
+const handleMouseMove = () => {
+  if(!position.x || !dragWidth.value || !_ori_width.value) return
+
+  const deltaX = x.value - position.x;
+  if(_ori_width.value + deltaX >= leftDrawerMinWidth.value && _ori_width.value + deltaX <= leftDrawerMaxWidth.value){
+    leftDrawerWidth.value = _ori_width.value + deltaX
+  } else if(_ori_width.value + deltaX > leftDrawerMaxWidth.value) {
+    leftDrawerWidth.value = leftDrawerMaxWidth.value
+  } else if(_ori_width.value + deltaX === leftDrawerMaxWidth.value) {
+    leftDrawerWidth.value = leftDrawerMinWidth.value
+  } else if(_ori_width.value + deltaX < 50){
+    uiStore.projectLeftDrawer = false
+  }
+}
+
+const byInfo = ref({
+  by: "project",
+  project_id: computed(() => teamStore?.project?.id),
+});
+
+// you need filter Boards by Type in different Models, use teamStore.navigation value as filter's Key
+const showBoard = computed(() => {
+  const _show = ["kanban", "classroom", "segment"];
+  return _show.includes(teamStore.navigation);
+});
+
+watch(
+  route,
+  () => {
+    if (route?.params?.project_id) {
+      teamStore.project_id = route.params.project_id;
+    }
+  },
+  { immediate: true, deep: true }
+);
+
+onBeforeMount(() => {
+  const jwt = localStorage.getItem("jwt");
+  const mmtoken = localStorage.getItem("mmtoken");
+  if (!jwt || !mmtoken) {
+    router.push("/login");
+  }
+});
+watch(
+  teamStore,
+  () => {
+    if (teamStore?.team?.status || teamStore?.team?.isExternal) {
+      router.push("/teams");
+    }
+  },
+  { immediate: true, deep: true }
+);
+</script>
+
+<style lang="scss" scoped></style>

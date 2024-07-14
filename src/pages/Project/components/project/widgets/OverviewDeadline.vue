@@ -1,0 +1,57 @@
+<template>
+  <div class="q-pa-xs radius-xs border q-space font-small">
+    <q-icon size="xs" name="mdi-calendar-clock" />
+    审核：{{ date.formatDate(deadline, "MM/DD - HH:mm") }}
+    <q-popup-proxy v-if="calc_auth('overview', 'deadline', authBase.of)">
+      <q-date
+        v-model="deadline"
+        minimal
+        bordered
+        mask="YYYY-MM-DDTHH:mm:ss.SSSZ"
+        :options="(date) => date >= quasarDate(current_versionRef?.end)"
+      />
+      <q-time
+        v-model="deadline"
+        mask="YYYY-MM-DDTHH:mm:ss.SSSZ"
+        @update:model-value="updateVersionFn"
+      />
+    </q-popup-proxy>
+  </div>
+</template>
+
+<script setup>
+import { inject, ref, toRef, watchEffect } from "vue";
+
+import { date } from "quasar";
+
+function quasarDate(val) {
+  return date.formatDate(val, "YYYY/MM/DD");
+}
+
+const props = defineProps({
+  current_version: {
+    type: Object,
+    default() {
+      return {};
+    },
+  },
+  wasAttached_to: {
+    type: String,
+    default: "project",
+  },
+});
+const authBase = inject("authBase");
+const current_versionRef = toRef(props, "current_version");
+const wasAttached_toRef = toRef(props, "wasAttached_to");
+const deadline = ref(current_versionRef.value?.deadline);
+watchEffect(() => {
+  deadline.value = current_versionRef.value?.deadline;
+});
+
+const emit = defineEmits(["deadlineChanged"]);
+const updateVersionFn = async () => {
+  if (deadline.value == current_versionRef.value?.deadline) return;
+
+  emit("deadlineChanged", deadline.value);
+};
+</script>

@@ -1,0 +1,39 @@
+@import "./base/material.css";
+@import "./buttons/material.css";
+@import "./calendars/material.css";
+@import "./dropdowns/material.css";
+@import "./inputs/material.css";
+@import "./navigations/material.css";
+@import "./popups/material.css";
+@import "./splitbuttons/material.css";
+@import "./layouts/material.css";
+@import "./grids/material.css";
+@import "./schedule/material.css";
+.e-schedule {
+  background: #303030;
+  border: 0px solid #61616100;
+}
+.e-filemanager {
+  background: #fafafa;
+}
+.e-treeview .e-list-item.e-active > .e-fullrow {
+  background-color: rgba(199, 199, 199, 0.04);
+}
+.e-splitter .e-split-bar.e-split-bar-horizontal {
+  background: #cbcbcb;
+  border-left: none;
+  border-right: none;
+}
+.e-filemanager .e-address {
+  border-bottom-color: #e7e7e7;
+}
+.e-filemanager .e-toolbar {
+  border-bottom-color: #d2d2d2;
+}
+
+.e-dlg-header-content {
+  border-bottom: 1px solid #dfdfdf !important;
+}
+.e-filemanager .e-large-icons .e-list-text {
+  color: #303030;
+}
