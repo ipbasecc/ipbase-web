@@ -161,7 +161,7 @@ module.exports = configure(function (/* ctx */) {
       // iconSet: 'material-icons', // Quasar icon set
       // lang: 'en-US', // Quasar language pack
 
-      // For special cases outside of where the auto-import strategy can have an impact
+      // For special cases outside where the auto-import strategy can have an impact
       // (like functional components as one of the examples),
       // you can manually specify Quasar components/directives to be available everywhere:
       //
@@ -274,21 +274,56 @@ module.exports = configure(function (/* ctx */) {
       bundler: "packager", // 'packager' or 'builder'
 
       packager: {
-        // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
-        // OS X / Mac App Store
-        // appBundleId: '',
-        // appCategoryType: '',
-        // osxSign: '',
-        // protocol: 'myapp://path',
-        // Windows only
-        // win32metadata: { ... }
+        // asar: {
+        //   unpackDir: "node_modules"
+        // },
+        // appId: "com.ipbase.ipbase",
+        // productName: "IPBase",
+        // directories: {
+        //   output: "dist/electron"
+        // },
       },
 
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: "homelandfg",
+        asar: true,
+        appId: "com.ipbase.ipbase",
+        productName: "IPBase",
+        // directories: {
+        //   output: "dist/electron"
+        // },
+        copyright: 'Copyright © 2024 IPBase'
+        // linux: {
+        //   target: ['deb','rpm']
+        // }
+        // asarUnpack: [
+        //   "node_modules/some-module/**/*"
+        // ]
       },
+
+      // Specify additional parameters when yarn/npm installing
+      // the UnPackaged folder, right before bundling with either
+      // electron packager or electron builder;
+      // Example: [ 'install', '--production', '--ignore-optional', '--some-other-param' ]
+      unPackagedInstallParams: [ 'install', '--production' ],
+
+      // optional; add/remove/change properties
+      // of production generated package.json
+      extendPackageJson (pkg) {
+        // directly change props of pkg;
+        // no need to return anything
+      },
+
+      extendElectronMainConf (cfg) {
+        // do something with Esbuild config
+        // for the Electron Main thread
+      },
+
+      extendElectronPreloadConf (cfg) {
+        // do something with Esbuild config
+        // for the Electron Preload thread
+      }
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-browser-extensions/configuring-bex
