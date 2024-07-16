@@ -1,6 +1,7 @@
 <template>
   <div class="absolute-full column flex-center">
-    <q-card v-if="!code" bordered style="width: 420px" class="focus-form">
+    <div v-if="$q.platform.is.electron" class="absolute-full q-electron-drag" />
+    <q-card v-if="!code" bordered style="width: 420px" class="focus-form q-electron-drag--exception">
       <template v-if="!resetSuccess">
         <q-card-section class="border-bottom font-large">
           重设你的密码
@@ -40,6 +41,11 @@
           </q-input>
         </q-card-section>
         <q-card-section class="row no-wrap q-pa-sm border-top">
+          <q-btn
+              padding="xs md"
+              label="返回登陆"
+              @click="back"
+          />
           <q-space />
           <q-btn
             padding="xs md"
@@ -68,7 +74,7 @@
         </q-card-section>
       </template>
     </q-card>
-    <q-card v-else bordered flat style="width: 420px" class="shadow-focus">
+    <q-card v-else bordered flat style="width: 420px" class="shadow-focus q-electron-drag--exception">
       <q-card-section class="column no-wrap gap-xs">
         <span class="font-x-large font-bold-600">密码重设地址无效</span>
         <span class="font-large font-bold-400"
@@ -82,7 +88,6 @@
 <script setup>
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-// import { resetPassword } from "src/apollo/api/api.js";
 import { resetPassword } from "src/api/strapi.js";
 import useUserStore from "src/stores/user.js";
 import { useQuasar } from "quasar";
@@ -160,6 +165,9 @@ const startCountdown = () => {
     }
   }, 1000);
 };
+const back = () => {
+  router.push('/login');
+}
 </script>
 
 <style lang="scss" scoped></style>

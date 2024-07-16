@@ -1,6 +1,7 @@
 <template>
   <div class="absolute-full column flex-center">
-    <q-card v-if="uiStore.setServer" bordered style="width: 420px" class="focus-form">
+    <div v-if="$q.platform.is.electron" class="absolute-full q-electron-drag" />
+    <q-card v-if="uiStore.setServer" bordered style="width: 420px" class="focus-form q-electron-drag--exception">
       <ServerList :useDialog="false" @setCompleted="setCompleted()" />
     </q-card>
     <template v-else>
@@ -9,7 +10,7 @@
         bordered
         flat
         style="width: 420px"
-        class="focus-form"
+        class="focus-form q-electron-drag--exception"
       >
         <q-card-section
           v-if="step === 2"
@@ -35,7 +36,7 @@
       <q-card
         v-else-if="step === 0"
         bordered
-        class="focus-form overflow-hidden ipbase"
+        class="focus-form overflow-hidden ipbase q-electron-drag--exception"
         style="width: 420px"
       >
         <!-- <q-card-section v-show="!credible" class="border-bottom flex flex-center q-py-xl">
@@ -53,8 +54,9 @@
               v-model="username"
               :standout="$q.dark.mode"
               type="text"
+              label="用户名"
               hide-bottom-space
-              :rules="[(val) => val?.length >= 4 || '用户名不能小于4位']"
+              :rules="[(val) => val?.length >= 6 || '请输入至少6位，且由字母开头，仅包含字母或数字的用户名']"
               class="border radius-xs overflow-hidden"
             >
               <template v-slot:prepend>
@@ -71,9 +73,10 @@
               v-model="email"
               :standout="$q.dark.mode"
               type="text"
+              label="邮箱"
               hide-bottom-space
               :rules="[
-                (val) => !!val || 'Email is missing',
+                (val) => !!val || '邮箱地址不能缺少',
                 (val) =>
                   /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(val) ||
                   '邮箱输入有误，请检查输入！',
@@ -90,6 +93,7 @@
               v-model="password"
               :standout="$q.dark.mode"
               type="password"
+              label="密码"
               hide-bottom-space
               autocomplete
               :rules="[(val) => val?.length >= 8 || '密码不能小于8位数']"
@@ -105,6 +109,7 @@
               v-model="confirmPassword"
               :standout="$q.dark.mode"
               type="password"
+              label="确认密码"
               hide-bottom-space
               autocomplete
               :rules="[
@@ -123,7 +128,7 @@
               unelevated
               color="primary"
               icon="check"
-              label="提交"
+              label="提交注册"
               class="full-width"
               @click="submitRegister()"
             />
@@ -152,7 +157,7 @@
           </template>
         </form>
       </q-card>
-      <div v-if="me && step === 1" class="column no-wrap gap-sm">
+      <div v-if="me && step === 1" class="column no-wrap gap-sm q-electron-drag--exception">
         <LoginStep
           :me
           :email="email"

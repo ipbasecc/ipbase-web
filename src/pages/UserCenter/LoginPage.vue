@@ -1,9 +1,10 @@
 <template>
-  <div class="absolute-full column flex-center">
-    <q-card v-if="uiStore.setServer" bordered style="width: 420px" class="shadow-focus">
+  <div class="absolute-full column flex-center relative-position">
+    <div v-if="$q.platform.is.electron" class="absolute-full q-electron-drag" />
+    <q-card v-if="uiStore.setServer" bordered style="width: 420px" class="shadow-focus q-electron-drag--exception">
       <ServerList :useDialog="false" @setCompleted="setCompleted()" />
     </q-card>
-    <q-card v-else bordered style="width: 420px" class="focus-form">
+    <q-card v-else bordered style="width: 420px" class="focus-form q-electron-drag--exception">
       <template v-if="!hasError">
         <template v-if="!store.logged">
           <q-card-section class="q-mt-lg">
@@ -71,7 +72,7 @@
             >
           </q-card-section>
         </template>
-        <template v-if="start">
+        <template v-else-if="start">
           <q-card-section
             v-if="strapi_loading"
             class="row no-wrap gap-sm items-center"
@@ -85,7 +86,7 @@
             <span>正在链接通讯服务，请稍等...</span>
           </q-card-section>
         </template>
-        <template v-if="isLogined">
+        <template v-else-if="isLogined">
           <q-card-section class="row no-wrap items-center">
             <div class="font-medium">
               {{
@@ -125,10 +126,25 @@
       </q-card-section>
 
       <q-card-section
-        v-if="errorStats === 'wrongPassword'"
+        v-else-if="errorStats === 'wrongPassword'"
         class="row no-wrap gap-sm items-center"
       >
         <span>账号或密码错误！</span
+        ><q-btn
+          color="primary"
+          padding="xs md"
+          dense
+          flat
+          label="重新登录"
+          @click="reLogin"
+        />
+      </q-card-section>
+
+      <q-card-section
+        v-else-if="errorStats === 'wrongAuth'"
+        class="row no-wrap gap-sm items-center"
+      >
+        <span>授权已过期，请重新登陆</span
         ><q-btn
           color="primary"
           padding="xs md"
@@ -261,9 +277,10 @@ const submitLogin = async () => {
     hasError.value = true;
     if (error === "ApolloError: Your account email is not confirmed") {
       errorStats.value = "noneConfirmed";
-    }
-    if (error === "ApolloError: Invalid identifier or password") {
+    }else if (error === "ApolloError: Invalid identifier or password") {
       errorStats.value = "wrongPassword";
+    } else {
+      errorStats.value = "wrongAuth";
     }
     console.log(error);
     Rsps.value = error;
@@ -285,6 +302,7 @@ onUnmounted(() => {
 const reLogin = () => {
   errorStats.value = null;
   hasError.value = false;
+  store.logged = false;
 };
 const redirectNow = () => {
   store.needRefetch = true;

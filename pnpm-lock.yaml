@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@apollo/client':
+        specifier: ^3.10.8
+        version: 3.10.8(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0))
       '@blocksuite/blocks':
         specifier: ^0.14.0-canary-202404261005-5f81f7c
         version: 0.14.0(yjs@13.6.18)
@@ -89,17 +92,23 @@ importers:
       '@syncedstore/core':
         specifier: ^0.6.0
         version: 0.6.0(yjs@13.6.18)
+      '@syncfusion/ej2-base':
+        specifier: ^26.1.37
+        version: 26.1.37
+      '@syncfusion/ej2-icons':
+        specifier: ^26.1.35
+        version: 26.1.35
       '@syncfusion/ej2-schedule':
-        specifier: ^25.1.35
+        specifier: ^25.2.7
         version: 25.2.7
       '@syncfusion/ej2-vue-filemanager':
-        specifier: ^25.1.35
+        specifier: ^25.2.6
         version: 25.2.6
       '@syncfusion/ej2-vue-navigations':
-        specifier: ^25.1.40
+        specifier: ^25.2.6
         version: 25.2.6
       '@syncfusion/ej2-vue-schedule':
-        specifier: ^25.1.35
+        specifier: ^25.2.7
         version: 25.2.7
       '@tiptap/extension-blockquote':
         specifier: ^2.1.12
@@ -221,6 +230,9 @@ importers:
       '@types/ws':
         specifier: ^8.5.8
         version: 8.5.10
+      '@vue/apollo-composable':
+        specifier: ^4.0.2
+        version: 4.0.2(@apollo/client@3.10.8(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0)))(@vue/composition-api@1.7.2(vue@3.4.29(typescript@5.4.5)))(graphql@15.8.0)(typescript@5.4.5)(vue@3.4.29(typescript@5.4.5))
       '@vue/composition-api':
         specifier: ^1.7.2
         version: 1.7.2(vue@3.4.29(typescript@5.4.5))
@@ -278,6 +290,9 @@ importers:
       file-saver:
         specifier: ^2.0.5
         version: 2.0.5
+      graphql-tag:
+        specifier: ^2.12.6
+        version: 2.12.6(graphql@15.8.0)
       hevue-img-preview:
         specifier: ^6.1.0
         version: 6.1.0
@@ -401,7 +416,7 @@ importers:
         version: 1.9.3(@electron/packager@18.3.2)(electron-builder@24.13.3(electron-builder-squirrel-windows@24.13.3(dmg-builder@24.13.3)))(eslint@8.57.0)(pinia@2.1.7(@vue/composition-api@1.7.2(vue@3.4.29(typescript@5.4.5)))(typescript@5.4.5)(vue@3.4.29(typescript@5.4.5)))(quasar@2.16.4)(rollup@2.79.1)(vue-router@4.3.3(vue@3.4.29(typescript@5.4.5)))(vue@3.4.29(typescript@5.4.5))(workbox-build@6.6.1)
       '@quasar/quasar-app-extension-apollo':
         specifier: ^2.2.3
-        version: 2.2.3(@apollo/client@3.10.5(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0)))(@vue/apollo-composable@4.0.2(@apollo/client@3.10.5(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0)))(@vue/composition-api@1.7.2(vue@3.4.29(typescript@5.4.5)))(graphql@15.8.0)(typescript@5.4.5)(vue@3.4.29(typescript@5.4.5)))(graphql@15.8.0)(quasar@2.16.4)(vue@3.4.29(typescript@5.4.5))
+        version: 2.2.3(@apollo/client@3.10.8(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0)))(@vue/apollo-composable@4.0.2(@apollo/client@3.10.8(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0)))(@vue/composition-api@1.7.2(vue@3.4.29(typescript@5.4.5)))(graphql@15.8.0)(typescript@5.4.5)(vue@3.4.29(typescript@5.4.5)))(graphql@15.8.0)(quasar@2.16.4)(vue@3.4.29(typescript@5.4.5))
       autoprefixer:
         specifier: ^10.4.2
         version: 10.4.19(postcss@8.4.38)
@@ -472,8 +487,8 @@ packages:
     peerDependencies:
       ajv: '>=8'
 
-  '@apollo/client@3.10.5':
-    resolution: {integrity: sha512-bZh5wLAT8b4KdEmqnqiQeDUttnR+NJ+gDYSN8T+U0uFGN++5LO5PTwySih6kIU5ErGGGw4NHI94YdSET3uLuBA==}
+  '@apollo/client@3.10.8':
+    resolution: {integrity: sha512-UaaFEitRrPRWV836wY2L7bd3HRCfbMie1jlYMcmazFAK23MVhz/Uq7VG1nwbotPb5xzFsw5RF4Wnp2G3dWPM3g==}
     peerDependencies:
       graphql: ^15.0.0 || ^16.0.0
       graphql-ws: ^5.5.5
@@ -1673,6 +1688,10 @@ packages:
     resolution: {integrity: sha512-sbZ8IVEg4UkD5wXV3GXLyoH6q4sYpCVP3HJ1FwlJ+/+rgAQ2h7NaQhBmljg0o+ZfXEB7UuIZ59AzNQqc0eL6Eg==}
     hasBin: true
 
+  '@syncfusion/ej2-base@26.1.37':
+    resolution: {integrity: sha512-aDnABkOg+5Uw9SiORkCas8p+5/U+GWI0lL1czZJAwsJ1OGw3vN1zju6klwTX8prefOEh9/aQ67pmt2yepO00bg==}
+    hasBin: true
+
   '@syncfusion/ej2-buttons@25.2.7':
     resolution: {integrity: sha512-Jn+YN83XKH+sEWy1s8FVKVaiQZxwDf+Rwf2JxCNzIEz1cZA9HV8NT/W0YuxwFIoXBaz11OOiqG4ETqLE8JtX0Q==}
 
@@ -1702,6 +1721,9 @@ packages:
 
   '@syncfusion/ej2-icons@25.2.3':
     resolution: {integrity: sha512-WptrAR3YShA8S+mushGCojRmBgLUCYpsYq1Nw1S1ynWNRcijlZgdil5L7LjaGA8H6CA/mFG5BMBDCmZ76hYX1A==}
+
+  '@syncfusion/ej2-icons@26.1.35':
+    resolution: {integrity: sha512-rhaJDhN+vDBai+7xSw+xMnzAvLtG75vYoWvVA7wgUawA4boA4ODtkEgNYbMPJOEbtYaEQO7s3b7nzzWbXI3v+Q==}
 
   '@syncfusion/ej2-inputs@25.2.6':
     resolution: {integrity: sha512-DjhOU6ZH55JA92zb2PORSRPui6xBrx4VKQFO0Pkb2kVNixFK2AvmeeGMG33i+GdECLBFI5Vevl/qaQ+kttBwkg==}
@@ -6321,7 +6343,7 @@ snapshots:
       jsonpointer: 5.0.1
       leven: 3.1.0
 
-  '@apollo/client@3.10.5(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0))':
+  '@apollo/client@3.10.8(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0))':
     dependencies:
       '@graphql-typed-document-node/core': 3.2.0(graphql@15.8.0)
       '@wry/caches': 1.0.1
@@ -7788,10 +7810,10 @@ snapshots:
 
   '@quasar/extras@1.16.11': {}
 
-  '@quasar/quasar-app-extension-apollo@2.2.3(@apollo/client@3.10.5(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0)))(@vue/apollo-composable@4.0.2(@apollo/client@3.10.5(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0)))(@vue/composition-api@1.7.2(vue@3.4.29(typescript@5.4.5)))(graphql@15.8.0)(typescript@5.4.5)(vue@3.4.29(typescript@5.4.5)))(graphql@15.8.0)(quasar@2.16.4)(vue@3.4.29(typescript@5.4.5))':
+  '@quasar/quasar-app-extension-apollo@2.2.3(@apollo/client@3.10.8(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0)))(@vue/apollo-composable@4.0.2(@apollo/client@3.10.8(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0)))(@vue/composition-api@1.7.2(vue@3.4.29(typescript@5.4.5)))(graphql@15.8.0)(typescript@5.4.5)(vue@3.4.29(typescript@5.4.5)))(graphql@15.8.0)(quasar@2.16.4)(vue@3.4.29(typescript@5.4.5))':
     dependencies:
-      '@apollo/client': 3.10.5(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0))
-      '@vue/apollo-composable': 4.0.2(@apollo/client@3.10.5(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0)))(@vue/composition-api@1.7.2(vue@3.4.29(typescript@5.4.5)))(graphql@15.8.0)(typescript@5.4.5)(vue@3.4.29(typescript@5.4.5))
+      '@apollo/client': 3.10.8(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0))
+      '@vue/apollo-composable': 4.0.2(@apollo/client@3.10.8(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0)))(@vue/composition-api@1.7.2(vue@3.4.29(typescript@5.4.5)))(graphql@15.8.0)(typescript@5.4.5)(vue@3.4.29(typescript@5.4.5))
       graphql: 15.8.0
       quasar: 2.16.4
       vue: 3.4.29(typescript@5.4.5)
@@ -7898,6 +7920,10 @@ snapshots:
     dependencies:
       '@syncfusion/ej2-icons': 25.2.3
 
+  '@syncfusion/ej2-base@26.1.37':
+    dependencies:
+      '@syncfusion/ej2-icons': 26.1.35
+
   '@syncfusion/ej2-buttons@25.2.7':
     dependencies:
       '@syncfusion/ej2-base': 25.2.7
@@ -7967,6 +7993,8 @@ snapshots:
       '@syncfusion/ej2-splitbuttons': 25.2.4
 
   '@syncfusion/ej2-icons@25.2.3': {}
+
+  '@syncfusion/ej2-icons@26.1.35': {}
 
   '@syncfusion/ej2-inputs@25.2.6':
     dependencies:
@@ -8472,9 +8500,9 @@ snapshots:
       vite: 2.9.18(sass@1.77.5)
       vue: 3.4.29(typescript@5.4.5)
 
-  '@vue/apollo-composable@4.0.2(@apollo/client@3.10.5(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0)))(@vue/composition-api@1.7.2(vue@3.4.29(typescript@5.4.5)))(graphql@15.8.0)(typescript@5.4.5)(vue@3.4.29(typescript@5.4.5))':
+  '@vue/apollo-composable@4.0.2(@apollo/client@3.10.8(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0)))(@vue/composition-api@1.7.2(vue@3.4.29(typescript@5.4.5)))(graphql@15.8.0)(typescript@5.4.5)(vue@3.4.29(typescript@5.4.5))':
     dependencies:
-      '@apollo/client': 3.10.5(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0))
+      '@apollo/client': 3.10.8(graphql@15.8.0)(subscriptions-transport-ws@0.9.19(graphql@15.8.0))
       graphql: 15.8.0
       throttle-debounce: 5.0.0
       ts-essentials: 9.4.2(typescript@5.4.5)

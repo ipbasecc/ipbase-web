@@ -1,6 +1,7 @@
 <template>
   <div class="absolute-full column flex-center">
-    <q-card bordered class="focus-form" style="width: 420px">
+    <div v-if="$q.platform.is.electron" class="absolute-full q-electron-drag" />
+    <q-card bordered class="focus-form q-electron-drag--exception" style="width: 420px">
       <template v-if="!forgotSuccess && !isLoading">
         <q-card-section class="border-bottom">
           请输入你的注册邮箱地址
@@ -27,6 +28,11 @@
           </q-input>
         </q-card-section>
         <q-card-section class="row no-wrap q-pa-sm border-top">
+          <q-btn
+              padding="xs md"
+              label="返回登陆"
+              @click="back"
+          />
           <q-space />
           <q-btn
             padding="xs md"
@@ -58,6 +64,9 @@
 import { ref } from "vue";
 import { forgotPassword } from "src/apollo/api/api.js";
 import { uiStore } from "src/hooks/global/useStore.js";
+import {useRouter} from "vue-router";
+
+const router = useRouter();
 uiStore.topbarClass = "transparent";
 
 const forgotPasswordParmas = ref({
@@ -85,4 +94,7 @@ const forgot = async () => {
     console.log(error);
   }
 };
+const back = () => {
+  router.push('/login');
+}
 </script>
