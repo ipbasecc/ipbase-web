@@ -1,10 +1,19 @@
 <template>
   <div class="absolute-full column flex-center relative-position">
     <div v-if="$q.platform.is.electron" class="absolute-full q-electron-drag" />
-    <q-card v-if="uiStore.setServer" bordered style="width: 420px" class="shadow-focus q-electron-drag--exception">
+    <q-card v-if="uiStore.setServer"
+      :bordered="$q.screen.gt.sm" style="width: 420px" class="q-electron-drag--exception" :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'"
+    >
       <ServerList :useDialog="false" @setCompleted="setCompleted()" />
     </q-card>
-    <q-card v-else bordered style="width: 420px" class="focus-form q-electron-drag--exception">
+    <q-card
+        v-else
+        :bordered="$q.screen.gt.xs"
+        :flat="!$q.screen.gt.xs"
+        class="q-electron-drag--exception"
+        :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'"
+        style="width: 420px"
+    >
       <template v-if="!hasError">
         <template v-if="!store.logged">
           <q-card-section class="q-mt-lg">

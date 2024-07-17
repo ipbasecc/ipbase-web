@@ -1,7 +1,13 @@
 <template>
   <div class="absolute-full column flex-center">
     <div v-if="$q.platform.is.electron" class="absolute-full q-electron-drag" />
-    <q-card bordered class="focus-form q-electron-drag--exception" style="width: 420px">
+    <q-card
+      style="width: 420px"
+      :bordered="$q.screen.gt.xs"
+      :flat="!$q.screen.gt.xs"
+      class="q-electron-drag--exception"
+      :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'"
+    >
       <template v-if="!forgotSuccess && !isLoading">
         <q-card-section class="border-bottom">
           请输入你的注册邮箱地址

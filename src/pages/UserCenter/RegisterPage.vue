@@ -1,16 +1,22 @@
 <template>
   <div class="absolute-full column flex-center">
     <div v-if="$q.platform.is.electron" class="absolute-full q-electron-drag" />
-    <q-card v-if="uiStore.setServer" bordered style="width: 420px" class="focus-form q-electron-drag--exception">
+    <q-card v-if="uiStore.setServer" style="width: 420px"
+      :bordered="$q.screen.gt.xs"
+      :flat="!$q.screen.gt.xs"
+      class="q-electron-drag--exception"
+      :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'"
+    >
       <ServerList :useDialog="false" @setCompleted="setCompleted()" />
     </q-card>
     <template v-else>
       <q-card
         v-if="(step === 0 && logged) || step === 2"
-        bordered
-        flat
         style="width: 420px"
-        class="focus-form q-electron-drag--exception"
+        :bordered="$q.screen.gt.xs"
+        :flat="!$q.screen.gt.xs"
+        class="q-electron-drag--exception"
+        :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'"
       >
         <q-card-section
           v-if="step === 2"
@@ -35,8 +41,10 @@
       </q-card>
       <q-card
         v-else-if="step === 0"
-        bordered
-        class="focus-form overflow-hidden ipbase q-electron-drag--exception"
+        class="overflow-hidden ipbase q-electron-drag--exception"
+        :bordered="$q.screen.gt.xs"
+        :flat="!$q.screen.gt.xs"
+        :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'"
         style="width: 420px"
       >
         <!-- <q-card-section v-show="!credible" class="border-bottom flex flex-center q-py-xl">
