@@ -271,7 +271,7 @@ module.exports = configure(function (/* ctx */) {
       // specify the debugging port to use for the Electron app when running in development mode
       inspectPort: 5858,
 
-      bundler: "packager", // 'packager' or 'builder'
+      bundler: "builder", // 'packager' or 'builder'
 
       packager: {
         // asar: {
@@ -286,20 +286,41 @@ module.exports = configure(function (/* ctx */) {
 
       builder: {
         // https://www.electron.build/configuration/configuration
-
-        asar: true,
         appId: "com.ipbase.ipbase",
         productName: "IPBase",
-        // directories: {
-        //   output: "dist/electron"
-        // },
-        copyright: 'Copyright © 2024 IPBase'
-        // linux: {
-        //   target: ['deb','rpm']
-        // }
-        // asarUnpack: [
-        //   "node_modules/some-module/**/*"
-        // ]
+        copyright: 'Copyright © 2024 IPBase',
+        asar: true,
+        // files: [
+        //   'dist/electron/**/*'
+        // ],
+        dmg: {
+          contents: [
+            {
+              x: 130,
+              y: 220
+            },
+            {
+              x: 410,
+              y: 220,
+              type: 'link',
+              path: '/Applications'
+            }
+          ]
+        },
+        mac: {
+          icon: 'build/icons/icon.icns',
+          target: ['dmg'],
+          identity: null  // 跳过签名步骤
+        },
+        win: {
+          icon: 'build/icons/icon.ico',
+          target: ['nsis', 'appx', 'msi', 'portable']
+        },
+        linux: {
+          icon: 'build/icons',
+          target: ['rpm', 'deb', 'appImage', 'snap'],
+          category: 'Network'
+        }
       },
 
       // Specify additional parameters when yarn/npm installing
