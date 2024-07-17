@@ -13,6 +13,7 @@
         class="q-pa-xs"
         :class="!$q.screen.gt.xs ? 'border-bottom row no-wrap' : 'border-right'"
       >
+        <q-btn v-if="!$q.screen.gt.xs" flat icon="mdi-chevron-left" dense size="sm" round class="q-mx-sm" v-close-popup />
         <q-tabs
           v-model="section"
           inline-label
@@ -25,8 +26,6 @@
             :class="$q.screen.gt.xs ? 'radius-xs overflow-hidden' : ''"
           />
         </q-tabs>
-        <q-space />
-        <q-btn v-if="!$q.screen.gt.xs" flat icon="close" dense size="sm" round v-close-popup />
       </section>
       <q-scroll-area class="column no-wrap q-space">
         <q-bar v-if="$q.screen.gt.xs" class="transparent">
