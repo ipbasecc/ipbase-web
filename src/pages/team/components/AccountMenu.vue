@@ -137,6 +137,7 @@
             </q-list>
           </q-card-section>
           <q-card-section
+            v-if="$q.screen.gt.xs"
             class="q-pa-xs radius-none"
             :class="revers ? 'border-right' : 'border-left'"
             style="min-width: 16rem; flex: 0 0 auto"
@@ -211,7 +212,8 @@
   </q-btn>
   <q-dialog
     v-model="show_settings"
-    full-height
+    :maximized="!$q.screen.gt.xs"
+    :full-height="$q.screen.gt.xs"
     transition-show="slide-down"
     transition-hide="slide-up"
     transition-duration="500"
