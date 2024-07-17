@@ -35,6 +35,7 @@
             size="1em"
           />
         </div>
+        uiStore.app:{{uiStore.app}}
         <q-space class="" />
         <template v-if="$q.screen.gt.xs">
           <q-btn
@@ -179,59 +180,34 @@
     </template>
     <q-page-container>
       <q-page>
-        <template v-if="$q.screen.gt.xs">
-          <div
-            v-if="$q.screen.gt.xs"
-            class="absolute-left full-height hover-col-resize flex flex-center toggle-container z-max"
-            :class="dragWidth ? 'bg-primary ' : ''"
-            :style="dragWidth ? 'width: 3px' : 'width: 10px'"
-            @mousedown="handleMouseDown"
-          >
-            <q-icon
-              :name="`mdi-chevron-${
-                uiStore.navigatorDrawer ? 'left' : 'right'
-              }`"
-              color="primary"
-              size="sm"
-              @click="toggleNavDrawer()"
-              class="cursor-pointer toggle-btn transition z-max"
-              :style="`transform: translateX(${
-                uiStore.navigatorDrawer ? -16 : 12
-              }px)`"
-            />
-          </div>
-          <slot />
-          <div
-            v-if="showBrand && $q.screen.gt.xs"
-            class="absolute-full flex flex-center"
-            :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-3'"
-          >
-            <WelcomePage />
-          </div>
-        </template>
-        <template v-else>
-          <template v-if="teamStore.navigatorDrawer">
-            <SideNavigation
-              v-if="team"
-              class="absolute-full"
-              :class="team.isExternal ? 'q-pt-sm' : ''"
-            />
-            <TeamList
-              v-else-if="
-                !$q.screen.gt.xs &&
-                teamStore.init &&
-                !teamStore.init.default_team
-              "
-              :bordered="false"
-              :spaced="false"
-              :separator="true"
-              assignStyle="transparent"
-              :forceDard="true"
-              @createTeam="createing = true"
-            />
-          </template>
-          <slot v-else />
-        </template>
+        <div
+          v-if="$q.screen.gt.xs"
+          class="absolute-left full-height hover-col-resize flex flex-center toggle-container z-max"
+          :class="dragWidth ? 'bg-primary ' : ''"
+          :style="dragWidth ? 'width: 3px' : 'width: 10px'"
+          @mousedown="handleMouseDown"
+        >
+          <q-icon
+            :name="`mdi-chevron-${
+              uiStore.navigatorDrawer ? 'left' : 'right'
+            }`"
+            color="primary"
+            size="sm"
+            @click="toggleNavDrawer()"
+            class="cursor-pointer toggle-btn transition z-max"
+            :style="`transform: translateX(${
+              uiStore.navigatorDrawer ? -16 : 12
+            }px)`"
+          />
+        </div>
+        <slot />
+        <div
+          v-if="showBrand && $q.screen.gt.xs"
+          class="absolute-full flex flex-center"
+          :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-3'"
+        >
+          <WelcomePage />
+        </div>
       </q-page>
       <q-dialog v-model="createing" persistent>
         <CreateTeam @cannelCreate="createing = false" />

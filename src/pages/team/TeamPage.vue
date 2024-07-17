@@ -1,6 +1,26 @@
 <template>
   <NavigatorContainer>
-    <q-layout view="lHr LpR lfr" container
+    <template v-if="teamStore.navigatorDrawer && !$q.screen.gt.xs">
+      <SideNavigation
+          v-if="team"
+          class="absolute-full"
+          :class="team.isExternal ? 'q-pt-sm' : ''"
+      />
+      <TeamList
+        v-else-if="
+          !$q.screen.gt.xs &&
+          teamStore.init &&
+          !teamStore.init.default_team
+        "
+        :bordered="false"
+        :spaced="false"
+        :separator="true"
+        assignStyle="transparent"
+        :forceDard="true"
+        @createTeam="createing = true"
+      />
+    </template>
+    <q-layout v-else view="lHr LpR lfr" container
       :class="dragWidth ? 'col-resize' : ''"
       class="absolute-full"
       @mousemove="handleMouseMove" @mouseup="handleMouseUp">
@@ -125,9 +145,13 @@ import MemberManager from "src/pages/team/settings/MemberManager.vue";
 import ProjectHeader from "./components/ProjectHeader.vue";
 
 import { uiStore, teamStore } from "src/hooks/global/useStore.js";
+import SideNavigation from "pages/team/components/SideNavigation.vue";
+import TeamList from "pages/team/components/TeamList.vue";
 
 const route = useRoute();
 const router = useRouter();
+
+const team = computed(() => teamStore.team);
 
 const rightDrawer = ref();
 const toggleRightpannel = (val) => {
@@ -179,6 +203,7 @@ const byInfo = ref({
   by: "project",
   project_id: computed(() => teamStore?.project?.id),
 });
+const createing = ref(false);
 
 // you need filter Boards by Type in different Models, use teamStore.navigation value as filter's Key
 const showBoard = computed(() => {
