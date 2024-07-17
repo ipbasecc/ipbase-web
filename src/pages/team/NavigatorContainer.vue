@@ -35,8 +35,7 @@
             size="1em"
           />
         </div>
-        uiStore.app:{{uiStore.app}}
-        <q-space class="" />
+        <q-space />
         <template v-if="$q.screen.gt.xs">
           <q-btn
             v-if="teamStore.project && !teamStore.team?.isExternal && uiStore.app === 'teams'"
@@ -85,6 +84,8 @@
             <FileTransfer :color="ossStore.showList ? '#21BA45' : $q.dark.mode ? '#fff' : '#000'" />
           </q-btn>
         </template>
+        <AccountMenu v-else />
+<!--        <q-btn icon="check" dense @click="$q.dark.toggle()" />-->
 
         <div v-if="isElectron" class="row no-wrap items-center gap-sm q-pl-md">
           <q-btn dense round size="sm" icon="mdi-window-minimize" @click="minimize()" />
@@ -224,6 +225,7 @@ import FlagsContainder from "src/pages/team/chat/FlagsContainder.vue";
 import CreateTeam from "src/pages/team/components/CreateTeam.vue";
 
 import TeamMenu from "src/pages/team/components/TeamMenu.vue";
+import AccountMenu from 'src/pages/team/components/AccountMenu.vue'
 import SideNavigation from "src/pages/team/components/SideNavigation.vue";
 import TeamAddmenu from "src/pages/team/components/TeamAddmenu.vue";
 import WelcomePage from "src/pages/team/WelcomePage.vue";
