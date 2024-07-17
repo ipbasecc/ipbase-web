@@ -44,7 +44,7 @@
         stack-label
         :placeholder="description"
       />
-      <div class="row gap-xs items-center">
+      <div v-if="false" class="row gap-xs items-center">
         <q-chip
           v-for="(i, index) in self_tags"
           :key="index"
@@ -100,7 +100,7 @@
           </q-menu>
         </q-btn>
       </div>
-      <div class="row no-wrap gap-md items-center q-py-sm">
+      <div v-if="false" class="row no-wrap gap-md items-center q-py-sm">
         界面风格：
         <q-btn
           v-if="theme"
@@ -125,7 +125,7 @@
           </q-menu>
         </q-btn>
       </div>
-      <div class="row no-wrap gap-md items-start q-py-sm">
+      <div v-if="false" class="row no-wrap gap-md items-start q-py-sm">
         横向形象：
         <div style="flex: 0 0 26rem" class="column no-wrap gap-sm">
           <template v-if="brand?.length > 0">
@@ -192,7 +192,7 @@
           />
         </div>
       </div>
-      <div class="row no-wrap gap-md items-start q-py-sm">
+      <div v-if="false" class="row no-wrap gap-md items-start q-py-sm">
         纵向形象：
         <div class="column no-wrap gap-sm" style="flex: 0 0 22rem">
           <q-img
