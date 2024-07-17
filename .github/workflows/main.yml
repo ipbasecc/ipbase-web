@@ -26,5 +26,3 @@ jobs:
         uses: samuelmeuli/action-electron-builder@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          mac_certs: ${{ secrets.MAC_CERTS }}
-          mac_certs_password: ${{ secrets.MAC_CERTS_PASSWORD }}
