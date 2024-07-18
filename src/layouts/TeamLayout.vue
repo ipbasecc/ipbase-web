@@ -22,6 +22,20 @@
           icon="dark_mode"
           @click="$q.dark.toggle()"
         />
+        <q-btn v-if="is_development" dense round icon="translate">
+          <q-menu class="transparent">
+            <q-list dense bordered class="radius-sm q-pa-xs" :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-1'">
+              <q-item v-for="i in localeOptions" :key="i.value"
+                clickable v-close-popup @click="locale = i.value"
+                class="radius-xs"
+              >
+                <q-item-section>
+                  <q-item-label>{{ i.label }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
         <AccountMenu
           menu_anchor="bottom end"
           menu_self="bottom left"
@@ -75,6 +89,13 @@ import { init_user } from "src/api/strapi/project";
 import { useQuasar } from "quasar";
 import useWatcher from "src/pages/team/wsWatcher.js";
 import { _ws, closeWs } from "src/pages/team/ws.js";
+import { useI18n } from 'vue-i18n'
+
+const { locale } = useI18n({ useScope: 'global' })
+const localeOptions = [
+  { value: 'zh-CN', label: '中文' },
+  { value: 'en-US', label: 'English' }
+]
 
 const $q = useQuasar();
 

@@ -30,7 +30,7 @@
         >
           <q-tab v-for="i in fileTabs" :key="i.name" :name="i.name" :label="i.label" />
         </q-tabs>
-        <span v-else>文件上传</span>
+        <span v-else>{{ $t('upload_file') }}</span>
         <q-space />
         <q-btn
           flat
@@ -109,6 +109,9 @@ import {useRouter} from "vue-router";
 import useOss from "./stores/oss.js";
 import useUIStore from "./stores/ui.js";
 import useUserStore from "./stores/user.js";
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const router = useRouter()
 const $q = useQuasar();
@@ -192,12 +195,12 @@ const lang = ref("zh-CN");
 provide("lang", lang);
 provide("bingWallpaper", null);
 let navigationBase = [
-  { name: "动态", val: "posts", icon: "", activeClass: "", enable: true },
-  { name: "文章", val: "articles", icon: "", activeClass: "", enable: true },
-  { name: "视频", val: "videos", icon: "", activeClass: "", enable: true },
-  { name: "音频", val: "audios", icon: "", activeClass: "", enable: true },
-  { name: "聊天", val: "chat", icon: "", activeClass: "", enable: false },
-  { name: "橱窗", val: "sales", icon: "", activeClass: "", enable: false },
+  { name: t('channel_nav_posts'), val: "posts", icon: "", activeClass: "", enable: true },
+  { name: t('channel_nav_articles'), val: "articles", icon: "", activeClass: "", enable: true },
+  { name: t('channel_nav_videos'), val: "videos", icon: "", activeClass: "", enable: true },
+  { name: t('channel_nav_audios'), val: "audios", icon: "", activeClass: "", enable: true },
+  { name: t('channel_nav_chat'), val: "chat", icon: "", activeClass: "", enable: false },
+  { name: t('channel_nav_sales'), val: "sales", icon: "", activeClass: "", enable: false },
 ];
 provide("navigationBase", navigationBase);
 const upload_process = computed(() => ossStore.process);
@@ -226,8 +229,8 @@ watch(axiosStatusCode, () => {
 
 const fileTab = ref('upload');
 const fileTabs = [
-  { name: 'upload', icon: '', label: '上传'},
-  { name: 'download', icon: '', label: '下载'}
+  { name: 'upload', icon: '', label: t('upload')},
+  { name: 'download', icon: '', label: t('download')}
 ]
 const downloadFiles = ref([]);
 // 在组件挂载后订阅下载进度事件
@@ -274,10 +277,10 @@ if ("serviceWorker" in navigator) {
           refreshing = true;
           // 显示 Quasar 通知
           $q.notify({
-            message: "应用有新更新可用，请保存您的工作并刷新页面。",
+            message: t('app_update_tip'),
             actions: [
               {
-                label: "刷新页面",
+                label: t('refresh_page'),
                 color: "white",
                 handler: () => {
                   window.location.reload();

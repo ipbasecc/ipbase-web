@@ -1,7 +1,31 @@
 // This is just an example,
 // so you can safely delete all default props below
+// {{ $t('navigation_Quadrant') }}
 
 export default {
-  failed: "操作失败",
-  success: "操作成功",
+  Language: '语言',
+  app_loading: '应用加载中',
+  app_loading_tip: '首次加载需要较长时间，请稍等',
+  upload_file: '文件上传',
+  upload: '上传',
+  download: '下载',
+  channel_nav_posts: '动态',
+  channel_nav_articles: '下载',
+  channel_nav_videos: '视频',
+  channel_nav_audios: '音频',
+  channel_nav_chat: '聊天',
+  channel_nav_sales: '橱窗',
+  app_update_tip: '应用有新更新可用，请保存您的工作并刷新页面。',
+  refresh_page: '刷新页面',
+  navigation_threads: '讨论主题',
+  navigation_Quadrant: '事务沙盘',
+  public_channel: '公共频道',
+  private_channel: '私有频道',
+  invite_member: '邀请成员',
+  remove_channel: '删除频道',
+  create_channel: '新建频道',
+  channel_name: '频道名称',
+  channel: '频道',
+  project: '项目',
+  create_project: '新建项目',
 };

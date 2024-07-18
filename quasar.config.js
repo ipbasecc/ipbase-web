@@ -159,7 +159,7 @@ module.exports = configure(function (/* ctx */) {
       directives: ["ClosePopup"],
 
       // iconSet: 'material-icons', // Quasar icon set
-      // lang: 'en-US', // Quasar language pack
+      lang: 'zh-CN', // Quasar language pack
 
       // For special cases outside where the auto-import strategy can have an impact
       // (like functional components as one of the examples),

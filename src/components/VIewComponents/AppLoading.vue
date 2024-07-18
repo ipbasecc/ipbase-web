@@ -6,7 +6,7 @@
   >
     <img src="../../../public/icons/icon-128x128.png" alt="LoadingImage" class="rotate" />
     <div class="row items-center no-wrap gap-md font-xx-large">
-      <span>应用加载中</span>
+      <span>{{ $t('app_loading') }}</span>
       <div class="loading-dots">
         <div class="loading-dot"></div>
         <div class="loading-dot"></div>
@@ -14,7 +14,7 @@
       </div>
     </div>
     <span style="font-size: medium; font-weight: 400; opacity: 0.5">
-      首次加载需要较长时间，请稍等
+      {{ $t('app_loading_tip') }}
     </span>
   </div>
 </template>

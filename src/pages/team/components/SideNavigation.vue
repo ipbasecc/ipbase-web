@@ -19,7 +19,7 @@
           <q-item-section side class="q-pr-sm">
             <q-icon name="speaker_notes" :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`" />
           </q-item-section>
-          <q-item-section> 讨论主题 </q-item-section>
+          <q-item-section> {{ $t('navigation_threads') }} </q-item-section>
           <div
             v-if="teamStore?.mm_channel?.id === 'threads'"
             class="bg-primary absolute-left"
@@ -42,7 +42,7 @@
           <q-item-section side class="q-pr-sm">
             <q-icon name="developer_board" :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`" />
           </q-item-section>
-          <q-item-section> 事务沙盘 </q-item-section>
+          <q-item-section> {{ $t('navigation_Quadrant') }} </q-item-section>
           <div
             v-if="teamStore?.mm_channel?.id === 'intro'"
             class="bg-primary absolute-left"
@@ -51,7 +51,9 @@
         </q-item>
       </template>
       <template v-if="!isExternal">
-        <q-item-label header class="q-pa-sm" :class="$q.screen.gt.xs ? 'text-grey-1' : `text-grey-1${$q.dark.mode ? '' : '0'}`">频道</q-item-label>
+        <q-item-label header class="q-pa-sm" :class="$q.screen.gt.xs ? 'text-grey-1' : `text-grey-1${$q.dark.mode ? '' : '0'}`">
+          {{ $t('channel') }}
+        </q-item-label>
         <template v-if="team.team_channels?.length > 0">
           <q-item
             v-for="i in team.team_channels"
@@ -89,7 +91,7 @@
                       <q-item-section side
                         ><q-icon name="public" :color="`grey-1${$q.dark.mode ? '' : '0'}`"
                       /></q-item-section>
-                      <q-item-section>开放频道</q-item-section>
+                      <q-item-section>{{ $t('public_channel') }}</q-item-section>
                     </q-item>
                     <q-item
                       clickable
@@ -100,7 +102,7 @@
                       <q-item-section side
                         ><q-icon name="lock" :color="`grey-1${$q.dark.mode ? '' : '0'}`"
                       /></q-item-section>
-                      <q-item-section>私有频道</q-item-section>
+                      <q-item-section>{{ $t('private_channel') }}</q-item-section>
                     </q-item>
                   </q-list>
                 </q-menu>
@@ -169,7 +171,7 @@
                       class="radius-xs"
                       @click="inviteFn(i)"
                     >
-                      <q-item-section>邀请成员</q-item-section>
+                      <q-item-section>{{ $t('invite_member') }}</q-item-section>
                     </q-item>
                     <q-separator spaced />
                     <q-item
@@ -178,7 +180,7 @@
                       class="radius-xs"
                       @click="deleteChannelFn(i)"
                     >
-                      <q-item-section>删除频道</q-item-section>
+                      <q-item-section>{{ $t('remove_channel') }}</q-item-section>
                     </q-item>
                   </q-list>
                 </q-menu>
@@ -202,7 +204,7 @@
             <q-icon name="add" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>新建频道</q-item-label>
+            <q-item-label>{{ $t('create_channel') }}</q-item-label>
           </q-item-section>
         </q-item>
         <q-item
@@ -218,7 +220,7 @@
               filled
               dense
               type="text"
-              placeholder="频道名称"
+              :aria-placeholder="`${$t('channel_name')}`"
               class="radius-xs overflow-hidden"
               @keyup.enter="createChannelFn()"
               @keyup.esc="openCreateChannel = false"
@@ -242,7 +244,7 @@
 
       <q-item-label header class="q-pa-sm"
         :class="$q.screen.gt.xs ? 'text-grey-1' : `text-grey-1${$q.dark.mode ? '' : '0'}`"
-      >项目</q-item-label>
+      >{{ $t('project') }}</q-item-label>
       <template v-if="team.projects?.length > 0">
         <template v-for="project in team.projects" :key="project.id">
           <q-expansion-item
@@ -365,7 +367,7 @@
           <q-icon name="add" />
         </q-item-section>
         <q-item-section>
-          <q-item-label>新建项目</q-item-label>
+          <q-item-label>{{ $t('create_project') }}</q-item-label>
         </q-item-section>
       </q-item>
     </q-list>
