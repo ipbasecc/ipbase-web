@@ -19,6 +19,9 @@ jobs:
       - name: Install dependencies
         run: yarn  # 或者使用yarn
 
+      - name : Clean
+        run: rm -rf ./dist
+
       - name: Build IPBase app
         run: npx quasar build -m electron  # 运行quasar build命令
 
