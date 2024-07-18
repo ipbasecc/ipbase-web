@@ -6,15 +6,20 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
+    runs-on: ${{ matrix.os }}
 
-      - name: Set up Node.js
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v1
+
+      - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v2
         with:
-          node-version: 20  # 或者你的项目所需的Node.js版本
+          node-version: 20
 
       - name: Install dependencies
         run: yarn  # 或者使用yarn
@@ -22,10 +27,41 @@ jobs:
       - name : Clean
         run: rm -rf ./dist
 
+      - name: Create .env file
+        run: |
+          touch .env
+          echo "VUE_ROUTER_MODE=${{ secrets.VUE_ROUTER_MODE }}" >> .env
+          echo "VUE_ROUTER_BASE=${{ secrets.VUE_ROUTER_BASE }}" >> .env
+          echo "DEV=${{ secrets.DEV }}" >> .env
+          echo "PROD=${{ secrets.PROD }}" >> .env
+          echo "MODE=${{ secrets.MODE }}" >> .env
+          echo "DEBUGGING=${{ secrets.DEBUGGING }}" >> .env
+          echo "CLIENT=${{ secrets.CLIENT }}" >> .env
+          echo "SERVER=${{ secrets.SERVER }}" >> .env
+          echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
+          echo "APP_URI=${{ secrets.APP_URI }}" >> .env
+          echo "BACKEND_URI=${{ secrets.BACKEND_URI }}" >> .env
+          echo "GRAPHQL_URI=${{ secrets.GRAPHQL_URI }}" >> .env
+          echo "REST_API=${{ secrets.REST_API }}" >> .env
+          echo "ROOT=${{ secrets.ROOT }}" >> .env
+          echo "REGION=${{ secrets.REGION }}" >> .env
+          echo "BUCKET=${{ secrets.BUCKET }}" >> .env
+          echo "OSS_URL=${{ secrets.OSS_URL }}" >> .env
+          echo "MM_SITE=${{ secrets.MM_SITE }}" >> .env
+          echo "MM_API=${{ secrets.MM_API }}" >> .env
+          echo "EJ2_KEY=${{ secrets.EJ2_KEY }}" >> .env
+          echo "CF_SITE_KEY=${{ secrets.CF_SITE_KEY }}" >> .env
+
       - name: Build IPBase app
         run: npx quasar build -m electron  # 运行quasar build命令
 
       - name: Release app
         uses: samuelmeuli/action-electron-builder@v1.6.0
         with:
+          # GitHub token, automatically provided to the action
+          # (No need to define this secret in the repo settings)
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+          # If the commit is tagged with a version (e.g. "v1.0.0"),
+          # release the app after building
+          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
