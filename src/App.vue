@@ -106,9 +106,9 @@ import {ref, provide, computed, watch, watchEffect, onMounted} from 'vue';
 import AppLoading from "./components/VIewComponents/AppLoading.vue";
 import {useMeta, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
-import useOss from "src/stores/oss.js";
-import useUIStore from "src/stores/ui.js";
-import useUserStore from "src/stores/user.js";
+import useOss from "./stores/oss.js";
+import useUIStore from "./stores/ui.js";
+import useUserStore from "./stores/user.js";
 
 const router = useRouter()
 const $q = useQuasar();

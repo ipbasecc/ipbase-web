@@ -313,8 +313,14 @@ module.exports = configure(function (/* ctx */) {
           identity: null  // 跳过签名步骤
         },
         win: {
-          icon: 'build/icons/icon.ico',
-          target: ['nsis', 'appx', 'msi', 'portable']
+          target: [
+            {
+              target: "msi",
+              arch: [
+                "x64"
+              ]
+            }
+          ]
         },
         linux: {
           icon: 'build/icons',

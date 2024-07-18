@@ -1,10 +1,10 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
-    "beforeBuildCommand": "quasar dev -m spa",
+    "beforeBuildCommand": "quasar build -m spa",
     "beforeDevCommand": "quasar dev -m spa",
     "devPath": "http://localhost:9000/",
-    "distDir": "../build/spa",
+    "distDir": "../dist/spa",
     "withGlobalTauri": true
   },
   "package": {
@@ -30,7 +30,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.ipbase.ipbase",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
