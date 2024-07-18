@@ -23,6 +23,6 @@ jobs:
         run: npx quasar build -m electron  # 运行quasar build命令
 
       - name: Release app
-        uses: samuelmeuli/action-electron-builder@v2
+        uses: samuelmeuli/action-electron-builder
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
