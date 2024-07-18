@@ -17,7 +17,7 @@ jobs:
           node-version: 20  # 或者你的项目所需的Node.js版本
 
       - name: Install dependencies
-        run: npm ci  # 或者使用yarn
+        run: pnpm install  # 或者使用yarn
 
       - name: Build IPBase app
         run: npx quasar build -m electron  # 运行quasar build命令
