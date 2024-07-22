@@ -1,5 +1,9 @@
 <template>
-  <q-layout v-if="!needLogin" view="lHr LpR lfr" class="absolute-full border-negative">
+  <q-layout
+    v-if="!needLogin"
+    view="lHr LpR lfr"
+    class="absolute-full border-negative"
+  >
     <q-drawer
       v-if="$q.screen.gt.xs"
       side="left"
@@ -13,29 +17,11 @@
     >
       <div class="fit column no-wrap gap-md items-center q-py-md">
         <AppList />
-        <q-space class="full-width" :class="$q.platform.is.electron ? 'q-electron-drag' : ''" />
-        <q-btn v-if="is_development" flat dense label="ws" @click="closeWs()" />
-        <q-btn
-          v-if="is_development"
-          flat
-          dense
-          icon="dark_mode"
-          @click="$q.dark.toggle()"
+        <q-space
+          class="full-width"
+          :class="$q.platform.is.electron ? 'q-electron-drag' : ''"
         />
-        <q-btn v-if="is_development" dense round icon="translate">
-          <q-menu class="transparent">
-            <q-list dense bordered class="radius-sm q-pa-xs" :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-1'">
-              <q-item v-for="i in localeOptions" :key="i.value"
-                clickable v-close-popup @click="locale = i.value"
-                class="radius-xs"
-              >
-                <q-item-section>
-                  <q-item-label>{{ i.label }}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </q-btn>
+        <AppUtils />
         <AccountMenu
           menu_anchor="bottom end"
           menu_self="bottom left"
@@ -62,11 +48,19 @@
   </q-layout>
   <div v-else class="absolute-full column flex-center">
     <q-card bordered class="focus-form" style="min-width: 16rem">
-      <q-card-section class="font-xx-large font-bold-600 flex flex-center q-py-mg">
+      <q-card-section
+        class="font-xx-large font-bold-600 flex flex-center q-py-mg"
+      >
         请先登陆
       </q-card-section>
       <q-card-section class="q-pa-sm border-top">
-        <q-btn color="primary" icon="login" label="点此登陆" class="full-width" @click="toLogin()" />
+        <q-btn
+          color="primary"
+          icon="login"
+          label="点此登陆"
+          class="full-width"
+          @click="toLogin()"
+        />
       </q-card-section>
     </q-card>
   </div>
@@ -77,11 +71,7 @@ import { ref, onMounted, computed, watchEffect, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import AccountMenu from "../pages/team/components/AccountMenu.vue";
 import AppList from "components/VIewComponents/AppList.vue";
-import {
-  teamStore,
-  uiStore,
-  userStore,
-} from "src/hooks/global/useStore";
+import { teamStore, uiStore, userStore } from "src/hooks/global/useStore";
 import shortcut from "src/pages/team/hooks/useShortcut.js";
 import { fetch_MmMe, fetch_StrapiMe } from "src/hooks/global/useFetchme";
 import localforage from "localforage";
@@ -89,13 +79,8 @@ import { init_user } from "src/api/strapi/project";
 import { useQuasar } from "quasar";
 import useWatcher from "src/pages/team/wsWatcher.js";
 import { _ws, closeWs } from "src/pages/team/ws.js";
-import { useI18n } from 'vue-i18n'
-
-const { locale } = useI18n({ useScope: 'global' })
-const localeOptions = [
-  { value: 'zh-CN', label: '中文' },
-  { value: 'en-US', label: 'English' }
-]
+import { useI18n } from "vue-i18n";
+import AppUtils from "src/components/VIewComponents/AppUtils.vue";
 
 const $q = useQuasar();
 
@@ -133,19 +118,17 @@ const needLogin = computed(() => uiStore.axiosStautsCode === 401);
 let strapiLoged;
 let mmLoged;
 fetch_StrapiMe().then(() => {
-  strapiLoged = true
+  strapiLoged = true;
   init();
 });
 fetch_MmMe().then(() => {
-  mmLoged = true
+  mmLoged = true;
 });
 watchEffect(() => {
-  if(strapiLoged && mmLoged){
-    userStore.logged = true
+  if (strapiLoged && mmLoged) {
+    userStore.logged = true;
   }
-})
-
-const is_development = ref(process.env.DEV);
+});
 
 const need_show_footer = ["teams", "AffairsPage", "team_threads_homepage"];
 const route = useRoute();
@@ -155,8 +138,8 @@ watchEffect(() => {
   uiStore.hide_footer = !need_show_footer.includes(routeName.value);
 });
 const toLogin = () => {
-  router.push('/login')
-}
+  router.push("/login");
+};
 
 onMounted(() => {
   shortcut();
