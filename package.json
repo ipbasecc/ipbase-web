@@ -5,7 +5,6 @@
   "productName": "ipbase",
   "author": "auxcc <jerr@foxmail.com>",
   "private": true,
-  "type": "module",
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
     "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",

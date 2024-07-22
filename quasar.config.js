@@ -10,8 +10,9 @@
 // const { configure } = require("quasar/wrappers");
 // const path = require("path");
 
-import { configure } from 'quasar/wrappers'
-import { fileURLToPath } from 'node:url'
+import { configure } from "quasar/wrappers";
+import { fileURLToPath } from "node:url";
+
 export default configure((ctx) => {
   return {
     eslint: {
@@ -26,7 +27,7 @@ export default configure((ctx) => {
        * @default 'stylish'
        */
       // formatter: ESLint.Formatter,
-      formatter: 'stylish',
+      formatter: "stylish",
       // fix: true,
       // include: [],
       // exclude: [],
@@ -57,7 +58,7 @@ export default configure((ctx) => {
       "dexie",
       "ej2",
       "oss",
-      "syncedStore"
+      "syncedStore",
       // 'localforage'
       // { path: 'websocket', server: false }
     ],
@@ -110,7 +111,7 @@ export default configure((ctx) => {
        *
        * @example ['.env.somefile', '../.env.someotherfile']
        */
-      envFiles: ['.env'],
+      envFiles: [".env"],
 
       // publicPath: '/',
       // analyze: true,
@@ -126,7 +127,7 @@ export default configure((ctx) => {
 
       vitePlugins: [
         [
-          '@intlify/unplugin-vue-i18n/vite',
+          "@intlify/unplugin-vue-i18n/vite",
           {
             // if you want to use Vue I18n Legacy API, you need to set `compositionOnly: false`
             // compositionOnly: false,
@@ -136,16 +137,20 @@ export default configure((ctx) => {
             // runtimeOnly: false,
 
             // you need to set i18n resource including paths !
-            include: [ fileURLToPath(new URL('./src/i18n', import.meta.url)) ],
-            ssr: ctx.modeName === 'ssr'
+            include: [fileURLToPath(new URL("./src/i18n", import.meta.url))],
+            ssr: ctx.modeName === "ssr",
           },
         ],
-        ['vite-plugin-checker', {
-          eslint: {
-            lintCommand: 'eslint "./**/*.{js,mjs,cjs,vue}"'
-          }
-        }, { server: false }]
-      ]
+        [
+          "vite-plugin-checker",
+          {
+            eslint: {
+              lintCommand: 'eslint "./**/*.{js,mjs,cjs,vue}"',
+            },
+          },
+          { server: false },
+        ],
+      ],
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
@@ -162,7 +167,7 @@ export default configure((ctx) => {
       directives: ["ClosePopup"],
 
       // iconSet: 'material-icons', // Quasar icon set
-      lang: 'zh-CN', // Quasar language pack
+      lang: "zh-CN", // Quasar language pack
 
       // For special cases outside where the auto-import strategy can have an impact
       // (like functional components as one of the examples),
@@ -172,7 +177,7 @@ export default configure((ctx) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: ["Notify", "Dialog", "AppVisibility"]
+      plugins: ["Notify", "Dialog", "AppVisibility"],
     },
 
     // animations: 'all', // --- includes all animations
@@ -214,7 +219,7 @@ export default configure((ctx) => {
 
     // https://v2.quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
-      workboxMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
+      workboxMode: "GenerateSW", // 'GenerateSW' or 'InjectManifest'
       injectPwaMetaTags: true,
       // injectPwaMetaTags: boolean | ((injectParam: InjectPwaMetaTagsParams) => string),
       swFilename: "sw.js",
@@ -269,7 +274,7 @@ export default configure((ctx) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli/developing-electron-apps/configuring-electron
     electron: {
-      preloadScripts: [ 'electron-preload' ],
+      preloadScripts: ["electron-preload"],
       // extendElectronMainConf (esbuildConf)
       // extendElectronPreloadConf (esbuildConf)
 
@@ -293,7 +298,7 @@ export default configure((ctx) => {
         // https://www.electron.build/configuration/configuration
         appId: "com.ipbase.ipbase",
         productName: "IPBase",
-        copyright: 'Copyright © 2024 IPBase',
+        copyright: "Copyright © 2024 IPBase",
         asar: true,
         // files: [
         //   'dist/electron/**/*'
@@ -302,60 +307,58 @@ export default configure((ctx) => {
           contents: [
             {
               x: 130,
-              y: 220
+              y: 220,
             },
             {
               x: 410,
               y: 220,
-              type: 'link',
-              path: '/Applications'
-            }
-          ]
+              type: "link",
+              path: "/Applications",
+            },
+          ],
         },
         mac: {
-          icon: 'build/icons/icon.icns',
-          target: ['dmg'],
-          identity: null  // 跳过签名步骤
+          icon: "build/icons/icon.icns",
+          target: ["dmg"],
+          identity: null, // 跳过签名步骤
         },
         win: {
           target: [
             {
               target: "msi",
-              arch: [
-                "x64"
-              ]
-            }
-          ]
+              arch: ["x64"],
+            },
+          ],
         },
         linux: {
-          icon: 'build/icons',
-          target: ['rpm', 'deb', 'appImage', 'snap'],
-          category: 'Network'
-        }
+          icon: "build/icons",
+          target: ["rpm", "deb", "appImage", "snap"],
+          category: "Network",
+        },
       },
 
       // Specify additional parameters when yarn/npm installing
       // the UnPackaged folder, right before bundling with either
       // electron packager or electron builder;
       // Example: [ 'install', '--production', '--ignore-optional', '--some-other-param' ]
-      unPackagedInstallParams: [ 'install', '--production' ],
+      unPackagedInstallParams: ["install", "--production"],
 
       // optional; add/remove/change properties
       // of production generated package.json
-      extendPackageJson (pkg) {
+      extendPackageJson(pkg) {
         // directly change props of pkg;
         // no need to return anything
       },
 
-      extendElectronMainConf (cfg) {
+      extendElectronMainConf(cfg) {
         // do something with Esbuild config
         // for the Electron Main thread
       },
 
-      extendElectronPreloadConf (cfg) {
+      extendElectronPreloadConf(cfg) {
         // do something with Esbuild config
         // for the Electron Preload thread
-      }
+      },
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-browser-extensions/configuring-bex
@@ -366,4 +369,4 @@ export default configure((ctx) => {
       // extendBexManifestJson (json) {}
     },
   };
-})
+});
