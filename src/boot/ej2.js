@@ -3,6 +3,5 @@ import { registerLicense } from "@syncfusion/ej2-base";
 
 export default boot(() => {
   const key = process.env.EJ2_KEY;
-  console.log('key', key)
   registerLicense(key);
 });

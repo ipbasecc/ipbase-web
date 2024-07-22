@@ -19,6 +19,7 @@ import { fileURLToPath } from "node:url";
 initialize(); // <-- add this
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
+
 const currentDir = fileURLToPath(new URL(".", import.meta.url));
 
 let mainWindow;
@@ -215,7 +216,7 @@ const __is = (a, b) => {
 // 监听来自Vue的下载请求
 ipcMain.on("download", async (event, args) => {
   const { url, filename } = args;
-  console.log(url, filename);
+  // console.log(url, filename);
 
   // 显示保存对话框
   const { canceled, filePath } = await dialog.showSaveDialog({

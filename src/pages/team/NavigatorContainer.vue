@@ -9,7 +9,9 @@
     <q-header>
       <q-bar
         class="border-bottom"
-        :class="`${$q.dark.mode ? 'bg-darker text-white' : 'bg-primary-dark text-grey-1'} ${$q.platform.is.electron ? 'q-electron-drag' : ''}`"
+        :class="`${
+          $q.dark.mode ? 'bg-darker text-white' : 'bg-primary-dark text-grey-1'
+        } ${$q.platform.is.electron ? 'q-electron-drag' : ''}`"
         style="height: 2.5rem"
       >
         <div
@@ -38,7 +40,11 @@
         <q-space />
         <template v-if="$q.screen.gt.xs">
           <q-btn
-            v-if="teamStore.project && !teamStore.team?.isExternal && uiStore.app === 'teams'"
+            v-if="
+              teamStore.project &&
+              !teamStore.team?.isExternal &&
+              uiStore.app === 'teams'
+            "
             :flat="!uiStore.isFocusMode"
             :color="uiStore.isFocusMode ? 'primary' : ''"
             dense
@@ -80,15 +86,26 @@
             icon="bookmarks"
             @click="toggleRightDrawer('flaggeds')"
           />
-          <q-btn flat dense :class="ossStore.showList ? 'toggle-active' : ''" @click="toggleTransfer()">
-            <FileTransfer :color="ossStore.showList ? '#21BA45' : $q.dark.mode ? '#fff' : '#000'" />
+          <q-btn
+            flat
+            dense
+            :class="ossStore.showList ? 'toggle-active' : ''"
+            @click="toggleTransfer()"
+          >
+            <FileTransfer :color="ossStore.showList ? '#21BA45' : '#fff'" />
           </q-btn>
         </template>
         <AccountMenu v-else />
-<!--        <q-btn icon="check" dense @click="$q.dark.toggle()" />-->
+        <!--        <q-btn icon="check" dense @click="$q.dark.toggle()" />-->
 
         <div v-if="isElectron" class="row no-wrap items-center gap-sm q-pl-md">
-          <q-btn dense round size="sm" icon="mdi-window-minimize" @click="minimize()" />
+          <q-btn
+            dense
+            round
+            size="sm"
+            icon="mdi-window-minimize"
+            @click="minimize()"
+          />
           <q-btn dense round size="sm" @click="toggleMaximize()">
             <WindowToggle
               v-if="isMax"
@@ -168,7 +185,10 @@
         :width="420"
       >
         <TodoPage
-          v-if="uiStore.projectRightDrawerContent === 'person_todos' && uiStore.app === 'teams'"
+          v-if="
+            uiStore.projectRightDrawerContent === 'person_todos' &&
+            uiStore.app === 'teams'
+          "
           _for="user_todos"
           class="absolute-full"
         />
@@ -189,9 +209,7 @@
           @mousedown="handleMouseDown"
         >
           <q-icon
-            :name="`mdi-chevron-${
-              uiStore.navigatorDrawer ? 'left' : 'right'
-            }`"
+            :name="`mdi-chevron-${uiStore.navigatorDrawer ? 'left' : 'right'}`"
             color="primary"
             size="sm"
             @click="toggleNavDrawer()"
@@ -218,21 +236,29 @@
 </template>
 
 <script setup>
-import {ref, computed, onBeforeMount, watch, reactive, onMounted, nextTick} from "vue";
+import {
+  ref,
+  computed,
+  onBeforeMount,
+  watch,
+  reactive,
+  onMounted,
+  nextTick,
+} from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import FlagsContainder from "src/pages/team/chat/FlagsContainder.vue";
 import CreateTeam from "src/pages/team/components/CreateTeam.vue";
 
 import TeamMenu from "src/pages/team/components/TeamMenu.vue";
-import AccountMenu from 'src/pages/team/components/AccountMenu.vue'
+import AccountMenu from "src/pages/team/components/AccountMenu.vue";
 import SideNavigation from "src/pages/team/components/SideNavigation.vue";
 import TeamAddmenu from "src/pages/team/components/TeamAddmenu.vue";
 import WelcomePage from "src/pages/team/WelcomePage.vue";
 import TeamList from "src/pages/team/components/TeamList.vue";
 import TodoPage from "src/pages/team/todo/TodoPage.vue";
 import localforage from "localforage";
-import {ossStore, teamStore, uiStore} from "src/hooks/global/useStore.js";
+import { ossStore, teamStore, uiStore } from "src/hooks/global/useStore.js";
 import { useMouse } from "@vueuse/core";
 import { useQuasar } from "quasar";
 import WindowToggle from "src/pages/team/components/widgets/icons/WindowToggle.vue";
@@ -305,16 +331,16 @@ const handleMouseMove = () => {
 };
 
 const toggleRightDrawer = (val) => {
-  if(uiStore.projectRightDrawerContent === void 0){
+  if (uiStore.projectRightDrawerContent === void 0) {
     uiStore.projectRightDrawer = true;
-    uiStore.projectRightDrawerContent = val
-  } else if(uiStore.projectRightDrawerContent === val){
+    uiStore.projectRightDrawerContent = val;
+  } else if (uiStore.projectRightDrawerContent === val) {
     uiStore.projectRightDrawer = !uiStore.projectRightDrawer;
-    if(!uiStore.projectRightDrawer){
-      uiStore.projectRightDrawerContent = void 0
+    if (!uiStore.projectRightDrawer) {
+      uiStore.projectRightDrawerContent = void 0;
     }
   } else {
-    uiStore.projectRightDrawerContent = val
+    uiStore.projectRightDrawerContent = val;
   }
 };
 
@@ -329,12 +355,12 @@ const toggleFocusMode = async () => {
   teamStore.isFocusMode = uiStore.isFocusMode;
 
   if (uiStore.isFocusMode) {
-    uiStore.showMainContentList = false
-    const _team_id = teamStore.team?.id
-    console.log('router isFocusMode')
+    uiStore.showMainContentList = false;
+    const _team_id = teamStore.team?.id;
+    console.log("router isFocusMode");
     await router.push(`/teams/${_team_id}/focus/${teamStore.project?.id}`);
   } else {
-    if(teamStore.card){
+    if (teamStore.card) {
       teamStore.card = void 0;
     }
     await router.push(`/teams/projects/${teamStore.project?.id}`);
@@ -346,8 +372,8 @@ watch(
   isExternal,
   async () => {
     if (isExternal.value && !uiStore.isFocusMode) {
-      console.log('router')
-      const _team_id = teamStore.team?.id
+      console.log("router");
+      const _team_id = teamStore.team?.id;
       await router.push(`/teams/${_team_id}/focus/${teamStore.project?.id}`);
     }
   },
@@ -357,11 +383,11 @@ watch(
 const isElectron = computed(() => $q.platform.is.electron);
 const isMax = ref(false);
 onMounted(async () => {
-  if(isElectron.value){
+  if (isElectron.value) {
     await nextTick();
     isMax.value = window.windowAPI.isMaximized();
   }
-})
+});
 function minimize() {
   if (isElectron.value) {
     window.windowAPI.minimize();
@@ -371,7 +397,7 @@ function minimize() {
 function toggleMaximize() {
   if (isElectron.value) {
     window.windowAPI.toggleMaximize(isMax.value);
-    isMax.value = !isMax.value
+    isMax.value = !isMax.value;
   }
 }
 
@@ -388,7 +414,7 @@ const toggleTransfer = () => {
 </script>
 
 <style scoped>
-.no-scroll > .absolute-full > .scroll{
+.no-scroll > .absolute-full > .scroll {
   overflow: hidden !important;
 }
 </style>

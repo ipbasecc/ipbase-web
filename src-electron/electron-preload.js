@@ -7,16 +7,16 @@ contextBridge.exposeInMainWorld("windowAPI", {
     BrowserWindow.getFocusedWindow().minimize();
   },
 
-  isMaximized () {
-    const win = BrowserWindow.getFocusedWindow()
-    return win.isMaximized()
+  isMaximized() {
+    const win = BrowserWindow.getFocusedWindow();
+    return win.isMaximized();
   },
-  toggleMaximize () {
-    const win = BrowserWindow.getFocusedWindow()
+  toggleMaximize() {
+    const win = BrowserWindow.getFocusedWindow();
     if (win.isMaximized()) {
-      win.unmaximize()
+      win.unmaximize();
     } else {
-      win.maximize()
+      win.maximize();
     }
   },
   close() {
@@ -47,7 +47,12 @@ contextBridge.exposeInMainWorld("windowAPI", {
 });
 contextBridge.exposeInMainWorld("pathAPI", {
   pathService(_path) {
-    // return path.join(__dirname, _path);
-    return path.resolve(__dirname, _path);
+    let __path;
+    if (process.env.DEV) {
+      __path = path.resolve(`public/${_path}`);
+    } else {
+      __path = path.join(process.resourcesPath, "app.asar", _path);
+    }
+    return __path;
   },
 });
