@@ -7,12 +7,26 @@
 
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
-const { configure } = require("quasar/wrappers");
-const path = require("path");
+// const { configure } = require("quasar/wrappers");
+// const path = require("path");
 
-module.exports = configure(function (/* ctx */) {
+import { configure } from 'quasar/wrappers'
+import { fileURLToPath } from 'node:url'
+export default configure((ctx) => {
   return {
     eslint: {
+      /**
+       * Enable or disable caching of the linting results.
+       * @default true
+       */
+      cache: true,
+
+      /**
+       * Formatter to use
+       * @default 'stylish'
+       */
+      // formatter: ESLint.Formatter,
+      formatter: 'stylish',
       // fix: true,
       // include: [],
       // exclude: [],
@@ -76,12 +90,31 @@ module.exports = configure(function (/* ctx */) {
       // vueRouterBase,
       // vueDevtools,
       // vueOptionsAPI: false,
+      useFilenameHashes: true,
 
-      // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
+      /**
+       * Automatically open remote Vue Devtools when running in development mode.
+       */
+      vueDevtools: true,
+
+      /**
+       * Folder where Quasar CLI should look for .env* files.
+       * Can be an absolute path or a relative path to project root directory.
+       *
+       * @default project root directory
+       */
+      // envFolder: './',
+      /**
+       * Additional .env* files to be loaded.
+       * Each entry can be an absolute path or a relative path to quasar.config > build > envFolder.
+       *
+       * @example ['.env.somefile', '../.env.someotherfile']
+       */
+      envFiles: ['.env'],
 
       // publicPath: '/',
       // analyze: true,
-      env: require("dotenv").config().parsed,
+      // env: require("dotenv").config().parsed,
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
@@ -90,29 +123,10 @@ module.exports = configure(function (/* ctx */) {
 
       // extendViteConf (viteConf) {},
       // viteVuePluginOptions: {},
-      chainWebpack(chain) {
-        chain.plugin("html").tap((args) => {
-          args[0].csp = {
-            enabled: true,
-            policy: {
-              "base-uri": ["'self'"],
-              "object-src": ["'none'"],
-              "script-src": ["'self'"],
-            },
-          };
-          return args;
-        });
-      },
-
-      vite: {
-        optimizeDeps: {
-          exclude: ["@tiptap/pm"],
-        },
-      },
 
       vitePlugins: [
         [
-          "@intlify/vite-plugin-vue-i18n",
+          '@intlify/unplugin-vue-i18n/vite',
           {
             // if you want to use Vue I18n Legacy API, you need to set `compositionOnly: false`
             // compositionOnly: false,
@@ -122,27 +136,16 @@ module.exports = configure(function (/* ctx */) {
             // runtimeOnly: false,
 
             // you need to set i18n resource including paths !
-            include: path.resolve(__dirname, "./src/i18n/**"),
+            include: [ fileURLToPath(new URL('./src/i18n', import.meta.url)) ],
+            ssr: ctx.modeName === 'ssr'
           },
         ],
-      ],
-
-      extendWebpack(cfg) {
-        cfg.module.rules.push({
-          test: /\.(gql|graphql)$/,
-          exclude: /node_modules/,
-          loader: "graphql-tag/loader",
-        });
-        cfg.module.rules.push({
-          test: /\.ws$/,
-          exclude: /node_modules/,
-          loader: "websocket-loader",
-        });
-        cfg.module.rules.push({
-          test: /\.json$/,
-          loader: "json-loader",
-        });
-      },
+        ['vite-plugin-checker', {
+          eslint: {
+            lintCommand: 'eslint "./**/*.{js,mjs,cjs,vue}"'
+          }
+        }, { server: false }]
+      ]
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
@@ -181,11 +184,11 @@ module.exports = configure(function (/* ctx */) {
     //   rootComponent: 'src/App.vue',
     //   router: 'src/router/index',
     //   store: 'src/store/index',
-    //   registerServiceWorker: 'src-pwa/register-service-worker',
-    //   serviceWorker: 'src-pwa/custom-service-worker',
+    //   pwaRegisterServiceWorker: 'src-pwa/register-service-worker',
+    //   pwaServiceWorker: 'src-pwa/custom-service-worker',
+    //   pwaManifestFile: 'src-pwa/manifest.json',
     //   pwaManifestFile: 'src-pwa/manifest.json',
     //   electronMain: 'src-electron/electron-main',
-    //   electronPreload: 'src-electron/electron-preload'
     // },
 
     // https://v2.quasar.dev/quasar-cli/developing-ssr/configuring-ssr
@@ -211,12 +214,13 @@ module.exports = configure(function (/* ctx */) {
 
     // https://v2.quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
-      workboxMode: "generateSW", // or 'injectManifest'
+      workboxMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       injectPwaMetaTags: true,
+      // injectPwaMetaTags: boolean | ((injectParam: InjectPwaMetaTagsParams) => string),
       swFilename: "sw.js",
       manifestFilename: "manifest.json",
       useCredentialsForManifestTag: false,
-      useFilenameHashes: true,
+      // useFilenameHashes: true, // Moved to quasar.config > build > useFilenameHashes
       // extendGenerateSWOptions (cfg) {}
       // extendInjectManifestOptions (cfg) {},
       // extendManifestJson (json) {}
@@ -265,6 +269,7 @@ module.exports = configure(function (/* ctx */) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli/developing-electron-apps/configuring-electron
     electron: {
+      preloadScripts: [ 'electron-preload' ],
       // extendElectronMainConf (esbuildConf)
       // extendElectronPreloadConf (esbuildConf)
 
@@ -361,4 +366,4 @@ module.exports = configure(function (/* ctx */) {
       // extendBexManifestJson (json) {}
     },
   };
-});
+})

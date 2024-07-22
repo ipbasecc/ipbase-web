@@ -81,7 +81,8 @@ function createWindow() {
    */
   const zoom = getZoomFactor();
   mainWindow = new BrowserWindow({
-    icon: path.resolve(__dirname, "icons/icon.png"), // tray icon
+    // icon: path.resolve(__dirname, "icons/icon.png"), // tray icon
+    icon: path.resolve(currentDir, "icons/icon.png"), // tray icon
     // width: 1600,
     // height: 1000,
     x: mainWindowState.x,
@@ -95,7 +96,13 @@ function createWindow() {
       sandbox: false,
       enableHardwareAcceleration: true,
       // More info: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/electron-preload-script
-      preload: path.resolve(__dirname, process.env.QUASAR_ELECTRON_PRELOAD),
+      preload: path.resolve(
+        currentDir,
+        path.join(
+          process.env.QUASAR_ELECTRON_PRELOAD_FOLDER,
+          "electron-preload" + process.env.QUASAR_ELECTRON_PRELOAD_EXTENSION
+        )
+      ),
       // Enable node integration for preload script only
       nodeIntegration: true, // 赋予此窗口页面中的 JavaScript 访问 Node.js 环境的能力
       enableRemoteModule: true, // 打开 remote 模块
@@ -106,7 +113,11 @@ function createWindow() {
     },
   });
   enable(mainWindow.webContents);
-  mainWindow.loadURL(process.env.APP_URL);
+  if (process.env.DEV) {
+    mainWindow.loadURL(process.env.APP_URL);
+  } else {
+    mainWindow.loadFile("index.html");
+  }
   // // mainWindow.webContents.setZoomFactor(1.5);
   // mainWindow.once('ready-to-show', () => {
   //   mainWindow.webContents.setZoomFactor(1);
