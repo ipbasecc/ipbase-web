@@ -79,7 +79,6 @@ import { init_user } from "src/api/strapi/project";
 import { useQuasar } from "quasar";
 import useWatcher from "src/pages/team/wsWatcher.js";
 import { _ws, closeWs } from "src/pages/team/ws.js";
-import { useI18n } from "vue-i18n";
 import AppUtils from "src/components/VIewComponents/AppUtils.vue";
 
 const $q = useQuasar();

@@ -35,7 +35,7 @@
       icon="dark_mode"
       @click="$q.dark.toggle()"
     />
-    <q-btn v-if="is_development" flat dense round icon="translate">
+    <q-btn flat dense round icon="translate">
       <q-menu anchor="bottom right" self="bottom left" class="transparent">
         <q-list
           dense

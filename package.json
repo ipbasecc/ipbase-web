@@ -10,10 +10,7 @@
     "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
-    "build": "quasar build",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder",
-    "release": "electron-builder build --linux"
+    "build": "quasar build"
   },
   "dependencies": {
     "@apollo/client": "^3.10.8",
@@ -45,6 +42,8 @@
     "@quasar/app-vite": "^2.0.0-beta.15",
     "@quasar/extras": "^1.16.12",
     "@syncedstore/core": "^0.6.0",
+    "@syncfusion/ej2-base": "^26.1.42",
+    "@syncfusion/ej2-icons": "^26.1.35",
     "@syncfusion/ej2-schedule": "^26.1.41",
     "@syncfusion/ej2-vue-filemanager": "^26.1.41",
     "@syncfusion/ej2-vue-navigations": "^26.1.41",
@@ -114,12 +113,14 @@
     "graphql-tag": "^2.12.6",
     "hevue-img-preview": "^6.1.0",
     "js-base64": "^3.7.5",
+    "jsonfile": "^6.1.0",
     "katex": "^0.16.9",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "markdown-it": "^13.0.2",
     "marked": "^9.1.6",
+    "mkdirp": "^3.0.1",
     "moment": "^2.29.4",
     "mousetrap": "^1.6.5",
     "path": "^0.12.7",
@@ -136,6 +137,7 @@
     "tiptap-markdown": "^0.8.10",
     "turndown": "^7.1.2",
     "turnstile": "^5.0.5",
+    "universalify": "^2.0.1",
     "vue": "^3.4.25",
     "vue-demi": "0.13.11",
     "vue-dragscroll": "^4.0.5",
@@ -176,9 +178,9 @@
     "workbox-strategies": "^6.5.0"
   },
   "engines": {
-    "node": "^22 || ^20 || ^18 || ^16 || ^14.19",
+    "node": "^24 || ^22 || ^20 || ^18",
     "npm": ">= 6.13.4",
-    "pnpm": ">= 9.0.0",
-    "yarn": ">= 1.21.1"
+    "yarn": ">= 1.21.1",
+    "pnpm": ">= 9.0.0"
   }
 }

@@ -12,12 +12,14 @@ import State from "electron-window-state";
 import path from "path";
 import os from "os";
 
-import { enable, initialize } from "@electron/remote/main";
+import { enable, initialize } from "@electron/remote/main/index.js";
 import fs from "fs";
+import { fileURLToPath } from "node:url";
 
 initialize(); // <-- add this
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
+const currentDir = fileURLToPath(new URL(".", import.meta.url));
 
 let mainWindow;
 
