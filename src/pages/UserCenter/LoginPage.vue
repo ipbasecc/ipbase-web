@@ -1,18 +1,22 @@
 <template>
   <div class="absolute-full column flex-center relative-position">
     <div v-if="$q.platform.is.electron" class="absolute-full q-electron-drag" />
-    <q-card v-if="uiStore.setServer"
-      :bordered="$q.screen.gt.sm" style="width: 420px" class="q-electron-drag--exception" :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'"
+    <q-card
+      v-if="uiStore.setServer"
+      :bordered="$q.screen.gt.sm"
+      style="width: 420px"
+      class="q-electron-drag--exception"
+      :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'"
     >
       <ServerList :useDialog="false" @setCompleted="setCompleted()" />
     </q-card>
     <q-card
-        v-else
-        :bordered="$q.screen.gt.xs"
-        :flat="!$q.screen.gt.xs"
-        class="q-electron-drag--exception"
-        :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'"
-        style="width: 420px"
+      v-else
+      :bordered="$q.screen.gt.xs"
+      :flat="!$q.screen.gt.xs"
+      class="q-electron-drag--exception"
+      :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'"
+      style="width: 420px"
     >
       <template v-if="!hasError">
         <template v-if="!store.logged">
@@ -172,18 +176,9 @@
           <q-spinner-oval color="primary" size="2rem" />
           <div class="absolute-full flex flex-center">{{ count }}</div>
         </div>
-        <span
-        >跳转中，请稍等<span class="q-px-sm"></span>...</span
-        >
+        <span>跳转中，请稍等<span class="q-px-sm"></span>...</span>
       </q-card-section>
     </q-card>
-    <template v-if="bingWallpaper">
-      <div
-        class="absolute-full blur-md z-unfab"
-        :style="`background-image: url(${bingWallpaper});background-size: cover;`"
-      ></div>
-      <div class="absolute-full blur-md z-unfab"></div>
-    </template>
   </div>
 </template>
 <script setup>
@@ -193,7 +188,8 @@ import {
   onMounted,
   onUnmounted,
   computed,
-  watchEffect, onBeforeMount,
+  watchEffect,
+  onBeforeMount,
 } from "vue";
 import { useRouter } from "vue-router";
 import { login } from "src/apollo/api/api.js";
@@ -219,10 +215,9 @@ onBeforeMount(() => {
   } else {
     localStorage.clear();
   }
-})
-
-watchEffect(() => {
 });
+
+watchEffect(() => {});
 
 // 开始登录
 // 定义登录表单数据
@@ -286,7 +281,7 @@ const submitLogin = async () => {
     hasError.value = true;
     if (error === "ApolloError: Your account email is not confirmed") {
       errorStats.value = "noneConfirmed";
-    }else if (error === "ApolloError: Invalid identifier or password") {
+    } else if (error === "ApolloError: Invalid identifier or password") {
       errorStats.value = "wrongPassword";
     } else {
       errorStats.value = "wrongAuth";
@@ -320,7 +315,7 @@ const redirectNow = () => {
 const count = ref();
 let intervalId = null;
 const startCountdown = () => {
-  count.value = 2
+  count.value = 2;
   intervalId = setInterval(() => {
     count.value--;
     if (count.value === 1) {
@@ -330,12 +325,21 @@ const startCountdown = () => {
   }, 1000);
 };
 const setServer = () => {
-  uiStore.setServer = true
-}
+  uiStore.setServer = true;
+};
 const setCompleted = () => {
-  uiStore.setServer = false
-}
-const bingWallpaper = inject("bingWallpaper");
+  uiStore.setServer = false;
+};
+const errCode = computed(() => uiStore.axiosStautsCode);
+watch(
+  errCode,
+  () => {
+    if (errCode.value === 401) {
+      reLogin();
+    }
+  },
+  { immediate: true, deep: false }
+);
 </script>
 <style>
 input:-webkit-autofill {
