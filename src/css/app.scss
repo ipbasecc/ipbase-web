@@ -716,6 +716,12 @@ input:-internal-autofill-selected {
   background: #f8f8f8;
   border: 1px solid #ccc;
 }
+.tiptap hr {
+  opacity: 0.1;
+}
+.body--light .tiptap hr {
+  opacity: 0.3;
+}
 
 .card h1,
 .card h2,

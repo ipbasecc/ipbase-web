@@ -345,8 +345,11 @@ const { isOverDropZone } = useDropZone(tiptap, {
   dataTypes: ["image/*"],
 });
 
+const setCursorToEnd = () => {
+  editor.value?.commands.focus("end");
+};
 onMounted(() => {
-  // editor.value?.commands.focus("end");
+  setCursorToEnd();
 });
 
 onBeforeMount(() => {
