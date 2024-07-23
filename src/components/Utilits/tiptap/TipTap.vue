@@ -108,7 +108,9 @@
     <div
       v-else
       class="tiptap"
-      :class="`${hideScroll ? '' : 'scroll-y '} ${styleClass ? styleClass : 'q-pa-md'}`"
+      :class="`${hideScroll ? '' : 'scroll-y '} ${
+        styleClass ? styleClass : 'q-pa-md'
+      }`"
       :style="contentStyle"
       v-html="html"
     ></div>
@@ -126,7 +128,7 @@ import {
   toRefs,
   watch,
   watchEffect,
-  computed
+  computed,
 } from "vue";
 
 import StarterKit from "@tiptap/starter-kit";
@@ -136,23 +138,16 @@ import TaskList from "@tiptap/extension-task-list";
 import TextStyle from "@tiptap/extension-text-style";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Color } from "@tiptap/extension-color";
-import Image from '@tiptap/extension-image'
-import Dropcursor from '@tiptap/extension-dropcursor'
-import { Markdown } from 'tiptap-markdown';
+import Image from "@tiptap/extension-image";
+import { Markdown } from "tiptap-markdown";
 
 import "prismjs";
 import "prismjs/themes/prism.css";
-import {uiStore, userStore} from 'src/hooks/global/useStore';
-import {onKeyStroke} from '@vueuse/core';
-import { useFileDialog } from '@vueuse/core'
+import { uiStore, userStore } from "src/hooks/global/useStore";
+import { onKeyStroke } from "@vueuse/core";
+import { useFileDialog } from "@vueuse/core";
 import { confirmUpload } from "src/hooks/utilits/useConfirmUpload.js";
-import { useDropZone, useEventListener } from '@vueuse/core'
-
-const highlightCodeBlocks = () => {
-  document.querySelectorAll("pre code").forEach((block) => {
-    Prism.highlightElement(block);
-  });
-};
+import { useDropZone, useEventListener } from "@vueuse/core";
 
 const props = defineProps({
   show_toolbar: {
@@ -300,15 +295,14 @@ const init = () => {
     // triggered on every change
     onUpdate: () => {
       tiptapUpdate();
-      highlightCodeBlocks();
       emit("tiptapChanged");
     },
     onBlur({ editor, event }) {
       tiptapBlur();
-      uiStore.disable_shortcut = false
+      uiStore.disable_shortcut = false;
     },
     onFocus({ editor, event }) {
-      uiStore.disable_shortcut = true
+      uiStore.disable_shortcut = true;
     },
   });
 };
@@ -321,28 +315,26 @@ const addImage = (url) => {
   editor.value.commands.createParagraphNear();
   editor.value?.chain().focus().setImage({ src: url }).run();
   editor.value.commands.createParagraphNear();
-}
-const uploadFiles = () => {
-
-}
+};
+const uploadFiles = () => {};
 const { files, open, reset, onChange } = useFileDialog({
-  accept: 'image/*', // Set to accept only image files
+  accept: "image/*", // Set to accept only image files
   directory: false, // Select directories instead of files if set true
-})
+});
 
 const me = computed(() => userStore.me);
-const batchInserImage = async(_files) => {
+const batchInserImage = async (_files) => {
   const res = await confirmUpload(_files, me.value);
   if (res) {
-    const urls = res.map(i => i.attributes.url);
+    const urls = res.map((i) => i.attributes.url);
     urls.forEach((url) => {
-      addImage(url)
+      addImage(url);
     });
   }
-}
-onChange(async(files) => {
-  await batchInserImage(files)
-})
+};
+onChange(async (files) => {
+  await batchInserImage(files);
+});
 
 async function onDrop(files) {
   await batchInserImage(files);
@@ -350,8 +342,12 @@ async function onDrop(files) {
 const { isOverDropZone } = useDropZone(tiptap, {
   onDrop,
   // specify the types of data to be received.
-  dataTypes: ['image/*']
-})
+  dataTypes: ["image/*"],
+});
+
+onMounted(() => {
+  // editor.value?.commands.focus("end");
+});
 
 onBeforeMount(() => {
   setSourceContent();
@@ -398,7 +394,7 @@ const tiptapBlur = async () => {
   }
 };
 
-onKeyStroke(['ctrlKey', 's'], (e) => {
+onKeyStroke(["ctrlKey", "s"], (e) => {
   e.preventDefault();
   tiptapBlur();
 });

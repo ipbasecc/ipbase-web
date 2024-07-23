@@ -698,6 +698,25 @@ input:-internal-autofill-selected {
   margin-bottom: 0.4rem;
 }
 
+.tiptap code[class*="language-"],
+.tiptap pre[class*="language-"] {
+  color: unset !important;
+  text-shadow: unset !important;
+}
+.tiptap pre {
+  background: #0e0e0e;
+  border-radius: 0.3rem;
+  color: var(--white);
+  font-family: JetBrainsMono, monospace;
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid #333;
+}
+.body--light .tiptap pre {
+  background: #f8f8f8;
+  border: 1px solid #ccc;
+}
+
 .card h1,
 .card h2,
 .card h3,
