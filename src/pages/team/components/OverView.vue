@@ -709,7 +709,6 @@ watch(
           strapi.data.action === "change_project_content"
         ) {
           teamStore.project.jsonContent = strapi.data.body;
-          $q.notify("已保存");
         }
         if (
           strapi.data?.is === "card" &&
@@ -717,7 +716,6 @@ watch(
           strapi.data.action === "change_card_content"
         ) {
           teamStore.card.jsonContent = strapi.data.body;
-          $q.notify("已保存");
         }
         if (
           strapi.data?.is === "overview" &&

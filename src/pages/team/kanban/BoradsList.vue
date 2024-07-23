@@ -1,6 +1,6 @@
 <template>
   <q-list v-if="teamStore.project && boards" class="fit column no-wrap q-pa-xs">
-    <template v-if="calc_auth('board', 'read', 'project')">
+    <template v-if="useAuths('read', ['board'], members, roles)">
       <div
         v-if="
           multiple_boards || isEmpty || teamStore.navigation === 'classroom'
@@ -12,7 +12,7 @@
       <q-scroll-area
         class="q-space"
         v-if="
-          calc_auth('group', 'read', 'project') &&
+          useAuths('read', ['group'], members, roles) &&
           teamStore.board?.groups?.length > 0
         "
       >
@@ -43,21 +43,21 @@
                   size="sm"
                   name="tag"
                   :class="
-                    calc_auth('group', 'order', 'project') ? 'dragBar' : ''
+                    useAuths('order', ['group'], members, roles) ? 'dragBar' : ''
                   "
                 />
                 <span
                   class="q-space q-pa-sm"
                   :class="
-                    calc_auth('group', 'order', 'project') ? 'dragBar' : ''
+                    useAuths('order', ['group'], members, roles) ? 'dragBar' : ''
                   "
                 >
                   {{ element.name }}
                 </span>
                 <q-btn
                   v-if="
-                    calc_auth('group', 'name', 'project') ||
-                    calc_auth('group', 'delete', 'project')
+                    useAuths('name', ['group'], members, roles) ||
+                    useAuths('delete', ['group'], members, roles)
                   "
                   class="hover-show transition"
                   dense
@@ -69,7 +69,7 @@
                   <q-menu class="radius-sm shadow-24" ref="more_vert_menu">
                     <q-list dense bordered class="radius-sm q-pa-xs">
                       <q-item
-                        v-if="calc_auth('group', 'name', 'project')"
+                        v-if="useAuths('name', ['group'], members, roles)"
                         class="no-padding"
                       >
                         <q-input
@@ -100,7 +100,7 @@
                           </template>
                         </q-input>
                       </q-item>
-                      <template v-if="calc_auth('group', 'delete', 'project')">
+                      <template v-if="useAuths('delete', ['group'], members, roles)">
                         <q-separator spaced />
                         <q-item
                           clickable
@@ -146,7 +146,7 @@
                 </template>
                 <template
                   #footer
-                  v-if="calc_auth('kanban', 'create', 'project')"
+                  v-if="useAuths('create', ['kanban'], members, roles)"
                 >
                   <div
                     v-if="!addKanban_targetId"
@@ -236,7 +236,7 @@
       <div v-else class="q-space flex flex-center">
         <span class="op-5">
           {{
-            calc_auth("group", "read", "project")
+            useAuths('read', ['group'], members, roles)
               ? isEmpty
                 ? "请点击上方按钮新建"
                 : "请点击下方按钮新建分组"
@@ -245,7 +245,7 @@
         </span>
       </div>
       <q-btn
-        v-if="calc_auth('group', 'create', 'project') && !isEmpty"
+        v-if="useAuths('create', ['group'], members, roles) && !isEmpty"
         size="md"
         flat
         class="full-width"
@@ -300,6 +300,9 @@ import {teamStore, mm_wsStore, userStore, uiStore} from 'src/hooks/global/useSto
 
 const router = useRouter();
 const route = useRoute();
+
+const members = computed(() => teamStore.project?.project_members);
+const roles = computed(() => teamStore.project?.member_roles);
 
 const multiple_boards = computed(
   () =>

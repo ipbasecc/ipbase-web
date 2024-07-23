@@ -144,10 +144,9 @@ import { Markdown } from "tiptap-markdown";
 import "prismjs";
 import "prismjs/themes/prism.css";
 import { uiStore, userStore } from "src/hooks/global/useStore";
-import { onKeyStroke } from "@vueuse/core";
 import { useFileDialog } from "@vueuse/core";
 import { confirmUpload } from "src/hooks/utilits/useConfirmUpload.js";
-import { useDropZone, useEventListener } from "@vueuse/core";
+import { useDropZone } from "@vueuse/core";
 
 const props = defineProps({
   show_toolbar: {
@@ -397,10 +396,10 @@ const tiptapBlur = async () => {
   }
 };
 
-onKeyStroke(["ctrlKey", "s"], (e) => {
-  e.preventDefault();
-  tiptapBlur();
-});
+// onKeyStroke(["ctrlKey", "s"], (e) => {
+//   e.preventDefault();
+//   tiptapBlur();
+// });
 
 const tiptapUpdate = () => {
   if (needRef.value === "html") {

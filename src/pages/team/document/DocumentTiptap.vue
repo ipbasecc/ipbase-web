@@ -25,11 +25,7 @@ import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
 import { updateDocument } from "src/api/strapi/project.js";
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import localforage from "localforage";
-import {
-  userStore,
-  teamStore,
-  mm_wsStore,
-} from "src/hooks/global/useStore.js";
+import { userStore, teamStore, mm_wsStore } from "src/hooks/global/useStore.js";
 import { isEqual } from "lodash-es";
 
 const userId = computed(() => teamStore.init?.id);
@@ -57,10 +53,12 @@ watchEffect(() => {
   members.value = teamStore.project?.project_members;
   roles.value = teamStore.project?.member_roles;
   if (by_info.value?.by === "card") {
-    const card_members_ids = teamStore.card.card_members?.map((i) => i.by_user.id);
+    const card_members_ids = teamStore.card.card_members?.map(
+      (i) => i.by_user.id
+    );
     if (card_members_ids?.includes(userId.value)) {
-      members.value.push(...teamStore.card.card_members)
-      roles.value.push(...teamStore.card.member_roles)
+      members.value = [...members.value, ...teamStore.card.card_members];
+      roles.value = [...roles.value, ...teamStore.card.member_roles];
     }
   }
   if (by_info.value?.user_id) {
@@ -71,7 +69,7 @@ watchEffect(() => {
 const updateDocumentFn = async (val) => {
   if (!val) return;
   const isChanged = !isEqual(document.value.jsonContent, val);
-  console.log('isChanged', isChanged);
+  // console.log("isChanged", isChanged);
   if (!isChanged) return;
   let params = {
     document_id: document.value.id,
@@ -120,14 +118,22 @@ const updateDocumentFn = async (val) => {
     }, 3000);
   }
 };
-const isUpdate = ref(false);
+
+const count = ref(15);
+let intervalId = null;
+const startCountdown = (val) => {
+  intervalId = setInterval(async () => {
+    count.value--;
+    if (count.value === 0) {
+      clearInterval(intervalId);
+      await updateDocumentFn(val);
+    }
+  }, 1000);
+};
+
 const tiptapUpdate = async (val) => {
-  isUpdate.value = true;
-  await new Promise(resolve => setTimeout(resolve, 5000));
-  isUpdate.value = false;
-  if (!isUpdate.value) {
-    await updateDocumentFn(val);
-  }
+  count.value = 15;
+  startCountdown(val);
 };
 const tiptapBlur = async (val) => {
   await updateDocumentFn(val);

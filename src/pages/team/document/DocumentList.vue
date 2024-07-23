@@ -220,12 +220,6 @@ const enterDocument = (element) => {
 
 const loading = ref(false);
 const creating = ref(false);
-const create_params = ref({
-  by_info: by_info.value,
-  data: {
-    name: "",
-  },
-});
 const createDocument_title = ref();
 const process_createdData = (val) => {
   if (by_info.value.project_id) {

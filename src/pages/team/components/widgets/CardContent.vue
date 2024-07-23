@@ -88,6 +88,9 @@ watchEffect(() => {
 const change_ing = ref(false);
 
 const tiptapBlur = async (val) => {
+  const isChanged = !isEqual(jsonContent.value, val);
+  // console.log('isChanged', isChanged);
+  if(!isChanged) return;
   if (change_ing.value) {
     setTimeout(() => {
       tiptapBlur(val);
