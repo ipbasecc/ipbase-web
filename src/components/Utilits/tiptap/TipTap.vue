@@ -18,7 +18,7 @@
             vertical
           />
           <q-btn
-            v-if="
+            v-else-if="
               i.type === 'Botton' &&
               (i.always_show || is_large) &&
               !i.disable &&
@@ -36,7 +36,7 @@
             /></template>
           </q-btn>
           <q-btn
-            v-if="i.type === 'menu' && (i.always_show || is_large)"
+            v-else-if="i.type === 'menu' && (i.always_show || is_large)"
             dense
             flat
             padding="xs"
@@ -61,7 +61,7 @@
             </q-menu>
           </q-btn>
           <q-btn
-            v-if="i.type === 'set_color' && (i.always_show || is_large)"
+            v-else-if="i.type === 'set_color' && (i.always_show || is_large)"
             dense
             flat
             padding="xs"
@@ -93,10 +93,12 @@
               </q-card>
             </q-popup-proxy>
           </q-btn>
+          <q-space v-else-if="i.type === 'space'" />
         </template>
         <slot name="more_btn"></slot>
       </div>
       <editor-content
+        ref="dropZoneRef"
         class="q-space scroll-y"
         :class="styleClass ? styleClass : 'q-pa-md'"
         :editor="editor"
@@ -135,12 +137,16 @@ import TextStyle from "@tiptap/extension-text-style";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Color } from "@tiptap/extension-color";
 import Image from '@tiptap/extension-image'
+import Dropcursor from '@tiptap/extension-dropcursor'
 import { Markdown } from 'tiptap-markdown';
 
 import "prismjs";
 import "prismjs/themes/prism.css";
-import {uiStore} from 'src/hooks/global/useStore';
+import {uiStore, userStore} from 'src/hooks/global/useStore';
 import {onKeyStroke} from '@vueuse/core';
+import { useFileDialog } from '@vueuse/core'
+import { confirmUpload } from "src/hooks/utilits/useConfirmUpload.js";
+import { useDropZone, useEventListener } from '@vueuse/core'
 
 const highlightCodeBlocks = () => {
   document.querySelectorAll("pre code").forEach((block) => {
@@ -210,6 +216,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  withImageBtb: {
+    type: Boolean,
+    default: false,
+  },
+  withAttachBtb: {
+    type: Boolean,
+    default: false,
+  },
   disable_btn: {
     type: Array,
     default() {
@@ -225,11 +239,13 @@ const props = defineProps({
 const contentRef = toRef(props, "content");
 const jsonContentRef = toRef(props, "jsonContent");
 const withSaveBtbRef = toRef(props, "withSaveBtb");
+const { withImageBtb, withAttachBtb } = toRefs(props);
 const isEditable = toRef(props, "editable");
 const needRef = toRef(props, "need");
 const { hideScroll } = toRefs(props);
 const emit = defineEmits([
   "tiptapBlur",
+  "tiptapSave",
   "tiptapClose",
   "tiptapUpdate",
   "tiptapChanged",
@@ -246,7 +262,9 @@ watchEffect(() => {
   is_large.value = send_box.value && send_box.value.width > 582;
 });
 
+const tiptap = ref(null);
 const editor = ref();
+const dropZoneRef = ref();
 
 const tiptapContent = ref();
 const cleanHtmlHandler = (val) => {
@@ -300,13 +318,45 @@ const setSourceContent = () => {
   sourceContent.value = editor.value && editor.value.getJSON();
 };
 const addImage = (url) => {
-  editor.value?.chain().focus().setImage({ src: url }).run()
+  editor.value.commands.createParagraphNear();
+  editor.value?.chain().focus().setImage({ src: url }).run();
+  editor.value.commands.createParagraphNear();
 }
+const uploadFiles = () => {
+
+}
+const { files, open, reset, onChange } = useFileDialog({
+  accept: 'image/*', // Set to accept only image files
+  directory: false, // Select directories instead of files if set true
+})
+
+const me = computed(() => userStore.me);
+const batchInserImage = async(_files) => {
+  const res = await confirmUpload(_files, me.value);
+  if (res) {
+    const urls = res.map(i => i.attributes.url);
+    urls.forEach((url) => {
+      addImage(url)
+    });
+  }
+}
+onChange(async(files) => {
+  await batchInserImage(files)
+})
+
+async function onDrop(files) {
+  await batchInserImage(files);
+}
+const { isOverDropZone } = useDropZone(tiptap, {
+  onDrop,
+  // specify the types of data to be received.
+  dataTypes: ['image/*']
+})
+
 onBeforeMount(() => {
   setSourceContent();
   init();
 });
-onMounted(() => {});
 
 const clear = () => {
   editor.value.commands.clearContent();
@@ -348,8 +398,8 @@ const tiptapBlur = async () => {
   }
 };
 
-const tiptap = ref(null);
-onKeyStroke(['shiftKey', 'ctrlKey'], (e) => {
+onKeyStroke(['ctrlKey', 's'], (e) => {
+  e.preventDefault();
   tiptapBlur();
 });
 
@@ -646,6 +696,34 @@ const menu = ref([
     handler: () => {
       editor.value.chain().focus().toggleTaskList().run();
     },
+  },
+  {
+    type: "space",
+    disable: false,
+    always_show: true,
+  },
+  {
+    type: "Botton",
+    disable: !withImageBtb.value,
+    icon: "image",
+    class: "",
+    activeClass: "",
+    always_show: true,
+    handler: () => open(),
+  },
+  {
+    type: "Botton",
+    disable: !withAttachBtb.value,
+    icon: "attachment",
+    class: "",
+    activeClass: "",
+    always_show: true,
+    handler: () => uploadFiles(),
+  },
+  {
+    type: "|",
+    disable: !withSaveBtbRef.value,
+    always_show: false,
   },
   {
     type: "Botton",

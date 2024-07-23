@@ -1,13 +1,16 @@
 <template>
-  <DocumentPageEditorjs v-if="document" :document="document" :by_info />
-<!--  document: {{ teamStore.card.card_documents }}-->
+  <!--  <DocumentPageEditorjs v-if="document" :document="document" :by_info />-->
+  <!--  document: {{ teamStore.card.card_documents }}-->
+  <DocumentTiptap v-if="document" :document :by_info />
+  <!--  {{ document }}-->
 </template>
 
 <script setup>
-import DocumentPageEditorjs from "./DocumentEditorjs.vue";
 import { ref, toRefs, watch, watchEffect } from "vue";
 import { getDocument } from "src/api/strapi/project.js";
-import { teamStore, mm_wsStore } from "src/hooks/global/useStore.js";
+import { teamStore, mm_wsStore, userStore } from "src/hooks/global/useStore.js";
+import DocumentPageEditorjs from "./DocumentEditorjs.vue";
+import DocumentTiptap from "./DocumentTiptap.vue";
 
 const props = defineProps({
   project_id: {
@@ -37,10 +40,13 @@ watchEffect(async () => {
       by_info.value.project_id = teamStore.project?.id;
     } else if (by_info.value.by === "card") {
       by_info.value.card_id = teamStore.card?.id;
-    } else if (by_info.value.user_id) {
+    } else {
+      by_info.value.user_id = userStore.userId
     }
-    if(teamStore.card?.card_documents){
-      document.value = teamStore.card.card_documents?.find(i => i.id === Number(document_id.value))
+    if (teamStore.card?.card_documents) {
+      document.value = teamStore.card.card_documents?.find(
+        (i) => i.id === Number(document_id.value)
+      );
     } else {
       const fetch = await getDocument(document_id.value);
       if (fetch?.data) {

@@ -30,16 +30,16 @@
             :active="actived_id === element.id"
             @click="enterDocument(element)"
           >
-            <q-item-section side>
+            <q-item-section side top>
               <q-icon :name="findIcon_byType(element.type)"> </q-icon>
             </q-item-section>
-            <q-item-section class="text-no-wrap">{{
+            <q-item-section>{{
               element.title
             }}</q-item-section>
             <q-item-section
               v-if="!teamStore.shareInfo"
-              side
-              class="hover-show transition"
+              side top
+              class="hover-show transition no-padding"
               @mouseenter="unEnter = true"
               @mouseleave="unEnter = false"
             >

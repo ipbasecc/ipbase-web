@@ -45,4 +45,6 @@ export default {
   quick_create_card_props: "",
   cancel_quick_create_card: "取消创建卡片",
   cancel_quick_create_card_props: "正在创建卡片",
+
+  save: "保存",
 };
