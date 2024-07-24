@@ -53,6 +53,7 @@
     <QuadrantBackgroud />
     <q-resize-observer @resize="onResize" />
     <QuadrantChart
+      v-if="taskContainerSIze"
       :axisData="axisData"
       :taskContainerSIze="taskContainerSIze"
       @QuadrantChange="QuadrantChange"
