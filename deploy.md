@@ -117,18 +117,6 @@ yarn develop
 
 Mattermost
 
-数据库
-```
-CREATE DATABASE ipbase_mm_demo WITH ENCODING 'UTF8' LC_COLLATE='en_US.UTF-8' LC_CTYPE='en_US.UTF-8' TEMPLATE=template0;
-
-CREATE USER ipbase_mm_demo WITH PASSWORD 'QstFhjyHRFer4VfBF';
-
-GRANT ALL PRIVILEGES ON DATABASE ipbase_mm_demo to ipbase_mm_demo;
-
-ALTER DATABASE ipbase_mm_demo OWNER TO ipbase_mm_demo;
-
-GRANT USAGE, CREATE ON SCHEMA PUBLIC TO ipbase_mm_demo;
-```
 应用部署
 ```
 # 下载执行文件
