@@ -23,7 +23,6 @@ import { findShareCardStorage } from "src/api/strapi/project.js";
 import { computed } from "vue";
 import AzureBlob from "../filemamager/AzureBlob.vue";
 import {teamStore, uiStore} from 'src/hooks/global/useStore';
-// import AzureBlob from "src/pages/Project/filemamager/StorageBody.vue";
 
 const props = defineProps({
   project_id: {

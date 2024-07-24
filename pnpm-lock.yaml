@@ -23,66 +23,6 @@ importers:
       '@coleqiu/vue-drag-select':
         specifier: ^2.0.5
         version: 2.0.5(vue@3.4.33(typescript@5.5.3))
-      '@editorjs/attaches':
-        specifier: ^1.3.0
-        version: 1.3.0
-      '@editorjs/checklist':
-        specifier: ^1.6.0
-        version: 1.6.0
-      '@editorjs/code':
-        specifier: ^2.9.0
-        version: 2.9.0
-      '@editorjs/delimiter':
-        specifier: ^1.4.0
-        version: 1.4.0
-      '@editorjs/editorjs':
-        specifier: ^2.29.0
-        version: 2.30.2
-      '@editorjs/embed':
-        specifier: ^2.7.0
-        version: 2.7.4
-      '@editorjs/header':
-        specifier: ^2.8.1
-        version: 2.8.7
-      '@editorjs/image':
-        specifier: ^2.9.0
-        version: 2.9.2
-      '@editorjs/inline-code':
-        specifier: ^1.5.0
-        version: 1.5.1
-      '@editorjs/link':
-        specifier: ^2.6.2
-        version: 2.6.2
-      '@editorjs/list':
-        specifier: ^1.9.0
-        version: 1.9.0
-      '@editorjs/marker':
-        specifier: ^1.4.0
-        version: 1.4.0
-      '@editorjs/nested-list':
-        specifier: ^1.4.2
-        version: 1.4.2
-      '@editorjs/paragraph':
-        specifier: ^2.11.3
-        version: 2.11.6
-      '@editorjs/personality':
-        specifier: ^2.0.2
-        version: 2.0.2
-      '@editorjs/quote':
-        specifier: ^2.6.0
-        version: 2.6.0
-      '@editorjs/raw':
-        specifier: ^2.5.0
-        version: 2.5.0
-      '@editorjs/simple-image':
-        specifier: ^1.6.0
-        version: 1.6.0
-      '@editorjs/table':
-        specifier: ^2.3.0
-        version: 2.3.0
-      '@editorjs/warning':
-        specifier: ^1.4.0
-        version: 1.4.0
       '@electron/remote':
         specifier: ^2.1.2
         version: 2.1.2(electron@31.2.1)
@@ -441,9 +381,6 @@ importers:
       dotenv:
         specifier: ^16.3.1
         version: 16.4.5
-      editorjs-drag-drop:
-        specifier: ^1.1.13
-        version: 1.1.14
       electron:
         specifier: ^31.0.1
         version: 31.2.1
@@ -1133,21 +1070,6 @@ packages:
     peerDependencies:
       yjs: ^13
 
-  '@codexteam/icons@0.0.2':
-    resolution: {integrity: sha512-KdeKj3TwaTHqM3IXd5YjeJP39PBUZTb+dtHjGlf5+b0VgsxYD4qzsZkb11lzopZbAuDsHaZJmAYQ8LFligIT6Q==}
-
-  '@codexteam/icons@0.0.4':
-    resolution: {integrity: sha512-V8N/TY2TGyas4wLrPIFq7bcow68b3gu8DfDt1+rrHPtXxcexadKauRJL6eQgfG7Z0LCrN4boLRawR4S9gjIh/Q==}
-
-  '@codexteam/icons@0.0.5':
-    resolution: {integrity: sha512-s6H2KXhLz2rgbMZSkRm8dsMJvyUNZsEjxobBEg9ztdrb1B2H3pEzY6iTwI4XUPJWJ3c3qRKwV4TrO3J5jUdoQA==}
-
-  '@codexteam/icons@0.0.6':
-    resolution: {integrity: sha512-L7Q5PET8PjKcBT5wp7VR+FCjwCi5PUp7rd/XjsgQ0CI5FJz0DphyHGRILMuDUdCW2MQT9NHbVr4QP31vwAkS/A==}
-
-  '@codexteam/icons@0.3.2':
-    resolution: {integrity: sha512-P1ep2fHoy0tv4wx85eic+uee5plDnZQ1Qa6gDfv7eHPkCXorMtVqJhzMb75o1izogh6G7380PqmFDXV3bW3Pig==}
-
   '@coleqiu/vue-drag-select@2.0.5':
     resolution: {integrity: sha512-lcfdDqV7FDlfwQwF4ehhH49tl7bszZ7whcXIFBpkb60oaDvjAQ36yJk1ay1N6mdEpMWn//ZQwhTgaZF/k5P3ug==}
     peerDependencies:
@@ -1167,66 +1089,6 @@ packages:
 
   '@dotlottie/player-component@2.7.12':
     resolution: {integrity: sha512-oNv/+bVnmBY3DILdY+ehBWk15Q76m8OByq8gPDpyEQwHf0kRJ6GUO074X1m8WPgvPKw0o8dYnz+UrbOFhZmmqA==}
-
-  '@editorjs/attaches@1.3.0':
-    resolution: {integrity: sha512-D+dj55EsC5bvXV///Dh/+KN4unuI0j6SU3f5QcMA5zrfda47PNKwbKOuwMBJwn0O+o5qwqrFv67g98lAo2qqVQ==}
-
-  '@editorjs/checklist@1.6.0':
-    resolution: {integrity: sha512-hRNP36DInr73mSK3noHBQeoQb7DA12ANfqTXufEkTgQzx+k4mRJ0HdeGukTIR4JbwjHJ9ecUBnnQqIEGnxCFEg==}
-
-  '@editorjs/code@2.9.0':
-    resolution: {integrity: sha512-QNOWxF29j6mYl/gM5HJzeGOt3s4laoZCUbuRqj6RkIvLBWMU+ASwjckEiouA61hcYUOMfpw4vQjzhsfC7xm/vA==}
-
-  '@editorjs/delimiter@1.4.0':
-    resolution: {integrity: sha512-i1Wm3UQsVisM7Fh9focJ1a4kX2l7IxO3zrEd+GmYoPVaNwxb/63GLNbGfCCGZBuvUyzeUDnc8cdhD1QQGwUZIg==}
-
-  '@editorjs/editorjs@2.30.2':
-    resolution: {integrity: sha512-JjtUDs2/aHTEjNZzEf/2cugpIli1+aNeU8mloOd5USbVxv2vC02HTMpv7Vc1UyB7dIuc45JaYSJwgnBZp9duhA==}
-
-  '@editorjs/embed@2.7.4':
-    resolution: {integrity: sha512-ByvSZnVuh9FhjLGmvjNlxhk3hnqN0g5K+E/tJY6Whdspgh9mst0iBARoVJQDGeJC+NNL2sSgYGt1ZjvEK5Z+lQ==}
-
-  '@editorjs/header@2.8.7':
-    resolution: {integrity: sha512-rfxzYFR/Jhaocj3Xxx8XjEjyzfPbBIVkcPZ9Uy3rEz1n3ewhV0V4zwuxCjVfFhLUVgQQExq43BxJnTNlLOzqDQ==}
-
-  '@editorjs/image@2.9.2':
-    resolution: {integrity: sha512-n09sMieGW8cksoeflpplzvbmFH2bdVzVTWbnidPWAHaeU467HRteoXU9yfGBB7+eeHZLnmCulQ2dr6ae+G2niw==}
-
-  '@editorjs/inline-code@1.5.1':
-    resolution: {integrity: sha512-XvKpqw9y1bOYgyuVUHGDuu7KlNWCYIXD5uU1Lpc4s4LJ8VN4TjWFGKJ3sS+LR7zzasWe8hu2ffR1JC6MHIS0EQ==}
-
-  '@editorjs/link@2.6.2':
-    resolution: {integrity: sha512-3cPx6M4ZvwDDvsi0E0fvMR3rvveAV/C0GRo1JLeZJ9cG9QgyoNolj4eu5Eqx3/r1XTC/he54qYEIZ/Dc4Lr4Ow==}
-
-  '@editorjs/list@1.9.0':
-    resolution: {integrity: sha512-BQEvZW4vi0O0dBvGNljiKxiE89vMSHoM2Tu2OzKUndoj7pY9AxqpgCh1qvwIVsJAlG4Lbt/vBFQilnoStMmI6A==}
-
-  '@editorjs/marker@1.4.0':
-    resolution: {integrity: sha512-5ipEXfL44jTTRzgNp/p/YjMO7jT08S5z4V8qA3FFJTfdhKgQyM3mvP1zpdYKw47ZZpVWMCncvk5Nto3BxihEtg==}
-
-  '@editorjs/nested-list@1.4.2':
-    resolution: {integrity: sha512-qb1dAoJ+bihqmlR3822TC2GuIxEjTCLTZsZVWNces3uJIZ+W4019G3IJKBt/MOOgz4Evzad/RvUEKwPCPe6YOQ==}
-
-  '@editorjs/paragraph@2.11.6':
-    resolution: {integrity: sha512-i9B50Ylvh+0ZzUGWIba09PfUXsA00Y//zFZMwqsyaXXKxMluSIJ6ADFJbbK0zaV9Ijx49Xocrlg+CEPRqATk9w==}
-
-  '@editorjs/personality@2.0.2':
-    resolution: {integrity: sha512-CnQ15cW14bHQrjUT6qWQHJJOrTyAbTlIOeARQcQ1COU3OFWuJOmMsWFUFYpz5POMmQk30Cgi9qdFyyFfZf0asA==}
-
-  '@editorjs/quote@2.6.0':
-    resolution: {integrity: sha512-8DiCMBT4n4UDV5bgzvfRH26HmL6YWddGC4+twvjhR+PzX0gwrnY8nFifvro79EeSqxwRtFjjlGnu5I0VTfw5aQ==}
-
-  '@editorjs/raw@2.5.0':
-    resolution: {integrity: sha512-ZOYKgR/sutOXHQ4uaWg8KzZ6yFJZCMTndezlN257GGsQ3Sa3ERcK9wZHKgAMNXaDhdKx9fDuojxRRcYvz6l9aQ==}
-
-  '@editorjs/simple-image@1.6.0':
-    resolution: {integrity: sha512-WvdGfQPlozwZd3PXQrJnRXk6gEYbv1U2vRupYJ6lTd3/UsLInXYUX5jSFcnGB5ZMH3bd0JDZfcb4d4Sv1/1big==}
-
-  '@editorjs/table@2.3.0':
-    resolution: {integrity: sha512-/dKE6A5FkukX/FpvIyQGsewwXglZk8YbXpEp9vkB6Ec4ETLeGJMxObCcYqbXqVod+IU/a1tFH+j3lsD8ASD41g==}
-
-  '@editorjs/warning@1.4.0':
-    resolution: {integrity: sha512-JMYm3hrmN4/S6aHBHzKsJab9+8AJRPaPh9wDGE6QrVF3dj2fCo/DZcc0MaT5TN4YI5Hu4GKBH52wOKFGOyAuoA==}
 
   '@electron/asar@3.2.10':
     resolution: {integrity: sha512-mvBSwIBUeiRscrCeJE1LwctAriBj65eUDm0Pc11iE5gRwzkmsdbS7FnZ1XUWjpSeQWL1L5g12Fc/SchPM9DUOw==}
@@ -3471,9 +3333,6 @@ packages:
 
   echarts@5.5.1:
     resolution: {integrity: sha512-Fce8upazaAXUVUVsjgV6mBnGuqgO+JNDlcgF79Dksy4+wgGpQB2lmYoO4TSweFg/mZITdpGHomw/cNBJZj1icA==}
-
-  editorjs-drag-drop@1.1.14:
-    resolution: {integrity: sha512-FpH3ILtfsadWrb/VcRfET7kC2fK3cBnlrTBY4wjm1bLNSxpM/OSmaRToeJJMxaIuwMldkKyuG+qWP4CiOLUu3g==}
 
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
@@ -7790,16 +7649,6 @@ snapshots:
       y-protocols: 1.0.6(yjs@13.6.18)
       yjs: 13.6.18
 
-  '@codexteam/icons@0.0.2': {}
-
-  '@codexteam/icons@0.0.4': {}
-
-  '@codexteam/icons@0.0.5': {}
-
-  '@codexteam/icons@0.0.6': {}
-
-  '@codexteam/icons@0.3.2': {}
-
   '@coleqiu/vue-drag-select@2.0.5(vue@3.4.33(typescript@5.5.3))':
     dependencies:
       vue: 3.4.33(typescript@5.5.3)
@@ -7829,84 +7678,6 @@ snapshots:
     dependencies:
       '@dotlottie/common': 0.7.11
       lit: 2.8.0
-
-  '@editorjs/attaches@1.3.0':
-    dependencies:
-      '@codexteam/icons': 0.0.4
-
-  '@editorjs/checklist@1.6.0':
-    dependencies:
-      '@codexteam/icons': 0.3.2
-
-  '@editorjs/code@2.9.0':
-    dependencies:
-      '@codexteam/icons': 0.0.5
-
-  '@editorjs/delimiter@1.4.0':
-    dependencies:
-      '@codexteam/icons': 0.0.5
-
-  '@editorjs/editorjs@2.30.2': {}
-
-  '@editorjs/embed@2.7.4':
-    dependencies:
-      '@editorjs/editorjs': 2.30.2
-
-  '@editorjs/header@2.8.7':
-    dependencies:
-      '@codexteam/icons': 0.0.5
-      '@editorjs/editorjs': 2.30.2
-
-  '@editorjs/image@2.9.2':
-    dependencies:
-      '@codexteam/icons': 0.3.2
-
-  '@editorjs/inline-code@1.5.1':
-    dependencies:
-      '@codexteam/icons': 0.3.2
-
-  '@editorjs/link@2.6.2':
-    dependencies:
-      '@babel/runtime': 7.24.8
-      '@codexteam/icons': 0.0.4
-
-  '@editorjs/list@1.9.0':
-    dependencies:
-      '@codexteam/icons': 0.0.4
-
-  '@editorjs/marker@1.4.0':
-    dependencies:
-      '@codexteam/icons': 0.0.5
-
-  '@editorjs/nested-list@1.4.2':
-    dependencies:
-      '@codexteam/icons': 0.0.2
-
-  '@editorjs/paragraph@2.11.6':
-    dependencies:
-      '@codexteam/icons': 0.0.4
-
-  '@editorjs/personality@2.0.2': {}
-
-  '@editorjs/quote@2.6.0':
-    dependencies:
-      '@codexteam/icons': 0.0.5
-
-  '@editorjs/raw@2.5.0':
-    dependencies:
-      '@codexteam/icons': 0.0.4
-
-  '@editorjs/simple-image@1.6.0':
-    dependencies:
-      '@codexteam/icons': 0.0.6
-
-  '@editorjs/table@2.3.0':
-    dependencies:
-      '@codexteam/icons': 0.0.6
-
-  '@editorjs/warning@1.4.0':
-    dependencies:
-      '@codexteam/icons': 0.0.4
 
   '@electron/asar@3.2.10':
     dependencies:
@@ -10366,8 +10137,6 @@ snapshots:
     dependencies:
       tslib: 2.3.0
       zrender: 5.6.0
-
-  editorjs-drag-drop@1.1.14: {}
 
   ee-first@1.1.1: {}
 
