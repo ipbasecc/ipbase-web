@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import { toRefs, ref, watchEffect, watch, computed } from "vue";
+import { toRefs, ref, watchEffect, watch, computed, onBeforeUnmount } from "vue";
 import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
 
 import { updateDocument } from "src/api/strapi/project.js";
@@ -66,6 +66,7 @@ watchEffect(() => {
   }
 });
 
+let updateChatMsg = void 0;
 const updateDocumentFn = async (val) => {
   if (!val) return;
   const isChanged = !isEqual(document.value.jsonContent, val);
@@ -89,7 +90,7 @@ const updateDocumentFn = async (val) => {
 
   let res = await updateDocument(document.value.id, params);
   if (res) {
-    let chat_Msg = {
+    updateChatMsg = {
       props: {
         strapi: {
           data: {
@@ -104,20 +105,22 @@ const updateDocumentFn = async (val) => {
     };
 
     if (by_info.value.project_id) {
-      chat_Msg.body = `${userStore.me.username}修改了项目：'${teamStore.project.name}'内的文档：'${document.value.title}'的内容`;
+      updateChatMsg.body = `${userStore.me.username}修改了项目：'${teamStore.project.name}'内的文档：'${document.value.title}'的内容`;
     }
     if (by_info.value.card_id) {
-      chat_Msg.body = `${userStore.me.username}修改了卡片：'${teamStore.card.name}'内的文档：'${document.value.title}'的内容`;
+      updateChatMsg.body = `${userStore.me.username}修改了卡片：'${teamStore.card.name}'内的文档：'${document.value.title}'的内容`;
     }
     if (by_info.value.user_id) {
       process_documentContent_change(res.data);
     }
-    send_chat_Msg(chat_Msg);
     setTimeout(() => {
       localforage.removeItem(`__document_${document.value.id}`);
     }, 3000);
   }
 };
+onBeforeUnmount(() => {
+  send_chat_Msg(updateChatMsg);
+});
 
 const count = ref(15);
 let intervalId = null;

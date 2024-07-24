@@ -11,7 +11,6 @@
           @keyup.ctrl.enter="sendMsg(msg)"
         >
           <template v-slot:more_btn>
-            <q-space />
             <uploadFile
               :channel_id="channel_idRef"
               @fileUploaded="handlerFileUploaded"
