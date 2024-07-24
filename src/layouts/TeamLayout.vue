@@ -137,6 +137,7 @@ watchEffect(() => {
   uiStore.hide_footer = !need_show_footer.includes(routeName.value);
 });
 const toLogin = () => {
+  uiStore.axiosStautsCode = void 0
   router.push("/login");
 };
 
