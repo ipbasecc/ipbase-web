@@ -48,7 +48,7 @@
             :key="i.val"
             clickable
             v-close-popup
-            @click="locale = i.val"
+            @click="setLocale(i.val)"
             class="radius-xs"
           >
             <q-item-section>
@@ -73,11 +73,12 @@
   </div>
 </template>
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onBeforeMount } from "vue";
 import { closeWs } from "src/pages/team/ws.js";
 import { useI18n } from "vue-i18n";
 import AppManual from "src/components/VIewComponents/AppManual.vue";
 import AppShortcut from "src/components/VIewComponents/AppShortcut.vue";
+import localforage from "localforage";
 
 const is_development = process.env.DEV;
 const { locale } = useI18n({ useScope: "global" });
@@ -85,6 +86,19 @@ const localeOptions = [
   { val: "zh-CN", label: "中文" },
   { val: "en-US", label: "English" },
 ];
+const setLocale = async (val) => {
+  locale.value = val;
+  await localforage.setItem("locale", val);
+};
+const restoreLocal = async () => {
+  const _locale = await localforage.getItem("locale");
+  if (_locale) {
+    locale.value = _locale;
+  }
+};
+onBeforeMount(() => {
+  restoreLocal();
+});
 
 const helpItem = ref();
 const helpItems = [
