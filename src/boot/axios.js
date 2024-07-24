@@ -151,7 +151,6 @@ export default boot(async ({ app }) => {
       return config;
     },
     function (error) {
-      uiStore.axiosStauts = 'error';
       return Promise.reject(error);
     }
   );
@@ -163,14 +162,13 @@ export default boot(async ({ app }) => {
       // 将拿到的结果发布给其他相同的接口
       uiStore.axiosStauts = 'complete';
       handleSuccessResponse_limit(response);
+      console.log('response', response)
       return response;
     },
     (error) => {
-      // 如果响应返回的状态码为401，说明token鉴权失败，执行自定义逻辑
+      console.log('error', error)
       uiStore.axiosStauts = 'error';
-      if (error.response?.data?.error?.status === 401) {
-        uiStore.axiosStautsCode = 401;
-      }
+      uiStore.axiosError = error;
       // 如果是其他错误，继续抛出
       return handleErrorResponse_limit(error);
     }

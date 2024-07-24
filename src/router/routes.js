@@ -329,21 +329,6 @@ const routes = [
         path: "/login",
         component: () => import("src/pages/UserCenter/LoginPage.vue"),
         name: "login",
-        beforeEnter: async (to, from, next) => {
-          // console.log(from)
-          // fix
-          // 聚焦模式、外部协作模式，即：
-          // src/pages/team/ExternalPage.vue页面，刷新后会跳转到此处
-          // 原因待查清，此处暂时不执行退出流程
-          const errPages = ['team_projects_focus_page', 'team_projects_external_page']
-          if(!errPages.includes(from.name)) {
-            await clearLocalDB('login');
-            next();
-          } else {
-            // redirect: from.fullPath
-            next(from.fullPath);
-          }
-        },
         meta: {
           requireAuth: false,
           title: "用户登陆——易乎APP",

@@ -102,22 +102,18 @@
 </template>
 
 <script setup>
-import {ref, provide, computed, watch, watchEffect, onMounted} from 'vue';
+import {ref, provide, computed, watchEffect, onMounted} from 'vue';
 import AppLoading from "./components/VIewComponents/AppLoading.vue";
 import {useMeta, useQuasar} from "quasar";
-import {useRouter} from "vue-router";
 import useOss from "./stores/oss.js";
 import useUIStore from "./stores/ui.js";
-import useUserStore from "./stores/user.js";
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
-const router = useRouter()
 const $q = useQuasar();
 const uiStore = useUIStore();
 const ossStore = useOss();
-const userStore = useUserStore();
 
 const fetching = ref(false);
 const detectFetching = ref(false);
@@ -218,14 +214,6 @@ useMeta(() => {
     title: uiStore?.pageTitle
   }
 })
-const axiosStatusCode = computed(() => uiStore.axiosStautsCode);
-watch(axiosStatusCode, () => {
-  // console.log('axiosStatusCode', axiosStatusCode)
-  if(axiosStatusCode.value === 401){
-    // userStore.logged = false;
-    router.push('/login')
-  }
-},{ immediate: true })
 
 const fileTab = ref('upload');
 const fileTabs = [

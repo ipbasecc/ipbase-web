@@ -102,14 +102,6 @@ if (fineMeErr && fineMeErr.value?.networkError?.statusCode === "401") {
 
 // 第一次请求数据出错，尝试重新请求
 const count = ref(2);
-const startCountdown = () => {
-  setInterval(() => {
-    count.value--;
-    if (count.value === 0) {
-      router.push("/");
-    }
-  }, 1000);
-};
 //第二次请求数据出错，清空本地缓存重载整个页面
 const logout_then_refetch = async () => {
   await clearLocalDB('MainLayout');

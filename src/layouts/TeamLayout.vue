@@ -80,6 +80,7 @@ import { useQuasar } from "quasar";
 import useWatcher from "src/pages/team/wsWatcher.js";
 import { _ws, closeWs } from "src/pages/team/ws.js";
 import AppUtils from "src/components/VIewComponents/AppUtils.vue";
+import {clearLocalDB} from "pages/team/hooks/useUser";
 
 const $q = useQuasar();
 
@@ -113,7 +114,7 @@ const init = async () => {
   }
 };
 
-const needLogin = computed(() => uiStore.axiosStautsCode === 401);
+const needLogin = computed(() => uiStore.axiosError?.response?.data?.id === 'api.context.session_expired.app_error' || uiStore.axiosError?.response?.data?.error?.name === 'UnauthorizedError');
 let strapiLoged;
 let mmLoged;
 fetch_StrapiMe().then(() => {
@@ -136,9 +137,10 @@ const routeName = computed(() => route.name);
 watchEffect(() => {
   uiStore.hide_footer = !need_show_footer.includes(routeName.value);
 });
-const toLogin = () => {
-  uiStore.axiosStautsCode = void 0
-  router.push("/login");
+const toLogin = async () => {
+  uiStore.axiosStautsCode = void 0;
+  await clearLocalDB('TeamLayout.vue');
+  window.location.reload();
 };
 
 onMounted(() => {

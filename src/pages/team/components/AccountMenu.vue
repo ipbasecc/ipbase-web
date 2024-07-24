@@ -306,7 +306,7 @@ getUserStatusFn();
 const confirmOut = ref(false);
 const logout = async () => {
   await router.push("/login");
-  await clearLocalDB('注销动作开始');
+  await clearLocalDB('AccountMenu.vue');
   localStorage.setItem(
     "isViewedIds",
     JSON.stringify(userStore.viewed.map((i) => i.id))

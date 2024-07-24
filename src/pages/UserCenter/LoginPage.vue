@@ -184,11 +184,9 @@
 <script setup>
 import {
   ref,
-  inject,
   onMounted,
   onUnmounted,
   computed,
-  watch,
   watchEffect,
   onBeforeMount,
 } from "vue";
@@ -331,16 +329,6 @@ const setServer = () => {
 const setCompleted = () => {
   uiStore.setServer = false;
 };
-const errCode = computed(() => uiStore.axiosStautsCode);
-watch(
-  errCode,
-  () => {
-    if (errCode.value === 401) {
-      reLogin();
-    }
-  },
-  { immediate: true, deep: false }
-);
 </script>
 <style>
 input:-webkit-autofill {

@@ -51,12 +51,7 @@ export default boot(async ({ app }) => {
     },
     (error) => {
       console.log('error', error)
-      // 如果响应返回的状态码为401，说明token鉴权失败，执行自定义逻辑
-      uiStore.axiosStauts = 'error';
-      if(error.response?.data?.status_code === 401){
-        console.log('error', 'status_code:401')
-        uiStore.axiosStautsCode = 401;
-      }
+      uiStore.axiosError = error;
     }
   );
 
