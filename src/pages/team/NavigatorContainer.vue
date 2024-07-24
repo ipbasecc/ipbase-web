@@ -414,7 +414,4 @@ const toggleTransfer = () => {
 </script>
 
 <style scoped>
-.no-scroll > .absolute-full > .scroll {
-  overflow: hidden !important;
-}
 </style>

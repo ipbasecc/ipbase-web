@@ -56,6 +56,9 @@ body * {
     "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji";
 }
+.no-scroll > .absolute-full > .scroll {
+  overflow: hidden !important;
+}
 
 p {
   margin: 0;
