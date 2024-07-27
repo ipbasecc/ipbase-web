@@ -50,13 +50,13 @@ const taskContainerSIzeRef = toRef(props, "taskContainerSIze");
 const CardId = ref();
 const chartRef = shallowRef();
 
-let chart;
+const chart = ref();
 const initECharts = () => {
   if (!chartRef.value || !taskContainerSIzeRef.value) return;
-  chart = echarts.init(chartRef.value, $q.dark.mode ? "dark" : "light");
+  chart.value = echarts.init(chartRef.value, $q.dark.mode ? "dark" : "light");
   const base = () => {
     // 把配置和数据放这里
-    chart.setOption(
+    chart.value.setOption(
       {
         backgroundColor: "#00000000",
         tooltip: {
@@ -172,7 +172,7 @@ const initECharts = () => {
   };
   const setDrag = () => {
     if(teamStore.shareInfo) return
-    chart.setOption({
+    chart.value.setOption({
       // 声明一个 graphic component，里面有若干个 type 为 'circle' 的 graphic elements。
       // 这里使用了 echarts.util.map 这个帮助方法，其行为和 Array.prototype.map 一样，但是兼容 es5 以下的环境。
       // 用 map 方法遍历 data 的每项，为每项生成一个圆点。
@@ -191,7 +191,7 @@ const initECharts = () => {
 
             // 用 transform 的方式对圆点进行定位。position: [x, y] 表示将圆点平移到 [x, y] 位置。
             // 这里使用了 convertToPixel 这个 API 来得到每个圆点的位置，下面介绍。
-            position: chart.convertToPixel("grid", dataItem),
+            position: chart.value.convertToPixel("grid", dataItem),
 
             // 这个属性让圆点不可见（但是不影响他响应鼠标事件）。
             invisible: true,
@@ -220,7 +220,7 @@ const initECharts = () => {
     });
   };
   const setTooltip = () => {
-    chart.setOption({
+    chart.value.setOption({
       // ...,
       tooltip: {
         // 表示不使用默认的“显示”“隐藏”触发规则。
@@ -265,12 +265,12 @@ const initECharts = () => {
     });
   };
 
-  chart.on("click", function (params) {
+  chart.value.on("click", function (params) {
     CardId.value = params.data;
   });
 
   function showTooltip(dataIndex) {
-    chart.dispatchAction({
+    chart.value.dispatchAction({
       type: "showTip",
       seriesIndex: 0,
       dataIndex: dataIndex,
@@ -285,7 +285,7 @@ const initECharts = () => {
   };
 
   function hideTooltip(dataIndex) {
-    chart.dispatchAction({
+    chart.value.dispatchAction({
       type: "hideTip",
     });
   }
@@ -296,7 +296,7 @@ const initECharts = () => {
     const _attach = [dataItem[2], dataItem[3], dataItem[4], dataItem[5]];
     // 这里的 data 就是本文最初的代码块中声明的 data，在这里会被更新。
     // 这里的 this 就是被拖拽的圆点。this.position 就是圆点当前的位置。
-    axisDataRef.value[dataIndex] = chart.convertFromPixel("grid", [
+    axisDataRef.value[dataIndex] = chart.value.convertFromPixel("grid", [
       this.x,
       this.y,
     ]);
@@ -322,7 +322,7 @@ const initECharts = () => {
   watch(
     taskContainerSIzeRef,
     () => {
-      chart.resize();
+      chart.value.resize();
       base();
       setDrag();
       setTooltip();
@@ -344,8 +344,11 @@ onMounted(() => {
   initECharts();
 });
 onBeforeUnmount(() => {
-  chart.off('click');
-  chart.dispose();
+  if (chart.value) {
+    chart.value.off("click");
+    chart.value.dispose();
+    chart.value = void 0;
+  }
 });
 const emit = defineEmits(["QuadrantChange"]);
 const updateCardFn = async (id, params) => {
