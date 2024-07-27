@@ -1,6 +1,7 @@
 <template>
   <q-layout
     v-if="!needLogin"
+    v-bind="$attrs"
     view="lHr LpR lfr"
     class="absolute-full border-negative"
   >
