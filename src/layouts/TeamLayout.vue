@@ -128,7 +128,10 @@ const init = async () => {
   }
 };
 
-const needLogin = computed(() => uiStore.axiosError?.response?.data?.id === 'api.context.session_expired.app_error' || uiStore.axiosError?.response?.data?.error?.name === 'UnauthorizedError');
+const needLogin = computed(() => 
+  uiStore.axiosError?.response?.data?.id === 'api.context.session_expired.app_error'
+  || uiStore.axiosError?.response?.data?.error?.name === 'UnauthorizedError'
+);
 let strapiLoged;
 let mmLoged;
 fetch_StrapiMe().then(() => {

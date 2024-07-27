@@ -344,6 +344,7 @@ onMounted(() => {
   initECharts();
 });
 onBeforeUnmount(() => {
+  chart.off('click');
   chart.dispose();
 });
 const emit = defineEmits(["QuadrantChange"]);
