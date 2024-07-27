@@ -10,6 +10,7 @@
 > https://yihu.team
 
 ## 演示视频
+> https://www.bilibili.com/video/BV1BWeYeKEbZ/?spm_id_from=333.999.0.0
 
 ## 重要说明：
 
