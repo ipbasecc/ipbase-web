@@ -75,8 +75,6 @@ p {
   -ms-user-select: none; /* IE10+/Edge */
   user-select: none; /* Standard */
 }
-body {
-}
 
 video {
   object-fit: cover;
@@ -1256,10 +1254,6 @@ body.body--dark .mm_message.active {
 .todo_in_card .q-field__input {
   padding-top: 2px;
   padding-bottom: 2px;
-}
-.todo_in_card .q-field__control,
-.todo_in_card .q-field__marginal {
-  // height: 32px;
 }
 .todo_in_card .q-field__control {
   padding: 0 4px;
