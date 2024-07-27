@@ -225,7 +225,7 @@ onBeforeMount(() => {
   const jwt = localStorage.getItem("jwt");
   const mmtoken = localStorage.getItem("mmtoken");
   if (!jwt || !mmtoken) {
-    router.push("/login");
+    // router.push("/login");
   }
 });
 watch(

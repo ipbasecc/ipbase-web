@@ -132,14 +132,13 @@
           </q-card-section>
         </template>
       </template>
-      <q-card-section v-if="errorStats === 'noneConfirmed'">
+      <q-card-section v-else-if="errorStats === 'noneConfirmed'">
         账号未激活，请检查您的注册邮箱，接收来自
         <span class="text-red font-bild-600">“易乎APP“</span>
         的邮件，点击其中的激活链接！
       </q-card-section>
 
-      <q-card-section
-        v-else-if="errorStats === 'wrongPassword'"
+      <q-card-section v-else-if="errorStats === 'wrongPassword'"
         class="row no-wrap gap-sm items-center"
       >
         <span>账号或密码错误！</span
@@ -153,8 +152,7 @@
         />
       </q-card-section>
 
-      <q-card-section
-        v-else-if="errorStats === 'wrongAuth'"
+      <q-card-section v-else-if="errorStats === 'wrongAuth'"
         class="row no-wrap gap-sm items-center"
       >
         <span>授权已过期，请重新登陆</span
@@ -167,6 +165,22 @@
           @click="reLogin"
         />
       </q-card-section>
+      <template v-else-if="errorStats === 'ERR_NETWORK'">
+        <q-card-section class="column no-wrap gap-sm">
+          <span class="font-larger">{{ $t('connect_refused_header') }}</span>
+          <span class="op-6">{{ $t('connect_refused_login_caption') }}</span>
+        </q-card-section>
+        <q-card-section class="border-top">
+          <q-btn
+            color="primary"
+            padding="xs md"
+            dense
+            class='full-width'
+            :label="$t('connect_refused_login_btn_label')"
+            @click="setServer()"
+          />
+        </q-card-section>
+      </template>
 
       <q-card-section
         v-if="count"
@@ -187,7 +201,6 @@ import {
   onMounted,
   onUnmounted,
   computed,
-  watchEffect,
   onBeforeMount,
 } from "vue";
 import { useRouter } from "vue-router";
@@ -216,7 +229,7 @@ onBeforeMount(() => {
   }
 });
 
-watchEffect(() => {});
+const connect_refused = computed(() => uiStore.serverResfused);
 
 // 开始登录
 // 定义登录表单数据
@@ -249,7 +262,7 @@ const submitLogin = async () => {
   try {
     strapi_loading.value = true;
     // 提交登录数据并拿回Apollo返回数据
-    const { data } = await loginMutate();
+    const { data, error } = await loginMutate();
     // 填充本地JWT数据，填充store数据
     if (data) {
       strapi_loading.value = false;
@@ -276,12 +289,17 @@ const submitLogin = async () => {
         console.log(error);
       }
     }
+    if(error){
+      console.log('error', error);
+    }
   } catch (error) {
     hasError.value = true;
     if (error === "ApolloError: Your account email is not confirmed") {
       errorStats.value = "noneConfirmed";
     } else if (error === "ApolloError: Invalid identifier or password") {
       errorStats.value = "wrongPassword";
+    } else if(error.code === 'ERR_NETWORK' || connect_refused.value) {
+      errorStats.value = "ERR_NETWORK";
     } else {
       errorStats.value = "wrongAuth";
     }
@@ -323,7 +341,16 @@ const startCountdown = () => {
     }
   }, 1000);
 };
+const resetError = () => {
+  uiStore.axiosStauts = void 0;
+  uiStore.axiosStautsCode = void 0;
+  uiStore.axiosError = void 0;
+  errorStats.value = null;
+  hasError.value = false;
+  uiStore.serverResfused = false;
+}
 const setServer = () => {
+  resetError();
   uiStore.setServer = true;
 };
 const setCompleted = () => {

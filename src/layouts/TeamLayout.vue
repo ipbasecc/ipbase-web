@@ -64,6 +64,20 @@
       </q-card-section>
     </q-card>
   </div>
+  <q-dialog v-model="connect_refused" persistent>
+    <q-card bordered>
+      <q-card-section class="row items-center border-bottom">
+        <q-avatar icon="signal_wifi_off" color="primary" text-color="white" />
+        <div class="q-ml-sm column no-wrap gap-sm">
+          <span class="font-large">{{ $t('connect_refused_header') }}</span>
+          <span class="op-6">{{ $t('connect_refused_caption') }}</span>
+        </div>
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn dense padding="xs md" :label="$t('connect_refused_btn_label')" color="primary" v-close-popup @click="serverRefusedHandler()" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
@@ -125,7 +139,7 @@ fetch_MmMe().then(() => {
   mmLoged = true;
 });
 watchEffect(() => {
-  if (strapiLoged && mmLoged) {
+  if(strapiLoged && mmLoged) {
     userStore.logged = true;
   }
 });
@@ -142,6 +156,14 @@ const toLogin = async () => {
   await clearLocalDB('TeamLayout.vue');
   window.location.reload();
 };
+
+const connect_refused = computed(() => uiStore.serverResfused);
+const serverRefusedHandler = () => {
+  localStorage.clear();
+  userStore.logged=false
+  uiStore.axiosStautsCode = void 0;
+  router.push('/login')
+}
 
 onMounted(() => {
   shortcut();

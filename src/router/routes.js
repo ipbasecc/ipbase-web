@@ -329,6 +329,9 @@ const routes = [
         path: "/login",
         component: () => import("src/pages/UserCenter/LoginPage.vue"),
         name: "login",
+        beforeEnter: async (from) => {
+          console.log('from', from);
+        },
         meta: {
           requireAuth: false,
           title: "用户登陆——易乎APP",

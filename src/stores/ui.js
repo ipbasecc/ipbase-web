@@ -5,6 +5,7 @@ export default defineStore("ui", {
     axiosStauts: void 0,
     axiosStautsCode: void 0,
     axiosError: void 0,
+    serverResfused: false,
     app: void 0,
     pageLoaded: false,
     pageTitle: null,
