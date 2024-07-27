@@ -122,7 +122,11 @@ export default configure((ctx) => {
       // polyfillModulePreload: true,
       // distDir
 
-      // extendViteConf (viteConf) {},
+      extendViteConf(viteConf) {
+        viteConf.esbuild = {
+          drop: ['console', 'debugger']
+        }
+      },
       // viteVuePluginOptions: {},
 
       vitePlugins: [

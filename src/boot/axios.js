@@ -162,18 +162,18 @@ export default boot(async ({ app }) => {
       // 将拿到的结果发布给其他相同的接口
       uiStore.axiosStauts = 'complete';
       handleSuccessResponse_limit(response);
-      console.log('response', response)
+      // console.log('response', response)
       return response;
     },
     (error) => {
       if (error.response) {
         // 服务器返回了状态码，但是状态码超出了2xx的范围
-        console.log('error', error)
+        // console.log('error', error)
         uiStore.axiosStauts = 'error';
         uiStore.axiosError = error;
       } else if (error.request) {
         // 请求已经发出，但是没有收到任何响应
-        console.log(error.request);
+        // console.log(error.request);
       } else{
         // 在设置请求时触发了一个错误
         console.log('Error', error.message);

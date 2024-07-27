@@ -356,6 +356,7 @@ const setServer = () => {
 };
 const setCompleted = () => {
   uiStore.setServer = false;
+  localStorage.clear();
 };
 </script>
 <style>

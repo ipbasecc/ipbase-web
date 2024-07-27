@@ -13,7 +13,7 @@ import { uiStore } from "src/hooks/global/useStore";
 const setAPI = async () => {
   let GRAPHQL_URI
   const { graphql_endpoint } = await $server();
-  // console.log('graphql_endpoint', graphql_endpoint)
+  console.log('graphql_endpoint', graphql_endpoint)
   if(graphql_endpoint && graphql_endpoint !== "") {
     GRAPHQL_URI = graphql_endpoint
   } else {
