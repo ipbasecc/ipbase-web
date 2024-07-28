@@ -237,7 +237,6 @@ import MemberManager from "../settings/MemberManager.vue";
 import { mmUser, teamStore, uiStore } from "src/hooks/global/useStore.js";
 import useMmws from "src/stores/mmws.js";
 import { removeLastChannel } from "pages/team/chat/TeamChat";
-import localforage from "localforage";
 
 const mm_wsStore = useMmws();
 const props = defineProps({
@@ -265,7 +264,6 @@ const chatInfo = computed(() => ({
 
 const page = ref(0);
 const per_page = ref(60);
-// const after = ref();
 const before = computed(() => messages.value?.order[0]);
 const after = ref();
 const options = computed(() => {
@@ -333,7 +331,6 @@ const deleteCache = async (_cid) => {
 
 const initCache = async (_cid) => {
   let cache = await getCache(_cid);
-  // console.log('cache', cache);
   if (cache?.order?.length > 0) {
     page.value = 0;
     after.value = cache.order[cache.order.length - 1];
@@ -359,10 +356,7 @@ const updateCache = async (_cid, Msgs) => {
     } catch (error) {}
   }
 };
-let count = 0;
 const initChannel = async (_cid) => {
-  count++;
-  // console.log("count", count, _cid);
   if (channel_id.value) {
     messages.value = {
       ...__base.value,
@@ -371,7 +365,7 @@ const initChannel = async (_cid) => {
     await initCache(_cid);
     fetchMoreOnly.value = true;
     await get(_cid);
-    // initMessage();
+    initMessage();
   }
 };
 watch(
@@ -555,7 +549,7 @@ const onResize = async (size) => {
 };
 
 const cleanCache = async (_cid) => {
-  await db.channels.delete(_cid);
+  await deleteCache(_cid);
   const _empty = {
     order: [],
     posts: {},
