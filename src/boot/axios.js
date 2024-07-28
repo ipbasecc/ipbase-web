@@ -167,16 +167,8 @@ export default boot(async ({ app }) => {
     },
     (error) => {
       if (error.response) {
-        // 服务器返回了状态码，但是状态码超出了2xx的范围
-        // console.log('error', error)
         uiStore.axiosStauts = 'error';
         uiStore.axiosError = error;
-      } else if (error.request) {
-        // 请求已经发出，但是没有收到任何响应
-        // console.log(error.request);
-      } else{
-        // 在设置请求时触发了一个错误
-        console.log('Error', error.message);
       }
       if (error.code === 'ERR_NETWORK') {
         uiStore.serverResfused = true;

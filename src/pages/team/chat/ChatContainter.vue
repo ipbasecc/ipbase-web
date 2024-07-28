@@ -292,6 +292,9 @@ const __posts = ref();
 const __channelMessages = ref();
 
 const initMessage = () => {
+  console.log('__base', __base.value);
+  console.log('__beforCache', __order.value);
+  console.log('__afterCache', __order.value);
   __order.value = [
     ...__beforCache.value.order,
     ...__base.value.order,
@@ -323,8 +326,14 @@ const getCache = async (_cid) => {
   return await db.channels.get(_cid);
 };
 
+const deleteCache = async (_cid) => {
+  // console.log("getCache", _cid);
+  return await db.channels.delete(_cid);
+};
+
 const initCache = async (_cid) => {
   let cache = await getCache(_cid);
+  // console.log('cache', cache);
   if (cache?.order?.length > 0) {
     page.value = 0;
     after.value = cache.order[cache.order.length - 1];
@@ -362,7 +371,7 @@ const initChannel = async (_cid) => {
     await initCache(_cid);
     fetchMoreOnly.value = true;
     await get(_cid);
-    initMessage();
+    // initMessage();
   }
 };
 watch(
@@ -546,19 +555,26 @@ const onResize = async (size) => {
 };
 
 const cleanCache = async (_cid) => {
-  const val = {
-    id: _cid,
+  await db.channels.delete(_cid);
+  const _empty = {
     order: [],
     posts: {},
+  }
+  const val = {
+    id: _cid,
+    ..._empty
   };
-  await db.channels.delete(_cid);
   __channelMessages.value = val;
   __base.value = val;
+
+  __afterCache.value = _empty;
+  __beforCache.value = _empty;
 };
 const cleanCacheReInit = async (_cid) => {
+  await cleanCache(_cid);
   after.value = void 0;
   before.value = void 0;
-  await cleanCache(_cid);
+  page.value = 0;
   await initChannel(_cid);
 };
 
