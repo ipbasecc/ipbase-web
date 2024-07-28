@@ -1,6 +1,6 @@
 // This is just an example,
 // so you can safely delete all default props below
-// {{ $t('navigation_Quadrant') }}
+// {{ $t('Language') }}
 
 export default {
   Language: "语言",

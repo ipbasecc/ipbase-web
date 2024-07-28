@@ -254,6 +254,10 @@ const gqlAggregate = {
             username
             email
             self_tags
+            config {
+              lang
+              theme
+            }
             profile {
               title
               description

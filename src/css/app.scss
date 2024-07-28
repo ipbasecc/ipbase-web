@@ -1128,6 +1128,14 @@ body.body--dark .q-dialog-plugin .q-dialog__title {
   background-color: #003569;
 }
 
+.q-tabs--vertical.q-indicator-dense .q-tab__indicator {
+  height: 40%;
+  width: 2px;
+  top: 30%;
+  right: 0;
+  bottom: 0;
+}
+
 .expand_icon {
   width: auto;
   min-width: auto;

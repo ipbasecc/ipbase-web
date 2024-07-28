@@ -44,6 +44,33 @@
         stack-label
         :placeholder="description"
       />
+
+      <div class="row no-wrap gap-sm items-center">
+        {{ $t('Language') }}:
+        <q-btn flat dense padding="xs md" :label="langLabel">
+          <q-menu class="transparent z-max">
+            <q-list
+              dense
+              bordered
+              class="radius-sm q-pa-xs"
+              :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-1'"
+            >
+              <q-item
+                v-for="i in localeOptions"
+                :key="i.val"
+                clickable
+                v-close-popup
+                @click="setLocale(i.val)"
+                class="radius-xs"
+              >
+                <q-item-section>
+                  <q-item-label>{{ i.label }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
+      </div>
       <div v-if="false" class="row gap-xs items-center">
         <q-chip
           v-for="(i, index) in self_tags"
@@ -241,7 +268,7 @@
 </template>
 
 <script setup>
-import { ref, watch, inject, watchEffect } from "vue";
+import { ref, computed, watch, inject, watchEffect } from "vue";
 import useGetMyMatedate from "src/hooks/global/useGetMyMatedata.js";
 import { updateUsersBasicinfo } from "src/apollo/api/api.js";
 import UploadFile from "src/components/Utilits/UploadFile.vue";
@@ -249,6 +276,8 @@ import UpdateAvatar from "src/pages/Chat/components/user/Settings/UpdateAvatar.v
 
 import useUserStore from "src/stores/user.js";
 import { useQuasar } from "quasar";
+import { useI18n } from "vue-i18n";
+import localforage from "localforage";
 
 const props = defineProps({
   style: {
@@ -292,6 +321,25 @@ const tehmeItems = ref([
   { name: "lighter", icon: "light_mode", val: "lighter" },
   { name: "darker", icon: "dark_mode", val: "darker" },
 ]);
+const { locale } = useI18n({ useScope: "global" });
+const localeOptions = [
+  { val: "zh-CN", label: "中文" },
+  { val: "en-US", label: "English" },
+];
+const setLocale = async (val) => {
+  locale.value = val;
+  updateUsersBasicinfoParams.value.data.config.lang = val
+  await localforage.setItem("locale", val);
+};
+const language = computed(() => locale.value)
+const langLabel = computed(() => {
+  if(language.value === "zh-CN"){
+    return "中文"
+  }else{
+    return "English"
+  }
+})
+
 const avatar = ref();
 const cover = ref();
 const brand = ref();

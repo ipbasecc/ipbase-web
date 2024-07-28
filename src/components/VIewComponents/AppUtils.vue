@@ -80,6 +80,7 @@ import AppManual from "src/components/VIewComponents/AppManual.vue";
 import AppShortcut from "src/components/VIewComponents/AppShortcut.vue";
 import localforage from "localforage";
 
+
 const is_development = process.env.DEV;
 const { locale } = useI18n({ useScope: "global" });
 const localeOptions = [
@@ -91,9 +92,16 @@ const setLocale = async (val) => {
   await localforage.setItem("locale", val);
 };
 const restoreLocal = async () => {
-  const _locale = await localforage.getItem("locale");
-  if (_locale) {
-    locale.value = _locale;
+  const _init = await localforage.getItem("init");
+  if(_init?.config?.lang){
+    locale.value = _init?.config?.lang
+    console.log('locale.value', locale.value);
+    await setLocale(locale.value)
+  } else {
+    const _locale = await localforage.getItem("locale");
+    if (_locale) {
+      locale.value = _locale;
+    }
   }
 };
 onBeforeMount(() => {
