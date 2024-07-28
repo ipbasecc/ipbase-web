@@ -11,14 +11,23 @@
             square
             filled
             type="text"
-            label="频道名称"
-            aria-placeholder="频道名称"
+            :label="$t('channel_name')"
+            :aria-placeholder="$t('channel_name')"
             @keyup.enter="createChannelFn()"
           >
             <template v-slot:prepend>
                 <q-icon :name="findIconByType(createChannelparams.data.type)" size="sm" />
             </template>
           </q-input>
+          <q-input
+            v-model="createChannelparams.data.purpose"
+            square
+            filled
+            type="textarea"
+            :label="$t('channel_purpose')"
+            :aria-placeholder="$t('channel_purpose')"
+            @keyup.enter="createChannelFn()"
+          />
           <div class="row no-wrap gap-md">
             <q-radio
                 v-for="i in CHANNEL_TYPES"
