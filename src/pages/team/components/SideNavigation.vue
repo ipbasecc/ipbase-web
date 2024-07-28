@@ -113,6 +113,16 @@
                 <span class="row flex-center">{{ i.name }}</span>
                 <UnreadBlock :mm_channel_id="i.mm_channel?.id" />
               </div>
+              <q-tooltip class="transparent radius-sm">
+                <q-card bordered>
+                  <q-card-section class="q-py-sm q-px-md">
+                    <div class="font-large">{{ i.name }}</div>
+                  </q-card-section>
+                  <q-card-section v-if="i.purpose" class="border-top font-medium q-py-sm q-px-md op-5">
+                    {{ i.purpose }}
+                  </q-card-section>
+                </q-card>
+              </q-tooltip>
             </q-item-section>
             <q-item-section
               side
@@ -133,35 +143,15 @@
                         : 'bg-white text-grey-10'
                     "
                   >
-                    <q-item class="no-padding radius-xs">
+                    <q-item
+                      clickable v-ripple v-close-popup
+                      class="radius-xs"
+                      @click="editChannel(i)">
+                      <q-item-section side>
+                        <q-icon name="tune" size=sm />
+                      </q-item-section>
                       <q-item-section>
-                        <q-input
-                          v-model="params.data.name"
-                          square
-                          dense
-                          filled
-                          type="text"
-                          class="full-width radius-xs overflow-hidden"
-                          :placeholder="i.name"
-                          @keyup.enter="updateChannelFn(i)"
-                        >
-                          <template
-                            v-if="
-                              params.data?.name !== i.name
-                            "
-                            v-slot:append
-                          >
-                            <q-btn
-                              flat
-                              dense
-                              round
-                              size="sm"
-                              icon="check"
-                              v-close-popup
-                              @click="updateChannelFn(i)"
-                            />
-                          </template>
-                        </q-input>
+                        {{ $t('edit_channel') }}
                       </q-item-section>
                     </q-item>
                     <q-separator spaced />
@@ -171,6 +161,9 @@
                       class="radius-xs"
                       @click="inviteFn(i)"
                     >
+                      <q-item-section side>
+                        <q-icon name="group_add" size=sm />
+                      </q-item-section>
                       <q-item-section>{{ $t('invite_member') }}</q-item-section>
                     </q-item>
                     <q-separator spaced />
@@ -180,6 +173,9 @@
                       class="radius-xs"
                       @click="deleteChannelFn(i)"
                     >
+                      <q-item-section side>
+                        <q-icon name="remove" size=sm />
+                      </q-item-section>
                       <q-item-section>{{ $t('remove_channel') }}</q-item-section>
                     </q-item>
                   </q-list>
@@ -377,6 +373,9 @@
     <q-dialog v-model="openCreateProject" persistent>
       <CreateProject @projectCreated="projectCreated" />
     </q-dialog>
+    <q-dialog v-model="openEditChannel" persistent>
+      <EditChannel :channel="editTarget" />
+    </q-dialog>
   </q-scroll-area>
 </template>
 
@@ -402,6 +401,7 @@ import { getProjectNav } from "./SideNavigation.js";
 import TeamInvite from "./widgets/TeamInvite.vue";
 import UnreadBlock from 'src/pages/team/components/widgets/UnreadBlock.vue'
 import CreateProject from "./CreateProject.vue";
+import EditChannel from "./EditChannel.vue";
 import { createChannel } from "src/pages/team/hooks/useCreateChannel.js";
 import { useQuasar } from "quasar";
 import {mm_wsStore, teamStore, uiStore} from 'src/hooks/global/useStore.js';
@@ -569,6 +569,13 @@ const enterChannel = async (channel) => {
   }
 };
 
+const openEditChannel = ref(false);
+const editTarget = ref();
+const editChannel = (channel) => {
+  editTarget.value = channel;
+  openEditChannel.value = true;
+};
+
 const projcetCover = (project) => {
   let url;
   if (project.overviews?.length > 0) {
@@ -607,7 +614,7 @@ const params = ref({
   },
 });
 const setChannelType = (val, channel) => {
-  console.log("setChannelType", val, channel);
+  // console.log("setChannelType", val, channel);
   params.value.data.type = val;
   params.value.data.name = channel.name;
   updateChannelFn(channel);
@@ -624,6 +631,7 @@ const updateChannelFn = async (channel) => {
 };
 
 const deleteChannelFn = async (i) => {
+  const curChannelId = route.params?.channel_id;
   const _mm_channel_id = i.mm_channel.id;
   if (!_mm_channel_id) return;
   const removeMmChannel = await deleteMmChannel(_mm_channel_id);
@@ -633,7 +641,9 @@ const deleteChannelFn = async (i) => {
       teamStore.team.team_channels = teamStore.team.team_channels.filter(
         (i) => i.id !== res.data.channel_id
       );
-      await router.push("/teams");
+      if(curChannelId === _mm_channel_id){
+        await router.push("/teams");
+      }
     }
   }
 };
