@@ -58,7 +58,7 @@
                 <q-tooltip
                   class="z-max"
                   :class="$q.dark.mode ? 'bg-black' : 'bg-white'"
-                  >用户中心</q-tooltip
+                  >{{ $t('user_center') }}</q-tooltip
                 >
               </q-item>
               <q-separator spaced class="op-3" />
@@ -75,7 +75,7 @@
                   <q-item-section side>
                     <q-icon :name="i.icon" size="24" :color="i.color" />
                   </q-item-section>
-                  <q-item-section>{{ i.name }}</q-item-section>
+                  <q-item-section>{{ $t(i.name) }}</q-item-section>
                 </q-item>
               </template>
               <template v-if="is_development">
@@ -89,7 +89,7 @@
                   <q-item-section side>
                     <q-icon name="contacts" />
                   </q-item-section>
-                  <q-item-section>我的频道</q-item-section>
+                  <q-item-section>{{ $t('my_channel')}}</q-item-section>
                 </q-item>
               </template>
               <q-separator spaced class="op-3" />
@@ -102,7 +102,7 @@
                 <q-item-section side>
                   <q-icon name="toggle_on" />
                 </q-item-section>
-                <q-item-section>个人设置</q-item-section>
+                <q-item-section>{{ $t('user_settings')}}</q-item-section>
               </q-item>
               <q-item
                 v-if="!confirmOut"
@@ -117,7 +117,7 @@
                     :color="confirmOut ? 'white' : ''"
                   />
                 </q-item-section>
-                <q-item-section>注销登录</q-item-section>
+                <q-item-section>{{ $t('logout')}}</q-item-section>
               </q-item>
               <q-item
                 v-else
@@ -132,7 +132,7 @@
                     :color="confirmOut ? 'white' : ''"
                   />
                 </q-item-section>
-                <q-item-section>确认注销</q-item-section>
+                <q-item-section>{{ $t('logout_confirm')}}</q-item-section>
               </q-item>
             </q-list>
           </q-card-section>
@@ -163,7 +163,7 @@
       unelevated
       padding="xs md"
       color="primary"
-      label="登陆"
+      :label="$t('login')"
       @click="$router.push('/login')"
     />
     <q-btn
@@ -171,7 +171,7 @@
       padding="xs md"
       class="q-ml-sm"
       color="primary"
-      label="注册"
+      :label="$t('regist')"
       @click="$router.push('/register')"
     />
   </template>
@@ -194,7 +194,7 @@
           <q-item-section side>
             <q-icon name="login" />
           </q-item-section>
-          <q-item-section>登陆</q-item-section>
+          <q-item-section>{{ $t('login') }}</q-item-section>
         </q-item>
         <q-item
           clickable
@@ -205,7 +205,7 @@
           <q-item-section side>
             <q-icon name="person_add" />
           </q-item-section>
-          <q-item-section>注册</q-item-section>
+          <q-item-section>{{ $t('regist') }}</q-item-section>
         </q-item>
       </q-list>
     </q-menu>
@@ -242,6 +242,9 @@ import {
   teamStore,
 } from "src/hooks/global/useStore.js";
 import {clearLocalDB} from "pages/team/hooks/useUser";
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   avatarSize: {
@@ -326,20 +329,20 @@ const is_development = ref(process.env.DEV);
 const statuses = ref([
   {
     status: "online",
-    name: "在线",
+    name: 'status_online',
     color: "positive",
     icon: "mdi-checkbox-marked-circle",
   },
-  { status: "away", name: "忙碌", color: "orange", icon: "schedule" },
+  { status: "away", name: 'status_away', color: "orange", icon: "schedule" },
   {
     status: "dnd",
-    name: "勿扰",
+    name: 'status_dnd',
     color: "deep-orange-9",
     icon: "mdi-minus-circle",
   },
   {
     status: "offline",
-    name: "离线",
+    name: 'status_offline',
     color: "grey",
     icon: "radio_button_unchecked",
   },

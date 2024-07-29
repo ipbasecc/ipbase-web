@@ -11,7 +11,7 @@
         <q-item-section side>
           <q-icon color="primary" name="archive" />
         </q-item-section>
-        <q-item-section class="q-pr-lg">归档项目</q-item-section>
+        <q-item-section class="q-pr-lg">{{ $t('archive_project') }}</q-item-section>
       </q-item>
       <q-item
         v-if="calc_auth('project', 'delete', 'project')"
@@ -23,7 +23,7 @@
         <q-item-section side>
           <q-icon color="primary" name="close" />
         </q-item-section>
-        <q-item-section class="q-pr-lg">删除项目</q-item-section>
+        <q-item-section class="q-pr-lg">{{ $t('delete_project') }}</q-item-section>
       </q-item>
     </q-list>
   </div>

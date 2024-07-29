@@ -6,8 +6,8 @@
       </q-avatar>
     </q-item-section>
     <q-item-section>
-      <q-item-label :class="classInfo.labelClass">易乎APP</q-item-label>
-      <q-item-label caption lines="2" :class="classInfo.captionClass">谈正事 用易乎APP</q-item-label>
+      <q-item-label :class="classInfo.labelClass">{{ $t('ipbase_brand') }}</q-item-label>
+      <q-item-label caption lines="2" :class="classInfo.captionClass">{{ $t('ipbase_brand_purpose') }}</q-item-label>
     </q-item-section>
   </q-item>
 </template>

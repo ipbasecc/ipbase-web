@@ -23,7 +23,7 @@
           stretch
         >
           <template v-for="i in classExtends" :key="i.id">
-            <q-tab :name="i.name" :icon="i.icon" :label="i.label" />
+            <q-tab :name="i.name" :icon="i.icon" :label="$t(i.label)" />
           </template>
         </q-tabs>
       </q-toolbar>
@@ -83,7 +83,7 @@
             </template>
           </q-splitter>
           <div v-else class="absolute-full flex flex-center op-3">
-            您无权查看此内容
+            {{ $t('no_premission_to_view') }}
           </div>
         </template>
         <template
@@ -184,16 +184,16 @@ const handleMouseMove = () => {
 
 const current_classExtend = ref("card_forum");
 const classExtends = ref([
-  { id: 0, label: "概览", name: "overview", icon: "mdi-developer-board" },
-  { id: 1, label: "讨论", name: "card_forum", icon: "forum" },
+  { id: 0, label: "overview", name: "overview", icon: "mdi-developer-board" },
+  { id: 1, label: "chat", name: "card_forum", icon: "forum" },
   {
     id: 2,
-    label: "待处理",
+    label: "todo",
     name: "card_note",
     icon: "mdi-checkbox-marked-outline",
   },
-  { id: 3, label: "文档", name: "card_documents", icon: "article" },
-  { id: 4, label: "文件", name: "card_storage", icon: "storage" },
+  { id: 3, label: "document", name: "card_documents", icon: "article" },
+  { id: 4, label: "file", name: "card_storage", icon: "storage" },
 ]);
 const splitterModel = ref(260);
 const limits = ref([160, 480]);

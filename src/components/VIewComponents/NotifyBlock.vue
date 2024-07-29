@@ -11,7 +11,7 @@
           <q-tooltip class="transparent">
             <q-card bordered>
               <q-card-section class="q-py-xs q-px-sm font-medium text-no-wrap">
-                未读：{{uiStore.unreads.team.msg_count}}
+                {{ $t('unread') }}: {{uiStore.unreads.team.msg_count}}
               </q-card-section>
             </q-card>
           </q-tooltip>

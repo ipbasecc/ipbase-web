@@ -30,6 +30,9 @@ import { useFetchAvatar } from "src/pages/Chat/hooks/useFetchAvatar.js";
 import UserAvatar from "src/pages/team/components/user/UserAvatar.vue";
 
 import { marked } from "marked";
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const props = defineProps({
   msg: {
@@ -54,7 +57,7 @@ calc_avatar();
 
 const avatar_size = ref(32);
 let _ =
-  (date.formatDate(msg.value.create_at, "DD") === "AM" && "上午") || "下午";
+  (date.formatDate(msg.value.create_at, "DD") === "AM" && $t('AM')) || $t('PM');
 let __ = date.formatDate(msg.value.create_at, "HH:mm");
 const time = computed(() => _ + __);
 </script>

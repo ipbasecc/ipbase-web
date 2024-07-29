@@ -6,9 +6,9 @@
   >
     <q-card-section class="row items-center border-bottom">
       <div class="column no-wrap gap-xs q-pr-md">
-        <span class="text-h6">{{ `共享此${target}` }}</span>
+        <span class="text-h6">{{ `${$t('share_this')}${target}` }}</span>
         <span v-if="user_shareCode" class="op-7">{{
-          `你已共享过该${target},您可以直接分享此连接，或修改共享`
+          `${$t('have_shared_this')}${target},${$t('can_share_or_edit')}`
         }}</span>
       </div>
       <q-space />
@@ -18,7 +18,7 @@
           dense
           flat
           padding="xs md"
-          label="返回"
+          :label="$t('back')"
           @click="showBeforeShare()"
         />
         <q-btn
@@ -27,7 +27,7 @@
           :flat="!waring"
           :color="waring ? 'deep-orange' : ''"
           padding="xs md"
-          label="修改"
+          :label="$t('motify')"
           @click="editeShare()"
         />
         <q-btn dense flat size="sm" icon="mdi-menu-down" class="border-left">
@@ -45,7 +45,7 @@
                 @click="deleteShare()"
               >
                 <q-item-section side><q-icon name="close" /></q-item-section>
-                <q-item-section>删除并创建新共享</q-item-section>
+                <q-item-section>{{ $t('delete_and_reshare') }}</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
@@ -53,18 +53,18 @@
       </q-btn-group>
     </q-card-section>
     <q-card-section v-if="waring" class="bg-deep-orange row">
-      该共享已失效，如有需要，请点击修改按钮更新共享连接
+      {{ $t('share_expired_reshare') }}
       <q-space />
       <q-btn flat dense size="sm" round icon="close" @click="waring = false" />
     </q-card-section>
     <q-card-section v-if="confirmRemove" class="bg-info row">
-      您并没有新建“共享”，旧“共享”将依然存在
+      {{ $t('new_share_cancel_old_still') }}
       <q-space />
       <q-btn
         flat
         dense
         icon="close"
-        label="知道了"
+        :label="$t('known_it')"
         @click="confirmRemoveFn()"
       />
     </q-card-section>
@@ -78,7 +78,7 @@
             v-model="share_code.code"
             outlined
             type="text"
-            label="分享码"
+            :label="$t('share_code')"
             :readonly="user_shareCode && !remove"
           >
             <template v-slot:append>
@@ -101,12 +101,10 @@
                   <q-card bordered class="q-pl-none q-py-xs q-pr-xs">
                     <q-card-section>
                       <ul class="font-medium">
-                        <li>{{ `您已经共享过此“${target}”了，不可以修改共享码` }}</li>
-                        <li>否则其它用户将不能使用其访问</li>
-                        <li>您可以删除此共享</li>
-                        <li>
-                          您可以在删除后重新共享，从而废弃旧共享，使用新共享
-                        </li>
+                        <li>{{ `${$t('have_shared_this')}“${target}” ${$t('cannot_modify_sharecode')}` }}</li>
+                        <li>{{ $t('or_others_cannot_visit') }}</li>
+                        <li>{{ $t('you_can_delete_this_share') }}</li>
+                        <li>{{ $t('you_can_recreate_share_after_delete') }}</li>
                       </ul>
                     </q-card-section>
                   </q-card>
@@ -119,15 +117,15 @@
             type="number"
             step="1"
             outlined
-            label="最大查看次数"
-            :rules="[val => val > 0 || '不能小于0']"
+            :label="$t('view_limit')"
+            :rules="[val => val > 0 || $t('view_limit_rule_tip')]"
             @input="checkInput(share_code.max_count)"
           />
           <q-input
             v-model="share_code.up_time"
             type="text"
             outlined
-            label="有效期"
+            :label="$t('date_limit')"
             mask="date"
           >
             <template v-slot:append>
@@ -158,7 +156,7 @@
         class="column gap-md q-px-xl q-pt-lg q-pb-xl border-top"
         :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-3'"
       >
-        <div class="font-medium">选择共享的功能模块</div>
+        <div class="font-medium">{{ $t('chose_share_moudle') }}</div>
         <div class="row gap-md">
           <q-checkbox v-for="i in share_code.props" :key="i.val" dense v-model="i.enable" :label="i.label" @update:model-value="setShareEnable(share_code.props)" />
         </div>
@@ -168,16 +166,16 @@
       <q-card-section class="row no-wrap justify-around" :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-3'">
         <q-list>
           <q-item>
-            <q-item-section side>提取码：</q-item-section>
+            <q-item-section side>{{ $t('share_code') }} ：</q-item-section>
             <q-item-section>{{user_shareCode?.code}}</q-item-section>
           </q-item>
           <q-item>
-            <q-item-section side>可用次数：</q-item-section>
+            <q-item-section side>{{ $t('available_times') }}：</q-item-section>
             <q-item-section>{{user_shareCode?.max_count}}</q-item-section>
           </q-item>
           <q-item>
-            <q-item-section side>过期时间：</q-item-section>
-            <q-item-section>{{user_shareCode?.up_time ? user_shareCode?.up_time : '永久 '}}</q-item-section>
+            <q-item-section side>{{ $t('expried_data') }}：</q-item-section>
+            <q-item-section>{{user_shareCode?.up_time ? user_shareCode?.up_time : $t('forever')}}</q-item-section>
           </q-item>
         </q-list>
         <qrcode-vue :value="share_url" :size="240" level="H" />
@@ -193,14 +191,14 @@
       </q-card-section>
     </template>
     <q-card-section class="row items-center q-pa-sm border-top">
-      <q-btn flat dense padding="xs md" label="返回" v-close-popup />
+      <q-btn flat dense padding="xs md" :label="$t('back')" v-close-popup />
       <q-space />
       <q-btn
         dense
         padding="xs md"
         color="primary"
         icon="check"
-        label="确认"
+        :label="$t('confirm')"
         :disable="!share_code.code || !userStore.userId || !isChanged"
         @click="createShare(share_code)"
       />
@@ -214,6 +212,9 @@ import QrcodeVue from "qrcode.vue";
 import {computed, onMounted, ref, toRefs, watch, watchEffect} from 'vue';
 import { randomKey } from "src/hooks/utilits.js";
 import { userStore } from "src/hooks/global/useStore.js";
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const props = defineProps({
   share_item: {
@@ -233,7 +234,7 @@ const { share_item, is, share_props } = toRefs(props);
 const target = ref();
 watchEffect(() => {
   if (is.value === "card") {
-    target.value = "卡片";
+    target.value = $t('card');
   }
 });
 const emit = defineEmits(["createShare"]);
@@ -305,10 +306,10 @@ const checkInput = (count) => {
 const copy_uri = (val) => {
   copyToClipboard(val)
     .then(() => {
-      $q.notify("邀请链接已复制到剪贴板");
+      $q.notify($t('url_copy_secuss'));
     })
     .catch(() => {
-      $q.notify("复制出错，请手动复制");
+      $q.notify($t('copy_error'));
     });
 };
 const waring = ref(false);

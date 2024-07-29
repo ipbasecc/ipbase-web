@@ -28,7 +28,7 @@
           @click="refresh()"
         >
           <q-tooltip>
-            刷新
+            {{ $t('refresh') }}
           </q-tooltip>
         </q-btn>
         <q-space />
@@ -38,7 +38,7 @@
             :key="i.val"
             dense
             padding="4px 10px"
-            :label="i.label"
+            :label="$t(i.label)"
             :icon="i.icon"
             :color="view_model === i.val ? 'primary' : ''"
             :class="
@@ -171,10 +171,10 @@ const route = useRoute();
 const router = useRouter();
 const view_models = ref()
 const all_view_models = [
-  { val: "kanban", label: "看板", icon: "view_kanban" },
-  { val: "segment", label: "镜头", icon: "mdi-film" },
-  { val: "list", label: "列表", icon: "format_list_bulleted" },
-  { val: "quadrant", label: "四象限", icon: "border_inner" },
+  { val: "kanban", label: "kanban", icon: "view_kanban" },
+  { val: "segment", label: "segment", icon: "mdi-film" },
+  { val: "list", label: "list", icon: "format_list_bulleted" },
+  { val: "quadrant", label: "quadrant", icon: "border_inner" },
 ];
 const conflicts = ["kanban", "segment"];
 const ex_conflicts = computed(() => conflicts.filter((i) => i !== teamStore?.navigation));

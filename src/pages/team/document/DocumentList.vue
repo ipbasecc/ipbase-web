@@ -80,7 +80,7 @@
                       <q-item-section side
                         ><q-icon name="delete"
                       /></q-item-section>
-                      <q-item-section>删除</q-item-section>
+                      <q-item-section>{{ $t('delete') }}</q-item-section>
                     </q-item>
                   </q-list>
                 </q-menu>
@@ -105,7 +105,7 @@
               <q-icon name="add" />
             </q-item-section>
             <q-item-section class="hover-show transition">
-              新建文档
+              {{ $t('create_document') }}
             </q-item-section>
           </q-item>
           <q-item v-else class="radius-xs border q-pa-xs">
@@ -117,7 +117,7 @@
                 autofocus
                 filled
                 type="text"
-                placeholder="文档名称"
+                :placeholder="$t('create_title')"
                 @keydown.esc="cancelCreate()"
                 @keyup.enter="create()"
               >
@@ -160,6 +160,10 @@ import {
 
 import {userStore, mm_wsStore, teamStore, uiStore} from 'src/hooks/global/useStore.js';
 
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
+
 const router = useRouter();
 const route = useRoute();
 const actived_id = ref();
@@ -192,10 +196,10 @@ onMounted(() => {
 
 const { documents, by_info } = toRefs(props);
 const types = ref([
-  { type: "document", tip: "文档", icon: "article" },
+  { type: "document", tip: "document", icon: "article" },
   { type: "pdf", tip: "PDF", icon: "picture_as_pdf" },
   { type: "office", tip: "Office...", icon: "text_snippet" },
-  { type: "video", tip: "视频", icon: "video_file" },
+  { type: "video", tip: "video", icon: "video_file" },
 ]);
 const findIcon_byType = (type) => {
   return types.value.find((i) => i.type === type)?.icon;
@@ -330,11 +334,11 @@ const update = async (document) => {
       },
     };
     if (by_info.value?.by === "project") {
-      chat_Msg.body = `${userStore.me.username}：修改了项目文档 - ${document.id}`;
+      chat_Msg.body = `${userStore.me.username}：${$t('changed_project_document')} - ${document.id}`;
       chat_Msg.props.strapi.data.project_id = teamStore.project?.id;
     }
     if (by_info.value?.by === "card") {
-      chat_Msg.body = `${userStore.me.username}：修改了任务文档 - ${document.id}`;
+      chat_Msg.body = `${userStore.me.username}：${$t('changed_task_document')} - ${document.id}`;
       chat_Msg.props.strapi.data.card_id = teamStore.card?.id;
     }
     if (by_info.value?.by === "user") {
@@ -381,11 +385,11 @@ const remove = async (i) => {
       },
     };
     if (by_info.value?.by === "project") {
-      chat_Msg.body = `${userStore.me.username}：删除了项目文档 - ${document.title}`;
+      chat_Msg.body = `${userStore.me.username}：${$t('deleted_project_document')} - ${document.title}`;
       chat_Msg.props.strapi.data.project_id = teamStore.project?.id;
     }
     if (by_info.value?.by === "card") {
-      chat_Msg.body = `${userStore.me.username}：删除了任务文档 - ${document.title}`;
+      chat_Msg.body = `${userStore.me.username}：${$t('deleted_task_document')} - ${document.title}`;
       chat_Msg.props.strapi.data.card_id = teamStore.card?.id;
     }
     if (by_info.value?.by === "user") {
@@ -445,11 +449,11 @@ const orderDocuments = async (documents) => {
         },
       };
       if (by_info.value?.by === "project") {
-        chat_Msg.body = `${userStore.me.username}：对项目文档进行了排序`;
+        chat_Msg.body = `${userStore.me.username}：${$t('sorted_project_document')}`;
         chat_Msg.props.strapi.data.project_id = teamStore.project?.id;
       }
       if (by_info.value?.by === "card") {
-        chat_Msg.body = `${userStore.me.username}：对任务文档进行了排序`;
+        chat_Msg.body = `${userStore.me.username}：${$t('sorted_task_document')}`;
         chat_Msg.props.strapi.data.card_id = teamStore.card?.id;
       }
       if (by_info.value?.by === "user") {

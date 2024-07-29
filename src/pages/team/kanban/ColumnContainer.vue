@@ -46,7 +46,7 @@
                     <q-input
                       v-model="params.data.name"
                       type="text"
-                      placeholder="分栏名称"
+                      :placeholder="$t('column_name')"
                       dense
                       square
                       filled
@@ -72,7 +72,7 @@
                 <q-separator spaced />
               </template>
               <q-item class="radius-xs" clickable>
-                <q-item-section>默认新建：</q-item-section>
+                <q-item-section>{{ $t('default_create') }}：</q-item-section>
                 <q-item-section side>
                   <q-icon name="keyboard_arrow_right" />
                 </q-item-section>
@@ -94,7 +94,7 @@
                       /></q-item-section>
                       <q-item-section
                         ><span class="q-pr-md">{{
-                          i.label
+                          $t(i.label)
                         }}</span></q-item-section
                       >
                     </q-item>
@@ -102,7 +102,7 @@
                 </q-menu>
               </q-item>
               <q-item class="radius-xs" clickable>
-                <q-item-section>显示设置：</q-item-section>
+                <q-item-section>{{$t('display_settings')}}：</q-item-section>
                 <q-item-section side>
                   <q-icon name="keyboard_arrow_right" />
                 </q-item-section>
@@ -138,7 +138,7 @@
                   class="radius-xs"
                   @click="deleteColumnFn()"
                 >
-                  <q-item-section>删除分栏</q-item-section>
+                  <q-item-section>{{$t('delete_column')}}</q-item-section>
                 </q-item>
               </template>
             </q-list>
@@ -188,7 +188,7 @@
                     :name="i.icon"
                     :color="DefaultCreateCardType === i.val ? 'orange' : ''"
                 /></q-item-section>
-                <q-item-section class="q-pr-md">{{ i.label }}</q-item-section>
+                <q-item-section class="q-pr-md">{{ $t(i.label) }}</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
@@ -263,7 +263,7 @@
           <q-popup-proxy context-menu class="radius-sm shadow-12">
             <q-list bordered dense class="q-pa-xs radius-sm">
               <q-item clickable v-ripple class="radius-xs">
-                <q-item-section>新建卡片</q-item-section>
+                <q-item-section>{{ $t('create_card') }}</q-item-section>
                 <q-item-section side>
                   <q-icon name="keyboard_arrow_right" />
                 </q-item-section>
@@ -286,14 +286,14 @@
                           "
                       /></q-item-section>
                       <q-item-section class="q-pr-md">{{
-                        i.label
+                        $t(i.label)
                       }}</q-item-section>
                     </q-item>
                   </q-list>
                 </q-menu>
               </q-item>
               <q-item class="radius-xs" clickable>
-                <q-item-section>显示设置：</q-item-section>
+                <q-item-section>{{ $t('display_settings') }}：</q-item-section>
                 <q-item-section side>
                   <q-icon name="keyboard_arrow_right" />
                 </q-item-section>
@@ -410,7 +410,7 @@
                     :color="DefaultCreateCardType === i.val ? 'orange' : ''"
                 /></q-item-section>
                 <q-item-section class="q-pr-md text-no-wrap">{{
-                  i.label
+                  $t(i.label)
                 }}</q-item-section>
               </q-item>
             </q-list>
@@ -443,7 +443,7 @@
                     <q-input
                       v-model="params.data.name"
                       type="text"
-                      placeholder="分栏名称"
+                      :placeholder="$t('column_name')"
                       dense
                       square
                       filled
@@ -477,7 +477,7 @@
                   class="radius-xs"
                   @click="deleteColumnFn()"
                 >
-                  <q-item-section>删除分栏</q-item-section>
+                  <q-item-section>{{$t('delete_column')}}</q-item-section>
                 </q-item>
               </template>
             </q-list>
@@ -488,15 +488,15 @@
         <thead class="table-view">
           <tr>
             <th v-if="!teamStore.shareInfo" class="text-left dragBar"></th>
-            <th class="text-left status">状态</th>
-            <th class="text-left thumbnial">预览图</th>
-            <th class="text-left name">名称</th>
-            <th class="text-left content">内容</th>
-            <th class="text-left todos">清单</th>
-            <th class="text-left score">分值</th>
-            <th class="text-left progress">进度</th>
-            <th v-if="!teamStore.shareInfo" class="text-left follow">关注者</th>
-            <th v-if="!teamStore.shareInfo" class="text-left more">操作</th>
+            <th class="text-left status">{{$t('status')}}</th>
+            <th class="text-left thumbnial">{{$t('thumbnial')}}</th>
+            <th class="text-left name">{{$t('title')}}</th>
+            <th class="text-left content">{{$t('content')}}</th>
+            <th class="text-left todos">{{$t('todo')}}</th>
+            <th class="text-left score">{{$t('score')}}</th>
+            <th class="text-left progress">{{$t('progress')}}</th>
+            <th v-if="!teamStore.shareInfo" class="text-left follow">{{$t('follower')}}</th>
+            <th v-if="!teamStore.shareInfo" class="text-left more">{{$t('more_actions')}}</th>
           </tr>
         </thead>
         <draggable
@@ -590,6 +590,9 @@ import {
   uiStore,
 } from "src/hooks/global/useStore.js";
 import { useMagicKeys } from "@vueuse/core";
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const $q = useQuasar();
 const props = defineProps({
@@ -685,10 +688,10 @@ const deleteColumnFn = () => {
   };
   if (columnRef.value.cards.length > 0) {
     $q.dialog({
-      title: "注意！",
-      message: "分栏内包含有卡片，如果删除分栏，卡片也会被清理，是否继续？",
-      cancel: "取消",
-      ok: "确定",
+      title: $t('attention'),
+      message: $t('delete_column_include_cards_tip'),
+      cancel: $t('cancel'),
+      ok: $t('confirm'),
       class: "shadow-24",
     }).onOk(() => {
       deleteFn();
@@ -844,9 +847,9 @@ const getDefaultCreateCardType = async () => {
 };
 getDefaultCreateCardType();
 const cardTypes = ref([
-  { val: "task", label: "任务", icon: "task_alt" },
-  { val: "note", label: "笔记", icon: "event_note" },
-  { val: "todo", label: "待办", icon: "checklist" },
+  { val: "task", label: "task", icon: "task_alt" },
+  { val: "note", label: "note", icon: "event_note" },
+  { val: "todo", label: "todo", icon: "checklist" },
 ]);
 const setDefaultCreateCardType = async (val) => {
   try {
@@ -990,7 +993,7 @@ watch(
               // 如果当前用户正在弹框内查看该卡片详情，关闭并发出提醒
               if (teamStore.card.id === strapi.data.card_id) {
                 teamStore.card = null;
-                $q.notify("该卡片已被设置为私有，只有卡片成员可查看其内容");
+                $q.notify($t('cant_view_private_card_tip'));
               }
             }
           }
@@ -1033,7 +1036,7 @@ watch(
 const uiOptions = ref([
   {
     val: "hidecompletedTodo",
-    label: "隐藏已完成待办",
+    label: $t('hide_completed_todo'),
     enable: true,
     icon: "mdi-checkbox-marked-circle",
   },

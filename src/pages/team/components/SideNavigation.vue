@@ -405,6 +405,9 @@ import EditChannel from "./EditChannel.vue";
 import { createChannel } from "src/pages/team/hooks/useCreateChannel.js";
 import { useQuasar } from "quasar";
 import {mm_wsStore, teamStore, uiStore} from 'src/hooks/global/useStore.js';
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const $q = useQuasar();
 const router = useRouter();
@@ -511,7 +514,7 @@ watch(
 );
 const enterProject = async (project) => {
   if (project?.auth && !project?.auth?.read) {
-    $q.notify("您尚未正式加入该项目、或您已被该项目管理员屏蔽");
+    $q.notify($t('project_not_join_or_was_blocked'));
     return;
   }
   if (
@@ -549,7 +552,7 @@ const deEnter = ref(false);
 const enterChannel = async (channel) => {
   if (deEnter.value) return;
   if (channel?.auth && !channel?.auth?.read) {
-    $q.notify("您尚未正式加入该频道、或您已被该频道管理员屏蔽");
+    $q.notify($t('channel_not_join_or_was_blocked'));
     return;
   }
   teamStore.project = void 0;

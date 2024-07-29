@@ -35,7 +35,7 @@
             anchor="top middle"
             self="bottom middle"
           >
-            双击改名
+            {{ $t('doubel_click_rename') }}
           </q-tooltip>
         </span>
         <q-icon
@@ -101,7 +101,7 @@ const updateNameFn = async () => {
       if (res?.data) {
         // console.log(res);
         let chat_Msg = {
-          body: `${userStore.me.username}将项目名称修改为：${res.data.name}`,
+          body: `${userStore.me.username} ${$t('chang_project_title_to')} ${res.data.name}`,
           props: {
             strapi: {
               data: {
@@ -125,7 +125,7 @@ const updateNameFn = async () => {
     if (res) {
       change_ing.value = false;
       let chat_Msg = {
-        body: `${userStore.me.username}将卡片名称修改为：${res.data.name}`,
+        body: `${userStore.me.username} ${$t('chang_project_title_to')} ${res.data.name}`,
         props: {
           strapi: {
             data: {

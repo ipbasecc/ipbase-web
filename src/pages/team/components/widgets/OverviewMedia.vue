@@ -68,7 +68,7 @@
                 @click="media_change_ing = true"
               >
                 <q-item-section side><q-icon name="upload" /></q-item-section>
-                <q-item-section class="text-no-wrap">修改概览图</q-item-section>
+                <q-item-section class="text-no-wrap">{{ $t('change_overview_preview') }}</q-item-section>
               </q-item>
               <q-separator spaced />
               <q-item
@@ -78,7 +78,7 @@
                 @click="updateVersionFn(null)"
               >
                 <q-item-section side><q-icon name="remove" /></q-item-section>
-                <q-item-section class="text-no-wrap">移除概览图</q-item-section>
+                <q-item-section class="text-no-wrap">{{ $t('remove_overview_preview') }}</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
@@ -112,7 +112,7 @@
               flat
               dense
               padding="xs md"
-              label="取消"
+              :label="$t('cancel')"
               @click="media_change_ing = false"
             />
             <q-space />
@@ -129,6 +129,9 @@ import StrapiUpload from "src/components/Utilits/StrapiUpload.vue";
 import Artplayer from "src/components/VIewComponents/ArtPlayer.vue";
 import filetype from "src/hooks/global/filetype.js";
 import { teamStore, uiStore } from "src/hooks/global/useStore.js";
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const props = defineProps({
   current_version: {
@@ -155,7 +158,7 @@ const current_versionRef = toRef(props, "current_version");
 const isShared = computed(() => uiStore.isShared)
 const authBase = inject("authBase");
 const upload_label = computed(() =>
-  teamStore.card?.type === "classroom" ? "课程文件" : "预览文件"
+  teamStore.card?.type === "classroom" ? $t('classroom_file') : $t('preview_file')
 );
 
 const media_change_ing = ref(false);

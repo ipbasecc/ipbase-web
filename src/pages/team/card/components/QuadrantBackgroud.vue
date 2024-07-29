@@ -10,7 +10,7 @@
           square
           dense
           color="black"
-          label="重要 · 不紧急"
+          :label="$t('quadranta')"
           class="absolute-bottom-right text-md line-height-md"
           :class="
             $q.dark.mode ? 'bg-grey-10 text-grey-1' : 'bg-grey-1 text-grey-10'
@@ -25,7 +25,7 @@
           square
           dense
           color="black"
-          label="重要 · 紧急"
+          :label="$t('quadrantb')"
           class="absolute-bottom-left text-md line-height-md"
           :class="
             $q.dark.mode ? 'bg-grey-10 text-grey-1' : 'bg-grey-1 text-grey-10'
@@ -42,7 +42,7 @@
           square
           dense
           color="black"
-          label="不重要 · 不紧急"
+          :label="$t('quadrantc')"
           class="absolute-top-right text-md line-height-md"
           :class="
             $q.dark.mode ? 'bg-grey-10 text-grey-1' : 'bg-grey-1 text-grey-10'
@@ -57,7 +57,7 @@
           square
           dense
           color="black"
-          label="不重要 · 紧急"
+          :label="$t('quadrantd')"
           class="absolute-top-left text-md line-height-md"
           :class="
             $q.dark.mode ? 'bg-grey-10 text-grey-1' : 'bg-grey-1 text-grey-10'

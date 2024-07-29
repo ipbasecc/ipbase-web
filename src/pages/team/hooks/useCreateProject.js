@@ -2,13 +2,16 @@ import { createProject } from "src/api/strapi/project.js";
 import { createChannel } from "src/api/mattermost.js";
 
 import { Notify, uid } from "quasar";
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 export async function createProjectFn(_params) {
   let create_res;
   let params = _params;
   const mm_team_id = _params.by_team?.mm_team?.id;
   if (!mm_team_id) {
-    console.log("没有对应的Mattermost团队！");
+    // console.log("没有对应的Mattermost团队！");
     return;
   }
 
@@ -29,6 +32,6 @@ export async function createProjectFn(_params) {
       return create_res;
     }
   } else {
-    Notify.create("创建通讯频道失败，请刷新页面后重试");
+    Notify.create($t('create_chat_channel_fiald_try_refresh'));
   }
 }

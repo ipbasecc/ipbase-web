@@ -136,7 +136,7 @@
             : ''
         "
       >
-        分值：{{ cardRef.score }}
+        {{ $t('score') }}：{{ cardRef.score }}
         <q-popup-proxy
           cover
           v-if="calc_auth('card', 'score', 'project') || isCreator"
@@ -178,7 +178,7 @@
         >
           <template #tooltip>
             <q-tooltip :class="$q.dark.mode ? 'bg-black' : 'bg-white'">
-              关注了此卡片
+              {{ $t('followed_card') }}
             </q-tooltip>
           </template>
         </overlappingAvatar>
@@ -196,7 +196,7 @@
           @click="followCard(cardRef)"
         >
           <q-tooltip :class="$q.dark.mode ? 'bg-black' : 'bg-white'">
-            关注此卡片
+            {{ $t('followed_card') }}
           </q-tooltip>
         </q-btn>
       </div>
@@ -242,7 +242,7 @@
                       "
                     >
                       <q-tooltip>
-                        <span class="font-medium">任务详情</span>
+                        <span class="font-medium">{{ $t('task_detial') }}</span>
                       </q-tooltip>
                     </q-btn>
                     <q-btn
@@ -257,7 +257,7 @@
                       @click="name_changing = true"
                     >
                       <q-tooltip>
-                        <span class="font-medium">命名卡片</span>
+                        <span class="font-medium">{{ $t('rename_card') }}</span>
                       </q-tooltip>
                     </q-btn>
                   </div>
@@ -308,7 +308,7 @@
               class="radius-xs"
               clickable
             >
-              <q-item-section>修改为：</q-item-section>
+              <q-item-section>{{ $t('change_to') }}：</q-item-section>
               <q-item-section side>
                 <q-icon name="keyboard_arrow_right" />
               </q-item-section>
@@ -344,7 +344,7 @@
               class="radius-xs"
               clickable
             >
-              <q-item-section>状态：</q-item-section>
+              <q-item-section>{{ $t('status') }}：</q-item-section>
               <q-item-section side>
                 <q-icon name="keyboard_arrow_right" />
               </q-item-section>
@@ -366,7 +366,7 @@
                 v-close-popup
                 @click="removeCard(cardRef, belong_card)"
               >
-                <q-item-section>删除卡片</q-item-section>
+                <q-item-section>{{ $t('delete_card') }}</q-item-section>
               </q-item>
             </template>
           </q-list>
@@ -415,7 +415,7 @@
                   "
                 >
                   <q-tooltip>
-                    <span class="font-medium">任务详情</span>
+                    <span class="font-medium">{{ $t('task_detial') }}</span>
                   </q-tooltip>
                 </q-btn>
                 <q-btn
@@ -430,7 +430,7 @@
                   @click="name_changing = true"
                 >
                   <q-tooltip>
-                    <span class="font-medium">命名卡片</span>
+                    <span class="font-medium">{{ $t('rename_card') }}</span>
                   </q-tooltip>
                 </q-btn>
               </div>
@@ -481,7 +481,7 @@
           class="radius-xs"
           clickable
         >
-          <q-item-section>修改为：</q-item-section>
+          <q-item-section>{{ $t('change_to') }}：</q-item-section>
           <q-item-section side>
             <q-icon name="keyboard_arrow_right" />
           </q-item-section>
@@ -500,7 +500,7 @@
                   ><q-icon :name="i.icon" size="xs"
                 /></q-item-section>
                 <q-item-section
-                  ><span class="q-pr-md">{{ i.label }}</span></q-item-section
+                  ><span class="q-pr-md">{{ $t(i.label) }}</span></q-item-section
                 >
               </q-item>
             </q-list>
@@ -515,7 +515,7 @@
           class="radius-xs"
           clickable
         >
-          <q-item-section>状态：</q-item-section>
+          <q-item-section>{{ $t('status') }}：</q-item-section>
           <q-item-section side>
             <q-icon name="keyboard_arrow_right" />
           </q-item-section>
@@ -535,7 +535,7 @@
             v-close-popup
             @click="removeCard(cardRef, belong_card)"
           >
-            <q-item-section>删除卡片</q-item-section>
+            <q-item-section>{{ $t('delete_card') }}</q-item-section>
           </q-item>
         </template>
       </q-list>
@@ -808,9 +808,9 @@ const _enterCard = async (auth) => {
   }
 };
 const cardTypes = ref([
-  { val: "task", label: "任务", icon: "task_alt" },
-  { val: "note", label: "笔记", icon: "event_note" },
-  { val: "todo", label: "待办", icon: "checklist" },
+  { val: "task", label: "task", icon: "task_alt" },
+  { val: "note", label: "note", icon: "event_note" },
+  { val: "todo", label: "todo", icon: "checklist" },
 ]);
 
 const colorMarks = [

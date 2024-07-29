@@ -11,7 +11,7 @@
           @click="inviteFn(teamStore.project)"
         >
           <q-icon name="group_add" size="xs" />
-          <span class="q-ml-md">邀请</span>
+          <span class="q-ml-md">{{ $t('invite') }}</span>
         </q-btn>
         <q-dialog v-model="open_invite" persistent>
           <TeamInvite :byInfo />
@@ -20,7 +20,7 @@
           v-if="!calc_auth(authBase.collection, 'invite_uris', authBase.of)"
           class="bg-black font-smaller"
         >
-          您没有邀请成员的权限
+          {{ $t('no_premission_to_invite') }}
         </q-tooltip>
       </div>
       <div class="q-space relative-position">
@@ -100,7 +100,7 @@
                           class="radius-xs text-no-wrap"
                           @click="removeUserFn(i)"
                         >
-                          <q-item-section>移除用户</q-item-section>
+                          <q-item-section>{{ $t('remove_member') }}</q-item-section>
                         </q-item>
                       </q-list>
                     </q-menu>
@@ -113,7 +113,7 @@
         <slot v-else name="tip"></slot>
       </div>
     </template>
-    <div v-else>无法获取您的权限，该功能对您临时禁用</div>
+    <div v-else>{{ $t('no_premission_to_view') }}</div>
   </div>
 </template>
 

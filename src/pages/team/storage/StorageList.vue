@@ -54,7 +54,7 @@
                   <q-item-section side>
                     <q-icon name="edit" />
                   </q-item-section>
-                  <q-item-section class="q-pr-md">重命名</q-item-section>
+                  <q-item-section class="q-pr-md">{{ $t('rename') }}</q-item-section>
                 </q-item>
                 <q-item
                   clickable
@@ -66,7 +66,7 @@
                   <q-item-section side>
                     <q-icon name="close" />
                   </q-item-section>
-                  <q-item-section class="q-pr-md">删除</q-item-section>
+                  <q-item-section class="q-pr-md">{{ $t('delete') }}</q-item-section>
                 </q-item>
               </q-list>
             </q-menu>
@@ -84,7 +84,7 @@
               <q-item-section side>
                 <q-icon name="edit" />
               </q-item-section>
-              <q-item-section class="q-pr-md">重命名</q-item-section>
+              <q-item-section class="q-pr-md">{{ $t('rename') }}</q-item-section>
             </q-item>
             <q-item
               clickable
@@ -96,7 +96,7 @@
               <q-item-section side>
                 <q-icon name="close" />
               </q-item-section>
-              <q-item-section class="q-pr-md">删除</q-item-section>
+              <q-item-section class="q-pr-md">{{ $t('delete') }}</q-item-section>
             </q-item>
           </q-list>
         </q-popup-proxy>
@@ -116,7 +116,7 @@
           <q-icon name="add" />
         </q-item-section>
         <q-item-section class="hover-show transition">
-          新建存储
+          {{ $t('create_storage') }}
         </q-item-section>
         <q-menu class="radius-sm" anchor="bottom end" self="top end">
           <q-list dense bordered class="radius-sm q-pa-xs">
@@ -129,7 +129,7 @@
               <q-item-section side
                 ><q-icon name="mdi-server-network" size="sm"
               /></q-item-section>
-              <q-item-section class="text-no-wrap">默认存储</q-item-section>
+              <q-item-section class="text-no-wrap">{{ $t('default_storage') }}</q-item-section>
             </q-item>
             <q-separator spaced />
             <q-item
@@ -160,7 +160,7 @@
             @keyup.enter.prevent="createFn()"
             filled
             type="text"
-            placeholder="存储名称"
+            :placeholder="$t('storage_name')"
           >
             <template v-slot:prepend>
               <q-item-section side>
@@ -186,7 +186,7 @@
       <q-card>
         <q-toolbar class="border-bottom">
           <q-toolbar-title class="q-pr-xl">
-            填写 Azure Blob 资料
+            {{ $t('fill_azure_info') }}
           </q-toolbar-title>
           <q-btn
             flat
@@ -205,7 +205,7 @@
             filled
             dense
             type="text"
-            label="存储名称"
+            :label="$t('storage_name')"
           />
           <q-separator spaced />
           <q-input
@@ -262,13 +262,13 @@
           <q-btn
             color="primary"
             padding="xs md"
-            label="确认"
+            :label="$t('confirm')"
             @click="createFn(azureInfo)"
           />
         </q-card-section>
         <template v-if="loading">
           <div class="absolute-full bg-black op-5"></div>
-          <div class="absolute-full bg-black column flex-center">请稍候...</div>
+          <div class="absolute-full bg-black column flex-center">{{ $t('please_wait') }}</div>
         </template>
       </q-card>
     </q-dialog>

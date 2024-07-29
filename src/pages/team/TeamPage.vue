@@ -57,8 +57,8 @@
         />
         <div v-else class="absolute-full column flex-center">
           <div class="col-4 column flex-center">
-            <span class="op-5">进入相应功能</span>
-            <span class="text-orange">请点击右侧导航内容</span>
+            <span class="op-5">{{ $t('enter_functions') }}</span>
+            <span class="text-orange">{{ $t('click_right_navigation') }}</span>
           </div>
           <q-space />
         </div>

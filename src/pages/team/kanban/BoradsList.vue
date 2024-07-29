@@ -111,7 +111,7 @@
                           <q-item-section side
                             ><q-icon name="remove"
                           /></q-item-section>
-                          <q-item-section>移除此分组</q-item-section>
+                          <q-item-section>{{ $t('remove_this_group')}}</q-item-section>
                         </q-item>
                       </template>
                     </q-list>
@@ -162,7 +162,7 @@
                         class="undrag cursor-pointer"
                       ></q-icon>
                       <span class="hover-show transition cursor-pointer"
-                        >新看板</span
+                        >{{ $t('new_kanban')}}</span
                       >
                     </div>
                   </div>
@@ -177,7 +177,7 @@
                       dense
                       autofocus
                       type="text"
-                      placeholder="看板名称"
+                      :placeholder="$t('kanban_name')"
                       @keyup.esc="addKanban_targetId = null"
                       @keyup.enter="
                         kanbanCreateFn(element.id, createKanba_type)
@@ -212,7 +212,7 @@
           filled
           autofocus
           type="text"
-          placeholder="新分组名称"
+          :placeholder="$t('new_group_name')"
           class="q-pa-xs border radius-xs"
           @keyup.enter="createGroupFn()"
           @keyup.ctrl.enter="createGroupFn()"
@@ -238,9 +238,9 @@
           {{
             useAuths('read', ['group'], members, roles)
               ? isEmpty
-                ? "请点击上方按钮新建"
-                : "请点击下方按钮新建分组"
-              : "您没有查看此处内容的权限"
+                ? $t('click_btn_above')
+                : $t('click_btn_bellow')
+              : $t('no_premission_to_view')
           }}
         </span>
       </div>
@@ -262,12 +262,12 @@
           :name="createGroup_ing ? 'arrow_back_ios_new' : 'add'"
         />
         <span v-if="teamStore.board?.groups?.length === 0">{{
-          createGroup_ing ? "新建分组" : "取消"
+          createGroup_ing ? $t('new_group') : $t('cancel')
         }}</span>
       </q-btn>
     </template>
     <div v-else class="q-space flex flex-center">
-      <span class="op-5">您没有查看此处内容的权限</span>
+      <span class="op-5">{{$t('no_premission_to_view')}}</span>
     </div>
   </q-list>
 </template>
@@ -297,6 +297,10 @@ import { deleteKanbanCache } from "src/hooks/project/useProcess.js";
 
 import { useQuasar } from "quasar";
 import {teamStore, mm_wsStore, userStore, uiStore} from 'src/hooks/global/useStore.js';
+
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const router = useRouter();
 const route = useRoute();
@@ -344,7 +348,7 @@ const groupOrderFn = async () => {
   let res = await groupOrder(teamStore.project.id, teamStore.board.id, params);
   if (res) {
     let chat_Msg = {
-      body: `${userStore.me.username}调整了看板分组的排序`,
+      body: `${userStore.me.username}${$t('sort_kanban')}`,
       props: {
         strapi: {
           data: {
@@ -412,7 +416,7 @@ const updateGroupFn = async (group_id, element, action) => {
 };
 const groupDeleteFn = async (element) => {
   if (element.kanbans?.length > 0) {
-    $q.notify("不能删除包含看板的分组");
+    $q.notify($t('cant_delete_include_kanban'));
     return;
   }
   let res = await groupDelete(

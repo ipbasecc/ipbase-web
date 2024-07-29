@@ -101,7 +101,7 @@
               >
                 <template v-if="teamStore.cards.length > 1">
                   <q-tooltip class="no-padding">
-                    <q-card bordered class="q-pa-sm"> 双击关闭 </q-card>
+                    <q-card bordered class="q-pa-sm"> {{ $t('double_click_to_close') }} </q-card>
                   </q-tooltip>
                   <q-popup-proxy context-menu class="radius-sm">
                     <q-list bordered dense class="q-pa-xs radius-sm">
@@ -114,7 +114,7 @@
                         <q-item-section side
                         ><q-icon name="close" size="sm"
                         /></q-item-section>
-                        <q-item-section>关闭</q-item-section>
+                        <q-item-section>{{ $t('close') }}</q-item-section>
                       </q-item>
                     </q-list>
                   </q-popup-proxy>
@@ -190,9 +190,9 @@
           style="height: 2.3rem"
         >
           <q-tabs v-model="side_pannel" inline-label dense stretch shrind>
-            <q-tab name="overview" label="概览" />
-            <q-tab v-if="teamStore.card.mm_thread" name="chat" label="讨论" />
-            <q-tab v-if="teamStore.card.feedback" name="feedback" label="反馈" />
+            <q-tab name="overview" :label="$t('overview')" />
+            <q-tab v-if="teamStore.card.mm_thread" name="chat" :label="$t('overview')" />
+            <q-tab v-if="teamStore.card.feedback" name="feedback" :label="$t('feedback')" />
           </q-tabs>
           <q-space />
         </div>
@@ -258,7 +258,7 @@
               <div class="col-4 flex flex-center">
                 <q-card flat bordered>
                   <q-card-section class="q-px-lg q-py-sm">
-                    指定成员:
+                    {{ $t('assign_member') }}:
                     <q-btn
                         flat
                         dense
@@ -312,7 +312,7 @@
               :kanban_id="teamStore.card?.card_kanban?.id"
             />
             <div v-else class="absolute-full flex flex-center op-3">
-              您无权查看此内容
+              {{ $t('no_premission_to_view') }}
             </div>
           </template>
           <TodoPage
@@ -357,7 +357,7 @@
               </template>
             </q-splitter>
             <div v-else class="absolute-full flex flex-center op-3">
-              您无权查看此内容
+              {{ $t('no_premission_to_view') }}
             </div>
           </template>
           <template
@@ -392,7 +392,7 @@
           v-for="i in card_models"
           :key="i.id"
           :name="i.relation"
-          :label="i.name"
+          :label="$t(i.name)"
           class="q-px-xs"
         />
       </q-tabs>
@@ -438,7 +438,7 @@
               :hiddenToolbar="true"
           />
           <div v-else class="absolute-full flex flex-center op-3">
-            您无权查看此内容
+            {{ $t('no_premission_to_view') }}
           </div>
         </q-tab-panel>
         <q-tab-panel name="card_todo" class="no-padding">
@@ -471,7 +471,7 @@
             </q-scroll-area>
           </template>
           <div v-else class="absolute-full flex flex-center op-3">
-            您无权查看此内容
+            {{ $t('no_premission_to_view') }}
           </div>
         </q-tab-panel>
         <q-tab-panel name="card_storage" class="no-padding">
@@ -728,21 +728,21 @@ onBeforeMount(async () => {
 });
 
 const card_models = ref([
-  { id: 1, name: "任务", relation: "card_kanban", icon: "view_kanban" },
-  { id: 2, name: "待办", relation: "card_todo", icon: "task_alt" },
-  { id: 3, name: "文档", relation: "card_documents", icon: "article" },
-  { id: 4, name: "文件", relation: "card_storage", icon: "storage" },
-  { id: 5, name: "规划", relation: "card_schedule", icon: "schedule" },
+  { id: 1, name: "task", relation: "card_kanban", icon: "view_kanban" },
+  { id: 2, name: "todo", relation: "card_todo", icon: "task_alt" },
+  { id: 3, name: "document", relation: "card_documents", icon: "article" },
+  { id: 4, name: "file", relation: "card_storage", icon: "storage" },
+  { id: 5, name: "schedule", relation: "card_schedule", icon: "schedule" },
 ]);
 const $q = useQuasar();
 onBeforeMount(() => {
   if(!$q.screen.gt.sm){
     const _attach = [
-      { id: 10, name: "概览", relation: "card_overview", icon: "view_kanban" },
-      { id: 11, name: "讨论", relation: "card_chat", icon: "view_kanban" }
+      { id: 10, name: "overview", relation: "card_overview", icon: "view_kanban" },
+      { id: 11, name: "chat", relation: "card_chat", icon: "view_kanban" }
     ]
     if(teamStore.card?.feedback){
-      _attach.push({ id: 12, name: "反馈", relation: "card_feedback", icon: "view_kanban" })
+      _attach.push({ id: 12, name: "feedback", relation: "card_feedback", icon: "view_kanban" })
     }
     card_models.value = [..._attach, ...card_models.value];
   }

@@ -54,7 +54,7 @@
           <q-tooltip
             class="z-max"
             :class="$q.dark.mode ? 'bg-black' : 'bg-white'"
-            >用户中心</q-tooltip
+            >{{ $t('user_center') }}</q-tooltip
           >
         </q-item>
         <q-separator spaced class="op-3" />
@@ -85,7 +85,7 @@
           <q-item-section side>
             <q-icon name="contacts" />
           </q-item-section>
-          <q-item-section>我的频道</q-item-section>
+          <q-item-section>{{ $t('my_channel') }}</q-item-section>
         </q-item>
         <q-separator spaced class="op-3" />
         <q-item
@@ -97,7 +97,7 @@
           <q-item-section side>
             <q-icon name="toggle_on" />
           </q-item-section>
-          <q-item-section>个人设置</q-item-section>
+          <q-item-section>{{ $t('user_settings') }}</q-item-section>
         </q-item>
         <q-item
           v-if="!confirmOut"
@@ -109,7 +109,7 @@
           <q-item-section side>
             <q-icon name="mdi-exit-to-app" />
           </q-item-section>
-          <q-item-section>注销登录</q-item-section>
+          <q-item-section>{{ $t('logout') }}</q-item-section>
         </q-item>
         <q-item
           v-else
@@ -121,7 +121,7 @@
           <q-item-section side>
             <q-icon name="mdi-exit-to-app" />
           </q-item-section>
-          <q-item-section>确认注销</q-item-section>
+          <q-item-section>{{ $t('logout_confirm') }}</q-item-section>
         </q-item>
       </q-list>
     </q-menu>
@@ -136,7 +136,7 @@
       unelevated
       padding="xs md"
       color="primary"
-      label="登陆"
+      :label="$t('login')"
       @click="$router.push('/login')"
     />
     <q-btn
@@ -144,7 +144,7 @@
       padding="xs md"
       class="q-ml-sm"
       color="primary"
-      label="注册"
+      :label="$t('regist')"
       @click="$router.push('/register')"
     />
   </template>
@@ -167,7 +167,7 @@
           <q-item-section side>
             <q-icon name="login" />
           </q-item-section>
-          <q-item-section>登陆</q-item-section>
+          <q-item-section>{{ $t('login') }}</q-item-section>
         </q-item>
         <q-item
           clickable
@@ -178,7 +178,7 @@
           <q-item-section side>
             <q-icon name="person_add" />
           </q-item-section>
-          <q-item-section>注册</q-item-section>
+          <q-item-section>{{ $t('regist') }}</q-item-section>
         </q-item>
       </q-list>
     </q-menu>
@@ -216,6 +216,9 @@ import localforage from "localforage";
 import mmUserStore from "src/stores/mmuser.js";
 import useProjectStore from "src/stores/project.js";
 import { clearLocalDB } from 'src/pages/team/hooks/useUser.js'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   avatarSize: {
@@ -323,20 +326,20 @@ localforage
 const statuses = ref([
   {
     status: "online",
-    name: "在线",
+    name: t('status_online'),
     color: "positive",
     icon: "mdi-checkbox-marked-circle",
   },
-  { status: "away", name: "忙碌", color: "orange", icon: "schedule" },
+  { status: "away", name: t('status_away'), color: "orange", icon: "schedule" },
   {
     status: "dnd",
-    name: "勿扰",
+    name: t('status_dnd'),
     color: "deep-orange-9",
     icon: "mdi-minus-circle",
   },
   {
     status: "offline",
-    name: "离线",
+    name: t('status_offline'),
     color: "grey",
     icon: "radio_button_unchecked",
   },

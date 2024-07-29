@@ -1,16 +1,16 @@
 <template>
 
   <div v-if="!shareInfo" class="absolute-full column flex-center">
-    <span class="font-large font-bold-600 q-mb-md" >请输入提取码：</span>
+    <span class="font-large font-bold-600 q-mb-md" >{{ $t('please_fill_code') }}</span>
     <q-card flat bordered style="min-width: 22rem" class="shadow-focus radius-sm">
       <q-card-section v-if="!share_by">
-        <div class="text-h6">分享链接有误，请检查链接是否正确!</div>
+        <div class="text-h6">{{ $t('sharlink_error_tip') }}</div>
       </q-card-section>
       <template v-else-if="!share_code">
         <q-card-section class="q-pa-xs">
           <q-input
             v-model="share_code_input"
-            prefix="提取码："
+            :prefix="$t('share_code')"
             filled
             class="overflow-hidden radius-xs"
           >

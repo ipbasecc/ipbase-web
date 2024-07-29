@@ -1,7 +1,7 @@
 <template>
   <q-card bordered :style="$q.screen.gt.sm ? 'width: 62vw; height: 62vh;' : 'width: 100vw; height: 100vh;'" class="column no-wrap">
     <q-card-section class="row no-wrap border-bottom q-pa-sm">
-        <div class="q-pl-sm">与 {{ targetDataRef.username }} 的对话</div>
+        <div class="q-pl-sm">{{ $t('_with') }} {{ targetDataRef.username }} {{ $t('s_talk') }}</div>
         <q-space />
         <q-btn icon="close" dense size="sm" round v-close-popup />
     </q-card-section>
@@ -15,25 +15,6 @@
             >
                 <div v-if="messages" :key="directChannelId" ref="chatBody" class="column no-wrap gap-xl">
                     <template v-for="i in messages" :key="i.id">
-                        <!-- <q-chat-message v-if="i.type == ''" :sent="i.user_id === currentUerId && i.type == ''">
-                            <template v-slot:name>{{ members.find((item) => item.user_id === i.user_id)?.profile
-                                .nickname ||
-                                members.find((item) => item.user_id === i.user_id)?.profile
-                                    .username }}</template>
-                            <template v-slot:avatar>
-                                <q-avatar size="48px" font-size="48px">
-                                    <q-img
-                                        :src="i.user_id === currentUerId && i.type == '' ? myAvatar : targetAvatar"
-                                        :ratio="1"
-                                        spinner-color="primary"
-                                        spinner-size="28px"
-                                    />
-                                </q-avatar>
-                            </template>
-                            <div>
-                                {{ i.message }}
-                            </div>
-                        </q-chat-message> -->
                         <div v-if="i.type === ''" class="row no-wrap gap-xs" :class="i.user_id === currentUerId ? 'reverse' : ''">
                             <q-avatar size="48px" font-size="48px">
                                 <q-img
@@ -57,7 +38,7 @@
                 </div>
             </q-scroll-area>
             <q-toolbar class="border-top">
-                <q-input v-model="msg" type="text" placeholder="发送消息" borderless autogrow class="full-width"
+                <q-input v-model="msg" type="text" :placeholder="$t('send_message')" borderless autogrow class="full-width"
                     @keyup.enter="sendMsg(msg)">
                     <template v-slot:append>
                         <q-btn round dense flat icon="send" @click="sendMsg()" />
@@ -117,7 +98,7 @@ const createDirectMsg = async () => {
         try {
             const res = await createDirect(aRef.value, bRef.value);
             if(res) {
-                console.log('与TA的对话',res);
+                // console.log('与TA的对话',res);
                 directChannelId.value = res.data.id;
                 init(directChannelId.value);
             }

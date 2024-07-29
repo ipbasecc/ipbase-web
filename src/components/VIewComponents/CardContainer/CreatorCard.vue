@@ -1,6 +1,6 @@
 <template>
     <div v-if="workStore && workStore.creator && creatorRef && creatorRef.length > 0" class="column no-wrap gap-sm">
-        <div class="q-pt-sm font-large font-bold-600">创作者：</div>
+        <div class="q-pt-sm font-large font-bold-600">{{ $t('creator')}}：</div>
         <template v-for="i in creatorRef" :key="i.id">
             <q-card
                 bordered
@@ -18,8 +18,8 @@
                     <section v-if="i.isExcutor || i.isOwner" class="absolute-full row flex-center transparent q-px-lg">
                         <div class="full-width row no-wrap gap-xs flex-center">
                             <q-space />
-                            <q-chip v-if="i.isOwner" dense color="primary" label="所有者" class="q-px-sm q-mx-none text-white" />
-                            <q-chip v-if="i.isExcutor" dense color="primary" label="负责人" class="q-px-sm q-mx-none text-white" />
+                            <q-chip v-if="i.isOwner" dense color="primary" :label="$t('owner')" class="q-px-sm q-mx-none text-white" />
+                            <q-chip v-if="i.isExcutor" dense color="primary" :label="$t('executor')" class="q-px-sm q-mx-none text-white" />
                         </div>
                     </section>
                 </q-img>
@@ -35,7 +35,7 @@
                             spinner-size="22px"
                         />
                             <q-tooltip v-if="i.user.data.attributes.user_channel?.data?.id">
-                                访问他的主页
+                                {{ $t('visit_channel') }}
                             </q-tooltip>
                     </q-avatar>
                     <div class="column no-wrap justify-center q-space">
@@ -45,7 +45,7 @@
                             <span>
                                 {{ i.user.data.attributes.username }}
                                 <q-tooltip v-if="i.user.data.attributes.user_channel?.data?.id">
-                                    访问他的主页
+                                    {{ $t('visit_channel') }}
                                 </q-tooltip>
                             </span>
                             <q-chip v-if="i.role" square dense flat color="primary" class="text-white" :label="i.role" />
@@ -60,13 +60,13 @@
                             {{ i.user.data.attributes.profile?.bio }}
                         </div>
                         <div v-if="showMoreTaget.includes(i.id)" class="column no-wrap gap-xs border-top q-pt-md q-mt-md">
-                            <span>{{ i.description || '未补充说明信息' }}</span>
-                            <span>{{ i.responsibility || '未补充负责内容信息' }}</span>
+                            <span>{{ i.description || $t('have_no_descripiton') }}</span>
+                            <span>{{ i.responsibility || $t('have_no_responsibility') }}</span>
                         </div>
                     </div>
                 </q-card-section>
                 <div v-if="i.user.data.attributes.blocked" class="absolute-full flex flex-center blur-xs z-fab">
-                    该用户已被封禁！
+                    {{ $t('user_blocked') }}
                 </div>
             </q-card>
         </template>

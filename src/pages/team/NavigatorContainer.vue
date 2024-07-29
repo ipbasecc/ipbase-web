@@ -58,7 +58,7 @@
                   : 'bg-grey-1 text-grey-10 border'
               "
             >
-              专注模式
+              {{ $t('focus_model') }}
             </q-tooltip>
           </q-btn>
           <q-btn

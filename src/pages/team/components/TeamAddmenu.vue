@@ -15,7 +15,7 @@
         <q-item-section side>
           <q-icon name="forum" />
         </q-item-section>
-        <q-item-section class="q-pr-md">新建频道</q-item-section>
+        <q-item-section class="q-pr-md">{{ $t('create_channel') }}</q-item-section>
       </q-item>
       <q-item
         v-if="!openCreateChannel"
@@ -27,7 +27,7 @@
         <q-item-section side>
           <q-icon name="mdi-trello" />
         </q-item-section>
-        <q-item-section class="q-pr-md">新建项目</q-item-section>
+        <q-item-section class="q-pr-md">{{ $t('create_project') }}</q-item-section>
       </q-item>
     </q-list>
   </q-menu>

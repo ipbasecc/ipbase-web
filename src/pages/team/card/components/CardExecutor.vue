@@ -17,7 +17,7 @@
     >
       <q-list dense bordered class="radius-sm q-pa-xs">
         <q-item-label header class="q-px-sm q-pt-sm q-pb-none"
-          >指定负责人</q-item-label
+          >{{ $t('assign_executor') }}</q-item-label
         >
         <q-separator spaced class="op-3" />
         <q-item
@@ -47,13 +47,14 @@
             <q-item-section side>
               <q-icon name="account_circle" size="20px" class="op-5" />
             </q-item-section>
-            <q-item-section class="q-pr-md">移除负责人</q-item-section>
+            <q-item-section class="q-pr-md">{{ $t('remove_executor') }}</q-item-section>
           </q-item>
         </template>
       </q-list>
     </q-menu>
     <q-tooltip :class="$q.dark.mode ? 'bg-black text-grey-1' : 'bg-white text-grey-10'">
-      {{ executor ? "负责人" : "指定负责人" }}
+      {{ executor ? $t('executor') : $t('assign_executor') }}
+      <br />
     </q-tooltip>
   </div>
 </template>

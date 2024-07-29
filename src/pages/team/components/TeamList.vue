@@ -21,7 +21,7 @@
           <q-btn
             color="primary"
             icon="add"
-            label="创建团队"
+            :label="$t('create_team')"
             class="full-width"
             @click="createTeam()"
           />
@@ -72,7 +72,7 @@
     <q-space v-if="spaced" />
     <q-separator v-if="separator && teams?.length > 0" spaced class="op-3" />
     <div class="row no-wrap gap-xs items-center">
-      <q-btn dense flat icon="group_add" label="新建团队" class="q-space" @click="createTeam()" />
+      <q-btn dense flat icon="group_add" :label="$t('create_team')" class="q-space" @click="createTeam()" />
       <q-btn dense flat icon="mdi-server-network" @click="setServer()" />
     </div>
   </q-card>
@@ -87,6 +87,9 @@ import { useRouter } from "vue-router";
 import {teamStore, uiStore} from "src/hooks/global/useStore.js";
 import { colorByAt } from "src/hooks/utilits.js";
 import ServerList from 'src/pages/team/settings/ServerList.vue'
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const $q = useQuasar();
 const props = defineProps({
@@ -129,9 +132,9 @@ const disabled = (team) => {
 };
 const toggleTeamFn = async (team) => {
   if (team.status === "unconfirmed") {
-    $q.notify("您尚未通过管理员验证，暂时不能访问此团队");
+    $q.notify($t('no_verifild_cant_access'));
   } else if (team.status === "blocked") {
-    $q.notify("您已被该团队管理员屏蔽，请尝试联系管理员申诉");
+    $q.notify($t('was_blocked_cant_access'));
   } else {
     const res = await toggleTeam(team);
     if (res?.data) {

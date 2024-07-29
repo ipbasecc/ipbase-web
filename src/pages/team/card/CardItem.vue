@@ -100,7 +100,7 @@
               $q.dark.mode ? 'bg-black text-grey-1' : 'bg-white text-grey-10'
             "
           >
-            {{ `${cardRef.expand === "collapse" ? "展开" : "折叠"}卡片` }}
+            {{ cardRef.expand === "collapse" ? $t('expand') : $t('collapse') }} {{ $t('card') }}
           </q-tooltip>
         </q-btn>
         <CardExecutor
@@ -216,7 +216,7 @@
           >
             <template #tooltip>
               <q-tooltip :class="$q.dark.mode ? 'bg-black' : 'bg-white'">
-                关注了此卡片
+                {{ $t('followed_card') }}
               </q-tooltip>
             </template>
           </overlappingAvatar>
@@ -233,7 +233,7 @@
             @click="followCard(cardRef)"
           >
             <q-tooltip :class="$q.dark.mode ? 'bg-black' : 'bg-white'">
-              关注此卡片
+              {{ $t('followed_card') }}
             </q-tooltip>
           </q-btn>
         </template>
@@ -271,7 +271,7 @@
               "
               class="border"
             >
-              查看详情
+              {{ $t('view_detial') }}
             </q-tooltip>
           </q-btn>
         </div>
@@ -310,7 +310,7 @@
                         "
                       >
                         <q-tooltip>
-                          <span class="font-medium">任务详情</span>
+                          <span class="font-medium">{{ $t('task_detial') }}</span>
                         </q-tooltip>
                       </q-btn>
                       <q-btn
@@ -326,7 +326,7 @@
                       >
                         <ReName />
                         <q-tooltip>
-                          <span class="font-medium">命名卡片</span>
+                          <span class="font-medium">{{ $t('rename_card') }}</span>
                         </q-tooltip>
                       </q-btn>
                       <q-space />
@@ -403,7 +403,7 @@
                 class="radius-xs"
                 clickable
               >
-                <q-item-section>修改为：</q-item-section>
+                <q-item-section>{{ $t('change_to') }}</q-item-section>
                 <q-item-section side>
                   <q-icon name="keyboard_arrow_right" />
                 </q-item-section>
@@ -423,7 +423,7 @@
                       /></q-item-section>
                       <q-item-section
                         ><span class="q-pr-md">{{
-                          i.label
+                          $t(i.label)
                         }}</span></q-item-section
                       >
                     </q-item>
@@ -439,7 +439,7 @@
                 class="radius-xs"
                 clickable
               >
-                <q-item-section>状态：</q-item-section>
+                <q-item-section>{{ $t('status') }}：</q-item-section>
                 <q-item-section side>
                   <q-icon name="keyboard_arrow_right" />
                 </q-item-section>
@@ -460,8 +460,8 @@
                   @click="removeCard(cardRef, belong_card)"
                 >
                   <q-item-section
-                    >删除{{
-                      cardRef.type === "classroom" ? "课程" : "卡片"
+                    >{{ $t('delete') }} {{
+                      cardRef.type === "classroom" ? $t('class_card') : $t('task_card')
                     }}</q-item-section
                   >
                 </q-item>
@@ -481,7 +481,7 @@
           square
           unelevated
           icon-right="mdi-chevron-down"
-          label="显示更多"
+          :label="$t('show_more')"
           class="full-width hover-highlight-lg"
           @click="toggleExpand(cardRef)"
         />
@@ -618,12 +618,12 @@ const { card: cardRef } = toRefs(props);
 const viewTypeRef = toRef(props, "viewType");
 const isShared = computed(() => uiStore.isShared);
 const shareProps = ref([
-  { val: "card_todo", label: "待办", enable: false },
-  { val: "card_kanban", label: "任务", enable: false },
-  { val: "card_documents", label: "文档", enable: false },
-  { val: "card_storage", label: "存储", enable: false },
-  { val: "card_schedule", label: "规划", enable: false },
-  { val: "card_feedback", label: "反馈", enable: false },
+  { val: "card_todo", label: "todo", enable: false },
+  { val: "card_kanban", label: "task", enable: false },
+  { val: "card_documents", label: "document", enable: false },
+  { val: "card_storage", label: "storage", enable: false },
+  { val: "card_schedule", label: "schedule", enable: false },
+  { val: "card_feedback", label: "feedback", enable: false },
 ]);
 const videoOption = {
   muted: false,
@@ -864,9 +864,9 @@ const tryEnter = async () => {
   }
 };
 const cardTypes = ref([
-  { val: "task", label: "任务", icon: "task_alt" },
-  { val: "note", label: "笔记", icon: "event_note" },
-  { val: "todo", label: "待办", icon: "checklist" },
+  { val: "task", label: "task", icon: "task_alt" },
+  { val: "note", label: "note", icon: "event_note" },
+  { val: "todo", label: "todo", icon: "checklist" },
 ]);
 
 const toggleExpand = async (card) => {

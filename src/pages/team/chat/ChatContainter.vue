@@ -22,7 +22,7 @@
         :color="$q.dark.mode ? 'white' : 'black'"
         @click="cleanCacheReInit(channel_id)"
       >
-        <q-tooltip> 清除缓存 </q-tooltip>
+        <q-tooltip> {{ $t('clean_cache') }} </q-tooltip>
       </q-btn>
       <q-space />
       <q-btn
@@ -32,7 +32,7 @@
         :icon="powerPannel === 'pinneds' ? 'mdi-pin-off' : 'mdi-pin'"
         @click="togglePowerpannel('pinneds')"
       >
-        <q-tooltip> 置顶的消息 </q-tooltip>
+        <q-tooltip> {{ $t('pinned_messages') }} </q-tooltip>
       </q-btn>
       <q-btn
         v-if="strapi_channel_id && calc_auth('channel', 'manageMember', 'team')"
@@ -194,7 +194,7 @@
             <template v-slot:disableTip>
               <div class="absolute-full bg-black op-5"></div>
               <div class="absolute-full column flex-center">
-                请先选择一个聊天频道
+                {{ $t('chose_a_channel') }}
               </div>
             </template>
           </SendmsgBox>
@@ -237,6 +237,9 @@ import MemberManager from "../settings/MemberManager.vue";
 import { mmUser, teamStore, uiStore } from "src/hooks/global/useStore.js";
 import useMmws from "src/stores/mmws.js";
 import { removeLastChannel } from "pages/team/chat/TeamChat";
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const mm_wsStore = useMmws();
 const props = defineProps({
@@ -451,7 +454,7 @@ const get = async (_cid) => {
     } else {
       // 初始化时、onLoad时各自执行过一次，从第三次开始，如果没有获得新消息，发出提示
       if (countGet.value > 2) {
-        $q.notify("没有更多消息了");
+        $q.notify($t('no_more_message'));
       }
     }
   }
@@ -616,11 +619,11 @@ watch(
         if (mm_me.value?.id !== sender && readingHistory) {
           const avatar = await useFetchAvatar(sender);
           $q.notify({
-            message: "收到新消息",
+            message: $t('got_new_messages'),
             avatar: avatar,
             actions: [
               {
-                label: "立即查看",
+                label: $t('view_now'),
                 color: "white",
                 handler: () => {
                   scroll_bottom();

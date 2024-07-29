@@ -1,7 +1,7 @@
 <template>
   <q-card bordered>
     <q-card-section class="row no-wrap items-center border-bottom">
-      <div>邀请成员加入项目：</div>
+      <div>{{ $t('invite_member_to_project') }}</div>
       <q-space />
       <q-btn dense round size="xs" icon="close" v-close-popup />
     </q-card-section>
@@ -10,7 +10,7 @@
         v-if="!params.up_time"
         class="full-width q-pa-lg border radius-sm flex flex-center"
       >
-        请选择一个有效期
+      {{ $t('chose_a_available_data') }}
       </div>
       <q-spinner-orbit v-if="gen_ing" color="primary" size="2em" />
       <template v-else-if="invite_uri">
@@ -34,7 +34,7 @@
             <q-btn
               flat
               dense
-              label="知道了"
+              :label="$t('known_it')"
               padding="xs md"
               @click="un_tip()"
             />
@@ -42,17 +42,17 @@
         </q-card>
       </q-banner>
       <div class="row no-wrap items-center">
-        <span class="q-mr-md">有效期：</span>
+        <span class="q-mr-md">{{$t('expried_data')}}</span>
         <q-radio
           v-for="i in uptimes"
           :key="i.val"
           v-model="uptime"
           :val="i.val"
-          :label="i.label"
+          :label="$t(i.label)"
         />
       </div>
       <div class="row no-wrap items-center">
-        <span class="q-mr-md">最大可用次数:</span>
+        <span class="q-mr-md">{{$t('available_times')}}:</span>
         <q-radio
           v-for="i in maxes"
           :key="i"
@@ -62,16 +62,16 @@
         />
       </div>
       <div class="column no-wrap gap-sm">
-        <span class="q-mr-md">留言:</span>
+        <span class="q-mr-md">{{ $t('invite_message') }}:</span>
         <div class="font-medium q-pa-md border radius-sm">
-          我是
+          {{$t('i_am')}}:
           <q-chip
             dense
             square
             color="deep-orange"
             class="q-px-sm"
             :label="userStore.me.username"
-          />, 邀请你加入团队
+          />, {{$t('invite_you_to_team')}}:
           <q-chip
             dense
             square
@@ -80,7 +80,7 @@
             :label="teamStore.team?.display_name"
           />
           <br />
-          等你哦！
+          {{$t('waitting_for_you')}}:
         </div>
       </div>
     </q-card-section>
@@ -95,6 +95,9 @@ import QrcodeVue from "qrcode.vue";
 import { copyToClipboard, useQuasar } from "quasar";
 
 import { teamStore, userStore } from "src/hooks/global/useStore.js";
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const props = defineProps({
   byInfo: {
@@ -111,10 +114,10 @@ const $q = useQuasar();
 const APP_URI = process.env.APP_URI;
 const uptime = ref();
 const uptimes = [
-  { val: 1, label: "1天" },
-  { val: 7, label: "1周" },
-  { val: 30, label: "1月" },
-  { val: -1, label: "永久" },
+  { val: 1, label: "one_day" },
+  { val: 7, label: "one_week" },
+  { val: 30, label: "one_month" },
+  { val: -1, label: "forever" },
 ];
 const maxes = [1, 5, 10, 20, 50, 1000];
 const max = ref(10);
@@ -133,7 +136,7 @@ watchEffect(() => {
   params.value.max_total = max.value;
   error_tip.value =
     params.value.up_time < 0 && params.value.max_total < 0
-      ? "最大可用次数 与 有效期，不能同时都不限制！"
+      ? $t('need_limit_times_or_date')
       : "";
 });
 
@@ -161,7 +164,7 @@ const genInviteFn = async () => {
     delete params.value.max_total;
   }
   if (params.value.up_time === -1 && params.value.max_total === -1) {
-    error_tip.value = "最大可用次数 与 有效期，不能同时都不限制！";
+    error_tip.value = $t('need_limit_times_or_date');
     return;
   }
 
@@ -209,10 +212,10 @@ watch(
 const copy_uri = (val) => {
   copyToClipboard(val)
     .then(() => {
-      $q.notify("邀请链接已复制到剪贴板");
+      $q.notify($t('url_copy_secuss'));
     })
     .catch(() => {
-      $q.notify("复制出错，请手动复制");
+      $q.notify($t('copy_error'));
     });
 };
 </script>

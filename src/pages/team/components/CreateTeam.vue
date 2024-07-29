@@ -1,7 +1,7 @@
 <template>
   <q-card bordered style="min-width: 24rem">
     <q-toolbar class="transparent q-px-md border-bottom">
-      <span class="font-medium">创建团队</span>
+      <span class="font-medium">{{ $t('create_team') }}</span>
       <q-space />
       <q-btn
         flat
@@ -21,16 +21,16 @@
           filled
           outlined
           type="text"
-          label="团队名称"
+          :label="$t('team_name')"
           class="radius-xs overflow-hidden"
           @keydown.enter="create()"
         />
       </div>
     </q-card-section>
     <q-card-section class="row items-center no-wrap q-pa-sm border-top">
-      <q-btn flat label="取消" v-close-popup />
+      <q-btn flat :label="$t('cancel')" v-close-popup />
       <q-space />
-      <q-btn color="primary" padding="xs md" label="创建" @click="create()" />
+      <q-btn color="primary" padding="xs md" :label="$t('create')" @click="create()" />
     </q-card-section>
   </q-card>
 </template>

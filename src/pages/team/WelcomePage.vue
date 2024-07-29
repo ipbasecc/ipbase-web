@@ -8,7 +8,7 @@
     <q-toolbar class="absolute-top transparent z-fab">
       <q-space />
       <span class="row no-wrap gap-xs items-center q-mr-sm">
-        相关：{{ cards?.length }} / {{ total_cards }}
+        {{ $t('related')}}：{{ cards?.length }} / {{ total_cards }}
         <q-icon
           name="mdi-autorenew"
           class="cursor-pointer"
@@ -17,7 +17,7 @@
         />
       </span>
       <span class="row no-wrap gap-xs items-center q-mr-sm">
-        关注：{{ followedCards?.length }} / {{ total_followedCards }}
+        {{ $t('followed')}}：{{ followedCards?.length }} / {{ total_followedCards }}
         <q-icon
           name="mdi-autorenew"
           class="cursor-pointer"
@@ -44,7 +44,7 @@
                   :class="cardClass?.includes(i.val) ? '' : 'op-0'"
                 />
               </q-item-section>
-              <q-item-section class="text-no-wrap">{{ i.name }}</q-item-section>
+              <q-item-section class="text-no-wrap">{{ $t(i.name) }}</q-item-section>
             </q-item>
           </q-list>
         </q-menu>
@@ -197,9 +197,9 @@ watch(
 const _cardClassBase = ["related", "followed", "executor"];
 const cardClass = ref(_cardClassBase);
 const filterClasses = [
-  { val: "executor", icon: "", name: "我负责的" },
-  { val: "related", icon: "", name: "与我相关" },
-  { val: "followed", icon: "", name: "我关心的" },
+  { val: "executor", icon: "", name: "my_executed" },
+  { val: "related", icon: "", name: "my_related" },
+  { val: "followed", icon: "", name: "my_followed" },
 ];
 const filterCards = () => {
   if (!cardClass.value?.includes("related")) {

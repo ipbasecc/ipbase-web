@@ -112,7 +112,7 @@
                     >
                       <ReName />
                       <q-tooltip>
-                        <span class="font-medium">命名卡片</span>
+                        <span class="font-medium">{{ $t('rename_card') }}</span>
                       </q-tooltip>
                     </q-btn>
                   </div>
@@ -181,7 +181,7 @@
               class="radius-xs"
               clickable
             >
-              <q-item-section>修改为：</q-item-section>
+              <q-item-section>{{ $t('change_to') }}:</q-item-section>
               <q-item-section side>
                 <q-icon name="keyboard_arrow_right" />
               </q-item-section>
@@ -222,7 +222,7 @@
               class="radius-xs"
               clickable
             >
-              <q-item-section>状态：</q-item-section>
+              <q-item-section>{{ $t('status') }}:</q-item-section>
               <q-item-section side>
                 <q-icon name="keyboard_arrow_right" />
               </q-item-section>
@@ -251,7 +251,7 @@
                 v-close-popup
                 @click="removeCard(card, belong_card)"
               >
-                <q-item-section>删除卡片</q-item-section>
+                <q-item-section>{{ $t('delete_card') }}</q-item-section>
               </q-item>
             </template>
           </q-list>

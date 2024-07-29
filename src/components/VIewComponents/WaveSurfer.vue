@@ -45,7 +45,7 @@
       <div class="row no-wrap gap-xs items-center col-4">
         <q-space />
         <q-btn round size="xs" flat icon="mdi-minus" @click="setSpeed(-1);" />
-        <q-btn dense flat :label="`速度：${speed / 10}`" @click="resetSpeed()" style="width: 6rem;" />
+        <q-btn dense flat :label="`${$t('speed')}：${speed / 10}`" @click="resetSpeed()" style="width: 6rem;" />
         <q-btn round size="xs" flat icon="mdi-plus" @click="setSpeed(1);" />
       </div>
     </div>

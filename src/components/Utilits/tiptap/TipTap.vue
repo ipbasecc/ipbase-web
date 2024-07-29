@@ -88,7 +88,7 @@
                   class="col-12 font-small q-pa-xs cursor-pointer q-pt-sm"
                   @click="editor.chain().focus().unsetColor().run()"
                 >
-                  清除颜色
+                  {{ $t('clean_color') }}
                 </div>
               </q-card>
             </q-popup-proxy>
@@ -147,6 +147,9 @@ import { uiStore, userStore } from "src/hooks/global/useStore";
 import { useFileDialog } from "@vueuse/core";
 import { confirmUpload } from "src/hooks/utilits/useConfirmUpload.js";
 import { useDropZone } from "@vueuse/core";
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   show_toolbar: {
@@ -285,7 +288,7 @@ const init = () => {
       Image,
       Placeholder.configure({
         // Use a placeholder:
-        placeholder: "在此开始你的输入 …",
+        placeholder: t('start_type_tip'),
       }),
       Markdown,
     ],

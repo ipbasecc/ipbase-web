@@ -4,7 +4,7 @@
       <q-tab
           :name="i.name"
           :icon="$q.screen.gt.sm ? i.icon : void 0"
-          :label="i.label"
+          :label="$t(i.label)"
           @click="goto(i)"
           :class="$q.screen.gt.sm ? '' : 'q-px-xs'"
       />
@@ -42,43 +42,43 @@ watchEffect(() => {
   tabs.value = [
     {
       name: "chat",
-      label: "讨论",
+      label: "chat",
       to: `/teams/projects/${project.value.id}/chat`,
       icon: "forum",
     },
     {
       name: "kanban",
-      label: "看板",
+      label: "kanban",
       to: `/teams/projects/${project.value.id}/kanban`,
       icon: "mdi-chart-gantt",
     },
     {
       name: "classroom",
-      label: "课堂",
+      label: "classroom",
       to: `/teams/projects/${project.value.id}/classroom`,
       icon: "mdi-school",
     },
     {
       name: "segment",
-      label: "镜头",
+      label: "segment",
       to: `/teams/projects/${project.value.id}/segment`,
       icon: "mdi-film",
     },
     {
       name: "document",
-      label: "文档",
+      label: "document",
       to: `/teams/projects/${project.value?.id}/document`,
       icon: "menu_book",
     },
     {
       name: "storage",
-      label: "文件",
+      label: "storage",
       to: `/teams/projects/${project.value.id}/storage`,
       icon: "storage",
     },
     {
       name: "schedule",
-      label: "规划",
+      label: "schedule",
       to: `/teams/projects/${project.value.id}/schedule`,
       icon: "schedule",
     },

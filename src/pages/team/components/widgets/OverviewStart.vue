@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-xs radius-xs border q-space font-small">
     <q-icon size="xs" name="event" />
-    开始：{{ start }}
+    {{ $t('satrt') }} ：{{ start }}
     <q-popup-proxy v-if="calc_auth('overview', 'start', authBase.of)">
       <q-date
         v-model="start"

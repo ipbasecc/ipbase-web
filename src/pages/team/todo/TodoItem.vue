@@ -171,7 +171,7 @@
         <q-btn
           flat
           dense
-          label="取消"
+          :label="$t('cancel')"
           padding="xs sm"
           @click.stop="cancelEdit"
         />
@@ -180,7 +180,7 @@
           :disable="!todo_params.data.content"
           dense
           color="primary"
-          label="确认"
+          :label="$t('confirm')"
           padding="xs sm"
           @click="updateContent"
         />
@@ -190,7 +190,7 @@
           <q-card-section class="q-pa-xs">
             <StrapiUpload
               :bordered="false"
-              :label="`附加文件`"
+              :label="$t('attach_file')"
               class="no-padding fit"
               color="transparent"
               accept=".jpg,.png,.mp4,.mov,.m4v,.jpeg,.png,.webp,.svg,.avi,.pdf,.ppt,.pptx,.doc,.docx"
@@ -198,7 +198,7 @@
             ></StrapiUpload>
           </q-card-section>
           <q-card-actions align="left" class="q-pa-xs border-top">
-            <q-btn flat label="取消" color="primary" v-close-popup />
+            <q-btn flat :label="$t('cancel')" color="primary" v-close-popup />
           </q-card-actions>
         </q-card>
       </q-dialog>

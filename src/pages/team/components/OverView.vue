@@ -63,7 +63,7 @@
             anchor="top left"
             self="bottom start"
           >
-            双击改名
+            {{ $t('double_click_change_name') }}
           </q-tooltip>
         </span>
       </template>
@@ -112,7 +112,7 @@
                 <q-item-section side>
                   <ReName />
                 </q-item-section>
-                <q-item-section>修改版本名称</q-item-section>
+                <q-item-section>{{ $t('change_version_name') }}</q-item-section>
                 <q-item-section side />
               </q-item>
               <q-separator
@@ -159,7 +159,7 @@
                 <q-item-section class="q-pa-none radius-xs overflow-hidden">
                   <q-input
                       v-model="_input_text"
-                      dense square filled label="添加新版本" placeholder="版本名称" type="text"
+                      dense square filled :label="$t('add_version')" :placeholder="$t('version_name')" type="text"
                       @keyup.esc="_input_text = ''"
                       @keydown.enter.stop="newVersion"
                   >
@@ -190,7 +190,7 @@
                   ><q-avatar size="sm"
                     ><q-icon name="close" color="red" /></q-avatar
                 ></q-item-section>
-                <q-item-section>移除此版本</q-item-section>
+                <q-item-section>{{ $t('remove_this_version') }}</q-item-section>
                 <q-item-section side></q-item-section>
               </q-item>
             </template>
@@ -241,6 +241,9 @@ import {
   teamStore,
   uiStore,
 } from "src/hooks/global/useStore.js";
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const $q = useQuasar();
 const userId = computed(() => teamStore.init?.id);
@@ -609,7 +612,7 @@ const send_chat_Msg = async (MsgContent) => {
 
 watchEffect(() => {
   if (overView_attachedTo.value?.overviews.length === 0) {
-    _input_text.value = "默认版本";
+    _input_text.value = $t('default_version');
     newVersion();
   }
 });

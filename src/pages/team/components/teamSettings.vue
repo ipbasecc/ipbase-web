@@ -1,7 +1,7 @@
 <template>
   <q-card bordered style="min-width: 28rem">
     <q-card-section class="row no-wrap items-center q-pa-sm border-bottom">
-      <span>团队设置</span>
+      <span>{{ $t('team_settings') }}</span>
       <q-space />
       <q-btn flat dense size="sm" round icon="close" v-close-popup />
     </q-card-section>
@@ -19,14 +19,14 @@
           <div class="absolute-full column flex-center">
             <q-btn
               color="primary"
-              label="修改标志"
+              :label="$t('update_team_icon')"
               @click="changeLogo = true"
             />
           </div>
         </q-img>
         <UploadFile
           v-else
-          label="团队标志"
+          :label="$t('team_icon')"
           accept=".jpeg,.png,.jpg,.webp"
           :maxFiles="1"
           :autoUpload="true"
@@ -37,7 +37,7 @@
         <q-btn
           v-if="changeLogo"
           flat
-          label="取消"
+          :label="$t('cancel')"
           @click="changeLogo = false"
         />
         <q-input
@@ -45,7 +45,7 @@
           filled
           outlined
           type="text"
-          placeholder="团队名称"
+          :placeholder="$t('team_name')"
           class="radius-xs overflow-hidden"
         />
       </div>
@@ -55,7 +55,7 @@
       <q-btn
         color="primary"
         padding="xs lg"
-        label="确认"
+        :label="$t('confirm')"
         v-close-popup
         @click="update()"
       />

@@ -17,7 +17,7 @@
         <q-item-section side>
           <q-icon name="mdi-send" />
         </q-item-section>
-        <q-item-section>邀请成员</q-item-section>
+        <q-item-section>{{ $t('invite_member') }}</q-item-section>
       </q-item>
       <q-item
         v-if="calc_auth('team', 'manageMember', 'team')"
@@ -29,7 +29,7 @@
         <q-item-section side>
           <q-icon name="manage_accounts" />
         </q-item-section>
-        <q-item-section>成员管理</q-item-section>
+        <q-item-section>{{ $t('manage_member') }}</q-item-section>
       </q-item>
       <q-item
         v-if="calc_auth('team', 'modify', 'team')"
@@ -41,7 +41,7 @@
         <q-item-section side>
           <q-icon name="tune" />
         </q-item-section>
-        <q-item-section>团队设置</q-item-section>
+        <q-item-section>{{ $t('team_settings') }}</q-item-section>
       </q-item>
       <q-separator
         v-if="
@@ -60,7 +60,7 @@
         <q-item-section side>
           <q-icon name="add_circle" />
         </q-item-section>
-        <q-item-section>创建团队</q-item-section>
+        <q-item-section>{{ $t('create_team') }}</q-item-section>
       </q-item>
       <q-item
         v-if="!removeAuth"
@@ -73,7 +73,7 @@
         <q-item-section side>
           <q-icon name="mdi-export" />
         </q-item-section>
-        <q-item-section>离开团队</q-item-section>
+        <q-item-section>{{ $t('leave_team') }}</q-item-section>
       </q-item>
       <q-item
         v-else
@@ -86,14 +86,14 @@
         <q-item-section side>
           <q-icon name="close" />
         </q-item-section>
-        <q-item-section>删除团队</q-item-section>
+        <q-item-section>{{ $t('delete_team') }}</q-item-section>
       </q-item>
       <q-separator spaced />
       <q-item clickable v-close-popup class="radius-xs text-blue-5">
         <q-item-section side
           ><q-icon name="lightbulb" size="sm" color="blue-5"
         /></q-item-section>
-        <q-item-section>了解团队</q-item-section>
+        <q-item-section>{{ $t('about_team') }}</q-item-section>
       </q-item>
     </q-list>
   </q-menu>
@@ -111,7 +111,7 @@
     >
       <q-card-section class="border-bottom">
         <div class="row no-wrap items-center">
-          <div class="text-h6">成员管理</div>
+          <div class="text-h6">{{ $t('manage_member') }}</div>
           <q-space />
           <q-btn dense size="sm" round icon="close" v-close-popup />
         </div>
@@ -125,7 +125,7 @@
     <TeamSettings :team />
   </q-dialog>
   <q-dialog v-model="leaving" persistent maximized>
-    正在执行操作，请稍候...
+    {{ $t('doing_wait') }}
   </q-dialog>
   <q-dialog v-model="cant_leave" persistent>
     <q-card bordered>
@@ -133,7 +133,7 @@
         class="row gap-md items-center q-pa-sm font-large text-orange border-bottom"
       >
         <q-icon size="lg" name="info" />
-        <span>不能执行此操作</span>
+        <span>{{ $t('cannt_do_it') }}</span>
       </q-card-section>
       <q-card-section>
         <div class="row no-wrap items-center gap-md q-pa-xl">
@@ -141,7 +141,7 @@
         </div>
       </q-card-section>
       <q-card-section class="q-pa-sm border-top">
-        <q-btn color="primary" label="返回" padding="xs lg" v-close-popup />
+        <q-btn color="primary" :label="$t('back')" padding="xs lg" v-close-popup />
       </q-card-section>
     </q-card>
   </q-dialog>

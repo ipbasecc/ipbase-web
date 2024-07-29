@@ -18,7 +18,7 @@ import { toRefs } from "vue";
 const props = defineProps({
   label: {
     type: String,
-    default: "点击按钮选择文件，或拖拽文件到下方",
+    default: '',
   },
   accept: {
     type: String,
@@ -86,7 +86,7 @@ const Response = ref();
 const RespsFile = ref([]);
 const uploadFile = (val) => {
   let arr = val;
-  console.log("接收到文件：", val);
+  // console.log("接收到文件：", val);
 
   Response.value = arr.map((item) => {
     const newUrl = item.url.res.requestUrls[0].split("?")[0];

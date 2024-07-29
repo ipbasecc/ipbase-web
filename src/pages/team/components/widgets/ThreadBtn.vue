@@ -18,6 +18,9 @@
     :class="thread.reply_count > 0 ? '' : 'op-5'"
     @click="enterThread(thread)"
   >
+  <q-tooltip>
+    {{ $t('quick_chat') }}
+  </q-tooltip>
   </q-btn>
 </template>
 

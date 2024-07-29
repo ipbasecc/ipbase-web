@@ -1,6 +1,6 @@
 <template>
     <q-list class="q-pa-md">
-        <q-item-label class="q-mb-sm">{{ tip }}</q-item-label>
+        <q-item-label class="q-mb-sm">{{ $t(tip) }}</q-item-label>
         <q-item
             v-for="(i,index) in downloadFiles"
             :key="index"
@@ -11,7 +11,7 @@
             </q-item-section>
             <q-item-section>{{ i.name }}</q-item-section>
             <q-item-section side>
-                <q-btn dense flat color="primary" icon="mdi-download" label="下载" class="q-px-md" @click="downloadFile(i.url)" />
+                <q-btn dense flat color="primary" icon="mdi-download" :label="$t('download')" class="q-px-md" @click="downloadFile(i.url)" />
             </q-item-section>
         </q-item>
     </q-list>
@@ -28,7 +28,7 @@
         },
         tip: {
             type: String,
-            default: '文档下载：'
+            default: 'document_download'
         }
     })
     const filesRef = toRef(props,'files');
@@ -50,7 +50,7 @@
                 // 获取文件名
                 filename = decodeURIComponent(str);
 
-                console.log('开始格式化');
+                // console.log('开始格式化');
                 downloadFiles.value.push({
                     name: filename,
                     url: val.attributes.url

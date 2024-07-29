@@ -127,7 +127,7 @@
             <q-btn
               flat
               icon="download"
-              label="当前文件不能预览，请下载后查看"
+              :label="$t('cant_preview_need_download')"
               @click.stop="downloadFile(previewFile)"
             />
           </div>

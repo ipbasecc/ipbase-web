@@ -50,7 +50,7 @@
               filled
               autofocus
               type="text"
-              placeholder="文件夹名字"
+              :placeholder="$t('folder_name')"
               ref="new_folder"
               @click.stop="focusNewFolder()"
               @keyup.enter="createStorageFn()"
@@ -82,7 +82,7 @@
               <q-item-section side>
                 <q-icon name="create_new_folder" />
               </q-item-section>
-              <q-item-section>新建文件夹</q-item-section>
+              <q-item-section>{{ $t('new_folder') }}</q-item-section>
             </q-item>
           </q-list>
         </q-popup-proxy>

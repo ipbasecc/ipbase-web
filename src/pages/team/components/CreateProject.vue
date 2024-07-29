@@ -7,7 +7,7 @@
   >
     <template v-if="!loading">
       <q-card-section class="border-bottom row no-wrap">
-        <span>新建项目</span>
+        <span>{{ $t('create_project') }}</span>
         <q-space />
         <q-btn dense round flat size="sm" icon="close" v-close-popup />
       </q-card-section>
@@ -24,7 +24,7 @@
             />
             <UploadFile
               v-else
-              label="项目预览"
+              :label="$t('project_overview')"
               accept=".jpeg,.png,.jpg,.webp"
               :maxFiles="1"
               :autoUpload="true"
@@ -38,24 +38,24 @@
               <q-input
                 v-model="params.name"
                 type="text"
-                label="项目名称"
+                :label="$t('project_title')"
                 class="q-px-sm"
-                hint="请在此处输入您的项目名称"
+                :hint="$t('project_title_input_tip')"
                 :rules="[
                   (val) =>
-                    val?.length <= 32 || '项目名称最多32个英文字符、或16个中文',
+                    val?.length <= 32 || $t('project_title_rules_tip'),
                 ]"
               />
               <q-input
                 v-model="params.description"
                 type="textarea"
-                label="摘要、备注、说明"
+                :label="$t('project_description')"
                 class="q-px-sm"
-                hint="您可以为您的项目添加简单的说明，方便成员理解项目内容"
+                :hint="$t('project_description_input_tip')"
                 :rules="[
                   (val) =>
                     val.length <= 256 ||
-                    '项目名称最多256个英文字符、或128个中文',
+                    $t('project_description_rules_tip'),
                 ]"
               />
               <div v-if="false" class="row no-wrap gap-sm q-pt-md">
@@ -64,7 +64,7 @@
                   :key="i.val"
                   v-model="project_type"
                   :val="i.val"
-                  :label="i.label"
+                  :label="$t(i.label)"
                   @click.stop="setPrivate()"
                 />
               </div>
@@ -73,14 +73,14 @@
         </q-card>
       </q-card-section>
       <q-card-section class="row no-wrap q-pa-sm border-top">
-        <q-btn flat dense padding="xs md" label="取消" v-close-popup />
+        <q-btn flat dense padding="xs md" :label="$t('cancel')" v-close-popup />
         <q-space />
         <q-btn
           color="primary"
           dense
           padding="xs md"
           icon="check"
-          label="创建"
+          :label="$t('create')"
           @click="create_project"
         />
       </q-card-section>
@@ -88,7 +88,7 @@
     <q-inner-loading
       v-else
       :showing="loading"
-      label="正在创建，请稍后..."
+      :label="$t('creating_waiting')"
       label-class="text-white"
       label-style="font-size: 1.1em"
     />
@@ -104,8 +104,8 @@ import { teamStore } from "src/hooks/global/useStore.js";
 const project_type = ref("P");
 const project_private = [
   //P - personal : 私有 ； O - Open ： 公开
-  { label: "私有项目", val: "P", icon: "" },
-  { label: "公开项目", val: "O", icon: "" },
+  { label: "private_project", val: "P", icon: "" },
+  { label: "public_project", val: "O", icon: "" },
 ];
 const team = computed(() => teamStore.team);
 const params = ref({

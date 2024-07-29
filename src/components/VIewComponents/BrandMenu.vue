@@ -7,7 +7,7 @@
     :offset="offset"
     class="bg-white z-max shadow-focus"
   >
-    <q-card bordered>
+    <q-card bordered style="max-width: 24rem;">
       <q-card-section
         class="row no-wrap q-pa-xs q-pt-sm items-center justify-between border-bottom"
       >
@@ -26,7 +26,7 @@
           class="q-space row flex-center cursor-pointer back_home transition"
           @click="gohome()"
         >
-          回首页
+          {{ $t('gohome') }}
         </span>
         <q-icon
           name="expand_less"
@@ -38,33 +38,16 @@
       </q-card-section>
       <q-card-section class="q-pa-xs">
         <q-list>
-          <q-item clickable v-ripple class="radius-xs" @click="goTeamhome()">
+          <q-item v-for="i in enabledApps" :key="i.val"
+          clickable v-ripple class="radius-xs" @click="to(i)">
             <q-item-section side>
               <q-avatar>
-                <q-icon name="mark_chat_read" color="primary" />
+                <q-icon :name="i.icon" />
               </q-avatar>
             </q-item-section>
             <q-item-section>
-              <q-item-label>团队协作</q-item-label>
-              <q-item-label caption>组织你的团队，开展业务或完成项目。</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            clickable
-            v-ripple
-            class="radius-xs"
-            href="https://flame.vip"
-            target="_blank"
-            @click="title = 'Flame.VIP'"
-          >
-            <q-item-section side>
-              <q-avatar>
-                <q-icon name="panorama_fish_eye" color="primary" />
-              </q-avatar>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Flame.VIP</q-item-label>
-              <q-item-label caption>Autodesk Flame中文教程</q-item-label>
+              <q-item-label>{{ $t(i.label) }}</q-item-label>
+              <q-item-label caption>{{ $t(i.description) }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
@@ -74,14 +57,13 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import useGetMyMatedate from "src/hooks/global/useGetMyMatedata.js";
+import { ref, computed } from "vue";
 import localforage from "localforage";
 import { useRouter } from "vue-router";
 import useStore from "src/stores/store.js";
+import { uiStore } from "src/hooks/global/useStore";
 const store = useStore();
 const router = useRouter();
-const { logged, userChannelId } = useGetMyMatedate;
 
 const props = defineProps({
   offset: {
@@ -92,20 +74,44 @@ const props = defineProps({
   },
 });
 
-const title = ref("微名片");
 const openBrand = ref(false);
+const apps = [
+  {
+    val: "teams",
+    label: 'team',
+    icon: "mark_chat_read",
+    description: 'app_team_purpose',
+    to: "teams",
+    enable: true,
+  },
+  {
+    val: "affairs",
+    label: 'affairs',
+    icon: "mdi-calendar-clock",
+    description: 'app_affairs_purpose',
+    to: "affairs",
+    enable: true,
+  },
+  {
+    val: "threads",
+    label: 'threads',
+    icon: "mdi-forum",
+    description: 'app_threads_purpose',
+    to: "teams/threads",
+    enable: true,
+  },
+];
+const enabledApps = computed(() => apps.filter((i) => i.enable));
+const to = async (i) => {
+  uiStore.app = i.val;
+  await localforage.setItem("last_module", i.to);
+  await router.push(`/${i.to}`);
+};
 const gohome = () => {
   localforage.setItem("last_module", "homepage");
   openBrand.value = !openBrand.value;
-  store.brand_title = "易乎APP";
+  store.brand_title = "ipbase_brand";
   router.push("/");
-};
-const goTeamhome = () => {
-  localforage.setItem("last_module", "chat");
-  title.value = "团队沟通";
-  openBrand.value = !openBrand.value;
-  store.brand_title = "团队";
-  router.push("/teams");
 };
 </script>
 

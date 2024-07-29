@@ -17,14 +17,14 @@
             v-if="!$q.screen.gt.xs"
             name="overview"
             icon="mdi-developer-board"
-            label="概览"
+            :label="$t('overview')"
             class="q-px-md"
         />
         <template v-for="i in enabled_byShare" :key="i.id">
           <q-tab
             :name="i.relation"
             :icon="i.icon"
-            :label="i.name"
+            :label="$t(i.name)"
             class="q-px-md"
             @click="!$q.screen.gt.xs && toggleDocumentList()"
           />
@@ -56,7 +56,7 @@
               >
                 <template v-if="teamStore.cards.length > 1">
                   <q-tooltip class="no-padding">
-                    <q-card bordered class="q-pa-sm"> 双击关闭 </q-card>
+                    <q-card bordered class="q-pa-sm"> {{$t('double_click_to_close')}} </q-card>
                   </q-tooltip>
                   <q-popup-proxy context-menu class="radius-sm">
                     <q-list bordered dense class="q-pa-xs radius-sm">
@@ -69,7 +69,7 @@
                         <q-item-section side
                         ><q-icon name="close" size="sm"
                         /></q-item-section>
-                        <q-item-section>关闭</q-item-section>
+                        <q-item-section> {{$t('close')}} </q-item-section>
                       </q-item>
                     </q-list>
                   </q-popup-proxy>
@@ -102,14 +102,14 @@
               v-if="teamStore.card?.card_kanban?.columns?.length > 0"
               :kanban_id="teamStore.card?.card_kanban?.id"
             />
-            <div v-else class="absolute-full column flex-center">尚无任何子任务...</div>
+            <div v-else class="absolute-full column flex-center">{{ $t('no_subtask') }}...</div>
           </template>
           <template v-if="current_model === 'card_todo'">
             <TodoPage
                 v-if="teamStore.card?.todogroups?.length > 0"
                 layout="row" class="absolute-full"
             />
-            <div v-else class="absolute-full column flex-center">尚无任何待办事项...</div>
+            <div v-else class="absolute-full column flex-center">{{ $t('no_todos') }}...</div>
           </template>
           <template v-if="current_model === 'card_feedback'" >
             <div v-if="teamStore.card?.feedback" class="absolute-full column items-center">
@@ -278,12 +278,12 @@ const side_pannel = ref('overview');
 
 const activedCard_id = computed(() => Number(shareInfo.value?.props.card_id));
 const card_models = ref([
-  { id: 1, name: "任务", relation: "card_kanban", icon: "view_kanban" },
-  { id: 2, name: "待办", relation: "card_todo", icon: "task_alt" },
-  { id: 3, name: "文档", relation: "card_documents", icon: "article" },
-  { id: 4, name: "文件", relation: "card_storage", icon: "storage" },
-  { id: 5, name: "规划", relation: "card_schedule", icon: "schedule" },
-  { id: 6, name: "反馈", relation: "card_feedback", icon: "feedback" },
+  { id: 1, name: "task", relation: "card_kanban", icon: "view_kanban" },
+  { id: 2, name: "todo", relation: "card_todo", icon: "task_alt" },
+  { id: 3, name: "document", relation: "card_documents", icon: "article" },
+  { id: 4, name: "file", relation: "card_storage", icon: "storage" },
+  { id: 5, name: "schedule", relation: "card_schedule", icon: "schedule" },
+  { id: 6, name: "feedback", relation: "card_feedback", icon: "feedback" },
 ]);
 const enabled_byShare = computed(() => {
   let _enables = teamStore.card?.props?.filter((i) => i.enable).map((i) => i.val) || [];

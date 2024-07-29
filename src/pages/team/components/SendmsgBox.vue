@@ -25,7 +25,7 @@
               class="border"
             >
               <q-tooltip :class="$q.dark.mode ? 'bg-black' : 'bg-grey-1'">
-                <span class="op-5">CTRL + 回车发送</span>
+                <span class="op-5">{{ $t('ctrl_enter_send') }}</span>
               </q-tooltip>
             </q-btn>
           </template>

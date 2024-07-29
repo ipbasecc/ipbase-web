@@ -2,7 +2,9 @@ import OSS from "ali-oss";
 import axios from "axios";
 import { Notify } from "quasar";
 import { ossStore } from "src/hooks/global/useStore.js";
+import { i18n } from 'src/boot/i18n.js';
 
+const $t = i18n.global.t;
 export default function oss() {
   // 将上传列表先置空
   // store中已经为空了，不知为何上传组件中认为时undefined
@@ -47,7 +49,7 @@ export default function oss() {
             ossStore.client = new OSS(ossConfig);
           }
         } catch (error) {
-          console.error(`OSS授权请求出错：${error}`);
+          console.error(`OSS STS error：${error}`);
         }
       }
     }
@@ -85,7 +87,7 @@ export default function oss() {
     } catch (e) {
       console.log(e);
       Notify.create({
-        message: "上传错误",
+        message: $t('upload_error'),
         position: "top",
         color: "negative",
       });
@@ -102,7 +104,7 @@ export default function oss() {
     } catch (e) {
       console.log(e);
       Notify.create({
-        message: "获取文件访问权限出错",
+        message: $t('oss_premission_error'),
         position: "top",
         color: "negative",
       });
@@ -116,7 +118,7 @@ export default function oss() {
       // 上传文件到 OSS
       return await ossStore.client.put(url);
     } catch (error) {
-      console.error("文件上传失败：" + error);
+      console.error("Upload error：" + error);
     }
   };
   this.putBuffer = async (buffer) => {

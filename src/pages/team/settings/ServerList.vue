@@ -36,15 +36,15 @@
         <q-separator />
       </template>
       <div v-else class="q-space column no-wrap gap-xs q-pa-xl flex-center border-bottom">
-        <span class="op-5 font-bold-200">尚未添加自定义服务器,正在使用官方服务器</span>
-        <span class="font-large font-bold-600">点击下方按钮，添加自定义服务器</span>
+        <span class="op-5 font-bold-200">{{ $t('server_no_custom_tip') }}</span>
+        <span class="font-large font-bold-600">{{ $t('server_add_tip') }}</span>
       </div>
 
       <q-item :class="`q-px-${bordered ? 'sm' : 'xs'}`">
         <q-btn icon="mdi-chevron-left" padding="xs" flat @click="setCompleted()" />
         <q-separator vertical spaced />
         <q-item-section>
-          <q-btn icon="mdi-server-network" flat label="新增服务器" class="full-width" @click="add = true" />
+          <q-btn icon="mdi-server-network" flat :label="$t('add_server')" class="full-width" @click="add = true" />
         </q-item-section>
       </q-item>
     </template>
@@ -59,16 +59,16 @@
           class="overflow-hidden radius-xs"
           type="text"
           v-model="server_name"
-          label="服务器名称"
-          aria-placeholder="服务器名称"
+          :label="$t('server_name')"
+          :aria-placeholder="$t('server_name')"
         />
         <q-input
           filled
           class="overflow-hidden radius-xs"
           type="text"
           v-model="server_url"
-          label="服务器地址"
-          aria-placeholder="服务器地址"
+          :label="$t('server_url')"
+          :aria-placeholder="$t('server_url')"
           lazy-rules
         />
         <q-input
@@ -76,15 +76,15 @@
           class="overflow-hidden radius-xs"
           type="text"
           v-model="server_caption"
-          label="备注"
-          aria-placeholder="备注"
+          :label="$t('server_note')"
+          :aria-placeholder="$t('server_note')"
           lazy-rules
         />
         <q-space />
         <div class="row no-wrap items-center">
-          <q-btn label="取消" flat @click="setCompleted()" />
+          <q-btn :label="$t('cancel')" flat @click="setCompleted()" />
           <q-space />
-          <q-btn label="确认" type="submit" color="primary"/>
+          <q-btn :label="$t('confirm')" type="submit" color="primary"/>
         </div>
       </q-form>
     </q-item>
@@ -98,6 +98,9 @@ import {colorByAt} from "src/hooks/utilits";
 import { fetchServerInfo } from 'src/hooks/team/useServer.js'
 import {useQuasar} from "quasar";
 import { isValidHttpUrl } from 'src/hooks/utilits.js'
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const $q = useQuasar();
 const props = defineProps({
@@ -115,7 +118,7 @@ const server_caption = ref();
 const addServer = async (_server_url) => {
   if(!_server_url) return
   if(!isValidHttpUrl(_server_url)){
-    $q.notify('服务器地址格式错误：必须是 http:// 或 https:// 开头的有效地址')
+    $q.notify($t('server_url_error_tip'))
   }
   if (!_server_url.endsWith('/')) {
     _server_url = _server_url + '/';
@@ -140,7 +143,7 @@ const addServer = async (_server_url) => {
     await getServers();
     add.value = false
   } else {
-    $q.notify('服务器地址无效')
+    $q.notify($t('server_unvailable'))
   }
 }
 const add = ref(false);

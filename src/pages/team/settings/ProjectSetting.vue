@@ -13,7 +13,7 @@
       class="transparent border-bottom"
       style="height: 2.3rem"
     >
-      <span class="font-medium">项目设置</span>
+      <span class="font-medium">{{ $t('project_settings') }}</span>
       <q-space />
       <q-btn dense flat round icon="close" v-close-popup />
     </q-bar>
@@ -48,7 +48,7 @@
             />
           </q-item-section>
           <q-item-section class="text-no-wrap q-pr-md">{{
-            i.label
+            $t(i.label)
           }}</q-item-section>
         </q-item>
       </q-list>
@@ -65,7 +65,7 @@
       v-if="loading"
       class="absolute-full blur-sm column flex-center z-max bg-black"
     >
-      <span>请稍候...</span>
+      <span>{{ $t('please_wait') }}</span>
     </div>
   </q-card>
 </template>
@@ -94,12 +94,12 @@ const byInfo = ref({
 });
 
 const setting_items = ref([
-  { val: "basic", label: "基本信息", icon: "mdi-information-outline" },
-  { val: "enable", label: "功能设置", icon: "toggle_on" },
-  { val: "preferences", label: "偏好设置", icon: "tune" },
-  { val: "role", label: "权限", icon: "add_moderator" },
-  { val: "members", label: "成员", icon: "manage_accounts" },
-  { val: "more", label: "更多", icon: "more_horiz" },
+  { val: "basic", label: "project_setting_basic", icon: "mdi-information-outline" },
+  { val: "enable", label: "project_setting_enable", icon: "toggle_on" },
+  { val: "preferences", label: "project_setting_preferences", icon: "tune" },
+  { val: "role", label: "project_setting_role", icon: "add_moderator" },
+  { val: "members", label: "project_setting_members", icon: "manage_accounts" },
+  { val: "more", label: "project_setting_more", icon: "more_horiz" },
 ]);
 const loading = ref(false);
 </script>

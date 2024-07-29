@@ -5,7 +5,7 @@
     no-caps
     :icon="space_icon"
     :icon-right="isEmpty ? '' : 'unfold_more'"
-    :label="!isEmpty ? teamStore.board?.name : `新建${space_name}`"
+    :label="!isEmpty ? teamStore.board?.name : `${$t('create')}${space_name}`"
     align="left"
     class="full-width btn-fixed-width"
     padding="sm"
@@ -116,7 +116,7 @@
                         square
                         filled
                         type="text"
-                        :placeholder="`${space_name}名称`"
+                        :placeholder="`${space_name}${$t('name')}`"
                         class="radius-xs overflow-hidden"
                         @keyup.enter="updateBoardFn(element.id)"
                         @keyup.ctrl.enter="updateBoardFn(element.id)"
@@ -146,7 +146,7 @@
                         <q-item-section side
                           ><q-icon name="remove"
                         /></q-item-section>
-                        <q-item-section>移除{{ space_name }}</q-item-section>
+                        <q-item-section>{{ $t('remove') }} {{ space_name }}</q-item-section>
                       </q-item>
                     </template>
                   </q-list>
@@ -166,7 +166,7 @@
             <q-item-section side>
               <q-icon name="add_circle" />
             </q-item-section>
-            <q-item-section>{{ `新${space_name}` }}</q-item-section>
+            <q-item-section>{{ `${$t('new')}${space_name}` }}</q-item-section>
           </q-item>
           <q-item v-else class="radius-xs no-padding">
             <q-item-section class="q-pa-xs">
@@ -176,7 +176,7 @@
                 dense
                 square
                 filled
-                :placeholder="`新${space_name}名称`"
+                :placeholder="`${$t('new')}${space_name}${$t('name')}`"
                 @keyup.enter="createBoardFn()"
                 @keyup.ctrl.enter="createBoardFn()"
                 @keydown.esc="create_name = null"
@@ -213,6 +213,9 @@ import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import draggable from "vuedraggable";
 import { teamStore, userStore, mm_wsStore } from "src/hooks/global/useStore.js";
 import { boards } from "./BoradsList.js";
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const props = defineProps({
   isEmpty: {
@@ -229,13 +232,13 @@ const create_name = ref("");
 const space_name = computed(() => {
   let _space;
   if (teamStore.navigation === "kanban") {
-    _space = "工作空间";
+    _space = $t('workspace_kanban');
   }
   if (teamStore.navigation === "classroom") {
-    _space = "班级";
+    _space = $t('workspace_classroom');
   }
   if (teamStore.navigation === "segment") {
-    _space = "桌面";
+    _space = $t('workspace_segment');
   }
   return _space;
 });

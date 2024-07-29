@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-xs radius-xs border q-space font-small">
     <q-icon size="xs" name="event" />
-    结束：{{ date.formatDate(end, "MM/DD") }}
+    {{ $t('end') }} ：{{ date.formatDate(end, "MM/DD") }}
     <q-popup-proxy v-if="calc_auth('overview', 'end', authBase.of)">
       <q-date
         v-model="end"

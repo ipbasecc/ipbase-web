@@ -9,7 +9,7 @@
       :class="$q.dark.mode ? 'bg-grey-10' : 'bg-white'"
       style="height: 40px"
     >
-      <span class="font-medium">收藏的消息：{{ hasMore_thread_Msgs }}</span>
+      <span class="font-medium">{{ $t('favorited_message') }}：{{ hasMore_thread_Msgs }}</span>
     </q-bar>
     <q-scroll-area v-if="flaggeds?.length > 0" class="q-space">
       <q-pull-to-refresh @refresh="fetchMore_flaggedsFn" color="primary">
@@ -38,14 +38,14 @@
             dense
             size="sm"
             padding="xs md"
-            label="加载更多..."
+            :label="$t('load_more')"
             @click="fetchMore_flaggeds"
           />
         </div>
       </q-pull-to-refresh>
     </q-scroll-area>
     <div v-else class="q-space column flex-center">
-      <span>您尚未收藏任何消息!</span>
+      <span>{{ $t('no_favorited_message') }}!</span>
     </div>
   </div>
 </template>
@@ -61,6 +61,9 @@ import {
 } from "src/api/mattermost.js";
 
 import { mmUser, mm_wsStore } from "src/hooks/global/useStore.js";
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const props = defineProps({
   headerless: {
@@ -137,7 +140,7 @@ const fetchMore_flaggedsFn = async (done) => {
 const fetchMore_flaggeds = async () => {
   if (!hasMore_thread_Msgs.value) {
     $q.notify({
-      message: "没有更多消息了",
+      message: $t('no_more_message'),
       position: "top",
     });
     return;

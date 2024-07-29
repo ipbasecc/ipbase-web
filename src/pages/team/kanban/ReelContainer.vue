@@ -137,7 +137,7 @@
                     <q-input
                       v-model="params.data.name"
                       type="text"
-                      placeholder="Reel名称"
+                      :placeholder="`Reel${$t('title')}`"
                       dense
                       square
                       filled
@@ -172,7 +172,7 @@
                   class="radius-xs"
                   @click="deleteColumnFn()"
                 >
-                  <q-item-section>删除Reel</q-item-section>
+                  <q-item-section>{{ $t('delete') }} Reel</q-item-section>
                 </q-item>
               </template>
             </q-list>
@@ -229,6 +229,9 @@ import { useMagicKeys } from "@vueuse/core";
 import SegmentItem from "../card/SegmentItem.vue";
 import CreateSegment from "../card/components/CreateSegment.vue";
 import Bottleneck from "bottleneck";
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const $q = useQuasar();
 const props = defineProps({
@@ -324,10 +327,10 @@ const deleteColumnFn = () => {
   };
   if (columnRef.value.cards.length > 0) {
     $q.dialog({
-      title: "注意！",
-      message: "Reel内包含有卡片，如果删除Reel，卡片也会被清理，是否继续？",
-      cancel: "取消",
-      ok: "确定",
+      title: $t('attention'),
+      message: $t('delete_reel_include_cards_tip'),
+      cancel: $t('cancel'),
+      ok: $t('confirm'),
       class: "shadow-24",
     })
       .onOk(() => {
@@ -544,7 +547,7 @@ const dropCreateCard = async (file) => {
   loading.value = true;
   const column_id = columnRef.value?.id;
   if (!column_id) {
-    $q.notify("缺少Reel ID");
+    $q.notify(`${$t('miss')}Reel ID`);
     return;
   }
   let params = {
@@ -617,7 +620,7 @@ const handleDrop = (e) => {
     } else {
       let folder = items_asitem[i].webkitGetAsEntry();
       if (folder.isDirectory) {
-        $q.notify("此处不支持上传文件夹");
+        $q.notify($t('not_support_upload_dir'));
       }
     }
   }
@@ -699,7 +702,7 @@ watch(
               // 如果当前用户正在弹框内查看该卡片详情，关闭并发出提醒
               if (teamStore.card.id === strapi.data.card_id) {
                 teamStore.card = null;
-                $q.notify("该卡片已被设置为私有，只有卡片成员可查看其内容");
+                $q.notify($t('cant_view_private_card_tip'));
               }
             }
           }

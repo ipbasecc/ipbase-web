@@ -50,7 +50,7 @@
                       <q-item-section side
                         ><q-icon :name="icon.val" :color="icon.color"
                       /></q-item-section>
-                      <q-item-section>{{ icon.tip }}</q-item-section>
+                      <q-item-section>{{ $t(icon.tip) }}</q-item-section>
                     </q-item>
                   </q-list>
                 </q-menu>
@@ -102,7 +102,7 @@
                         type="textarea"
                         class="radius-xs"
                         :placeholder="
-                          element.description || '在此输入该“规划”的摘要'
+                          element.description || $t('schedula_desc_placeholder')
                         "
                       />
                     </q-item>
@@ -116,7 +116,7 @@
                       <q-item-section side
                         ><q-icon name="share"
                       /></q-item-section>
-                      <q-item-section>共享</q-item-section>
+                      <q-item-section>{{ $t('share') }}</q-item-section>
                       <q-item-section v-if="waring(element)" side>
                         <q-icon
                           color="red"
@@ -124,7 +124,7 @@
                           name="mdi-checkbox-blank-circle"
                         >
                           <q-tooltip class="font-medium">
-                            共享已失效
+                            {{ $t('share_expried') }}
                           </q-tooltip>
                         </q-icon>
                       </q-item-section>
@@ -139,7 +139,7 @@
                       <q-item-section side
                         ><q-icon name="delete"
                       /></q-item-section>
-                      <q-item-section>删除</q-item-section>
+                      <q-item-section>{{ $t('delete') }}</q-item-section>
                     </q-item>
                   </q-list>
                 </q-menu>
@@ -151,7 +151,7 @@
                 size="0.7rem"
                 name="mdi-checkbox-blank-circle"
               >
-                <q-tooltip class="font-medium"> 共享已失效 </q-tooltip>
+                <q-tooltip class="font-medium"> {{ $t('share_expried') }} </q-tooltip>
               </q-icon>
             </q-item-section>
             <div
@@ -173,7 +173,7 @@
               <q-icon name="add" />
             </q-item-section>
             <q-item-section class="hover-show transition">
-              新建规划
+              {{ $t('create_schedule') }}
             </q-item-section>
           </q-item>
           <q-item v-else class="radius-xs border q-pa-xs">
@@ -190,7 +190,7 @@
                 @keyup.enter.prevent="create()"
                 filled
                 type="text"
-                placeholder="规划名称"
+                :placeholder="$t('schedule_name')"
               >
                 <template v-slot:prepend>
                   <q-item-section side>
@@ -263,10 +263,10 @@ const props = defineProps({
 
 const { schedules, by_info } = toRefs(props);
 const icons = ref([
-  { val: "event", tip: "正常规划", color: "" },
-  { val: "handshake", tip: "多方协作", color: "blue" },
-  { val: "rocket_launch", tip: "紧张进行中...", color: "orange" },
-  { val: "event_busy", tip: "疯狂赶工中...", color: "negative" },
+  { val: "event", tip: "schedule_tip_event", color: "" },
+  { val: "handshake", tip: "schedule_tip_handshake", color: "blue" },
+  { val: "rocket_launch", tip: "schedule_tip_rocket", color: "orange" },
+  { val: "event_busy", tip: "schedule_tip_busy", color: "negative" },
 ]);
 const findColor_byIcon = (icon) => {
   return icons.value.find((i) => i.val === icon)?.color;

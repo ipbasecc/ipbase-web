@@ -8,7 +8,7 @@
     >
         <OwnerCard :userData="i.attributes" :userId="i.id" :cardType="`user_card`" />
         <q-tooltip v-if="!i.attributes.user_channel?.data?.id">
-            该用户没有创建自己的频道
+            {{ $t('user_have_no_channel') }}
         </q-tooltip>
     </q-item>
   </q-list>

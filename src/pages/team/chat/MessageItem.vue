@@ -17,7 +17,7 @@
           icon="mdi-account"
         />
         <q-avatar v-else :size="`${avatar_size}px`" color="primary">
-          你
+          {{$t('you')}}
         </q-avatar>
       </template>
       <UserAvatar
@@ -60,7 +60,7 @@
           @click="togglePowerpannel('pinneds')"
         >
           <q-icon name="push_pin" color="primary" />
-          <span class="hover-height transition">已置顶</span>
+          <span class="hover-height transition">{{ $t('pinned') }}</span>
         </div>
         <div
           v-if="flagged(msg) && container !== 'flagged'"
@@ -68,7 +68,7 @@
           @click="togglePowerpannel('flaggeds')"
         >
           <q-icon name="bookmark" color="primary" />
-          <span class="hover-height transition">已收藏</span>
+          <span class="hover-height transition">{{ $t('favorited') }}</span>
         </div>
         <template v-if="msg?.reply_count > 0 && !msg?.root_id">
           <q-chip icon="mdi-reply" dense :label="msg.reply_count" />
@@ -120,7 +120,7 @@
                   @click="enterThread(msg)"
                 >
                   <q-item-section side><q-icon name="reply" /></q-item-section>
-                  <q-item-section>回复</q-item-section>
+                  <q-item-section>{{$t('reply')}}</q-item-section>
                 </q-item>
                 <q-item
                   clickable
@@ -131,7 +131,7 @@
                   <q-item-section side
                     ><q-icon name="mdi-heart-pulse"
                   /></q-item-section>
-                  <q-item-section>关注主题</q-item-section>
+                  <q-item-section>{{$t('follow_thread')}}</q-item-section>
                 </q-item>
                 <q-item
                   clickable
@@ -143,7 +143,7 @@
                     ><q-icon name="mdi-book-plus"
                   /></q-item-section>
                   <q-item-section>{{
-                    flagged(msg) ? "取消收藏" : "收藏消息"
+                    flagged(msg) ? $t('unfavorite_message') : $t('favorite_message')
                   }}</q-item-section>
                 </q-item>
                 <q-item
@@ -156,7 +156,7 @@
                     ><q-icon name="mdi-pin"
                   /></q-item-section>
                   <q-item-section>{{
-                    msg.is_pinned ? "取消置顶" : "置顶消息"
+                    msg.is_pinned ? $t('unpin_message') : $t('pin_message')
                   }}</q-item-section>
                 </q-item>
               </q-list>
@@ -189,7 +189,7 @@
       rounded
       outline
       color="primary"
-      label="显示未读历史消息"
+      :label="$t('show_unread_history_message')"
       class="blur-sm"
       @click="getUnreadAfterCache"
     />

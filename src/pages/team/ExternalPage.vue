@@ -21,7 +21,7 @@
             <div class="flex flex-center">
               <q-chip
                 v-if="!cards_hasMore && done"
-                label="已完成全部卡片加载"
+                :label="$t('all_cards_loaded')"
                 class="op-5"
               />
               <q-spinner-dots v-else color="primary" size="2em" />
@@ -72,6 +72,8 @@ import {
 import CardPage from "./card/CardPage.vue";
 import CardItem from "./card/CardItem.vue";
 import BgBrand from "src/components/VIewComponents/BgBrand.vue";
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 
 const props = defineProps({
   team_id: {
@@ -205,7 +207,7 @@ const projectRemovedFn = () => {
 const uiOptions = ref([
   {
     val: "hidecompletedTodo",
-    label: "隐藏已完成待办",
+    label: t('hide_completed_todo'),
     enable: true,
     icon: "mdi-checkbox-marked-circle",
   },

@@ -10,7 +10,7 @@
         <q-btn
           dense
           padding="4px 10px"
-          label="看板"
+          :label="$t('kanban')"
           icon="view_kanban"
           @click="view_modelRef = 'kanban'"
           :color="view_modelRef === 'kanban' ? 'primary' : ''"
@@ -25,7 +25,7 @@
         <q-btn
           dense
           padding="4px 10px"
-          label="列表"
+          :label="$t('list')"
           icon="format_list_bulleted"
           @click="view_modelRef = 'list'"
           :color="view_modelRef === 'list' ? 'primary' : ''"
@@ -40,7 +40,7 @@
         <q-btn
           dense
           padding="4px 10px"
-          label="四象限"
+          :label="$t('quadrant')"
           icon="border_inner"
           @click="view_modelRef = 'quadrant'"
           :color="view_modelRef === 'quadrant' ? 'primary' : ''"

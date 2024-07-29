@@ -27,6 +27,9 @@ import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import localforage from "localforage";
 import { userStore, teamStore, mm_wsStore } from "src/hooks/global/useStore.js";
 import { isEqual } from "lodash-es";
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const userId = computed(() => teamStore.init?.id);
 const props = defineProps({
@@ -105,10 +108,10 @@ const updateDocumentFn = async (val) => {
     };
 
     if (by_info.value.project_id) {
-      updateChatMsg.body = `${userStore.me.username}修改了项目：'${teamStore.project.name}'内的文档：'${document.value.title}'的内容`;
+      updateChatMsg.body = `${userStore.me.username} ${$t('changed_project_props')}'${teamStore.project.name}' ${$t('inner_document')}'${document.value.title}' ${$t('of_content')}`;
     }
     if (by_info.value.card_id) {
-      updateChatMsg.body = `${userStore.me.username}修改了卡片：'${teamStore.card.name}'内的文档：'${document.value.title}'的内容`;
+      updateChatMsg.body = `${userStore.me.username} ${$t('changed_card_props')}'${teamStore.card.name}' ${$t('inner_document')}'${document.value.title}'${document.value.title}' ${$t('of_content')}`;
     }
     if (by_info.value.user_id) {
       process_documentContent_change(res.data);

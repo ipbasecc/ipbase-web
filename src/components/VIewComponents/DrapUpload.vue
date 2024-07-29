@@ -6,7 +6,7 @@
     } drop-zone_${dom_id}`"
     @click="openFilePicker"
   >
-    点击 或 拖拽到此上传
+    {{ $t('click_or_drag_to_upload') }}
     <input
       ref="fileInputRef"
       type="file"
@@ -26,6 +26,9 @@ import { useUploadAvatar } from "src/pages/UserCenter/hooks/useUploadAvatar.js";
 import { updateUserAvatar } from "src/api/strapi.js";
 import localforage from "localforage";
 import useUserStore from "src/stores/user.js";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 const userStore = useUserStore();
 const { me } = useGetMyMatedate;
 
@@ -172,7 +175,7 @@ const handleDrop = (e) => {
     let items_asfile = e.dataTransfer?.files;
     // console.log(items_asfile);
     if (items_asfile.length > 1 && !multiple.value) {
-      $q.notify("此处不支持上传多个文件");
+      $q.notify(t('upload_not_support_mutiple'));
       return;
     }
     let files = [];

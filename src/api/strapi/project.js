@@ -2,6 +2,9 @@ import { api } from "boot/axios";
 import { Notify } from "quasar";
 import { db } from "src/boot/dexie.js";
 import { uiStore } from "src/hooks/global/useStore.js";
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 // 获取用户初始化数据
 export async function init_user() {
@@ -21,7 +24,7 @@ export async function init_user() {
 //用户项目初始获取在init方法中，因此此处必须要分页参数，且起始页必须大于1
 export async function getProjects(page, per_page) {
   if (!page || !per_page) {
-    Notify.create("分页信息不能缺少");
+    Notify.create($t('need_pagination_info'));
     return;
   }
   let options = `?page=${page}&per_page=${per_page}`;
@@ -37,7 +40,7 @@ export async function getProjects(page, per_page) {
 }
 export async function getCards(team_id, page, per_page) {
   if (!page || !per_page) {
-    Notify.create("分页信息不能缺少");
+    Notify.create($t('need_pagination_info'));
     return;
   }
   let options = `?team_id=${team_id}&page=${page}&per_page=${per_page}`;
@@ -53,7 +56,7 @@ export async function getCards(team_id, page, per_page) {
 }
 export async function getFollowedCards(team_id, page, per_page) {
   if (!page || !per_page) {
-    Notify.create("分页信息不能缺少");
+    Notify.create($t('need_pagination_info'));
     return;
   }
   let options = `?team_id=${team_id}&page=${page}&per_page=${per_page}`;
@@ -467,8 +470,8 @@ export async function updateCard(card_id, parmars) {
   } catch (error) {
     Notify.create({
       color: 'red',
-      message: '更新卡片数据时发生错误，请刷新页面',
-      actions: [{ label: '刷新', handler: () => { window.location.reload(); } }],
+      message: $t('update_error_need_refresh'),
+      actions: [{ label: $t('refresh'), handler: () => { window.location.reload(); } }],
     });
   }
 }
@@ -644,8 +647,8 @@ export async function updateTodogroup(todogroup_id, params) {
   } catch (error) {
     Notify.create({
       color: 'red',
-      message: '更新分组数据时发生错误，请刷新页面',
-      actions: [{ label: '刷新', handler: () => { window.location.reload(); } }],
+      message: $t('update_error_need_refresh'),
+      actions: [{ label: $t('refresh'), handler: () => { window.location.reload(); } }],
     });
   }
 }

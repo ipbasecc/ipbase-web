@@ -2,7 +2,7 @@
   <div v-if="card_settings?.length > 0" class="row gap-md">
     <q-list>
       <template v-if="card_settings">
-        <q-item-label header>卡片偏好设置</q-item-label>
+        <q-item-label header>{{ $t('card_preference_settings') }}</q-item-label>
         <q-separator spaced inset class="op-5" />
         <q-item
           v-for="i in card_settings"

@@ -45,10 +45,10 @@
           <q-tooltip class="transparent">
             <q-card bordered>
               <q-card-section>
-                <div class="font-x-large font-bold-600">{{ i.label }}</div>
+                <div class="font-x-large font-bold-600">{{ $t(i.label) }}</div>
                 <q-separator spaced />
                 <div class="font-medium text-no-wrap">
-                  {{ i.description }}
+                  {{ $t(i.description) }}
                 </div>
               </q-card-section>
             </q-card>
@@ -100,41 +100,33 @@ const ipbase_uri = computed(() => {
 const apps = [
   {
     val: "teams",
-    label: "团队",
+    label: 'team',
     icon: "mark_chat_read",
-    description: "基于团队、频道的IM",
+    description: 'app_team_purpose',
     to: "teams",
     enable: true,
   },
   {
     val: "affairs",
-    label: "事务",
+    label: 'affairs',
     icon: "mdi-calendar-clock",
-    description: "管理个人事务",
+    description: 'app_affairs_purpose',
     to: "affairs",
     enable: true,
   },
   {
     val: "ipbase",
-    label: "品牌",
+    label: 'brand',
     icon: "contacts",
-    description: "打造你的个人、团队品牌",
+    description: 'app_brand_purpose',
     to: ipbase_uri.value,
     enable: false,
   },
   {
-    val: "connect",
-    label: "Flame",
-    icon: "panorama_fish_eye",
-    description: "Autodesk Flame中文教程",
-    to: "flame",
-    enable: false,
-  },
-  {
     val: "threads",
-    label: "主题",
+    label: 'threads',
     icon: "mdi-forum",
-    description: "访问你参与讨论的主题",
+    description: 'app_threads_purpose',
     to: "teams/threads",
     enable: !$q.screen.gt.xs,
   },
@@ -162,13 +154,9 @@ const getFirstSegment = (fullPath) => {
   return segments.find((segment) => segment !== "");
 };
 const to = async (i) => {
-  if (i.to === "flame") {
-    window.open("https://flame.vip", "_blank");
-  } else {
-    uiStore.app = i.val;
-    await localforage.setItem("last_module", i.to);
-    await router.push(`/${i.to}`);
-  }
+  uiStore.app = i.val;
+  await localforage.setItem("last_module", i.to);
+  await router.push(`/${i.to}`);
 };
 const topLeave_byRoute = computed(() => getFirstSegment(route.fullPath));
 watchEffect(() => {

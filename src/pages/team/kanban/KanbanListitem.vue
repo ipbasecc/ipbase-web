@@ -65,7 +65,7 @@
                     square
                     filled
                     type="text"
-                    placeholder="看板名称"
+                    :placeholder="$t('kanban_name')"
                     class="radius-xs overflow-hidden"
                     @keyup.enter="updateKanbanFn(kanbanRef.id)"
                     @keyup.ctrl.enter="updateKanbanFn(kanbanRef.id)"
@@ -92,7 +92,7 @@
                     @click="deleteKanbanFn(kanbanRef.id)"
                 >
                   <q-item-section side><q-icon name="remove" /></q-item-section>
-                  <q-item-section>移除此看板</q-item-section>
+                  <q-item-section>{{ $t('remove_this_kanban') }}</q-item-section>
                 </q-item>
               </template>
             </q-list>

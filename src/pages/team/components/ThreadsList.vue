@@ -5,7 +5,7 @@
         flat
         dense
         padding="xs md"
-        :label="`查看全部主题`"
+        :label="$t('view_all_threads')"
         :color="filter === 'all' ? 'primary' : ''"
         @click="filterThreadsFn('all')"
       />
@@ -13,7 +13,7 @@
         flat
         dense
         padding="xs md"
-        :label="`${unread_count} 未读`"
+        :label="`${unread_count} ${$t('unread')}`"
         :color="filter === 'unread' ? 'primary' : ''"
         @click="filterThreadsFn('unread')"
       >
@@ -42,11 +42,11 @@
         color="green"
       >
         <q-tooltip class="transparent">
-          有
+          {{ $t('have') }}
           <span class="q-px-xs text-white bg-primary radius-xs">{{
             threadData.total_unread_threads
           }}</span>
-          条未读
+          {{ $t('items_unread') }}
         </q-tooltip>
       </q-icon>
     </q-toolbar>
@@ -82,7 +82,7 @@
                     :size="18"
                     indicator_size="9px"
                   />
-                  <span class="q-pl-sm hover-highlight transition unselected">{{ thread.reply_count }} 条讨论</span>
+                  <span class="q-pl-sm hover-highlight transition unselected">{{ thread.reply_count }} {{ $t('items_talk_message') }}</span>
                 </q-item-label>
               </q-item-section>
               <div
@@ -96,7 +96,7 @@
       </q-scroll-area>
     </template>
     <div v-else class="q-space column flex-center">
-      <NoItem :content="`没有未阅读主题`" />
+      <NoItem :content="$t('no_unread_thread')" />
     </div>
   </div>
 </template>

@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-xs radius-xs border q-space font-small">
     <q-icon size="xs" name="mdi-calendar-clock" />
-    审核：{{ date.formatDate(deadline, "MM/DD - HH:mm") }}
+    {{ $t('examine') }}：{{ date.formatDate(deadline, "MM/DD - HH:mm") }}
     <q-popup-proxy v-if="calc_auth('overview', 'deadline', authBase.of)">
       <q-date
         v-model="deadline"

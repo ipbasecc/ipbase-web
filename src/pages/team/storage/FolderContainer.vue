@@ -108,7 +108,7 @@
                           <q-item-section side>
                             <q-icon size="sm" name="download" />
                           </q-item-section>
-                          <q-item-section>下载</q-item-section>
+                          <q-item-section>{{ $t('download') }}</q-item-section>
                         </q-item>
                         <q-item
                           v-if="
@@ -127,7 +127,7 @@
                           <q-item-section side>
                             <q-icon size="sm" name="delete" />
                           </q-item-section>
-                          <q-item-section>删除</q-item-section>
+                          <q-item-section>{{ $t('delete') }}</q-item-section>
                         </q-item>
                       </q-list>
                     </q-menu>
@@ -174,7 +174,7 @@
                     <q-item-section side>
                       <q-icon size="sm" name="download" />
                     </q-item-section>
-                    <q-item-section>下载</q-item-section>
+                    <q-item-section>{{ $t('download')}}</q-item-section>
                   </q-item>
                   <q-item
                     v-if="
@@ -189,7 +189,7 @@
                     <q-item-section side>
                       <q-icon size="sm" name="delete" />
                     </q-item-section>
-                    <q-item-section>删除</q-item-section>
+                    <q-item-section>{{ $t('delete')}}</q-item-section>
                   </q-item>
                 </q-list>
               </q-menu>
@@ -200,7 +200,7 @@
           v-if="isActivedFolder && showUpdateArea"
           class="bg-primary column flex-center absolute-full op-2"
         >
-          拖拽文件到此上传
+          {{ $t('drag_here_upload') }}
         </div>
       </q-scroll-area>
     </drag-select>

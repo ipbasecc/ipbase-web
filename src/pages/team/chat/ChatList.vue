@@ -17,7 +17,7 @@
           />
         </q-avatar>
       </q-item-section>
-      <q-item-section>全员群</q-item-section>
+      <q-item-section>{{ $t('all_members_group') }}</q-item-section>
       <div
         v-if="channel_id === project_mm_channel?.id"
         class="absolute-left bg-primary"

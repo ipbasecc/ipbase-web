@@ -11,7 +11,7 @@
         <q-item-section side class="q-pr-sm">
           <q-icon size="xs" name="forum" />
         </q-item-section>
-        <q-item-section>留言讨论</q-item-section>
+        <q-item-section>{{ $t('join_talk') }}</q-item-section>
       </q-item>
       <q-separator spaced class="op-3" />
     </template>
@@ -52,7 +52,7 @@
         <q-item-section side class="q-pr-sm">
           <q-icon size="xs" name="attachment" />
         </q-item-section>
-        <q-item-section>附加文件</q-item-section>
+        <q-item-section>{{ $t('attach_file') }}</q-item-section>
       </q-item>
     </template>
     <template
@@ -68,7 +68,7 @@
         <q-item-section side class="q-pr-sm">
           <q-icon size="xs" name="close" />
         </q-item-section>
-        <q-item-section>删除</q-item-section>
+        <q-item-section>{{ $t('delete') }}</q-item-section>
       </q-item>
     </template>
   </q-list>

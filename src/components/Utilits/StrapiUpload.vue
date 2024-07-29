@@ -32,7 +32,7 @@ import { userStore } from "src/hooks/global/useStore.js";
 const props = defineProps({
   label: {
     type: String,
-    default: "点击按钮选择文件，或拖拽文件到下方",
+    default: '',
   },
   accept: {
     type: String,

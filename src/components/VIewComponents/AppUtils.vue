@@ -20,7 +20,7 @@
               <q-icon :name="i.icon"></q-icon>
             </q-item-section>
             <q-item-section>
-              <q-item-label>{{ i.label }}</q-item-label>
+              <q-item-label>{{ $t(i.label) }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
@@ -83,6 +83,7 @@ import localforage from "localforage";
 
 const is_development = process.env.DEV;
 const { locale } = useI18n({ useScope: "global" });
+
 const localeOptions = [
   { val: "zh-CN", label: "中文" },
   { val: "en-US", label: "English" },
@@ -110,8 +111,8 @@ onBeforeMount(() => {
 
 const helpItem = ref();
 const helpItems = [
-  { val: "manual", label: "操作手册", icon: "support" },
-  { val: "shortcut", label: "快捷键", icon: "keyboard_command_key" },
+  { val: "manual", label: "manual", icon: "support" },
+  { val: "shortcut", label: "shortcut", icon: "keyboard_command_key" },
 ];
 const infoDlg = computed(() => helpItem.value !== void 0);
 </script>

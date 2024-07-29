@@ -49,7 +49,7 @@
             color="primary"
             dense
             icon="chat"
-            :label="user_idRef === self_user_id ? '给自己留言' : '发送消息'"
+            :label="user_idRef === self_user_id ? $t('send_to_self') : $t('send_message')"
             class="full-width"
             @click="createDirectChannel(user_idRef, self_user_id)"
           />

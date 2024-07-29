@@ -32,7 +32,7 @@
           @click="backHome()"
         />
         <q-toolbar-title>
-          {{ kanban_id ? "看板私密" + asTitle : "个人" + asTitle }}
+          {{ kanban_id ? $t('todo_attach_txt_private_kanban') + asTitle : $t('todo_attach_txt_person') + asTitle }}
         </q-toolbar-title>
         <q-space />
         <PersonTip :kanban_id :card />
@@ -109,7 +109,7 @@
                   {{ i.name }}
                   <slot name="header"></slot>
                   <q-tooltip v-if="!uiStore.isShared && !isFeedback">
-                    <span>双击改名</span>
+                    <span>{{ $t('double_click_change_name') }}</span>
                   </q-tooltip>
                 </span>
                 <div class="row no-wrap gap-xs hover-show transition">
@@ -130,7 +130,7 @@
                           : 'bg-grey-1 text-grey-10'
                       "
                     >
-                      刷新
+                    {{ $t('refresh') }}
                     </q-tooltip>
                   </q-btn>
                   <q-btn
@@ -152,7 +152,7 @@
                           : 'bg-grey-1 text-grey-10'
                       "
                     >
-                      添加待办分组
+                      {{$t('add_todogroup')}}
                     </q-tooltip>
                   </q-btn>
                   <q-btn flat dense size="sm" round icon="more_vert">
@@ -175,7 +175,7 @@
                             dense
                             filled
                             type="text"
-                            placeholder="分组名称"
+                            :placeholder="$t('group_name')"
                             class="col"
                             @keyup.esc="cannelUpdateGroupHandler()"
                             @keyup.ctrl.enter="updateTodogroupFn(i)"
@@ -238,8 +238,8 @@
                           <q-item-section class="q-pr-md">
                             {{
                               i.todos?.length > 0 && rf_deleteTodogroup
-                                ? "删除该分组及其所有待办？"
-                                : "删除该分组"
+                                ? $t('rf_delete_todogroup')
+                                : $t('delete_todogroup')
                             }}
                           </q-item-section>
                         </q-item>
@@ -260,7 +260,7 @@
                   square
                   autofocus
                   type="text"
-                  placeholder="待办分组名称"
+                  :placeholder="$t('todogroup_name')"
                   @keyup.esc="updateTodogroup_target = null"
                   @keyup.enter="updateTodogroupFn(i)"
                 >
@@ -346,7 +346,7 @@
                       autofocus
                       autogrow
                       type="text"
-                      placeholder="待办内容"
+                      :placeholder="$t('todo_content')"
                       @keydown.esc="cannelCreateTodo()"
                       @keyup.ctrl.enter="keepCreate(i)"
                     >
@@ -365,7 +365,7 @@
                       <q-btn
                         flat
                         dense
-                        label="取消"
+                        :label="$t('cancel')"
                         padding="xs sm"
                         @click="cannelCreateTodo"
                       />
@@ -374,7 +374,7 @@
                         :disable="!todo_params.data.content"
                         dense
                         color="primary"
-                        label="确认"
+                        :label="$t('confirm')"
                         padding="xs sm"
                         @click="createTodoFn(i, '')"
                       />
@@ -409,7 +409,7 @@
                 dense
                 flat
                 icon="add"
-                label="新建待办分组"
+                :label="$t('add_todogroup')"
                 align="left"
                 class="full-width"
                 @mouseenter="uiStore.dragKanbanScrollEnable = false"
@@ -427,7 +427,7 @@
                       dense
                       square
                       filled
-                      placeholder="分组名称"
+                      :placeholder="$t('todogroup_name')"
                       @keyup.esc="createTodogroup_ing = false"
                       @keyup.ctrl.enter="createTodogroupFn()"
                       @keyup.enter="createTodogroupFn()"
@@ -457,7 +457,7 @@
                   dense
                   square
                   filled
-                  placeholder="分组名称"
+                  :placeholder="$t('todogroup_name')"
                   @keyup.esc="createTodogroup_ing = false"
                   @keyup.ctrl.enter="createTodogroupFn()"
                   @keyup.enter="createTodogroupFn()"
@@ -493,7 +493,7 @@
               square
               autofocus
               type="text"
-              placeholder="待办分组名称"
+              :placeholder="$t('todogroup_name')"
               @keyup.esc="createTodogroup_ing = false"
               @keyup.ctrl.enter="createTodogroupFn()"
               @keyup.enter="createTodogroupFn()"
@@ -526,7 +526,7 @@
               <q-btn
                 flat
                 icon="add"
-                :label="`新建${asTitle}分组`"
+                :label="`${$t('create')}${asTitle}${$t('group')}`"
                 class="border q-mt-md"
                 @click="createGroupHandler"
               />
@@ -601,7 +601,7 @@
                       autofocus
                       filled
                       type="text"
-                      placeholder="待办分组名称"
+                      :placeholder="$t('todogroup_name')"
                       class="undrag"
                       @keyup.esc="updateTodogroup_target = null"
                       @keyup.ctrl.enter="updateTodogroupFn(i)"
@@ -659,7 +659,7 @@
                             <q-icon name="mdi-playlist-plus" size="xs" />
                           </q-item-section>
                           <q-item-section class="q-pr-md">
-                            增加待办
+                            {{$t('add_todo')}}
                           </q-item-section>
                         </q-item>
                         <q-item
@@ -672,7 +672,7 @@
                             <q-icon name="mdi-plus-circle-outline" size="xs" />
                           </q-item-section>
                           <q-item-section class="q-pr-md">
-                            增加分组
+                            {{$t('add_todogroup')}}
                           </q-item-section>
                         </q-item>
                       </template>
@@ -696,7 +696,7 @@
                             ><q-icon name="mdi-close" size="xs"
                           /></q-item-section>
                           <q-item-section class="q-pr-md"
-                            >删除该分组</q-item-section
+                            >{{$t('delete_todogroup')}}</q-item-section
                           >
                         </q-item>
                         <template v-if="i.todos?.length > 0">
@@ -710,7 +710,7 @@
                               <q-icon name="mdi-close-circle" size="xs" />
                             </q-item-section>
                             <q-item-section class="q-pr-md">
-                              强制删除该分组
+                              {{$t('rf_delete_todogroup')}}
                             </q-item-section>
                             <div class="absolute-full bg-negative op-2"></div>
                           </q-item>
@@ -849,7 +849,7 @@
                         <q-btn
                           flat
                           dense
-                          label="取消"
+                          :label="$t('cancel')"
                           padding="xs sm"
                           @click="cannelCreateTodo"
                         />
@@ -858,7 +858,7 @@
                           :disable="!todo_params.data.content"
                           dense
                           color="primary"
-                          label="确认"
+                          :label="$t('confirm')"
                           padding="xs sm"
                           @click="createTodoFn(i, '')"
                         />
@@ -898,7 +898,7 @@
                     : 'bg-grey-1 text-grey-10'
                 "
               >
-                添加待办分组
+                {{ $t('add_todogroup') }}
               </q-tooltip>
             </q-btn>
           </div>
@@ -916,7 +916,7 @@
               <q-btn
                 flat
                 icon="add"
-                label="新建清单分组"
+                :label="$t('add_todogroup')"
                 class="border"
                 @click="createGroupHandler"
               />
@@ -932,7 +932,7 @@
               square
               autofocus
               type="text"
-              placeholder="待办分组名称"
+              :placeholder="$t('todogroup_name')"
               @keyup.esc="createTodogroup_ing = false"
               @keyup.enter="createTodogroupFn()"
             >
@@ -956,7 +956,7 @@
         <q-card-section class="q-pa-xs">
           <StrapiUpload
             :bordered="false"
-            :label="`附加文件`"
+            :label="$t('attach_file')"
             class="no-padding fit"
             color="transparent"
             accept=".jpg,.png,.mp4,.mov,.m4v,.jpeg,.png,.webp,.svg,.avi,.pdf,.ppt,.pptx,.doc,.docx"
@@ -964,7 +964,7 @@
           ></StrapiUpload>
         </q-card-section>
         <q-card-actions align="left" class="q-pa-xs border-top">
-          <q-btn flat label="取消" color="primary" v-close-popup />
+          <q-btn flat :label="$t('cancel')" color="primary" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>

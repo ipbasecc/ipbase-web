@@ -1,7 +1,7 @@
 <template>
   <q-card bordered class="fit column no-wrap">
     <q-bar dark class="transparent border-bottom" style="height: 2.3rem">
-      <span class="font-medium">{{ title }}</span>
+      <span class="font-medium">{{ $t('title') }}{{ $t('settings') }}</span>
       <q-space />
       <q-btn dense flat round icon="close" v-close-popup />
     </q-bar>
@@ -22,7 +22,7 @@
             <q-icon :name="i.icon" />
           </q-item-section>
           <q-item-section class="text-no-wrap q-pr-md">{{
-            i.label
+            $t('i.label')
           }}</q-item-section>
         </q-item>
       </q-list>
@@ -45,14 +45,14 @@
                 checked-icon="task_alt"
                 unchecked-icon="panorama_fish_eye"
                 :val="i.val"
-                :label="i.label"
+                :label="$t('i.label')"
                 class="q-pr-lg"
                 @update:model-value="updateCardFn()"
               />
             </q-card-section>
           </q-card>
         </div>
-        <div v-else class="fit flex flex-center">您无权修改此设置</div>
+        <div v-else class="fit flex flex-center">{{ $t('no_premission_perform_operation') }}</div>
       </div>
     </div>
   </q-card>
@@ -94,23 +94,23 @@ const authBase = computed(() => {
 });
 const settingforRef = ref(toRef(props, "settingfor").value);
 const per_fixs = [
-  { val: "kanban", label: "任务" },
-  { val: "article", label: "文章" },
-  { val: "document", label: "文集" },
-  { val: "storage", label: "存储" },
+  { val: "kanban", label: "kanban" },
+  { val: "article", label: "article" },
+  { val: "document", label: "document" },
+  { val: "storage", label: "storage" },
 ];
 const title = `${
-  per_fixs.find((i) => i.val === teamStore.kanban?.type).label || "任务"
-}设置`;
+  per_fixs.find((i) => i.val === teamStore.kanban?.type).label || "task"
+}`;
 const setting_items = ref([
-  { val: "role", label: "权限", icon: "add_moderator" },
-  { val: "private", label: "可见性", icon: "mdi-eye-off" },
+  { val: "role", label: "role", icon: "add_moderator" },
+  { val: "private_setting", label: "role", icon: "mdi-eye-off" },
 ]);
 
 const isPrivate = ref((teamStore.card?.private && "private") || "public");
 const isPrivate_items = [
-  { val: "public", label: "公开" },
-  { val: "private", label: "私有" },
+  { val: "public", label: "public" },
+  { val: "private", label: "private" },
 ];
 const isCreator = computed(
   () => teamStore.card?.creator?.id === userStore.userId

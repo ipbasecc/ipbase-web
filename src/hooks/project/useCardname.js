@@ -9,7 +9,7 @@ function getFirstText(jsonData) {
         }
         }
     } else {
-        return '未命名任务';
+        return 'untitled_task';
     }
 }
 const genName = (i) => {

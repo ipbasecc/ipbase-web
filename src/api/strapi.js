@@ -1,7 +1,9 @@
 import { api } from "boot/axios";
 import localforage from "localforage";
 import {Notify} from "quasar";
+import { i18n } from 'src/boot/i18n.js';
 
+const $t = i18n.global.t;
 export async function server(_url) {
   try {
     const res = await api.get(_url);
@@ -70,8 +72,8 @@ export async function updateUserTodogroups(params) {
   } catch (error) {
     Notify.create({
       color: 'red',
-      message: '更新分组数据时发生错误，请刷新页面',
-      actions: [{ label: '刷新', handler: () => { window.location.reload(); } }],
+      message: $t('updateUserTodogroups_error_feedback'),
+      actions: [{ label: $t('refresh'), handler: () => { window.location.reload(); } }],
     });
   }
 }

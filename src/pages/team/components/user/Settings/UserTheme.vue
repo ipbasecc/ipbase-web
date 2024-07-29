@@ -13,7 +13,7 @@
           <q-avatar icon="mdi-theme-light-dark" />
         </q-item-section>
         <q-item-section>
-          <q-item-label>深色</q-item-label>
+          <q-item-label>{{ $t('dark_mode') }}</q-item-label>
         </q-item-section>
         <q-item-section side>
           <q-icon
@@ -36,7 +36,7 @@
           <q-avatar icon="dark_mode" />
         </q-item-section>
         <q-item-section>
-          <q-item-label>亮色</q-item-label>
+          <q-item-label>{{ $t('light_mode') }}</q-item-label>
         </q-item-section>
         <q-item-section side>
           <q-icon

@@ -28,7 +28,7 @@
         <e-resources v-if="!isShare">
           <e-resource
             field="OwnerId"
-            title="负责人"
+            :title="$t('executor')"
             name="Owners"
             :dataSource="ownerDataSource"
             textField="OwnerText"

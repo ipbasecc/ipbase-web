@@ -12,7 +12,7 @@
       </div>
       <template  v-if="!readonlyRef">
         <q-separator spaced />
-        <q-input v-model="CreateTagParmas.data.name" dense filled square type="text" label="新标签">
+        <q-input v-model="CreateTagParmas.data.name" dense filled square type="text" :label="$t('new_tag')">
             <template v-slot:append>
                 <q-btn v-if="CreateTagParmas.data.name" color="primary" round dense size="sm" icon="add" @click="createTagFn" />
             </template>

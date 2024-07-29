@@ -23,7 +23,7 @@
         >
           <q-tab
             v-for="i in sections"
-            :key="i.val" :name="i.val" :label="i.label" :icon="i.icon"
+            :key="i.val" :name="i.val" :label="$t(i.label)" :icon="i.icon"
             class="transition"
             :class="section === i.val ? 'op-none' : 'op-7'"
             style="justify-content: flex-start"
@@ -61,8 +61,8 @@ import OtherSetting from "./Settings/OtherSetting.vue";
 
 const section = ref("theme");
 const sections = [
-  {val: 'theme', label: '主题', icon: 'mdi-theme-light-dark'},
-  {val: 'profile', label: '个人资料', icon: 'info'},
-  {val: 'others', label: '其它', icon: 'mdi-dots-vertical'},
+  {val: 'theme', label: 'theme', icon: 'mdi-theme-light-dark'},
+  {val: 'profile', label: 'profile', icon: 'info'},
+  {val: 'others', label: 'others', icon: 'mdi-dots-vertical'},
 ]
 </script>

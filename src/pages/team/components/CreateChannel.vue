@@ -1,7 +1,7 @@
 <template>
     <q-card bordered style="min-width: 24rem;">
         <q-card-section class="row no-wrap q-pa-sm border-bottom">
-            <div class="font-larger q-ml-sm">新建讨论频道</div>
+            <div class="font-larger q-ml-sm">{{ $t('create_chat_channel') }}</div>
             <q-space />
             <q-btn icon="close" flat round dense size="sm" v-close-popup />
         </q-card-section>
@@ -35,7 +35,7 @@
                 v-model="createChannelparams.data.type"
                 checked-icon="task_alt"
                 unchecked-icon="panorama_fish_eye"
-                :label="i.label"
+                :label="$t(i.label)"
                 :icon="i.icon"
                 :val="i.val"
             />
@@ -45,7 +45,7 @@
             <q-btn
                 dense
                 color="primary"
-                label="创建"
+                :label="$t('create')"
                 class="full-width"
                 v-close-popup
                 :loading="loading"
@@ -70,8 +70,8 @@ const createChannelparams = ref({
   },
 });
 const CHANNEL_TYPES = [
-    { val: 'O', label: '公共频道', icon: 'public'},
-    { val: 'P', label: '私有频道', icon: 'lock'},
+    { val: 'O', label: 'public_channel', icon: 'public'},
+    { val: 'P', label: 'private_channel', icon: 'lock'},
 ]
 const findIconByType = (type) => {
     return CHANNEL_TYPES.find(item => item.val === type)?.icon || 'public'

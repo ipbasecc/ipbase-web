@@ -32,7 +32,7 @@
         class="font-large font-bold-600 relative-position"
         >{{ belonged?.description }}</span
       >
-      <span v-else class="op-5 font-medium">双击此处添加概述</span>
+      <span v-else class="op-5 font-medium">{{ $t('doubel_click_add_desc')}}</span>
     </div>
   </div>
 </template>
@@ -45,6 +45,9 @@ import {
   userStore,
   teamStore,
 } from "src/hooks/global/useStore.js";
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const props = defineProps({
   wasAttached_to: {
@@ -84,7 +87,7 @@ const updateProjectFn = async () => {
       belonged.value.description = res.data.description;
       change_ing.value = false;
       let chat_Msg = {
-        body: `${userStore.me.username}将项目摘要修改为：${res.data.description}`,
+        body: `${userStore.me.username} ${$t('chang_project_desc_to')} ${res.data.description}`,
         props: {
           strapi: {
             data: {
@@ -106,7 +109,7 @@ const updateProjectFn = async () => {
       teamStore.card.description = res.data.description;
       change_ing.value = false;
       let chat_Msg = {
-        body: `${userStore.me.username}将卡片摘要修改为：${res.data.description}`,
+        body: `${userStore.me.username} ${$t('chang_card_desc_to')} ${res.data.description}`,
         props: {
           strapi: {
             data: {

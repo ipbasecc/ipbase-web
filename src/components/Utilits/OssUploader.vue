@@ -24,7 +24,7 @@
             dense
             flat
           >
-            <q-tooltip>清除全部</q-tooltip>
+            <q-tooltip>{{ $t('clean_all') }}</q-tooltip>
           </q-btn>
           <q-btn
             v-if="scope.uploadedFiles.length > 0"
@@ -34,13 +34,13 @@
             dense
             flat
           >
-            <q-tooltip>清除已完成</q-tooltip>
+            <q-tooltip>{{ $t('clean_all_complate') }}</q-tooltip>
           </q-btn>
           <div class="column no-wrap q-space">
             <span class="font-large font-bold-600">{{ label }}</span>
             <span class="font-small op-7 text-limit" style="max-width: 40ch">
-              点击右侧按钮、或拖拽图片到此处上传预览图
-              <q-tooltip> 支持：{{ acceptRef }} </q-tooltip>
+              {{ $t('upload_tip_rBtn') }}
+              <q-tooltip> {{ $t('support') }}：{{ acceptRef }} </q-tooltip>
             </span>
           </div>
           <q-btn
@@ -53,7 +53,7 @@
             flat
           >
             <q-uploader-add-trigger />
-            <q-tooltip>选取文件</q-tooltip>
+            <q-tooltip>{{ $t('pick_file') }}</q-tooltip>
           </q-btn>
           <q-btn
             v-if="scope.canUpload && !autoUploadRef"
@@ -64,7 +64,7 @@
             dense
             :flat="uploadState === ''"
           >
-            <q-tooltip>上传文件</q-tooltip>
+            <q-tooltip>{{ $('upload_file') }}</q-tooltip>
           </q-btn>
         </div>
       </div>
@@ -72,7 +72,7 @@
     <template v-if="completed" v-slot:list="scope">
       <q-list separator>
         <q-item>
-          <q-item-label class="full-width ellipsis"> 上传完成 </q-item-label>
+          <q-item-label class="full-width ellipsis"> {{ $t('upload_complated') }} </q-item-label>
         </q-item>
         <q-item v-for="file in scope.files" :key="file.__key">
           <q-item-label class="full-width ellipsis">
@@ -90,6 +90,9 @@ import localforage from "localforage";
 
 import Bottleneck from "bottleneck";
 import { userStore, ossStore } from "src/hooks/global/useStore.js";
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const uploadQueue = new Bottleneck({ maxConcurrent: 5 });
 
@@ -106,7 +109,7 @@ getMe();
 const props = defineProps({
   label: {
     type: String,
-    default: "点击按钮选择文件，或拖拽文件到下方",
+    default: '',
   },
   accept: {
     type: String,
@@ -198,7 +201,7 @@ const uploadFile = async (file, username, id) => {
         url: res,
         name: file.name,
         size: fileSize,
-        caption: `${username}于${new Date().toISOString()}上传`,
+        caption: `${username} ${t('by_time')} ${new Date().toISOString()} ${t('upload')}`,
         hash: id + "-" + file.name,
         mime: file.type,
         provider: "yihu",
@@ -251,7 +254,7 @@ const confirmUpload = async (files) => {
             }
           });
         } catch (error) {
-          console.error(`上传失败：${file.name}`, error);
+          console.error(`${t('upload_error')}：${file.name}`, error);
         }
       })
     );
@@ -261,7 +264,7 @@ const confirmUpload = async (files) => {
     return complateFiles;
   } catch (e) {
     // 处理或抛出错误
-    console.log("文件获取错误" + e);
+    console.log(t('get_file_error') + e);
     throw e;
   }
 };

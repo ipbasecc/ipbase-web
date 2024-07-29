@@ -14,7 +14,7 @@
       <q-input
         v-model="params.data.name"
         type="text"
-        placeholder="在此输入名称"
+        :placeholder="$t('type_name_here')"
         dense
         square
         filled
@@ -52,7 +52,7 @@
           dense
           padding="xs md"
           flat
-          label="取消"
+          :label="$t('cancel')"
           @click.stop="closeCreate()"
         />
         <q-space />
@@ -61,7 +61,7 @@
           padding="xs md"
           color="primary"
           icon="done_all"
-          label="创建"
+          :label="$t('create')"
           :disable="loading"
           @click="createCardFn"
         />

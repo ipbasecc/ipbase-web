@@ -35,7 +35,7 @@
           />
         </template>
         <div v-else class="fit flex flex-center">
-          {{ noVideoRef }}
+          {{ $t(noVideoRef) }}
         </div>
       </q-responsive>
       <div v-if="fileType === 'audio'" class="column no-wrap q-pa-sm">
@@ -56,7 +56,7 @@
                       <q-item-section side
                         ><q-icon name="mdi-pencil" size="sm"
                       /></q-item-section>
-                      <q-item-section>编辑</q-item-section>
+                      <q-item-section>{{ $t('edit') }}</q-item-section>
                     </q-item>
                   </q-list>
                 </q-menu>
@@ -78,7 +78,7 @@
     <div v-if="fileType === 'others' || noPreviewRef" class="q-py-sm q-px-sm">
       <q-list>
         <q-item-label v-if="!noPreviewRef"
-          >文件不支持直接查看，请下载后查看：</q-item-label
+          >{{ $t('cant_preview_need_download') }}：</q-item-label
         >
         <q-item
           class="radius-xs border q-mt-sm"
@@ -130,7 +130,7 @@ const props = defineProps({
   },
   noVideo: {
     type: String,
-    default: "该作品没有上传视频",
+    default: "no_video",
   },
   noPreview: {
     type: Boolean,

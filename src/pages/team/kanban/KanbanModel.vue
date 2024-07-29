@@ -99,7 +99,7 @@
                 <q-input
                   v-model="new_column_name"
                   type="text"
-                  :placeholder="`${columnLabel}名称`"
+                  :placeholder="`${columnLabel} ${$t('title')}`"
                   dense
                   square
                   filled
@@ -136,7 +136,7 @@
                 align="left"
                 color="primary"
                 icon="add"
-                :label="`添加新${columnLabel}`"
+                :label="`${$t('add_new')}${columnLabel}`"
                 @click="new_column_ing = true"
               />
               <div
@@ -147,7 +147,7 @@
                 class="q-px-xs q-pt-xs q-pb-xl cursor-pointer transition font-medium hover-highlight-lg"
                 @click="new_column_ing = true"
               >
-                新建{{ columnLabel }}
+                {{ $t('create') }} {{ columnLabel }}
               </div>
             </div>
           </template>
@@ -156,7 +156,7 @@
     </q-scroll-area>
   </template>
   <div v-else class="fit flex flex-center">
-    <span class="op-5">您没有查看该内容的权限</span>
+    <span class="op-5">{{ $t('no_premission_to_view') }}</span>
   </div>
   <LoadingBlock v-if="loading" />
 </template>
@@ -189,6 +189,9 @@ import localforage from "localforage";
 import ReelContainer from "./ReelContainer.vue";
 import SegmentPage from "../card/SegmentPage.vue";
 import { onKeyStroke } from "@vueuse/core";
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const userId = computed(() => teamStore.init?.id);
 const props = defineProps({
@@ -210,7 +213,7 @@ const isShared = computed(() => uiStore.isShared)
 const columnLabel = computed(() => {
   let _label;
   if (kanban.value?.type === "kanban") {
-    _label = "分栏";
+    _label = $t('column');
   } else if (kanban.value?.type === "segment") {
     _label = "Reel";
   }

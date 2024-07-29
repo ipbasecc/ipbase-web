@@ -27,12 +27,11 @@ export function _ws() {
         }
       } else {
         Notify.create({
-          message:
-            "WebSocket 无法连接，部分功能可能无法使用，如果发现功能没有正常执行，可以在操作后手动刷新页面",
+          message: t('ws_error_need_refresh_tip'),
           position: "top",
           color: "negative",
           actions: [
-            { label: '刷新', color: 'positive', handler: () => { window.location.reload() } }
+            { label: t('refresh'), color: 'positive', handler: () => { window.location.reload() } },
           ]
         });
       }
@@ -69,13 +68,13 @@ export function _ws() {
     });
 
     ws.addEventListener("error", (event) => {
-      console.error(`WebSocket错误: ${event}`);
+      console.error(`WebSocket error: ${event}`);
       closeWs();
       token = localStorage.getItem("mmtoken");
       if(token){
         // 重新连接
         setTimeout(() => {
-          console.log(`WebSocke 离线，10秒后尝试重连...`);
+          console.log(`WebSocke offline,10 secends later reconnect...`);
           reConnect();
         }, 10000);
       }
@@ -89,7 +88,7 @@ export function _ws() {
       token = localStorage.getItem("mmtoken");
       if(token) {
         setTimeout(() => {
-          console.log(`WebSocke 离线，10秒后尝试重连...`);
+          console.log(`WebSocke offline,10 secends later reconnect...`);
           reConnect();
         }, 10000);
       }

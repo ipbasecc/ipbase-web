@@ -4,10 +4,13 @@ import { Notify } from "quasar";
 
 import { computed } from "vue";
 import { mm_wsStore, teamStore } from "src/hooks/global/useStore.js";
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const offlineNotify = () => {
   Notify.create({
-    message: "实时消息服务离线，其他人需要刷新页面才能看到你的更新",
+    message: $time('ws_offline_tip'),
   });
 };
 
