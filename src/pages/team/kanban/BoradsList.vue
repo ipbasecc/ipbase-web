@@ -1,5 +1,5 @@
 <template>
-  <q-list v-if="teamStore.project && boards" class="fit column no-wrap q-pa-xs">
+  <q-list v-if="teamStore.project && boards && members && roles" class="fit column no-wrap q-pa-xs">
     <template v-if="useAuths('read', ['board'], members, roles)">
       <div
         v-if="

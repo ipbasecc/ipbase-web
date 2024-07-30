@@ -1,5 +1,6 @@
 import { userStore } from "src/hooks/global/useStore.js";
 function useAuths(field, collections, members, roles) {
+  if(!members || !roles) return
   // console.log("members", members);
   const __calc_auth = (_ACLs) => {
     let authArr = _ACLs.map(
@@ -18,7 +19,7 @@ function useAuths(field, collections, members, roles) {
   // 用户的所有角色id集合
   const _userMember_roles = members
     .filter((i) => i.by_user?.id === Number(userStore.userId))
-    ?.map((j) => j.member_roles.map((k) => k.id))
+    ?.map((j) => j.member_roles?.map((k) => k.id))
     .flat(3);
   // console.log("_userMember_roles", _userMember_roles);
   // 筛选出用户在卡片中的角色
