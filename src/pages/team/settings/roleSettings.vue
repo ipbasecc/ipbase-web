@@ -9,7 +9,7 @@
             v-for="i in role"
             :key="i.id"
             :name="i.subject"
-            :label="translate(i.subject)"
+            :label="$t(`field_${i.subject}`)"
             no-caps
           >
             <q-menu
@@ -44,7 +44,7 @@
             square
             filled
             type="text"
-            placeholder="角色名称"
+            :placeholder="$t('role_name')"
           >
             <template #append>
               <q-btn flat dense round icon="check" @click="createRole()" />
@@ -73,14 +73,14 @@
           class="column no-wrap gap-sm"
         >
           <span class="border-bottom q-py-sm font-larger font-bold-600">{{
-            translate(collection.collection)
+            $t(`field_${collection.collection}`)
           }}</span>
           <div v-if="collection.collection !== 'project'" class="row gap-md">
             <q-checkbox
               v-model="collection.read"
               dense
               size="xs"
-              :label="translate('read')"
+              :label="$t(`field_read`)"
               :disable="disable_checkbox_collection"
               :class="collection.read ? '' : 'op-3'"
               @click="update()"
@@ -89,7 +89,7 @@
               v-model="collection.create"
               dense
               size="xs"
-              :label="translate('create')"
+              :label="$t(`field_create`)"
               :disable="disable_checkbox_collection"
               :class="collection.create ? '' : 'op-3'"
               @click="update()"
@@ -98,19 +98,19 @@
               v-model="collection.modify"
               dense
               size="xs"
-              :label="translate('modify')"
+              :label="$t(`field_modify`)"
               disable
               :class="collection.modify ? '' : 'op-3'"
               @click="update()"
               ><q-tooltip>
-                此处根据分类字段的配置权限自动设置
+                {{ $t('permission_autoset_tip') }}
               </q-tooltip></q-checkbox
             >
             <q-checkbox
               v-model="collection.delete"
               dense
               size="xs"
-              :label="translate('delete')"
+              :label="$t(`field_delete`)"
               :disable="disable_checkbox_collection"
               :class="collection.delete ? '' : 'op-3'"
               @click="update()"
@@ -126,7 +126,7 @@
                   v-model="field.modify"
                   dense
                   size="xs"
-                  :label="translate(field.field)"
+                  :label="$t(`field_${field.field}`)"
                   :disable="
                     disable_checkbox_collection ||
                     disable_checkbox_field(collection, field.field)
@@ -140,7 +140,7 @@
                       $q.dark.mode ? 'bg-grey-10' : 'bg-grey-1'
                     }`"
                   >
-                    仅限管理人员配置
+                  {{ $t('set_admin_only_tip') }}
                   </q-tooltip>
                 </q-checkbox>
               </template>
@@ -150,7 +150,7 @@
       </q-scroll-area>
     </template>
     <div v-else class="fit flex flex-center">
-      <span class="op-5">您无权设置此处内容</span>
+      <span class="op-5">{{ $t('set_no_permission_tip') }}</span>
     </div>
   </div>
 </template>
@@ -175,6 +175,10 @@ import {
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import { useQuasar } from "quasar";
 import { userStore, teamStore } from "src/hooks/global/useStore.js";
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
+
 const userId = computed(() => teamStore.init?.id);
 
 const props = defineProps({
@@ -248,6 +252,7 @@ onBeforeMount(() => {
 
 onMounted(() => {
   init();
+  console.log('role', role.value);
 });
 const disable_checkbox_collection = computed(
   () =>
@@ -359,7 +364,7 @@ const createRole_params = ref({
 const createRole = async () => {
   let role_alreadyIn = role.value.map((i) => i.subject);
   if (role_alreadyIn.includes(createRole_params.value.subject)) {
-    $q.notify("已存在相同角色");
+    $q.notify($t('same_role_exit_tip'));
     return;
   }
   if (isCardRef.value) {

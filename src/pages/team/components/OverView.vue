@@ -57,7 +57,7 @@
           class="q-space q-ml-sm"
           @dblclick="version_update_ing = current_version?.id"
         >
-          {{ current_version?.name }}
+          {{ $t(current_version?.name) }}
           <q-tooltip
             class="bg-black text-white"
             anchor="top left"
@@ -68,7 +68,7 @@
         </span>
       </template>
       <span v-else class="q-space q-ml-sm">
-        {{ current_version?.name }}
+        {{ $t(current_version?.name) }}
       </span>
       <q-input
         v-if="version_update_ing === current_version?.id"

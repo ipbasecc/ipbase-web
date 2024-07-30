@@ -13,10 +13,10 @@
         >
           <q-item-section>
             <q-item-label class="font-larger font-bold-600">{{
-              i.label
+              $t(i.label)
             }}</q-item-label>
             <q-item-label v-if="i.description" caption lines="2" class="op-7">{{
-              i.description
+              $t(i.description)
             }}</q-item-label>
           </q-item-section>
           <q-item-section avatar>

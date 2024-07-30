@@ -35,6 +35,7 @@
         :dense="!inDilg"
         :vertical="inDilg"
         :inline-label="!inDilg"
+        no-caps
         :style="!inDilg ? '' : 'width: 76px'"
         @update:model-value="setLastModel()"
       >
@@ -43,7 +44,7 @@
           :key="i.id"
           :name="i.relation"
           :icon="i.icon"
-          :label="i.name"
+          :label="$t(i.name)"
           class="q-px-md"
         />
       </q-tabs>
@@ -189,9 +190,9 @@
           class="full-width row no-wrap items-center border-bottom q-pr-sm"
           style="height: 2.3rem"
         >
-          <q-tabs v-model="side_pannel" inline-label dense stretch shrind>
+          <q-tabs v-model="side_pannel" inline-label dense stretch shrind no-caps>
             <q-tab name="overview" :label="$t('overview')" />
-            <q-tab v-if="teamStore.card.mm_thread" name="chat" :label="$t('overview')" />
+            <q-tab v-if="teamStore.card.mm_thread" name="chat" :label="$t('chat')" />
             <q-tab v-if="teamStore.card.feedback" name="feedback" :label="$t('feedback')" />
           </q-tabs>
           <q-space />

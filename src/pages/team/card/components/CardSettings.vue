@@ -1,7 +1,7 @@
 <template>
   <q-card bordered class="fit column no-wrap">
     <q-bar dark class="transparent border-bottom" style="height: 2.3rem">
-      <span class="font-medium">{{ $t('title') }}{{ $t('settings') }}</span>
+      <span class="font-medium">{{ $t('card') }} {{ $t('settings') }}</span>
       <q-space />
       <q-btn dense flat round icon="close" v-close-popup />
     </q-bar>
@@ -22,7 +22,7 @@
             <q-icon :name="i.icon" />
           </q-item-section>
           <q-item-section class="text-no-wrap q-pr-md">{{
-            $t('i.label')
+            $t(i.label)
           }}</q-item-section>
         </q-item>
       </q-list>
@@ -104,7 +104,7 @@ const title = `${
 }`;
 const setting_items = ref([
   { val: "role", label: "role", icon: "add_moderator" },
-  { val: "private_setting", label: "role", icon: "mdi-eye-off" },
+  { val: "private_setting", label: "private_setting", icon: "mdi-eye-off" },
 ]);
 
 const isPrivate = ref((teamStore.card?.private && "private") || "public");

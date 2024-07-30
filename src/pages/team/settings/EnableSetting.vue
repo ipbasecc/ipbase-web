@@ -11,7 +11,7 @@
       <q-card bordered class="full-height">
         <q-card-section class="row no-wrap items-center">
           <q-icon :name="i.icon" size="lg" color="positive" />
-          <div class="font-bold-800 font-x-large q-ml-md">{{ i.label }}</div>
+          <div class="font-bold-800 font-x-large q-ml-md">{{ $t(i.label) }}</div>
           <q-space />
           <q-toggle
             v-model="i.enable"
@@ -20,12 +20,12 @@
             @click.stop="updatePreferences()"
           >
             <q-tooltip v-if="calc_lock(i)">
-              {{ calc_tip(i) }}
+              {{ $t(calc_tip(i)) }}
             </q-tooltip>
           </q-toggle>
         </q-card-section>
         <q-card-section class="q-pt-none">
-          {{ i.description }}
+          {{ $t(i.description) }}
         </q-card-section>
       </q-card>
     </div>

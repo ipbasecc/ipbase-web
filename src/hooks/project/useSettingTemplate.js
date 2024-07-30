@@ -1,42 +1,44 @@
+
+import { i18n } from 'src/boot/i18n.js';
+const $t = i18n.global.t;
+
 export function useProjectCardPreference() {
   return [
     {
       val: "status",
-      label: "状态",
+      label: 'project_enable_tmpl_status_label',
       enable: true,
-      description: "显示和设置卡片状态：待处理、处理中、遇阻、待审核、已完成",
+      description: 'project_enable_tmpl_status_label',
     },
     {
       val: "score",
-      label: "分值",
+      label: 'project_enable_tmpl_score_label',
       enable: false,
-      description:
-        "管理成员可以为每项任务指定分值，以便后期统计每个成员对项目的共享，关闭后该功能不可用",
+      description: 'project_enable_tmpl_score_desc',
     },
     {
       val: "percent",
-      label: "进度",
+      label: 'project_enable_tmpl_percent_label',
       enable: true,
-      description:
-        "如果卡片是待办类型，那么会在左上角显示已完成待办的进度，你可以在此控制该内容是否显示在卡片上",
+      description: 'project_enable_tmpl_percent_desc',
     },
     {
       val: "executor",
-      label: "负责人",
+      label: 'project_enable_tmpl_executor_label',
       enable: true,
-      description: "显示和设置卡片的“负责人”，禁用则不会在卡片上显示",
+      description: 'project_enable_tmpl_executor_desc',
     },
     {
       val: "follow",
-      label: "关注",
+      label: 'project_enable_tmpl_follow_label',
       enable: false,
-      description: "显示和设置卡片的“关注”功能，禁用后“关注卡片”功能不可见",
+      description: 'project_enable_tmpl_follow_desc',
     },
     {
       val: "color_marker",
-      label: "颜色标签",
+      label: 'project_enable_tmpl_color_marker_label',
       enable: true,
-      description: "卡片右下角会显示颜色指示灯，仅用该功能将不可用",
+      description: 'project_enable_tmpl_color_marker_desc',
     },
   ];
 }
@@ -45,13 +47,11 @@ export function useProjectCanEnableItems() {
     {
       icon: "tune",
       name: "multiple_boards",
-      label: "工作空间",
+      label: 'project_enable_tmpl_multiple_boards_label',
       enable: true,
-      description:
-        "允许创建多个工作空间，以便在同一个项目中，启用多个任务管理应用",
+      description: 'project_enable_tmpl_multiple_boards_desc',
       locked: false,
-      locked_tip:
-        "该项目已经存在多个工作空间，不能禁用该功能，否则除了第一个工作空间外，其它均不能正常访问",
+      locked_tip: 'project_enable_tmpl_multiple_boards_locked_tip',
     },
   ];
 }
