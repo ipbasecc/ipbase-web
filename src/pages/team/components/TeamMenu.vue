@@ -89,7 +89,7 @@
         <q-item-section>{{ $t('delete_team') }}</q-item-section>
       </q-item>
       <q-separator spaced />
-      <q-item clickable v-close-popup class="radius-xs text-blue-5">
+      <q-item clickable v-close-popup class="radius-xs text-blue-5" @click="showAboutTeam()">
         <q-item-section side
           ><q-icon name="lightbulb" size="sm" color="blue-5"
         /></q-item-section>
@@ -97,6 +97,9 @@
       </q-item>
     </q-list>
   </q-menu>
+  <q-dialog v-model="aboutTeam" persistent :maximized="!$q.screen.gt.xs">
+    <AboutTeam />
+  </q-dialog>
   <q-dialog v-model="invite" persistent>
     <TeamInvite :byInfo />
   </q-dialog>
@@ -157,6 +160,7 @@ import { leaveTeam, removeTeam } from "src/api/strapi/team.js";
 import { useQuasar } from "quasar";
 import { teamStore, uiStore, userStore } from "src/hooks/global/useStore.js";
 import { useRouter } from "vue-router";
+import AboutTeam from '../AboutTeam.vue'
 
 const $q = useQuasar();
 const props = defineProps({
@@ -231,6 +235,11 @@ const removeTeamFn = async () => {
     await router.push("/teams");
   }
 };
+
+const aboutTeam = ref(false);
+const showAboutTeam = () => {
+  aboutTeam.value = true;
+}
 </script>
 
 <style lang="scss" scoped></style>

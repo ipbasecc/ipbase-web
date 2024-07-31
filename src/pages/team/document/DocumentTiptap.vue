@@ -70,15 +70,16 @@ watchEffect(() => {
 });
 
 let updateChatMsg = void 0;
-const updateDocumentFn = async (val) => {
-  if (!val) return;
-  const isChanged = !isEqual(document.value.jsonContent, val);
+let jsonContent = void 0;
+const updateDocumentFn = async () => {
+  if (!jsonContent) return;
+  const isChanged = !isEqual(document.value.jsonContent, jsonContent);
   // console.log("isChanged", isChanged);
   if (!isChanged) return;
   let params = {
     document_id: document.value.id,
     data: {
-      jsonContent: val,
+      jsonContent: jsonContent,
     },
   };
   if (by_info.value.project_id) {
@@ -127,21 +128,23 @@ onBeforeUnmount(() => {
 
 const count = ref(15);
 let intervalId = null;
-const startCountdown = (val) => {
+const startCountdown = () => {
   intervalId = setInterval(async () => {
     count.value--;
     if (count.value === 0) {
       clearInterval(intervalId);
-      await updateDocumentFn(val);
+      await updateDocumentFn();
     }
   }, 1000);
 };
 
 const tiptapUpdate = async (val) => {
+  jsonContent = val;
   count.value = 15;
-  startCountdown(val);
+  startCountdown();
 };
 const tiptapBlur = async (val) => {
+  jsonContent = val;
   await updateDocumentFn(val);
 };
 const send_chat_Msg = (MsgContent) => {
