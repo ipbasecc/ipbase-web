@@ -2,6 +2,7 @@
 // so you can safely delete all default props below
 
 export default {
+  App_Lang: 'zh-CN', //用于页面切换语言时，页面重新获取语言，不要直接翻译，应该直接设置对应语言代号
   Language: "语言",
   app_loading: "应用加载中",
   app_loading_tip: "首次加载需要较长时间，请稍等",
@@ -293,7 +294,7 @@ export default {
   team_settings: '团队设置',
   leave_team: '离开团队',
   delete_team: '删除团队',
-  about_team: '离开团队',
+  about_team: '关于团队',
 
   cannt_do_it: '不能执行此操作',
   doing_wait: '正在执行操作，请稍候...',

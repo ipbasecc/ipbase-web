@@ -2,6 +2,7 @@
 // so you can safely delete all default props below
 
 export default {
+  App_Lang: 'en-US', //用于页面切换语言时，页面重新获取语言，不要直接翻译，应该直接设置对应语言代号
   Language: 'Language',
   app_loading: "Loading",
   app_loading_tip: "This will take some time, please wait a moment...",
@@ -291,9 +292,9 @@ export default {
   invite_member: 'invite member',
   manage_member: 'manage member',
   team_settings: 'team settings',
-  leave_team: 'leave team',
-  delete_team: 'delete team',
-  about_team: 'about team',
+  leave_team: 'Leave team',
+  delete_team: 'Delete team',
+  about_team: 'About team',
 
   cannt_do_it: 'Cannot perform this operation',
   doing_wait: 'Executing operation, please wait...',
