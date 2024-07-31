@@ -18,23 +18,22 @@ export function _ws() {
   // console.log("ws token",token);
   if (!token) return;
   function reConnect() {
+    reConnectCount++;
     token = localStorage.getItem("mmtoken");
-    if (token) {
-      reConnectCount++;
-      if (reConnectCount < 10) {
-        if (token) {
-          wsConnect();
-        }
-      } else {
-        Notify.create({
-          message: t('ws_error_need_refresh_tip'),
-          position: "top",
-          color: "negative",
-          actions: [
-            { label: t('refresh'), color: 'positive', handler: () => { window.location.reload() } },
-          ]
-        });
+    if (!token) return
+    if (reConnectCount < 10) {
+      if (token) {
+        wsConnect();
       }
+    } else {
+      Notify.create({
+        message: t('ws_error_need_refresh_tip'),
+        position: "top",
+        color: "negative",
+        actions: [
+          { label: t('refresh'), color: 'positive', handler: () => { window.location.reload() } },
+        ]
+      });
     }
   }
 

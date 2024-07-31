@@ -32,3 +32,12 @@ export async function $server() {
     }
   }
 }
+
+export async function isOfficalServer() {
+  const _backend_url = await localforage.getItem('backend_url');
+  if(!_backend_url || _backend_url === 'https://api.yihu.team'){
+    return true
+  } else {
+    return false
+  }
+}
