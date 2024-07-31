@@ -39,7 +39,7 @@
         style="width: 48rem"
       >
         <q-card-section :horizontal="$q.screen.gt.sm">
-          <q-card-section :class="$q.screen.gt.sm ? 'col-6' : ''" :style="$q.screen.gt.sm ? 'order: 99;' : ''">
+          <q-card-section :class="$q.screen.gt.sm ? logged ? 'col-12' : 'col-6' : ''" :style="$q.screen.gt.sm ? 'order: 99;' : ''">
             <!-- <q-card-section v-show="!credible" class="border-bottom flex flex-center q-py-xl">
                       <Turnstile
                           :sitekey="cf_site_key"
@@ -158,7 +158,7 @@
               </template>
             </form>
           </q-card-section>
-          <q-card-section class="column no-wrap flex-center" :class="$q.screen.gt.sm ? 'col-6 border-right' : ''">
+          <q-card-section v-if="!logged" class="column no-wrap flex-center" :class="$q.screen.gt.sm ? 'col-6 border-right' : ''">
             <template v-if="uiStore.setServer" >
               <ServerList :useDialog="false" @setCompleted="setCompleted()" />
             </template>

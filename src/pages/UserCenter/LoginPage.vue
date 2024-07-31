@@ -9,7 +9,7 @@
       style="width: 48rem"
     >
       <q-card-section :horizontal="$q.screen.gt.sm">
-        <q-card-section :class="$q.screen.gt.sm ? 'col-6' : ''" :style="$q.screen.gt.sm ? 'order: 99;' : ''">
+        <q-card-section :class="$q.screen.gt.sm ?  showExtanInfo ? 'col-6' : 'col-12' : ''" :style="$q.screen.gt.sm ? 'order: 99;' : ''">
           <template v-if="!hasError">
             <template v-if="!store.logged">
               <q-card-section class="q-mt-lg">
@@ -176,7 +176,7 @@
 
           <q-card-section
             v-if="count"
-            class="row no-wrap flex-center border-top q-py-xl q-px-lg"
+            class="row no-wrap flex-center q-py-xl q-px-lg"
           >
             <div class="relative-position q-mr-md">
               <q-spinner-oval color="primary" size="2rem" />
@@ -185,7 +185,7 @@
             <span>跳转中，请稍等<span class="q-px-sm"></span>...</span>
           </q-card-section>
         </q-card-section>
-        <q-card-section class="column no-wrap flex-center" :class="$q.screen.gt.sm ? 'col-6 border-right' : ''">
+        <q-card-section v-if="showExtanInfo" class="column no-wrap flex-center" :class="$q.screen.gt.sm ? 'col-6 border-right' : ''">
           <template v-if="uiStore.setServer" >
             <ServerList :useDialog="false" @setCompleted="setCompleted()" />
           </template>
@@ -248,6 +248,7 @@ const errorStats = ref();
 const start = ref(false);
 const strapi_loading = ref(false);
 const mm_loading = ref(false);
+const showExtanInfo = ref(true);
 //提交登录数据登录方法
 const {
   mutate: loginMutate,
@@ -284,6 +285,7 @@ const submitLogin = async () => {
           await useFetchAvatar(res.data.id, "force");
           mm_loading.value = false;
           start.value = false;
+          showExtanInfo.value = false
           startCountdown();
         }
       } catch (error) {
