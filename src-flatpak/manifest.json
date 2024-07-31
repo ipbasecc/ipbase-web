@@ -1,0 +1,34 @@
+{
+    "app-id": "org.ipbase.IPBase",
+    "runtime": "org.freedesktop.Platform",
+    "runtime-version": "23.08",
+    "sdk": "org.freedesktop.Sdk",
+    "command": "./run.sh",
+    "finish-args": [
+        "--share=ipc",
+        "--socket=x11",
+        "--socket=pulseaudio",
+        "--share=network",
+        "--share=systemd"
+    ],
+    "modules": [
+      {
+        "name": "IPBase",
+        "buildsystem": "simple",
+        "build-commands": [ ],
+        "sources": [
+          {
+            "type": "dir",
+            "path": "/Volumes/StoragePool/www/vantuo/ipbase/ipbase-web/dist/electron/Packaged/linux-unpacked",
+            "dest-dirname": "flatpak"
+          },
+          {
+            "type": "file",
+            "path": "./run.sh",
+            "dest-filename": "run.sh"
+          }
+        ]
+      }
+    ]
+  }
+  
