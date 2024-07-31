@@ -35,9 +35,10 @@
         </q-card-section>
         <q-card-section class="row no-wrap q-pa-sm border-top">
           <q-btn
-              padding="xs md"
-              label="返回登陆"
-              @click="back"
+            flat
+            padding="xs md"
+            label="返回登陆"
+            @click="back"
           />
           <q-space />
           <q-btn

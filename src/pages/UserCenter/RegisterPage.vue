@@ -1,15 +1,6 @@
 <template>
   <div class="absolute-full column flex-center">
     <div v-if="$q.platform.is.electron" class="absolute-full q-electron-drag" />
-    <q-card v-if="uiStore.setServer" style="width: 420px"
-      :bordered="$q.screen.gt.xs"
-      :flat="!$q.screen.gt.xs"
-      class="q-electron-drag--exception"
-      :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'"
-    >
-      <ServerList :useDialog="false" @setCompleted="setCompleted()" />
-    </q-card>
-    <template v-else>
       <q-card
         v-if="(step === 0 && logged) || step === 2"
         style="width: 420px"
@@ -45,125 +36,135 @@
         :bordered="$q.screen.gt.xs"
         :flat="!$q.screen.gt.xs"
         :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'"
-        style="width: 420px"
+        style="width: 48rem"
       >
-        <!-- <q-card-section v-show="!credible" class="border-bottom flex flex-center q-py-xl">
-                  <Turnstile
-                      :sitekey="cf_site_key"
-                      @verify="verify"
-                  />
-              </q-card-section> -->
-        <form v-if="credible">
-          <q-card-section class="text-h3 text-center font-bold-600 q-mt-lg">
-            用户注册
-          </q-card-section>
-          <q-card-section class="q-mt-lg">
-            <q-input
-              v-model="username"
-              :standout="$q.dark.mode"
-              type="text"
-              label="用户名"
-              hide-bottom-space
-              :rules="[(val) => val?.length >= 6 || '请输入至少6位，且由字母开头，仅包含字母或数字的用户名']"
-              class="border radius-xs overflow-hidden"
-            >
-              <template v-slot:prepend>
-                <q-icon
-                  name="mdi-account-box-outline"
-                  size="sm"
-                  class="q-px-sm"
+        <q-card-section :horizontal="$q.screen.gt.sm">
+          <q-card-section :class="$q.screen.gt.sm ? 'col-6' : ''" :style="$q.screen.gt.sm ? 'order: 99;' : ''">
+            <!-- <q-card-section v-show="!credible" class="border-bottom flex flex-center q-py-xl">
+                      <Turnstile
+                          :sitekey="cf_site_key"
+                          @verify="verify"
+                      />
+                  </q-card-section> -->
+            <form v-if="credible">
+              <q-card-section class="text-h3 text-center font-bold-600 q-mt-lg">
+                用户注册
+              </q-card-section>
+              <q-card-section class="q-mt-lg">
+                <q-input
+                  v-model="username"
+                  :standout="$q.dark.mode"
+                  type="text"
+                  label="用户名"
+                  hide-bottom-space
+                  :rules="[(val) => val?.length >= 6 || '请输入至少6位，且由字母开头，仅包含字母或数字的用户名']"
+                  class="border radius-xs overflow-hidden"
+                >
+                  <template v-slot:prepend>
+                    <q-icon
+                      name="mdi-account-box-outline"
+                      size="sm"
+                      class="q-px-sm"
+                    />
+                  </template>
+                </q-input>
+              </q-card-section>
+              <q-card-section class="q-pt-none">
+                <q-input
+                  v-model="email"
+                  :standout="$q.dark.mode"
+                  type="text"
+                  label="邮箱"
+                  hide-bottom-space
+                  :rules="[
+                    (val) => !!val || '邮箱地址不能缺少',
+                    (val) =>
+                      /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(val) ||
+                      '邮箱输入有误，请检查输入！',
+                  ]"
+                  class="border radius-xs overflow-hidden"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="mdi-email-outline" size="sm" class="q-px-sm" />
+                  </template>
+                </q-input>
+              </q-card-section>
+              <q-card-section class="q-pt-none">
+                <q-input
+                  v-model="password"
+                  :standout="$q.dark.mode"
+                  type="password"
+                  label="密码"
+                  hide-bottom-space
+                  autocomplete
+                  :rules="[(val) => val?.length >= 8 || '密码不能小于8位数']"
+                  class="border radius-xs overflow-hidden"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="mdi-lock-outline" size="sm" class="q-px-sm" />
+                  </template>
+                </q-input>
+              </q-card-section>
+              <q-card-section class="q-pt-none">
+                <q-input
+                  v-model="confirmPassword"
+                  :standout="$q.dark.mode"
+                  type="password"
+                  label="确认密码"
+                  hide-bottom-space
+                  autocomplete
+                  :rules="[
+                    (val) => val?.length >= 8 || '密码不能小于8位数',
+                    (val) => val === password || '两次输入密码必须相同',
+                  ]"
+                  class="border radius-xs overflow-hidden"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="mdi-lock" size="sm" class="q-px-sm" />
+                  </template>
+                </q-input>
+              </q-card-section>
+              <q-card-section class="column no-wrap gap-sm items-end">
+                <q-btn
+                  unelevated
+                  color="primary"
+                  icon="check"
+                  label="提交注册"
+                  class="full-width"
+                  @click="submitRegister()"
                 />
+                <q-separator spaced class="op-5 full-width" />
+                <q-btn
+                  color="info"
+                  icon="mdi-server-network"
+                  label="设置服务器地址"
+                  unelevated
+                  class="full-width"
+                  @click="setServer()"
+                />
+                <RouterLink class="q-pr-xs text-primary" :to="`/login`"
+                  >已有账号？点此登陆</RouterLink
+                >
+              </q-card-section>
+              <template v-if="loading">
+                <div
+                  class="absolute-full op-8"
+                  :class="$q.dark.mode ? 'bg-black' : 'bg-white'"
+                ></div>
+                <div class="absolute-full row no-wrap gap-sm flex-center">
+                  <q-spinner-orbit color="primary" size="3rem" :thickness="5" />
+                  <span>请稍后...</span>
+                </div>
               </template>
-            </q-input>
+            </form>
           </q-card-section>
-          <q-card-section class="q-pt-none">
-            <q-input
-              v-model="email"
-              :standout="$q.dark.mode"
-              type="text"
-              label="邮箱"
-              hide-bottom-space
-              :rules="[
-                (val) => !!val || '邮箱地址不能缺少',
-                (val) =>
-                  /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(val) ||
-                  '邮箱输入有误，请检查输入！',
-              ]"
-              class="border radius-xs overflow-hidden"
-            >
-              <template v-slot:prepend>
-                <q-icon name="mdi-email-outline" size="sm" class="q-px-sm" />
-              </template>
-            </q-input>
+          <q-card-section class="column no-wrap flex-center" :class="$q.screen.gt.sm ? 'col-6 border-right' : ''">
+            <template v-if="uiStore.setServer" >
+              <ServerList :useDialog="false" @setCompleted="setCompleted()" />
+            </template>
+            <ExtendInfo v-else />
           </q-card-section>
-          <q-card-section class="q-pt-none">
-            <q-input
-              v-model="password"
-              :standout="$q.dark.mode"
-              type="password"
-              label="密码"
-              hide-bottom-space
-              autocomplete
-              :rules="[(val) => val?.length >= 8 || '密码不能小于8位数']"
-              class="border radius-xs overflow-hidden"
-            >
-              <template v-slot:prepend>
-                <q-icon name="mdi-lock-outline" size="sm" class="q-px-sm" />
-              </template>
-            </q-input>
-          </q-card-section>
-          <q-card-section class="q-pt-none">
-            <q-input
-              v-model="confirmPassword"
-              :standout="$q.dark.mode"
-              type="password"
-              label="确认密码"
-              hide-bottom-space
-              autocomplete
-              :rules="[
-                (val) => val?.length >= 8 || '密码不能小于8位数',
-                (val) => val === password || '两次输入密码必须相同',
-              ]"
-              class="border radius-xs overflow-hidden"
-            >
-              <template v-slot:prepend>
-                <q-icon name="mdi-lock" size="sm" class="q-px-sm" />
-              </template>
-            </q-input>
-          </q-card-section>
-          <q-card-section class="column no-wrap gap-sm items-end">
-            <q-btn
-              unelevated
-              color="primary"
-              icon="check"
-              label="提交注册"
-              class="full-width"
-              @click="submitRegister()"
-            />
-            <q-separator spaced class="op-5 full-width" />
-            <q-btn
-              color="info"
-              icon="mdi-server-network"
-              label="设置服务器地址"
-              unelevated
-              class="full-width"
-              @click="setServer()"
-            />
-            <RouterLink class="q-pr-xs text-primary" :to="`/login`"
-              >已有账号？点此登陆</RouterLink
-            >
-          </q-card-section>
-          <template v-if="loading">
-            <div
-              class="absolute-full op-8"
-              :class="$q.dark.mode ? 'bg-black' : 'bg-white'"
-            ></div>
-            <div class="absolute-full row no-wrap gap-sm flex-center">
-              <q-spinner-orbit color="primary" size="3rem" :thickness="5" />
-              <span>请稍后...</span>
-            </div>
-          </template>
-        </form>
+        </q-card-section>
       </q-card>
       <div v-if="me && step === 1" class="column no-wrap gap-sm q-electron-drag--exception">
         <LoginStep
@@ -173,7 +174,6 @@
           @emitLoginData="emitLoginData"
         />
       </div>
-    </template>
     <template v-if="bingWallpaper">
       <div
         class="absolute-full blur-md z-unfab"
@@ -189,10 +189,14 @@ import { useRouter } from "vue-router";
 import { inject, ref, watch } from "vue";
 import { register } from "src/api/strapi.js";
 import LoginStep from "src/pages/UserCenter/RegisterSteps/LoginStep.vue";
+import BgBrand from 'src/components/VIewComponents/BgBrand.vue'
 import useUserStore from "src/stores/user.js";
 import { useQuasar } from "quasar";
 import { uiStore } from "src/hooks/global/useStore.js";
 import ServerList from "src/pages/team/settings/ServerList.vue";
+import { isOfficalServer } from 'src/boot/server.js'
+import ExtendInfo from './ExtendInfo.vue'
+
 uiStore.topbarClass = "transparent";
 
 const router = useRouter();

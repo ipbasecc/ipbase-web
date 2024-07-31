@@ -2,7 +2,6 @@
 <!--   <div class="absolute z-max">serverInfo： {{ uiStore.serverInfo }}</div>-->
   <router-view
     :class="`
-      ${$q.dark.mode ? 'bg-grey-10 text-grey-1' : 'bg-grey-1 text-grey-10'}
       ${uiStore?.draging ? 'unselected' : ''}
     `"
   />

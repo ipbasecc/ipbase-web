@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpR fff">
+  <q-layout view="hHh lpR fff" class="bg-black">
     <q-header v-if="uiStore.topbarShow || $q.platform.is.electron" class="transparent">
       <q-bar class="transparent" :class="$q.platform.is.electron ? 'q-electron-drag' : ''">
         <template v-if="is_development">
@@ -38,17 +38,21 @@
     </q-header>
 
     <q-page-container>
-      <q-page> <router-view /></q-page>
+      <q-page>
+        <BgEffects />
+        <router-view />
+      </q-page>
     </q-page-container>
 
     <q-footer> </q-footer>
   </q-layout>
 </template>
 <script setup>
-import {computed, onBeforeMount, ref} from "vue";
+import {computed, onBeforeMount, ref, onMounted} from "vue";
 import { uiStore } from "src/hooks/global/useStore.js";
 import WindowToggle from "pages/team/components/widgets/icons/WindowToggle.vue";
 import {useQuasar} from "quasar";
+import BgEffects from './BgEffects.vue'
 
 const $q = useQuasar();
 const is_development = ref(process.env.DEV);
@@ -75,6 +79,7 @@ function closeApp() {
     window.windowAPI.close();
   }
 }
+
 </script>
 <style>
 .q-field--standard .q-field__control:before {

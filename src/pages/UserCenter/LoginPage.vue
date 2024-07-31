@@ -2,195 +2,195 @@
   <div class="absolute-full column flex-center relative-position">
     <div v-if="$q.platform.is.electron" class="absolute-full q-electron-drag" />
     <q-card
-      v-if="uiStore.setServer"
-      :bordered="$q.screen.gt.sm"
-      style="width: 420px"
-      class="q-electron-drag--exception"
-      :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'"
-    >
-      <ServerList :useDialog="false" @setCompleted="setCompleted()" />
-    </q-card>
-    <q-card
-      v-else
       :bordered="$q.screen.gt.xs"
       :flat="!$q.screen.gt.xs"
       class="q-electron-drag--exception"
       :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'"
-      style="width: 420px"
+      style="width: 48rem"
     >
-      <template v-if="!hasError">
-        <template v-if="!store.logged">
-          <q-card-section class="q-mt-lg">
-            <div class="text-h3 text-center font-bold-600">登陆您的账户</div>
-          </q-card-section>
-          <q-card-section class="q-pa-md q-mt-lg">
-            <form class="column gap-md no-wrap">
-              <q-input
-                v-model="identifier"
-                :standout="$q.dark.mode"
-                hide-bottom-space
-                autocomplete="off"
-                type="text"
-                :rules="[
-                  (val) => !!val || 'Email is missing',
-                  (val) =>
-                    /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(
-                      val
-                    ) || '邮箱输入有误，请检查输入！',
-                ]"
-                class="border radius-xs overflow-hidden"
+      <q-card-section :horizontal="$q.screen.gt.sm">
+        <q-card-section :class="$q.screen.gt.sm ? 'col-6' : ''" :style="$q.screen.gt.sm ? 'order: 99;' : ''">
+          <template v-if="!hasError">
+            <template v-if="!store.logged">
+              <q-card-section class="q-mt-lg">
+                <div class="text-h3 text-center font-bold-600">登陆您的账户</div>
+              </q-card-section>
+              <q-card-section class="q-pa-md q-mt-lg">
+                <form class="column gap-md no-wrap">
+                  <q-input
+                    v-model="identifier"
+                    :standout="$q.dark.mode"
+                    hide-bottom-space
+                    autocomplete="off"
+                    type="text"
+                    :rules="[
+                      (val) => !!val || 'Email is missing',
+                      (val) =>
+                        /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(
+                          val
+                        ) || '邮箱输入有误，请检查输入！',
+                    ]"
+                    class="border radius-xs overflow-hidden"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="mdi-email-outline" size="sm" class="q-px-sm" />
+                    </template>
+                  </q-input>
+                  <q-input
+                    v-model="password"
+                    :standout="$q.dark.mode"
+                    hide-bottom-space
+                    type="password"
+                    autocomplete="off"
+                    :rules="[(val) => !!val || '请输入账号密码!']"
+                    class="border radius-xs overflow-hidden"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="mdi-lock-outline" size="sm" class="q-px-sm" />
+                    </template>
+                  </q-input>
+                </form>
+              </q-card-section>
+              <q-card-section class="column no-wrap gap-sm items-end">
+                <q-btn
+                  color="primary"
+                  icon="login"
+                  label="登陆"
+                  unelevated
+                  class="full-width"
+                  @click="submitLogin()"
+                />
+                <q-separator spaced class="op-5 full-width" />
+                <q-btn
+                  color="info"
+                  icon="mdi-server-network"
+                  label="设置服务器地址"
+                  unelevated
+                  class="full-width"
+                  @click="setServer()"
+                />
+                <RouterLink class="q-pr-xs q-mt-sm text-primary" :to="`/register`"
+                  >没有账号？点此注册</RouterLink
+                >
+                <RouterLink class="q-pr-xs text-primary" :to="`/forgot-password`"
+                  >忘记密码？</RouterLink
+                >
+              </q-card-section>
+            </template>
+            <template v-else-if="start">
+              <q-card-section
+                v-if="strapi_loading"
+                class="row no-wrap gap-sm items-center"
               >
-                <template v-slot:prepend>
-                  <q-icon name="mdi-email-outline" size="sm" class="q-px-sm" />
-                </template>
-              </q-input>
-              <q-input
-                v-model="password"
-                :standout="$q.dark.mode"
-                hide-bottom-space
-                type="password"
-                autocomplete="off"
-                :rules="[(val) => !!val || '请输入账号密码!']"
-                class="border radius-xs overflow-hidden"
+                <span>正在验证账号，请稍等...</span>
+              </q-card-section>
+              <q-card-section
+                v-else-if="mm_loading"
+                class="row no-wrap gap-sm items-center"
               >
-                <template v-slot:prepend>
-                  <q-icon name="mdi-lock-outline" size="sm" class="q-px-sm" />
-                </template>
-              </q-input>
-            </form>
+                <span>正在链接通讯服务，请稍等...</span>
+              </q-card-section>
+            </template>
+            <template v-else-if="isLogined">
+              <q-card-section class="row no-wrap items-center">
+                <div class="font-medium">
+                  {{
+                    store.logged && me ? "欢迎回来：" : "您已成功登陆，无须再次登陆"
+                  }}
+                  <span class="font-medium font-bold-600">{{
+                    me?.username || store.me?.username
+                  }}</span>
+                </div>
+              </q-card-section>
+              <q-card-section
+                class="row no-wrap flex-center border-top q-py-xl q-px-lg"
+              >
+                <div class="relative-position q-mr-md">
+                  <q-spinner-oval color="primary" size="2rem" />
+                  <div class="absolute-full flex flex-center">{{ count }}</div>
+                </div>
+                <span
+                  >您已经登陆，正在跳转到首页<span class="q-px-sm"></span>...</span
+                >
+              </q-card-section>
+              <q-card-section class="q-pa-sm border-top">
+                <q-btn
+                  unelevated
+                  color="primary"
+                  label="点击立即跳转"
+                  class="full-width"
+                  @click="redirectNow()"
+                />
+              </q-card-section>
+            </template>
+          </template>
+          <q-card-section v-else-if="errorStats === 'noneConfirmed'">
+            账号未激活，请检查您的注册邮箱，接收来自
+            <span class="text-red font-bild-600">“易乎APP“</span>
+            的邮件，点击其中的激活链接！
           </q-card-section>
-          <q-card-section class="column no-wrap gap-sm items-end">
-            <q-btn
+
+          <q-card-section v-else-if="errorStats === 'wrongPassword'"
+            class="row no-wrap gap-sm items-center"
+          >
+            <span>账号或密码错误！</span
+            ><q-btn
               color="primary"
-              icon="login"
-              label="登陆"
-              unelevated
-              class="full-width"
-              @click="submitLogin()"
+              padding="xs md"
+              dense
+              flat
+              label="重新登录"
+              @click="reLogin"
             />
-            <q-separator spaced class="op-5 full-width" />
-            <q-btn
-              color="info"
-              icon="mdi-server-network"
-              label="设置服务器地址"
-              unelevated
-              class="full-width"
-              @click="setServer()"
-            />
-            <RouterLink class="q-pr-xs q-mt-sm text-primary" :to="`/register`"
-              >没有账号？点此注册</RouterLink
-            >
-            <RouterLink class="q-pr-xs text-primary" :to="`/forgot-password`"
-              >忘记密码？</RouterLink
-            >
           </q-card-section>
-        </template>
-        <template v-else-if="start">
-          <q-card-section
-            v-if="strapi_loading"
+
+          <q-card-section v-else-if="errorStats === 'wrongAuth'"
             class="row no-wrap gap-sm items-center"
           >
-            <span>正在验证账号，请稍等...</span>
+            <span>授权已过期，请重新登陆</span
+            ><q-btn
+              color="primary"
+              padding="xs md"
+              dense
+              flat
+              label="重新登录"
+              @click="reLogin"
+            />
           </q-card-section>
+          <template v-else-if="errorStats === 'ERR_NETWORK'">
+            <q-card-section class="column no-wrap gap-sm">
+              <span class="font-larger">{{ $t('connect_refused_header') }}</span>
+              <span class="op-6">{{ $t('connect_refused_login_caption') }}</span>
+            </q-card-section>
+            <q-card-section class="border-top">
+              <q-btn
+                color="primary"
+                padding="xs md"
+                dense
+                class='full-width'
+                :label="$t('connect_refused_login_btn_label')"
+                @click="setServer()"
+              />
+            </q-card-section>
+          </template>
+
           <q-card-section
-            v-else-if="mm_loading"
-            class="row no-wrap gap-sm items-center"
-          >
-            <span>正在链接通讯服务，请稍等...</span>
-          </q-card-section>
-        </template>
-        <template v-else-if="isLogined">
-          <q-card-section class="row no-wrap items-center">
-            <div class="font-medium">
-              {{
-                store.logged && me ? "欢迎回来：" : "您已成功登陆，无须再次登陆"
-              }}
-              <span class="font-medium font-bold-600">{{
-                me?.username || store.me?.username
-              }}</span>
-            </div>
-          </q-card-section>
-          <q-card-section
+            v-if="count"
             class="row no-wrap flex-center border-top q-py-xl q-px-lg"
           >
             <div class="relative-position q-mr-md">
               <q-spinner-oval color="primary" size="2rem" />
               <div class="absolute-full flex flex-center">{{ count }}</div>
             </div>
-            <span
-              >您已经登陆，正在跳转到首页<span class="q-px-sm"></span>...</span
-            >
+            <span>跳转中，请稍等<span class="q-px-sm"></span>...</span>
           </q-card-section>
-          <q-card-section class="q-pa-sm border-top">
-            <q-btn
-              unelevated
-              color="primary"
-              label="点击立即跳转"
-              class="full-width"
-              @click="redirectNow()"
-            />
-          </q-card-section>
-        </template>
-      </template>
-      <q-card-section v-else-if="errorStats === 'noneConfirmed'">
-        账号未激活，请检查您的注册邮箱，接收来自
-        <span class="text-red font-bild-600">“易乎APP“</span>
-        的邮件，点击其中的激活链接！
-      </q-card-section>
-
-      <q-card-section v-else-if="errorStats === 'wrongPassword'"
-        class="row no-wrap gap-sm items-center"
-      >
-        <span>账号或密码错误！</span
-        ><q-btn
-          color="primary"
-          padding="xs md"
-          dense
-          flat
-          label="重新登录"
-          @click="reLogin"
-        />
-      </q-card-section>
-
-      <q-card-section v-else-if="errorStats === 'wrongAuth'"
-        class="row no-wrap gap-sm items-center"
-      >
-        <span>授权已过期，请重新登陆</span
-        ><q-btn
-          color="primary"
-          padding="xs md"
-          dense
-          flat
-          label="重新登录"
-          @click="reLogin"
-        />
-      </q-card-section>
-      <template v-else-if="errorStats === 'ERR_NETWORK'">
-        <q-card-section class="column no-wrap gap-sm">
-          <span class="font-larger">{{ $t('connect_refused_header') }}</span>
-          <span class="op-6">{{ $t('connect_refused_login_caption') }}</span>
         </q-card-section>
-        <q-card-section class="border-top">
-          <q-btn
-            color="primary"
-            padding="xs md"
-            dense
-            class='full-width'
-            :label="$t('connect_refused_login_btn_label')"
-            @click="setServer()"
-          />
+        <q-card-section class="column no-wrap flex-center" :class="$q.screen.gt.sm ? 'col-6 border-right' : ''">
+          <template v-if="uiStore.setServer" >
+            <ServerList :useDialog="false" @setCompleted="setCompleted()" />
+          </template>
+          <ExtendInfo v-else />
         </q-card-section>
-      </template>
-
-      <q-card-section
-        v-if="count"
-        class="row no-wrap flex-center border-top q-py-xl q-px-lg"
-      >
-        <div class="relative-position q-mr-md">
-          <q-spinner-oval color="primary" size="2rem" />
-          <div class="absolute-full flex flex-center">{{ count }}</div>
-        </div>
-        <span>跳转中，请稍等<span class="q-px-sm"></span>...</span>
       </q-card-section>
     </q-card>
   </div>
@@ -210,6 +210,7 @@ import useUserStore from "src/stores/user.js";
 import { useFetchAvatar } from "src/pages/Chat/hooks/useFetchAvatar.js";
 import { uiStore } from "src/hooks/global/useStore.js";
 import ServerList from "pages/team/settings/ServerList.vue";
+import ExtendInfo from './ExtendInfo.vue'
 
 uiStore.topbarClass = "transparent";
 const store = useUserStore();
@@ -358,6 +359,7 @@ const setCompleted = () => {
   uiStore.setServer = false;
   localStorage.clear();
 };
+
 </script>
 <style>
 input:-webkit-autofill {
