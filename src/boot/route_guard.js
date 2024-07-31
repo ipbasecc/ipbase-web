@@ -4,6 +4,26 @@ import { clearLocalDB } from "src/pages/team/hooks/useUser.js";
 
 export default boot(({ router, store }) => {
   router.beforeEach(async (to, from, next) => {
+
+    // 记录路由切换的时间戳
+    const currentTime = Date.now();
+
+    // 如果之前没有记录时间戳，或者距离上次切换超过1秒
+    if (!router.lastRouteChangeTime || currentTime - router.lastRouteChangeTime > 1000) {
+      router.routeChangeCount = 1; // 初始化路由切换次数
+    } else {
+      router.routeChangeCount++; // 增加路由切换次数
+    }
+
+    // 更新上次切换的时间戳
+    router.lastRouteChangeTime = currentTime;
+
+    // 判断路由切换频率是否超过10次
+    if (router.routeChangeCount > 10) {
+      await clearLocalDB("route_guard");
+      next({ path: "/login" });
+    }
+
     // pageLoaded();
     const jwt = localStorage.getItem("jwt");
     const mm_token = localStorage.getItem("mmtoken");
