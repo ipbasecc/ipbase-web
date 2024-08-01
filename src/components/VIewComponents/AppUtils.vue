@@ -87,6 +87,7 @@ const { locale } = useI18n({ useScope: "global" });
 const localeOptions = [
   { val: "zh-CN", label: "中文" },
   { val: "en-US", label: "English" },
+  { val: "de-DE", label: "Deutsch" },
 ];
 const setLocale = async (val) => {
   locale.value = val;

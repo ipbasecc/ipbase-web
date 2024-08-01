@@ -45,6 +45,14 @@ import channelEN from "src/manual/en-US/channel.md?raw";
 import navigation_threadsEN from "src/manual/en-US/navigation_threads.md?raw";
 import navigation_QuadrantEN from "src/manual/en-US/navigation_Quadrant.md?raw";
 
+import whyUSDE from "src/manual/de-DE/whyUS.md?raw";
+import overviewDE from "src/manual/de-DE/overview.md?raw";
+import teamDE from "src/manual/de-DE/team.md?raw";
+import projectDE from "src/manual/de-DE/project.md?raw";
+import channelDE from "src/manual/de-DE/channel.md?raw";
+import navigation_threadsDE from "src/manual/de-DE/navigation_threads.md?raw";
+import navigation_QuadrantDE from "src/manual/de-DE/navigation_Quadrant.md?raw";
+
 import { useQuasar } from 'quasar';
 const $q = useQuasar();
 
@@ -105,6 +113,23 @@ const MDRender = (val) => {
       return md.render(projectEN);
     } else {
       return md.render(whyUSEN);
+    }
+  }
+  if (t('App_Lang') === "de-DE") {
+    if (val === "overview") {
+      return md.render(overviewDE);
+    } else if (val === "team") {
+      return md.render(teamDE);
+    } else if (val === "navigation_threads") {
+      return md.render(navigation_threadsDE);
+    } else if (val === "navigation_Quadrant") {
+      return md.render(navigation_QuadrantDE);
+    } else if (val === "channel") {
+      return md.render(channelDE);
+    } else if (val === "project") {
+      return md.render(projectDE);
+    } else {
+      return md.render(whyUSDE);
     }
   }
 };
