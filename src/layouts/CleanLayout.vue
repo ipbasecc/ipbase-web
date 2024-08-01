@@ -38,7 +38,7 @@
     </q-header>
 
     <q-page-container>
-      <q-page>
+      <q-page class="overflow-hidden">
         <BgEffects />
         <router-view />
       </q-page>
