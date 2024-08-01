@@ -1,2 +1,2 @@
 #!/bin/bash
-flatpak-builder build manifest.json --install
+flatpak-builder build manifest.json
