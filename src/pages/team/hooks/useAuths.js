@@ -1,39 +1,49 @@
 import { userStore } from "src/hooks/global/useStore.js";
-function useAuths(field, collections, members, roles) {
-  if(!members || !roles) return
-  // console.log("members", members);
-  const __calc_auth = (_ACLs) => {
-    let authArr = _ACLs.map(
-      (i) =>
-        (field === "read" && i.read) ||
-        (field === "create" && i.create) ||
-        (field === "modify" && i.modify) ||
-        (field === "delete" && i.delete) ||
-        i.fields_permission.find((f) => f.field === field)?.modify ||
-        null
-    );
-    // console.log(authArr.includes(true));
-    return authArr.includes(true);
-  };
 
-  // 用户的所有角色id集合
-  const _userMember_roles = members
-    .filter((i) => i.by_user?.id === Number(userStore.userId))
-    ?.map((j) => j.member_roles?.map((k) => k.id))
+// 优化前的useAuths hook
+function useAuths(field, collections, members, roles) {
+  if (!members || !roles) return false;
+
+  // 优化：将成员角色的筛选提前到只有当用户ID匹配时才进行
+  // 这样可以减少不必要的计算
+  const userId = Number(userStore.userId);
+  const filteredMembers = members.filter(member => member.by_user?.id === userId);
+  const _userMember_roles = filteredMembers
+    .map(member => member.member_roles?.map(role => role.id))
     .flat(3);
-  // console.log("_userMember_roles", _userMember_roles);
-  // 筛选出用户在卡片中的角色
-  const _member_roles = roles.filter((i) => _userMember_roles.includes(i.id));
-  // console.log("_member_roles", _member_roles);
-  const _Auths = collections.map((collection) => {
+
+  const _member_roles = roles.filter(role => _userMember_roles.includes(role.id))?.filter(Boolean);
+
+    // 立即执行函数，返回一个函数
+  const __calc_auth = ((_ACLs) => {
+    // 这个内层的函数是实际用于计算权限的函数
+    return (_ACLs) => {
+      // 确保传入的_ACLs是一个数组
+      if (!Array.isArray(_ACLs)) return false;
+      // 使用reduce来生成权限数组
+      const authArr = _ACLs.reduce((acc, i) => {
+        // 确保i具有所需的属性
+        if (i && typeof i === 'object') {
+          const permission = i[field] || (i.fields_permission && i.fields_permission.find(f => f.field === field)?.modify);
+          acc.push(permission === true); // 直接推入布尔值true或false
+        }
+        return acc;
+      }, []);
+      // 返回权限数组中是否包含true
+      return authArr.some(auth => auth);
+    };
+  })();
+
+  const _Auths = collections.map(collection => {
     const ACLs = _member_roles
-    .map((i) => i.ACL)
-    ?.flat(2)
-    .filter((j) => j.collection === collection);
-    // console.log("ACLs", ACLs);
-    return __calc_auth(ACLs);
+      .map(role => role.ACL)
+      .flat(2)
+      .filter(ACL => ACL.collection === collection);
+    // 确保ACLs是一个数组，然后调用__calc_auth
+    return ACLs.length > 0 ? __calc_auth(ACLs) : false;
   });
-  // console.log("_Auths", _Auths);
-  return _Auths.includes(true)
+
+  return _Auths.some(auth => auth); // 使用some替代includes，一旦找到true即可终止循环
 }
+
 export default useAuths;

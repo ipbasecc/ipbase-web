@@ -1,16 +1,15 @@
-import { computed } from "vue";
 import { teamStore } from "src/hooks/global/useStore.js";
 
 export async function useSyncAtom(_kanban) {
   if (!_kanban) return;
-  const all_kanbans = computed(() => teamStore.all_kanbans || []);
+  const all_kanbans = teamStore.all_kanbans || [];
 
   const _path = new URL("../../../works/processAllData.js", import.meta.url);
   const worker = new Worker(_path, {
     type: "module",
   });
   _kanban = JSON.parse(JSON.stringify(_kanban));
-  const _all_kanbans = JSON.parse(JSON.stringify(all_kanbans.value));
+  const _all_kanbans = JSON.parse(JSON.stringify(all_kanbans));
   const val = { _kanban, _all_kanbans };
   worker.postMessage(val);
 

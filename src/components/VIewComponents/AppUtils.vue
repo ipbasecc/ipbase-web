@@ -51,6 +51,9 @@
             @click="setLocale(i.val)"
             class="radius-xs"
           >
+            <q-item-section side>
+              <span :class="`fi fi-${i.flag_key}`"></span>
+            </q-item-section>
             <q-item-section>
               <q-item-label>{{ i.label }}</q-item-label>
             </q-item-section>
@@ -79,15 +82,15 @@ import { useI18n } from "vue-i18n";
 import AppManual from "src/components/VIewComponents/AppManual.vue";
 import AppShortcut from "src/components/VIewComponents/AppShortcut.vue";
 import localforage from "localforage";
-
+import "/node_modules/flag-icons/css/flag-icons.min.css";
 
 const is_development = process.env.DEV;
 const { locale } = useI18n({ useScope: "global" });
 
 const localeOptions = [
-  { val: "zh-CN", label: "中文" },
-  { val: "en-US", label: "English" },
-  { val: "de-DE", label: "Deutsch" },
+  { val: "zh-CN", label: "中文", flag_key: 'cn' },
+  { val: "en-US", label: "English", flag_key: 'gb' },
+  { val: "de-DE", label: "Deutsch", flag_key: 'de' },
 ];
 const setLocale = async (val) => {
   locale.value = val;

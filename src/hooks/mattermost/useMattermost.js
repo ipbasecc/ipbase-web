@@ -15,14 +15,20 @@ import {mmstore, mmUser, uiStore} from "src/hooks/global/useStore.js";
 export function mergePosts(post1, post2, post3) {
   const mergedPosts = {};
 
-  for (const key in post1) {
-    mergedPosts[key] = post1[key];
+  if (post1) {
+    for (const key in post1) {
+      mergedPosts[key] = post1[key];
+    }
   }
-  for (const key in post2) {
-    mergedPosts[key] = post2[key];
+  if (post2) {
+    for (const key in post2) {
+      mergedPosts[key] = post2[key];
+    }
   }
-  for (const key in post3) {
-    mergedPosts[key] = post3[key];
+  if (post3) {
+    for (const key in post3) {
+      mergedPosts[key] = post3[key];
+    }
   }
 
   return mergedPosts;

@@ -145,15 +145,6 @@ export default configure((ctx) => {
             ssr: ctx.modeName === "ssr",
           },
         ],
-        [
-          "vite-plugin-checker",
-          {
-            eslint: {
-              lintCommand: 'eslint "./**/*.{js,mjs,cjs,vue}"',
-            },
-          },
-          { server: false },
-        ],
       ],
     },
 

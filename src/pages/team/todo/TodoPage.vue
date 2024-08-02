@@ -863,6 +863,12 @@
                           @click="createTodoFn(i, '')"
                         />
                       </div>
+                      <q-inner-loading :showing="todo_creating" size="sm">
+                        <q-spinner-dots
+                          color="primary"
+                          size="1em"
+                        />
+                      </q-inner-loading>
                     </div>
                   </div>
                 </template>
@@ -1350,7 +1356,7 @@ const updateTodogroupFn = async (i) => {
 const dragTodo_sort = async (i) => {
   let sort = i.todos.map((i) => i.id);
   if (card.value || _for.value === "card_todo") {
-    emit("todoSort", i, sort);
+    // emit("todoSort", i, sort);
   }
   let params = {
     data: {
@@ -1362,7 +1368,7 @@ const dragTodo_sort = async (i) => {
       card_id: byInfo.value?.card_id,
     };
   }
-  await updateTodogroup(i.id, params);
+  // await updateTodogroup(i.id, params);
 };
 const dragTodogroup_sort = async () => {
   dragging.value = false;
@@ -1423,6 +1429,7 @@ const todo_params = ref({
   },
 });
 const todo_add_ing = ref(void 0);
+const todo_creating = ref(false);
 const editting_todosGroup = ref(void 0);
 const show_addTodo_ofGroup = ref(void 0);
 const uneditting = () => {
@@ -1455,6 +1462,7 @@ const createTodoFn = async (i) => {
     create_params.shareInfo = teamStore.shareInfo;
   }
 
+  todo_creating.value = true;
   let res = await createTodo(create_params);
   todo_params.value.data.content = "";
   if (res?.data) {
@@ -1462,6 +1470,7 @@ const createTodoFn = async (i) => {
     i.todos = [...i.todos, res.data];
   }
   todo_add_ing.value = void 0;
+  todo_creating.value = false;
   return res?.data;
 };
 const keepCreate = async (i) => {

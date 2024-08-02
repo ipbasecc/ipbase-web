@@ -14,7 +14,6 @@
     ref="cardDomRef"
     :style="`${$q.screen.gt.xs ? 'width: 320px' : 'width: 100%'}`"
   >
-    <q-resize-observer @resize="onResize" />
     <!-- 此处qCard组件不能添加class名：card，会导致其内部的input组件无法框选、或点击修改光标位置 -->
     <q-card
       v-if="cardRef && viewTypeRef === 'card'"
@@ -85,7 +84,7 @@
           <q-space />
         </template>
         <q-btn
-          v-if="cardHeight > 162 && !content_channging"
+          v-if="!content_channging"
           dense
           size="sm"
           unelevated
@@ -147,7 +146,7 @@
           :square="true"
           :show_toolbar="false"
           styleClass="q-px-md q-py-sm"
-          :hideScroll="cardRef.expand === 'collapse' || cardHeight < 540"
+          :hideScroll="cardRef.expand === 'collapse'"
           class="undrag"
           contentStyle="max-height: 540px;"
           @tiptapBlur="tiptapBlur"
@@ -910,10 +909,6 @@ const colorMarks = [
 const cardDomRef = ref(null);
 const cardSize = ref();
 
-const cardHeight = ref();
-function onResize(size) {
-  cardHeight.value = size.height;
-}
 const { current } = useMagicKeys();
 const keys = computed(() => Array.from(current));
 watch(

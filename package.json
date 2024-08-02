@@ -89,6 +89,7 @@
     "electron-window-state": "^5.0.3",
     "file-metadata": "^3.0.0",
     "file-saver": "^2.0.5",
+    "flag-icons": "^7.2.3",
     "graphql": "^16.9.0",
     "graphql-tag": "^2.12.6",
     "hevue-img-preview": "^6.1.0",

@@ -8,7 +8,7 @@
     `"
   >
     <div
-      class="column no-wrap hovered-item radius-xs q-px-xs"
+      class="column no-wrap hovered-item radius-xs q-px-xs relative-position"
       :class="
         inCard
           ? 'hover-border'
@@ -202,6 +202,12 @@
           </q-card-actions>
         </q-card>
       </q-dialog>
+      <q-inner-loading :showing="updating" color="primary">
+        <q-spinner-dots
+          color="primary"
+          size="1em"
+        />
+      </q-inner-loading>
     </div>
     <q-popup-proxy context-menu>
       <TodoMenu
@@ -364,7 +370,10 @@ const statusChange = async (todo) => {
   };
   await updateTodoFn(todo);
 };
+const updating = ref(false);
 const updateTodoFn = async (todo) => {
+  updating.value = true;
+
   todo_params.value.data = todo;
   if (byInfo.value?.by === "card") {
     todo_params.value.props = {
@@ -372,9 +381,11 @@ const updateTodoFn = async (todo) => {
     };
   }
   let res = await updateTodo(todo.id, todo_params.value);
+  updating.value = false;
   if (res.data) {
     if (card.value || teamStore.card) {
       const _card = card.value || teamStore.card;
+      // 发送ws消息
       await todoItemUpdate(_card, todogroup.value?.id, res.data);
     }
     setTimeout(() => {

@@ -1,5 +1,4 @@
 <template>
-  <q-resize-observer @resize="onResize" />
   <template v-if="calc_auth(authBase.collection, 'read', authBase.of) || isShared">
     <q-scroll-area
       v-bind="$attrs"
@@ -22,7 +21,7 @@
         :class="`${view_model !== 'list' ? '' : ''} ${
           uiStore.activeReel ? 'column no-wrap' : 'q-pa-sm '
         }`"
-        :style="`height: ${height}px;`"
+        style="height: calc(100vh - 116px);"
       >
         <SegmentPage v-if="uiStore.activeReel" />
         <!-- {{ view_model }} -->
@@ -241,11 +240,6 @@ const authBase = computed(() => {
   return res;
 });
 provide("authBase", authBase.value);
-
-const height = ref();
-function onResize(size) {
-  height.value = size.height;
-}
 
 const kanban = ref();
 const loading = ref(false);

@@ -266,7 +266,7 @@ const chatInfo = computed(() => ({
 }));
 
 const page = ref(0);
-const per_page = ref(60);
+const per_page = ref(5);
 const before = computed(() => messages.value?.order[0]);
 const after = ref();
 const options = computed(() => {
@@ -276,18 +276,9 @@ const options = computed(() => {
   return _.trim(); //要删掉请求参数中的所有空格
 });
 
-const __base = ref({
-  order: [],
-  posts: {},
-});
-const __afterCache = ref({
-  order: [],
-  posts: {},
-});
-const __beforCache = ref({
-  order: [],
-  posts: {},
-});
+const __base = ref({ order: [],  posts: {} });
+const __afterCache = ref({ order: [],  posts: {} });
+const __beforCache = ref({ order: [],  posts: {} });
 const __order = ref();
 const __posts = ref();
 const __channelMessages = ref();
