@@ -47,7 +47,11 @@
 
       <div class="row no-wrap gap-sm items-center">
         {{ $t('Language') }}:
-        <q-btn flat dense padding="xs md" :label="langLabel">
+        <q-btn flat dense padding="xs md">
+          <div class="row no-wrap gap-md">
+            <span :class="`fi fi-${langLabel.flag_key}`"></span>
+            <span>{{ langLabel.label }}</span>
+          </div>
           <q-menu class="transparent z-max">
             <q-list
               dense
@@ -63,6 +67,9 @@
                 @click="setLocale(i.val)"
                 class="radius-xs"
               >
+                <q-item-section side>
+                  <span :class="`fi fi-${i.flag_key}`"></span>
+                </q-item-section>
                 <q-item-section>
                   <q-item-label>{{ i.label }}</q-item-label>
                 </q-item-section>
@@ -323,8 +330,9 @@ const tehmeItems = ref([
 ]);
 const { locale } = useI18n({ useScope: "global" });
 const localeOptions = [
-  { val: "zh-CN", label: "中文" },
-  { val: "en-US", label: "English" },
+  { val: "zh-CN", label: "中文", flag_key: 'cn' },
+  { val: "en-US", label: "English", flag_key: 'gb' },
+  { val: "de-DE", label: "Deutsch", flag_key: 'de' },
 ];
 const setLocale = async (val) => {
   locale.value = val;
@@ -334,9 +342,13 @@ const setLocale = async (val) => {
 const language = computed(() => locale.value)
 const langLabel = computed(() => {
   if(language.value === "zh-CN"){
-    return "中文"
-  }else{
-    return "English"
+    return { val: "zh-CN", label: "中文", flag_key: 'cn' }
+  }else if(language.value === "en-US"){
+    return { val: "en-US", label: "English", flag_key: 'gb' }
+  }else if(language.value === "de-DE"){
+    return { val: "de-DE", label: "Deutsch", flag_key: 'de' }
+  } else {
+    return { val: "zh-CN", label: "中文", flag_key: 'cn' }
   }
 })
 
