@@ -318,12 +318,8 @@ export default configure((ctx) => {
           identity: null, // 跳过签名步骤
         },
         win: {
-          target: [
-            {
-              target: "msi",
-              arch: ["x64"],
-            },
-          ],
+          target: "msi",
+          icon: fileURLToPath(new URL("./src-electron/icons/icon.ico", import.meta.url)),
         },
         linux: {
           icon: "build/icons",

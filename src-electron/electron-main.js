@@ -68,8 +68,8 @@ function unregisterGlobalShortcuts() {
 
 function createWindow() {
   let mainWindowState = new State({
-    defaultWidth: 800,
-    defaultHeight: 600,
+    defaultWidth: 1280,
+    defaultHeight: 760,
   });
   const csp = `
     default-src 'none';
