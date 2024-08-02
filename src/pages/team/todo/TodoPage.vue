@@ -1356,7 +1356,7 @@ const updateTodogroupFn = async (i) => {
 const dragTodo_sort = async (i) => {
   let sort = i.todos.map((i) => i.id);
   if (card.value || _for.value === "card_todo") {
-    // emit("todoSort", i, sort);
+    emit("todoSort", i, sort);
   }
   let params = {
     data: {
@@ -1368,7 +1368,7 @@ const dragTodo_sort = async (i) => {
       card_id: byInfo.value?.card_id,
     };
   }
-  // await updateTodogroup(i.id, params);
+  await updateTodogroup(i.id, params);
 };
 const dragTodogroup_sort = async () => {
   dragging.value = false;
