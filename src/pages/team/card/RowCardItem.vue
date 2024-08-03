@@ -9,7 +9,7 @@
     <td class="status">
       <StatusMenu
         v-if="show_byPreference?.status?.value || teamStore.shareInfo"
-        :modify="calc_auth('card', 'status', 'project') || isCreator"
+        :modify="useAuths('status', ['card'], members, roles) || isCreator"
         :status="cardRef.status"
         @statusChange="_card_statusChange"
         class="undrag"
@@ -62,7 +62,7 @@
         :jsonContent="cardRef.jsonContent"
         :editable="
           content_channging &&
-          (calc_auth('card', 'jsonContent', 'project') || isCreator) &&
+          (useAuths('jsonContent', ['card'], members, roles) || isCreator) &&
           !teamStore.shareInfo
         "
         :need="'json'"
@@ -131,7 +131,7 @@
         icon="score"
         class="font-small"
         :class="
-          calc_auth('card', 'score', 'project') || isCreator
+          useAuths('score', ['card'], members, roles) || isCreator
             ? 'cursor-pointer'
             : ''
         "
@@ -139,7 +139,7 @@
         {{ $t('score') }}：{{ cardRef.score }}
         <q-popup-proxy
           cover
-          v-if="calc_auth('card', 'score', 'project') || isCreator"
+          v-if="useAuths('score', ['card'], members, roles) || isCreator"
           class="shadow-24"
         >
           <q-card bordered flat class="row no-wrap gap-xs items-center q-pa-xs">
@@ -185,7 +185,7 @@
         <q-btn
           v-if="
             !is_followed &&
-            (calc_auth('card', 'followed_bies', 'project') || isCreator)
+            (useAuths('followed_bies', ['card'], members, roles) || isCreator)
           "
           dense
           round
@@ -233,11 +233,7 @@
                       padding="sm"
                       @click="
                         _enterCard(
-                          calc_auth(
-                            'card',
-                            'read',
-                            isInCard ? 'card' : 'project'
-                          ) || isCreator
+                          useAuths('read', ['card'], members, roles) || isCreator
                         )
                       "
                     >
@@ -246,7 +242,7 @@
                       </q-tooltip>
                     </q-btn>
                     <q-btn
-                      v-if="calc_auth('card', 'name', 'project') || isCreator"
+                      v-if="useAuths('name', ['card'], members, roles) || isCreator"
                       flat
                       dense
                       size="sm"
@@ -268,7 +264,7 @@
             <q-item
               v-if="
                 show_byPreference?.color_marker?.value &&
-                (calc_auth('card', 'color_marker', 'project') || isCreator)
+                (useAuths('color_marker', ['card'], members, roles) || isCreator)
               "
             >
               <q-item-section>
@@ -296,15 +292,15 @@
             </q-item>
             <q-separator
               v-if="
-                calc_auth('card', 'type', 'project') ||
-                calc_auth('card', 'status', 'project') ||
+                useAuths('type', ['card'], members, roles) ||
+                useAuths('status', ['card'], members, roles) ||
                 isCreator
               "
               spaced
               class="op-5"
             />
             <q-item
-              v-if="calc_auth('card', 'type', 'project') || isCreator"
+              v-if="useAuths('type', ['card'], members, roles) || isCreator"
               class="radius-xs"
               clickable
             >
@@ -337,7 +333,7 @@
             </q-item>
             <q-item
               v-if="
-                (calc_auth('card', 'status', 'project') || isCreator) &&
+                (useAuths('status', ['card'], members, roles) || isCreator) &&
                 cardRef.type === 'task' &&
                 show_byPreference?.status?.value
               "
@@ -357,7 +353,7 @@
               </q-menu>
             </q-item>
             <template
-              v-if="calc_auth('card', 'delete', 'project') || isCreator"
+              v-if="useAuths('delete', ['card'], members, roles) || isCreator"
             >
               <q-separator spaced class="op-5" />
               <q-item
@@ -406,11 +402,7 @@
                   padding="sm"
                   @click="
                     _enterCard(
-                      calc_auth(
-                        'card',
-                        'read',
-                        isInCard ? 'card' : 'project'
-                      ) || isCreator
+                      useAuths('read', ['card'], members, roles) || isCreator
                     )
                   "
                 >
@@ -419,7 +411,7 @@
                   </q-tooltip>
                 </q-btn>
                 <q-btn
-                  v-if="calc_auth('card', 'name', 'project') || isCreator"
+                  v-if="useAuths('name', ['card'], members, roles) || isCreator"
                   flat
                   dense
                   size="sm"
@@ -441,7 +433,7 @@
         <q-item
           v-if="
             show_byPreference?.color_marker?.value &&
-            (calc_auth('card', 'color_marker', 'project') || isCreator)
+            (useAuths('color_marker', ['card'], members, roles) || isCreator)
           "
         >
           <q-item-section>
@@ -469,15 +461,15 @@
         </q-item>
         <q-separator
           v-if="
-            calc_auth('card', 'type', 'project') ||
-            calc_auth('card', 'status', 'project') ||
+            useAuths('type', ['card'], members, roles) ||
+            useAuths('status', ['card'], members, roles) ||
             isCreator
           "
           spaced
           class="op-5"
         />
         <q-item
-          v-if="calc_auth('card', 'type', 'project') || isCreator"
+          v-if="useAuths('type', ['card'], members, roles) || isCreator"
           class="radius-xs"
           clickable
         >
@@ -508,7 +500,7 @@
         </q-item>
         <q-item
           v-if="
-            (calc_auth('card', 'status', 'project') || isCreator) &&
+            (useAuths('status', ['card'], members, roles) || isCreator) &&
             cardRef.type === 'task' &&
             show_byPreference?.status?.value
           "
@@ -527,7 +519,7 @@
             />
           </q-menu>
         </q-item>
-        <template v-if="calc_auth('card', 'delete', 'project') || isCreator">
+        <template v-if="useAuths('delete', ['card'], members, roles) || isCreator">
           <q-separator spaced class="op-5" />
           <q-item
             class="radius-xs"

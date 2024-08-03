@@ -6,7 +6,7 @@
       flat
       class="column no-wrap cardBody overflow-hidden relative-position radius-sm hovered-item"
       :class="teamStore.card?.id === cardRef.id ? 'openedCard shadow-focus' : ''"
-      @mouseenter="AUTH = useAuth('read', 'card', members, roles)"
+      @mouseenter="AUTH = useAuths('read', ['card'], members, roles)"
       @mouseleave="AUTH = void 0"
     >
       <!-- 卡片顶部 -->
@@ -14,7 +14,7 @@
         class="row no-wrap q-pa-xs q-pr-sm items-center hovered-item absolute-top z-fab"
         :class="`
             ${
-              useAuth('order', 'card', members, roles) &&
+              useAuths('order', ['card'], members, roles) &&
               !name_changing &&
               !isExternal
                 ? 'dragBar'
@@ -45,13 +45,13 @@
           icon="score"
           class="font-small"
           :class="
-            useAuth('score', 'card', members, roles) ? 'cursor-pointer' : ''
+            useAuths('score', ['card'], members, roles) ? 'cursor-pointer' : ''
           "
         >
           分值：{{ cardRef.score }}
           <q-popup-proxy
             cover
-            v-if="useAuth('score', 'card', members, roles)"
+            v-if="useAuths('score', ['card'], members, roles)"
             class="shadow-24"
           >
             <q-card
@@ -75,7 +75,7 @@
           </q-popup-proxy>
         </q-chip>
         <div
-          v-if="name_changing && useAuth('name', 'card', members, roles)"
+          v-if="name_changing && useAuths('name', ['card'], members, roles)"
           class="undrag text-medium q-space cursor-text q-px-sm z-fab"
           style="
             writing-mode: lr;
@@ -107,6 +107,7 @@
           :card="cardRef"
           :executor="executor"
           :members="members"
+          :roles="roles"
           :isCreator="isCreator"
           @attachExecutor="attachExecutorFn"
         />
@@ -127,7 +128,7 @@
         <div
           class="absolute-full bg-gradient-bottom-black hover-show transition"
           @dblclick.stop="
-            _enterSegment(useAuth('read', 'card', members, roles))
+            _enterSegment(useAuths('read', ['card'], members, roles))
           "
         ></div>
       </q-card-section>
@@ -136,11 +137,11 @@
         v-show="cardRef?.expand !== 'collapse'"
         class="row no-wrap gap-sm items-center q-px-sm q-py-xs hovered-item absolute-bottom z-fab q-mb-sm"
         :class="isExternal ? '' : 'dragBar'"
-        @dblclick="_enterSegment(useAuth('read', 'card', members, roles))"
+        @dblclick="_enterSegment(useAuths('read', ['card'], members, roles))"
       >
         <StatusMenu
           v-if="show_byPreference?.status?.value"
-          :modify="useAuth('status', 'card', members, roles)"
+          :modify="useAuths('status', ['card'], members, roles)"
           :status="cardRef.status"
           @statusChange="_card_statusChange"
           class="undrag"
@@ -167,7 +168,7 @@
           </overlappingAvatar>
           <q-btn
             v-if="
-              !is_followed && useAuth('followed_bies', 'card', members, roles)
+              !is_followed && useAuths('followed_bies', ['card'], members, roles)
             "
             dense
             round
@@ -194,7 +195,7 @@
             round
             icon="fullscreen"
             class="op-5"
-            @click="_enterSegment(useAuth('read', 'card', members, roles))"
+            @click="_enterSegment(useAuths('read', ['card'], members, roles))"
           />
         </div>
         <q-icon
@@ -226,7 +227,7 @@
                         padding="sm"
                         v-close-popup
                         @click="
-                          _enterSegment(useAuth('read', 'card', members, roles))
+                          _enterSegment(useAuths('read', ['card'], members, roles))
                         "
                       >
                         <q-tooltip>
@@ -234,7 +235,7 @@
                         </q-tooltip>
                       </q-btn>
                       <q-btn
-                        v-if="useAuth('name', 'card', members, roles)"
+                        v-if="useAuths('name', ['card'], members, roles)"
                         flat
                         dense
                         size="sm"
@@ -264,7 +265,7 @@
               <template
                 v-if="
                   show_byPreference?.color_marker?.value &&
-                  useAuth('color_marker', 'card', members, roles)
+                  useAuths('color_marker', ['card'], members, roles)
                 "
               >
                 <q-separator spaced class="op-5" />
@@ -297,15 +298,15 @@
               </template>
               <q-separator
                 v-if="
-                  useAuth('type', 'card', members, roles) ||
-                  useAuth('status', 'card', members, roles)
+                  useAuths('type', ['card'], members, roles) ||
+                  useAuths('status', ['card'], members, roles)
                 "
                 spaced
                 class="op-5"
               />
               <q-item
                 v-if="
-                  useAuth('status', 'card', members, roles) &&
+                  useAuths('status', ['card'], members, roles) &&
                   show_byPreference?.status?.value
                 "
                 class="radius-xs"
@@ -323,7 +324,7 @@
                   />
                 </q-menu>
               </q-item>
-              <template v-if="useAuth('delete', 'card', members, roles)">
+              <template v-if="useAuths('delete', ['card'], members, roles)">
                 <q-item
                   class="radius-xs"
                   clickable
@@ -338,12 +339,12 @@
         </q-icon>
         <q-popup-proxy
           v-if="
-            useAuth('read', 'card', members, roles) ||
-            useAuth('name', 'card', members, roles) ||
-            useAuth('color_marker', 'card', members, roles) ||
-            useAuth('type', 'card', members, roles) ||
-            useAuth('status', 'card', members, roles) ||
-            useAuth('delete', 'card', members, roles)
+            useAuths('read', ['card'], members, roles) ||
+            useAuths('name', ['card'], members, roles) ||
+            useAuths('color_marker', ['card'], members, roles) ||
+            useAuths('type', ['card'], members, roles) ||
+            useAuths('status', ['card'], members, roles) ||
+            useAuths('delete', ['card'], members, roles)
           "
           context-menu
           ref="cardCtxMenu"
@@ -362,7 +363,7 @@
                     padding="sm"
                     v-close-popup
                     @click="
-                      _enterSegment(useAuth('read', 'card', members, roles))
+                      _enterSegment(useAuths('read', ['card'], members, roles))
                     "
                   >
                     <q-tooltip>
@@ -370,7 +371,7 @@
                     </q-tooltip>
                   </q-btn>
                   <q-btn
-                    v-if="useAuth('name', 'card', members, roles)"
+                    v-if="useAuths('name', ['card'], members, roles)"
                     flat
                     dense
                     size="sm"
@@ -399,7 +400,7 @@
             <template
               v-if="
                 show_byPreference?.color_marker?.value &&
-                useAuth('color_marker', 'card', members, roles)
+                useAuths('color_marker', ['card'], members, roles)
               "
             >
               <q-separator spaced class="op-5" />
@@ -431,7 +432,7 @@
             </template>
             <q-item
               v-if="
-                useAuth('status', 'card', members, roles) &&
+                useAuths('status', ['card'], members, roles) &&
                 show_byPreference?.status?.value
               "
               class="radius-xs"
@@ -449,7 +450,7 @@
                 />
               </q-menu>
             </q-item>
-            <template v-if="useAuth('delete', 'card', members, roles)">
+            <template v-if="useAuths('delete', ['card'], members, roles)">
               <q-separator spaced class="op-5" />
               <q-item
                 class="radius-xs"

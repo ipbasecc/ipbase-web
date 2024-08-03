@@ -51,7 +51,7 @@
       <template v-if="inDilg">
         <q-space />
         <div
-          v-if="calc_auth('card', 'manageRole', 'card')"
+          v-if="useAuths('manageRole', ['card'], members, roles)"
           class="flex flex-center q-mb-md"
         >
           <q-btn
@@ -307,7 +307,7 @@
           <template v-if="current_model === 'card_kanban'">
             <KanbanContainer
               v-if="
-                !teamStore.card?.private || calc_auth('column', 'read', 'card')
+                !teamStore.card?.private || useAuths('read', ['column'], members, roles)
               "
               :project_id="teamStore.project?.id"
               :kanban_id="teamStore.card?.card_kanban?.id"
@@ -332,7 +332,7 @@
             <q-splitter
               v-if="
                 !teamStore.card.private ||
-                calc_auth('card_document', 'read', 'card')
+                useAuths('read', ['card_document'], members, roles)
               "
               v-model="splitterModel"
               :limits
@@ -381,7 +381,11 @@
     <!-- <div class="absolute z-max">{{ teamStore.card }}</div> -->
     <q-dialog v-model="card_setting" persistent>
       <q-card bordered style="min-width: 61dvw">
-        <CardSettings :isCard="true" />
+        <CardSettings
+          :isCard="true" 
+          :members="members"
+          :roles="roles"
+        />
       </q-card>
     </q-dialog>
   </q-card>
@@ -432,7 +436,7 @@
         <q-tab-panel name="card_kanban" class="no-padding">
           <KanbanContainer
               v-if="
-                !teamStore.card?.private || calc_auth('column', 'read', 'card')
+                !teamStore.card?.private || useAuths('read', ['column'], members, roles)
               "
               :project_id="teamStore.project?.id"
               :kanban_id="teamStore.card?.card_kanban?.id"
@@ -457,7 +461,7 @@
           />
         </q-tab-panel>
         <q-tab-panel name="card_documents" class="no-padding">
-          <template v-if="!teamStore.card.private || calc_auth('card_document', 'read', 'card')">
+          <template v-if="!teamStore.card.private || useAuths('read', ['card_document'], members, roles)">
             <DocumentList
                 v-if="!document_id"
                 :documents="teamStore.card.card_documents"
@@ -605,6 +609,9 @@ const refetchFeedback = async (card_id) => {
   }
 }
 const isIntro = ref(false);
+
+const members = ref();
+const roles = ref();
 watchEffect(async () => {
   if (route.name === "teams") {
     isIntro.value = true;
@@ -620,6 +627,13 @@ watchEffect(async () => {
   if(uiStore.showMainContentList){
     document_id.value = void 0
   }
+
+  const _cardMembers = cardRef.value?.card_members || [];
+  members.value = uniqueById([...project_members.value, ..._cardMembers]);
+  const _projectRoles = teamStore?.project?.member_roles || [];
+  const _cardRoles = cardRef.value?.member_roles || [];
+  // 卡片鉴权需要从project、card判定两个主体，这里直接合并以便UI中判断
+  roles.value = [..._projectRoles, ..._cardRoles];
 });
 
 const closeCard = (id, index) => {

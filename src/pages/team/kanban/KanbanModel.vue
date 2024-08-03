@@ -16,7 +16,7 @@
       @wheel="handleScroll"
     >
       <div
-        v-if="kanban"
+        v-if="kanban && teamStore.authArgs"
         class="relative-position"
         :class="`${view_model !== 'list' ? '' : ''} ${
           uiStore.activeReel ? 'column no-wrap' : 'q-pa-sm '
@@ -240,6 +240,35 @@ const authBase = computed(() => {
   return res;
 });
 provide("authBase", authBase.value);
+const authArgs = computed(() => {
+  const _members = new Set();
+  const _roles = new Set();
+
+  // 从teamStore中获取members和member_roles，去重后添加到相应的Set中
+  [teamStore.team, teamStore.card].forEach(source => {
+    if (source?.members) {
+      source.members.forEach(member => _members.add(member));
+    }
+    if (source?.card_members) {
+      source.card_members.forEach(member => _members.add(member));
+    }
+    if (source?.member_roles) {
+      source.member_roles.forEach(role => _roles.add(role));
+    }
+  });
+
+  // 将Set转换为数组，以便作为结果返回
+  const members = Array.from(_members);
+  const roles = Array.from(_roles);
+
+  // 返回一个对象或其他结构，根据你的实际需求
+  return { members, roles };
+});
+watch(authArgs, () => {
+  if(authArgs.value?.members?.length > 0 || authArgs.value?.roles?.length > 0){
+    teamStore.authArgs = authArgs.value;
+  }
+},{immediate: true, deep: true})
 
 const kanban = ref();
 const loading = ref(false);
@@ -494,15 +523,14 @@ const _store_kanban = computed(() => teamStore.kanban)
 const _store_cardKanban = computed(() => teamStore.cardKanban)
 watch([_store_kanban, _store_cardKanban], async () => {
   await nextTick();
-  if(_store_kanban.value || _store_cardKanban.value) {
-    syncStoreByKanban();
-  }
-  if(_store_kanban.value){
-    await putKanbanCache(_store_kanban.value);
-  }
-  if(_store_cardKanban.value){
-    await putKanbanCache(_store_cardKanban.value);
-  }
+  setTimeout(async () => {
+    if(_store_kanban.value){
+      await putKanbanCache(_store_kanban.value);
+    }
+    if(_store_cardKanban.value){
+      await putKanbanCache(_store_cardKanban.value);
+    }
+  }, 500);
 },{immediate:true,deep:true})
 
 // -----------------------------------------

@@ -34,7 +34,7 @@
       >
         <div
           v-if="
-            calc_auth(authBase.collection, 'private', authBase.of) || isCreator
+            useAuths('private', [authBase.collection], members, roles) || isCreator
           "
           class="full-width row no-wrap gap-lg q-pa-md"
         >
@@ -70,6 +70,18 @@ const props = defineProps({
   settingfor: {
     type: String,
     default: "role",
+  },
+  members: {
+    type: Object,
+    default() {
+      return undefined;
+    },
+  },
+  roles: {
+    type: Object,
+    default() {
+      return undefined;
+    },
   },
 });
 const authBase = computed(() => {

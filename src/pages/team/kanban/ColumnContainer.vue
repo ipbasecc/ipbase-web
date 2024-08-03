@@ -761,6 +761,7 @@ const updateCannel = () => {
 
 const emit = defineEmits(["cardChange", "cardDelete", "orderCard"]);
 const dragCard_sort = async () => {
+  return
   let params = {
     project_id: teamStore.project.id,
     kanban_id: kanban_idRef.value,
@@ -830,8 +831,10 @@ const dragStart = () => {
   uiStore.draging = true;
 };
 const dragEnd = () => {
-  teamStore.cardDragging = false;
-  uiStore.draging = false;
+  setTimeout(() => {
+    teamStore.cardDragging = false;
+    uiStore.draging = false;
+  }, 500);
 };
 const setDragscroll = ref(false);
 
@@ -917,6 +920,7 @@ const dragHandler = (val) => {
 };
 
 // this data are all for watch, do not use it in anywhere!
+const __all_cards = computed(() => teamStore.kanban?.columns?.map(i => i.cards)?.flat(2));
 const _all_cards = computed(() => teamStore.all_cards);
 const syncStoreByColumn = () => {
   // 如果卡片在两个分栏之间移动，被动更新的客户端，会接收到两条ws消息
@@ -1018,14 +1022,28 @@ watch(
           strapi.data.action === "orderCard"
         ) {
           const order = strapi.data.order;
-          if (!_all_cards.value || _all_cards.value?.length === 0) return;
-          if (!order || order.length === 0) {
-            columnRef.value.cards = [];
-          } else {
-            columnRef.value.cards = order.map((i) =>
-              _all_cards.value.find((j) => j.id === i)
-            );
+          const syncCards = async (_order) => {
+            const targetIds = _order;
+            const cardMap = new Map(__all_cards.value.map(card => [card.id, card]));
+
+            // 根据目标顺序，重新构建卡片数组
+            columnRef.value.cards = targetIds.map(id => {
+              const card = cardMap.get(id);
+              if (!card) {
+                const res = findCard(id);
+                if (res?.data) {
+                  return res.data
+                } else {
+                  return {
+                    id: -1,
+                    error: 'card_fetch_error'
+                  }
+                }
+              }
+              return card;
+            });
           }
+          await syncCards(order);
           // syncStoreByColumn();
         }
       }

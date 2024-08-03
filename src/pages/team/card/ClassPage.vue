@@ -118,21 +118,21 @@
           <template v-if="current_classExtend === 'card_kanban'">
             <KanbanContainer
               v-if="
-                !teamStore.card?.private || calc_auth('column', 'read', 'card')
+                !teamStore.card?.private || useAuths('read', ['column'], members, roles)
               "
               :project_id="teamStore.project?.id"
               :kanban_id="teamStore.card?.card_kanban?.id"
               :hiddenToolbar="true"
             />
             <div v-else class="absolute-full flex flex-center op-3">
-              您无权查看此内容
+              {{ $t(no_premission_to_view) }}
             </div>
           </template>
           <template v-if="current_classExtend === 'card_documents'">
             <q-splitter
               v-if="
                 !teamStore.card.private ||
-                calc_auth('card_document', 'read', 'card')
+                useAuths('read', ['card_document'], members, roles)
               "
               v-model="splitterModel"
               :limits
@@ -246,6 +246,34 @@ const send_chat_Msg = async (MsgContent) => {
 
 const project_members = computed(() => teamStore.project?.project_members);
 const card_members = ref();
+
+const members = ref();
+const roles = ref();
+watchEffect(async () => {
+  if (route.name === "teams") {
+    isIntro.value = true;
+  }
+  if (teamStore.card?.belongedInfo?.belonged_project && !teamStore.project) {
+    const _project_id = teamStore.card.belongedInfo.belonged_project.id;
+    const res = await getOneProject(_project_id);
+    if (res?.data) {
+      teamStore.project = res.data;
+      teamStore.project_id = res.data.id;
+    }
+  }
+  if(uiStore.showMainContentList){
+    document_id.value = void 0
+  }
+
+  const _cardMembers = cardRef.value?.card_members || [];
+  members.value = uniqueById([...project_members.value, ..._cardMembers]);
+  const _projectRoles = teamStore?.project?.member_roles || [];
+  const _cardRoles = cardRef.value?.member_roles || [];
+  // 卡片鉴权需要从project、card判定两个主体，这里直接合并以便UI中判断
+  roles.value = [..._projectRoles, ..._cardRoles];
+});
+
+
 const getCard = async (card_id) => {
   let res = await findCard(card_id);
 

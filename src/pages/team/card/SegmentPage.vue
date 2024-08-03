@@ -57,7 +57,7 @@
           <q-splitter
             v-if="
               !teamStore.card.private ||
-              calc_auth('card_document', 'read', 'card')
+              useAuths('read', ['card_document'], members, roles)
             "
             v-model="splitterModel"
             :limits
@@ -219,6 +219,9 @@ const getCard = async (card_id) => {
   }
 };
 const isIntro = ref(false);
+const members = ref();
+const roles = ref();
+const project_members = computed(() => teamStore.project?.project_members);
 watchEffect(async () => {
   if (route.name === "teams") {
     isIntro.value = true;
@@ -231,6 +234,16 @@ watchEffect(async () => {
       teamStore.project_id = res.data.id;
     }
   }
+  // if(uiStore.showMainContentList){
+  //   document_id.value = void 0
+  // }
+
+  const _cardMembers = cardRef.value?.card_members || [];
+  members.value = uniqueById([...project_members.value, ..._cardMembers]);
+  const _projectRoles = teamStore?.project?.member_roles || [];
+  const _cardRoles = cardRef.value?.member_roles || [];
+  // 卡片鉴权需要从project、card判定两个主体，这里直接合并以便UI中判断
+  roles.value = [..._projectRoles, ..._cardRoles];
 });
 
 const document_id = ref();

@@ -2,7 +2,7 @@
   <div
     class="flex flex-center q-pl-xs"
     :class="
-      calc_auth(authBase.collection, 'executor', authBase.of) || isCreatoref
+      useAuths('executor', [authBase.collection], members, roles) || isCreatoref
         ? 'cursor-pointer undrag'
         : 'dragBar'
     "
@@ -11,7 +11,7 @@
     <q-icon v-else name="account_circle" size="20px" class="op-5" />
     <q-menu
       v-if="
-        calc_auth(authBase.collection, 'executor', authBase.of) || isCreatoref
+        useAuths('executor', [authBase.collection], members, roles) || isCreatoref
       "
       class="radius-sm shadow-12"
     >
@@ -73,6 +73,12 @@ const props = defineProps({
     },
   },
   members: {
+    type: Object,
+    default() {
+      return undefined;
+    },
+  },
+  roles: {
     type: Object,
     default() {
       return undefined;

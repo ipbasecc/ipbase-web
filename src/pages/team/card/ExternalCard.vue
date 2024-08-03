@@ -20,7 +20,7 @@
       <div
         v-if="
           name_changing &&
-          useAuth('name', 'card', card?.card_members, card?.member_roles)
+          useAuths('name', ['card'], card?.card_members, card?.member_roles)
         "
         class="undrag text-medium q-space cursor-text q-px-sm z-fab"
         style="
@@ -74,16 +74,16 @@
       >
         <q-menu
           v-if="
-            useAuth('name', 'card', card?.card_members, card?.member_roles) ||
-            useAuth(
+            useAuths('name', ['card'], card?.card_members, card?.member_roles) ||
+            useAuths(
               'color_marker',
-              'card',
+              ['card'],
               card?.card_members,
               card?.member_roles
             ) ||
-            useAuth('type', 'card', card?.card_members, card?.member_roles) ||
-            useAuth('status', 'card', card?.card_members, card?.member_roles) ||
-            useAuth('delete', 'card', card?.card_members, card?.member_roles)
+            useAuths('type', ['card'], card?.card_members, card?.member_roles) ||
+            useAuths('status', ['card'], card?.card_members, card?.member_roles) ||
+            useAuths('delete', ['card'], card?.card_members, card?.member_roles)
           "
           class="shadow-24"
         >
@@ -94,9 +94,9 @@
                   <div class="row no-wrap gap-sm">
                     <q-btn
                       v-if="
-                        useAuth(
+                        useAuths(
                           'name',
-                          'card',
+                          ['card'],
                           card?.card_members,
                           card?.member_roles
                         )
@@ -122,9 +122,9 @@
             <template
               v-if="
                 show_byPreference?.color_marker?.value &&
-                useAuth(
+                useAuths(
                   'color_marker',
-                  'card',
+                  ['card'],
                   card?.card_members,
                   card?.member_roles
                 )
@@ -158,13 +158,13 @@
             </template>
             <q-separator
               v-if="
-                useAuth(
+                useAuths(
                   'name',
                   'type',
                   card?.card_members,
                   card?.member_roles
                 ) ||
-                useAuth(
+                useAuths(
                   'name',
                   'status',
                   card?.card_members,
@@ -176,7 +176,7 @@
             />
             <q-item
               v-if="
-                useAuth('name', 'type', card?.card_members, card?.member_roles)
+                useAuths('name', 'type', card?.card_members, card?.member_roles)
               "
               class="radius-xs"
               clickable
@@ -210,7 +210,7 @@
             </q-item>
             <q-item
               v-if="
-                useAuth(
+                useAuths(
                   'name',
                   'status',
                   card?.card_members,
@@ -236,7 +236,7 @@
             </q-item>
             <template
               v-if="
-                useAuth(
+                useAuths(
                   'name',
                   'delete',
                   card?.card_members,

@@ -987,7 +987,7 @@
 // 实现效果：
 // 1.卡片上可以独立展示自己的todogroups
 // 2.用户针对不同的看板可以自己增加todogroups，作为对应的私有内容，仅供自己查阅
-import { computed, onBeforeMount, ref, toRefs, watch, watchEffect } from "vue";
+import { computed, onBeforeMount, ref, toRefs, watch, watchEffect, inject } from "vue";
 import {
   createTodo,
   createTodogroup,
@@ -1079,6 +1079,10 @@ const props = defineProps({
     type: Object,
     default: void 0,
   },
+  authArgs: {
+    type: Array,
+    default: void 0,
+  },
   /*
   定义todo的附加对象：
     @card_todo - 卡片的todo；
@@ -1107,6 +1111,7 @@ const {
   isFeedback,
   byInfo,
   _for,
+  authArgs
 } = toRefs(props);
 // 确定判断鉴权的字段
 // 只有在todogroups是属于卡片的时候需要鉴权
