@@ -1,5 +1,5 @@
 <template>
-  <template v-if="calc_auth(authBase.collection, 'read', authBase.of) || isShared">
+  <template v-if="members && roles || isShared">
     <q-scroll-area
       v-bind="$attrs"
       v-dragscroll="{
@@ -16,7 +16,7 @@
       @wheel="handleScroll"
     >
       <div
-        v-if="kanban && teamStore.authArgs"
+        v-if="kanban"
         class="relative-position"
         :class="`${view_model !== 'list' ? '' : ''} ${
           uiStore.activeReel ? 'column no-wrap' : 'q-pa-sm '
@@ -82,7 +82,7 @@
           </template>
           <template
             v-if="
-              calc_auth(authBase.collection, 'create', authBase.of) &&
+              useAuths('create', [authBase.collection], members, roles) &&
               !uiStore.activeReel && !isShared
             "
             #footer
@@ -189,6 +189,7 @@ import ReelContainer from "./ReelContainer.vue";
 import SegmentPage from "../card/SegmentPage.vue";
 import { onKeyStroke } from "@vueuse/core";
 import { i18n } from 'src/boot/i18n.js';
+import { uniqueById } from "src/hooks/utilits.js";
 
 const $t = i18n.global.t;
 
@@ -240,35 +241,17 @@ const authBase = computed(() => {
   return res;
 });
 provide("authBase", authBase.value);
-const authArgs = computed(() => {
-  const _members = new Set();
-  const _roles = new Set();
-
-  // 从teamStore中获取members和member_roles，去重后添加到相应的Set中
-  [teamStore.team, teamStore.card].forEach(source => {
-    if (source?.members) {
-      source.members.forEach(member => _members.add(member));
-    }
-    if (source?.card_members) {
-      source.card_members.forEach(member => _members.add(member));
-    }
-    if (source?.member_roles) {
-      source.member_roles.forEach(role => _roles.add(role));
-    }
-  });
-
-  // 将Set转换为数组，以便作为结果返回
-  const members = Array.from(_members);
-  const roles = Array.from(_roles);
-
-  // 返回一个对象或其他结构，根据你的实际需求
-  return { members, roles };
+const members = ref();
+const roles = ref();
+const project_members = computed(() => teamStore.project?.members || []);
+watchEffect(async () => {
+  const _cardMembers = teamStore?.card?.card_members || [];
+  members.value = uniqueById([...project_members.value, ..._cardMembers]);
+  const _projectRoles = teamStore?.project?.member_roles || [];
+  const _cardRoles = teamStore?.card?.member_roles || [];
+  // 卡片鉴权需要从project、card判定两个主体，这里直接合并以便UI中判断
+  roles.value = [..._projectRoles, ..._cardRoles];
 });
-watch(authArgs, () => {
-  if(authArgs.value?.members?.length > 0 || authArgs.value?.roles?.length > 0){
-    teamStore.authArgs = authArgs.value;
-  }
-},{immediate: true, deep: true})
 
 const kanban = ref();
 const loading = ref(false);

@@ -3,6 +3,7 @@
     v-if="onlyMedia"
     :current_version="current_version"
     :mediaWidth="mediaWidth"
+    :auth="useAuths('media', ['overview'], members, roles)"
     class="fit"
     @mediaChanged="mediaChanged"
   />
@@ -16,42 +17,46 @@
       v-if="!hideMedia"
       :current_version="current_version"
       :isClassroom
+      :auth="useAuths('media', ['overview'], members, roles)"
       @mediaChanged="mediaChanged"
     />
     <div
       class="column no-wrap q-px-sm gap-sm q-pt-sm"
       :class="isClassroom ? 'q-pb-sm' : ''"
     >
-      <OverviewName v-if="name" :wasAttached_to="wasAttached_toRef" />
+      <OverviewName v-if="name" :wasAttached_to="wasAttached_toRef" :auth="useAuths('name', ['overview'], members, roles)" />
       <OverviewDesc
         v-if="wasAttached_toRef === 'project'"
+        :auth="useAuths('description', ['overview'], members, roles)"
         :wasAttached_to="wasAttached_toRef"
       />
     </div>
-    <div
-      v-if="!isClassroom"
+    <div v-if="!isClassroom"
       class="row no-wrap gap-md items-center justify-between q-mx-sm"
     >
       <OverviewStart
         :wasAttached_to="wasAttached_toRef"
         :current_version="current_version"
+        :auth="useAuths('start', ['overview'], members, roles)"
         @startChanged="startChanged"
       />
       <OverviewEnd
         :wasAttached_to="wasAttached_toRef"
         :current_version="current_version"
+        :auth="useAuths('end', ['overview'], members, roles)"
         @endChanged="endChanged"
       />
       <OverviewDeadline
         :wasAttached_to="wasAttached_toRef"
         :current_version="current_version"
+        :auth="useAuths('deadline', ['overview'], members, roles)"
         @deadlineChanged="deadlineChanged"
       />
     </div>
     <div
       class="row no-wrap gap-md q-pa-sm q-mx-sm items-center radius-xs border"
     >
-      <template v-if="calc_auth('overview', 'start', authBase.of)">
+      <template v-if="useAuths('start', ['overview'], members, roles)">
         <span
           v-if="!version_update_ing"
           class="q-space q-ml-sm"
@@ -70,8 +75,7 @@
       <span v-else class="q-space q-ml-sm">
         {{ $t(current_version?.name) }}
       </span>
-      <q-input
-        v-if="version_update_ing === current_version?.id"
+      <q-input v-if="version_update_ing === current_version?.id"
         v-model="_input_text"
         dense
         square
@@ -103,11 +107,7 @@
             :class="$q.dark.mode ? 'bg-grey-10' : 'bg-white'"
             style="min-width: 9rem"
           >
-            <template
-              v-if="
-                calc_auth(authBase.collection, 'modify', authBase.of)
-              "
-            >
+            <template v-if="useAuths('modify', [authBase.collection], members, roles)">
               <q-item class="radius-xs" clickable v-close-popup @click="version_update_ing = current_version?.id">
                 <q-item-section side>
                   <ReName />
@@ -134,26 +134,17 @@
                   <q-avatar size="sm">{{ index }}</q-avatar>
                 </q-item-section>
                 <q-item-section>{{ i.name }}</q-item-section>
-                <q-item-section
-                  side
-                  v-if="
-                    calc_auth(
-                      authBase.collection,
-                      'default_version',
-                      authBase.of
-                    )
-                  "
-                >
+                <q-item-section side v-if="useAuths('default_version', [authBase.collection], members, roles)">
                   <q-btn dense size="sm" flat round icon="star" :color="overView_attachedTo.default_version === i.id
                         ? 'yellow'
                         : ''"
-                    :disable="!calc_auth(authBase.collection, 'default_version', authBase.of)"
+                    :disable="!useAuths('default_version', [authBase.collection], members, roles)"
                     @click.stop="set_defaultVersion(i.id)"
                   />
                 </q-item-section>
               </q-item>
             </template>
-            <template v-if="calc_auth(authBase.collection, 'create_version', authBase.of)">
+            <template v-if="useAuths('create_version', [authBase.collection], members, roles)">
               <q-separator v-if="overView_attachedTo.overviews?.length > 0" spaced />
               <q-item class="radius-xs no-padding">
                 <q-item-section class="q-pa-none radius-xs overflow-hidden">
@@ -176,7 +167,7 @@
             <template
               v-if="
                 overView_attachedTo.overviews?.length > 1 &&
-                calc_auth(authBase.collection, 'remove_version', authBase.of)
+                useAuths('remove_version', [authBase.collection], members, roles)
               "
             >
               <q-separator spaced />
@@ -202,6 +193,7 @@
       <CardContent
         v-if="wasAttached_toRef === 'card'"
         :wasAttached_to="wasAttached_toRef"
+        :contentAuth="useAuths('jsonContent', ['overview'], members, roles)"
       />
     </div>
   </div>
@@ -264,6 +256,14 @@ const props = defineProps({
   current_versionRef: {
     type: Object,
     default: null,
+  },
+  members: {
+    type: Array,
+    default: void 0,
+  },
+  roles: {
+    type: Array,
+    default: void 0,
   }
 });
 const { current_versionRef } = toRefs(props)

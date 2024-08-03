@@ -19,11 +19,7 @@
         v-if="dense"
         :name="_status(statusRef)?.icon"
         :color="_status(statusRef)?.color"
-        :class="
-          calc_auth(authBase.collection, 'status', authBase.of)
-            ? 'cursor-pointer'
-            : ''
-        "
+        :class="modify ? 'cursor-pointer' : ''"
       >
         <q-menu
           v-if="modifyRef"

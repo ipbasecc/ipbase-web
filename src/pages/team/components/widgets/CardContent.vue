@@ -1,14 +1,14 @@
 <template>
   <TipTap
-    v-if="calc_auth('overview', 'jsonContent', authBase.of) || teamStore.shareInfo"
+    v-if="contentAuth || teamStore.shareInfo"
     :jsonContent="jsonContent"
-    :editable="calc_auth('overview', 'jsonContent', authBase.of) && !teamStore.shareInfo"
+    :editable="contentAuth && !teamStore.shareInfo"
     square
     :need="'json'"
     :clickOutsideSave="true"
     :class="
-      calc_auth('overview', 'jsonContent', authBase.of)
-        ? 'border radius-sm overflow-hidden '
+      contentAuth
+      ? 'border radius-sm overflow-hidden '
         : 'overflow-hidden'
     "
     contentStyle="height: 100%"
@@ -33,6 +33,10 @@ const props = defineProps({
     type: String,
     default: "project",
   },
+  contentAuth: {
+    type: Boolean,
+    default: void 0,
+  }
 });
 const wasAttached_toRef = toRef(props, "wasAttached_to");
 const isShared = computed(() => uiStore.isShared)

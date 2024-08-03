@@ -12,22 +12,22 @@
       >
         <StatusMenu
           :status="column_status"
-          :modify="calc_auth('column', 'status', authBase.of) || isCreator"
+          :modify="useAuths('status', ['column'], members, roles)"
           :dense="true"
           class="flex"
           @statusChange="statusChange"
         />
         <span
           class="q-space unselected"
-          :class="calc_auth('column', 'order', authBase.of) ? 'dragBar' : ''"
+          :class="useAuths('order', ['column'], members, roles) ? 'dragBar' : ''"
           @mouseenter="uiStore.dragKanbanScrollEnable = false"
           @mouseleave="uiStore.dragKanbanScrollEnable = true"
           >{{ column_name }}</span
         >
         <q-btn
           v-if="
-            calc_auth('column', 'name', authBase.of) ||
-            calc_auth('column', 'delete', authBase.of) ||
+            useAuths('name', ['column'], members, roles) ||
+            useAuths('delete', ['column'], members, roles) ||
             isCreator
           "
           dense
@@ -39,7 +39,7 @@
           <q-menu class="border shadow-24" ref="column_menu">
             <q-list dense class="q-pa-xs radius-sm" style="min-width: 100px">
               <template
-                v-if="calc_auth('column', 'name', authBase.of) || isCreator"
+                v-if="useAuths('name', ['column'], members, roles)"
               >
                 <q-item class="no-padding">
                   <q-item-section>
@@ -129,7 +129,7 @@
                 </q-menu>
               </q-item>
               <template
-                v-if="calc_auth('column', 'delete', authBase.of) || isCreator"
+                v-if="useAuths('delete', ['column'], members, roles)"
               >
                 <q-separator spaced />
                 <q-item
@@ -146,7 +146,7 @@
         </q-btn>
       </div>
       <q-btn-group
-        v-if="calc_auth('card', 'create', authBase.of) || isCreator"
+        v-if="useAuths('create', ['column'], members, roles)"
         dense
         unelevated
         size="sm"
@@ -196,8 +196,7 @@
       </q-btn-group>
       <CreateCard
         v-if="
-          createCard_in === columnRef.id &&
-          (calc_auth('card', 'create', authBase.of) || isCreator)
+          createCard_in === columnRef.id && useAuths('create', ['card'], members, roles)
         "
         :column_id="columnRef.id"
         :DefaultCreateCardType="DefaultCreateCardType"
@@ -370,14 +369,13 @@
       >
         <StatusMenu
           :status="columnRef.status"
-          :modify="calc_auth('column', 'status', authBase.of) || isCreator"
+          :modify="useAuths('status', ['column'], members, roles)"
           :dense="true"
           @statusChange="statusChange"
         />
         <span
           class="q-space"
-          :class="
-            calc_auth('column', 'order', authBase.of) || isCreator
+          :class=" useAuths('order', ['column'], members, roles)
               ? 'dragBar'
               : ''
           "
@@ -385,7 +383,7 @@
         >
         <q-space />
         <q-btn
-          v-if="calc_auth('card', 'create', authBase.of) || isCreator"
+          v-if="useAuths('create', ['card'], members, roles)"
           dense
           flat
           round
@@ -423,8 +421,8 @@
         />
         <q-btn
           v-if="
-            calc_auth('column', 'name', authBase.of) ||
-            calc_auth('column', 'delete', authBase.of) ||
+            useAuths('name', ['column'], members, roles) ||
+            useAuths('delete', ['column'], members, roles) ||
             isCreator
           "
           dense
@@ -436,7 +434,7 @@
           <q-menu class="border shadow-24">
             <q-list dense class="q-pa-xs radius-sm" style="min-width: 100px">
               <template
-                v-if="calc_auth('column', 'name', authBase.of) || isCreator"
+                v-if="useAuths('name', ['column'], members, roles)"
               >
                 <q-item class="no-padding">
                   <q-item-section>
@@ -468,7 +466,7 @@
                 </q-item>
               </template>
               <template
-                v-if="calc_auth('column', 'delete', authBase.of) || isCreator"
+                v-if="useAuths('delete', ['column'], members, roles)"
               >
                 <q-separator spaced />
                 <q-item
@@ -526,8 +524,7 @@
           <template #header>
             <div
               v-if="
-                createCard_in === columnRef.id &&
-                (calc_auth('card', 'create', authBase.of) || isCreator)
+                createCard_in === columnRef.id && useAuths('create', ['card'], members, roles)
               "
               class="q-pa-sm"
             >
@@ -591,6 +588,7 @@ import {
 } from "src/hooks/global/useStore.js";
 import { useMagicKeys } from "@vueuse/core";
 import { i18n } from 'src/boot/i18n.js';
+import { uniqueById } from "src/hooks/utilits.js";
 
 const $t = i18n.global.t;
 
@@ -638,8 +636,17 @@ let column_unread_count = ref();
 let column_status = ref();
 let column_type = ref();
 let column_executor = ref();
+const members = ref();
+const roles = ref();
 watchEffect(() => {
   filter_txt.value = teamStore.filter_txt;
+  const _projectMembers = teamStore?.project?.project_members || [];
+  const _cardMembers = teamStore?.card?.card_members || [];
+  members.value = uniqueById([..._projectMembers, ..._cardMembers]);
+  const _projectRoles = teamStore?.project?.member_roles || [];
+  const _cardRoles = teamStore?.card?.member_roles || [];
+  // 卡片鉴权需要从project、card判定两个主体，这里直接合并以便UI中判断
+  roles.value = [..._projectRoles, ..._cardRoles];
 });
 watch(
   columnRef,

@@ -48,7 +48,7 @@ const calc_lock = (i) => {
     const boards_byType = (_type) => {
       return teamStore.project?.boards.filter((i) => i.type === _type)
     }
-    console.log('boards_byType_kanban', boards_byType('kanban'));
+    // console.log('boards_byType_kanban', boards_byType('kanban'));
     return boards_byType('kanban')?.length > 1;
   }
 };

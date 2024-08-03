@@ -28,8 +28,8 @@ const props = defineProps({
     default: "",
   },
   schedule_id: {
-    type: String,
-    default: "",
+    type: Number,
+    default: NaN,
   },
   by: {
     type: String,

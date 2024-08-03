@@ -76,8 +76,7 @@
           <template #header> </template>
           <template
             v-if="
-              uiStore.createCard_in === columnRef.id &&
-              (calc_auth('card', 'create', authBase.of) || isCreator)
+              uiStore.createCard_in === columnRef.id && useAuths('create', ['card'], members, roles)
             "
             #footer
           >
@@ -103,13 +102,13 @@
       >
         <StatusMenu
           :status="column_status"
-          :modify="calc_auth('column', 'status', authBase.of) || isCreator"
+          :modify="useAuths('status', ['column'], members, roles)"
           :dense="true"
           @statusChange="statusChange"
         />
         <span class="q-space">{{ column_name || "Reel ?" }}</span>
         <q-btn
-          v-if="calc_auth('card', 'create', authBase.of) || isCreator"
+          v-if="useAuths('create', ['card'], members, roles)"
           dense
           flat
           size="sm"
@@ -118,9 +117,8 @@
         />
         <q-btn
           v-if="
-            calc_auth('column', 'name', authBase.of) ||
-            calc_auth('column', 'delete', authBase.of) ||
-            isCreator
+            useAuths('name', ['column'], members, roles) ||
+            useAuths('delete', ['column'], members, roles)
           "
           dense
           size="sm"
@@ -130,7 +128,7 @@
           <q-menu class="border shadow-24" ref="column_menu">
             <q-list dense class="q-pa-xs radius-sm" style="min-width: 100px">
               <template
-                v-if="calc_auth('column', 'name', authBase.of) || isCreator"
+                v-if="useAuths('name', ['column'], members, roles)"
               >
                 <q-item class="no-padding">
                   <q-item-section>
@@ -163,7 +161,7 @@
                 <q-separator spaced />
               </template>
               <template
-                v-if="calc_auth('column', 'delete', authBase.of) || isCreator"
+                v-if="useAuths('delete', ['column'], members, roles)"
               >
                 <q-separator spaced />
                 <q-item
@@ -179,7 +177,7 @@
           </q-menu>
         </q-btn>
         <q-btn
-          v-if="calc_auth('column', 'order', authBase.of) || isCreator"
+          v-if="useAuths('order', ['column'], members, roles)"
           dense
           flat
           size="sm"
@@ -230,6 +228,7 @@ import SegmentItem from "../card/SegmentItem.vue";
 import CreateSegment from "../card/components/CreateSegment.vue";
 import Bottleneck from "bottleneck";
 import { i18n } from 'src/boot/i18n.js';
+import { uniqueById } from "src/hooks/utilits.js";
 
 const $t = i18n.global.t;
 
@@ -271,6 +270,18 @@ const isCreator = computed(
 );
 const kanban_idRef = toRef(props, "kanban_id");
 const authBase = inject("authBase");
+
+const members = ref();
+const roles = ref();
+watchEffect(() => {
+  const _projectMembers = teamStore?.project?.project_members || [];
+  const _cardMembers = teamStore?.card?.card_members || [];
+  members.value = uniqueById([..._projectMembers, ..._cardMembers]);
+  const _projectRoles = teamStore?.project?.member_roles || [];
+  const _cardRoles = teamStore?.card?.member_roles || [];
+  // 卡片鉴权需要从project、card判定两个主体，这里直接合并以便UI中判断
+  roles.value = [..._projectRoles, ..._cardRoles];
+});
 
 let filter_txt = computed(() => teamStore.filter_txt);
 let filteredCards = ref();

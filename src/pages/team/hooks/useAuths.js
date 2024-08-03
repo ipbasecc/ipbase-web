@@ -18,7 +18,6 @@ function useAuths(field, collections, members, roles) {
 
   // 检查缓存中是否有结果
   if (authsCache.has(cacheKey)) {
-    console.log('返回缓存结果');
     return authsCache.get(cacheKey);
   }
 

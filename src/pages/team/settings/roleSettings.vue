@@ -1,10 +1,10 @@
 <template>
-  <div class="fit q-space column no-wrap q-pb-lg">
+  <div v-if="authBase && members && roles" class="fit q-space column no-wrap q-pb-lg">
     <template
-      v-if="calc_auth(authBase?.collection, 'manageRole', authBase?.of)"
+      v-if="useAuths('manageRole', [authBase?.collection], members, roles)"
     >
       <q-toolbar class="transparent overflow-hidden full-width" :class="isCardRef ? 'border-bottom' : ''">
-        <q-tabs v-model="active_role" dense outside-arrows class="q-space scroll-x">
+        <q-tabs v-model="active_role" dense outside-arrows align="left" class="q-space scroll-x">
           <q-tab
             v-for="i in role"
             :key="i.id"
@@ -65,7 +65,6 @@
       <q-scroll-area
         v-if="active_role_detial"
         class="q-space column q-pa-md gap-lg"
-        :style="!$q.screen.gt.xs ? '' : 'height: 76vh'"
       >
         <div
           v-for="collection in active_role_detial.ACL"
@@ -177,16 +176,24 @@ import { useQuasar } from "quasar";
 import { userStore, teamStore } from "src/hooks/global/useStore.js";
 import { i18n } from 'src/boot/i18n.js';
 
-const $t = i18n.global.t;
-
-const userId = computed(() => teamStore.init?.id);
-
 const props = defineProps({
   isCard: {
     type: Boolean,
     default: false,
   },
+  members: {
+    type: Array,
+    default: void 0,
+  },
+  roles: {
+    type: Array,
+    default: void 0,
+  },
 });
+const $t = i18n.global.t;
+
+const userId = computed(() => teamStore.init?.id);
+
 const isCardRef = toRef(props, "isCard");
 const $q = useQuasar();
 
@@ -252,7 +259,7 @@ onBeforeMount(() => {
 
 onMounted(() => {
   init();
-  console.log('role', role.value);
+  // console.log('role', role.value);
 });
 const disable_checkbox_collection = computed(
   () =>
@@ -272,7 +279,7 @@ const disable_checkbox_field = (collection, field) => {
 
 watchEffect(() => {
   if (active_role_detial.value) {
-    console.log("active_role_detial.value", active_role_detial.value);
+    // console.log("active_role_detial.value", active_role_detial.value);
     active_role_detial.value.ACL = active_role_detial.value?.ACL?.map((i) => ({
       ...i,
       modify: i.fields_permission.filter((j) => j.modify)?.length > 0,

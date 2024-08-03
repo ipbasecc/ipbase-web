@@ -1,5 +1,5 @@
 <template>
-  <q-card bordered class="fit column no-wrap">
+  <q-card bordered class="column no-wrap" style="height: 76vh">
     <q-bar dark class="transparent border-bottom" style="height: 2.3rem">
       <span class="font-medium">{{ $t('card') }} {{ $t('settings') }}</span>
       <q-space />
@@ -14,9 +14,9 @@
           v-ripple
           dense
           active-class="bg-primary text-grey-1"
-          class="radius-xs"
-          :active="settingforRef === i.val"
-          @click="settingforRef = i.val"
+          class="radius-xs q-mb-sm"
+          :active="active_item === i.val"
+          @click="active_item = i.val"
         >
           <q-item-section side>
             <q-icon :name="i.icon" />
@@ -26,16 +26,13 @@
           }}</q-item-section>
         </q-item>
       </q-list>
-      <roleSettings v-if="settingforRef === 'role'" :isCard="true" />
+      <roleSettings v-if="active_item === 'role'" :isCard="true" :members :roles />
       <div
-        v-if="settingforRef === 'private'"
-        style="height: 76vh"
+        v-if="active_item === 'private_setting'"
         class="q-space"
       >
         <div
-          v-if="
-            useAuths('private', [authBase.collection], members, roles) || isCreator
-          "
+          v-if="useAuths('private', [authBase.collection], members, roles)"
           class="full-width row no-wrap gap-lg q-pa-md"
         >
           <q-card v-for="(i, index) in isPrivate_items" :key="index" bordered>
@@ -45,7 +42,7 @@
                 checked-icon="task_alt"
                 unchecked-icon="panorama_fish_eye"
                 :val="i.val"
-                :label="$t('i.label')"
+                :label="$t(i.label)"
                 class="q-pr-lg"
                 @update:model-value="updateCardFn()"
               />
@@ -59,7 +56,7 @@
 </template>
 
 <script setup>
-import { ref, toRef, computed, watch } from "vue";
+import { ref, toRefs, computed, watch, onMounted } from "vue";
 import roleSettings from "src/pages/team/settings/roleSettings.vue";
 import { updateCard } from "src/api/strapi/project.js";
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
@@ -104,7 +101,11 @@ const authBase = computed(() => {
   }
   return res;
 });
-const settingforRef = ref(toRef(props, "settingfor").value);
+const { settingfor } = toRefs(props);
+const active_item = ref();
+onMounted(() => {
+  active_item.value = settingfor.value;
+})
 const per_fixs = [
   { val: "kanban", label: "kanban" },
   { val: "article", label: "article" },

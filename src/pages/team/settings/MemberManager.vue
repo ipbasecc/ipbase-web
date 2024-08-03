@@ -1,13 +1,13 @@
 <template>
   <div class="fit column q-space">
-    <template v-if="authBase">
+    <template v-if="authBase && __members && member_roles">
       <div v-if="byInfo.by !== 'card'" class="q-pa-md">
         <q-btn
           color="primary"
           dense
           unelevated
           class="full-width"
-          :disable="!calc_auth(authBase.collection, 'invite_uris', authBase.of)"
+          :disable="!useAuths('invite_uris', [authBase.collection], __members, member_roles)"
           @click="inviteFn(teamStore.project)"
         >
           <q-icon name="group_add" size="xs" />
@@ -17,7 +17,7 @@
           <TeamInvite :byInfo />
         </q-dialog>
         <q-tooltip
-          v-if="!calc_auth(authBase.collection, 'invite_uris', authBase.of)"
+          v-if="!useAuths('invite_uris', [authBase.collection], __members, member_roles)"
           class="bg-black font-smaller"
         >
           {{ $t('no_premission_to_invite') }}
@@ -46,11 +46,7 @@
                 </q-item-section>
                 <q-item-section
                   v-if="
-                    calc_auth(
-                      authBase.collection,
-                      'manageMember',
-                      authBase.of
-                    ) && !protectedRoles.includes(g.group)
+                    useAuths('manageMember', [authBase.collection], __members, member_roles) && !protectedRoles.includes(g.group)
                   "
                   side
                 >
@@ -131,7 +127,7 @@ import { __dict } from "src/hooks/dict.js";
 import UserAvatar from "src/pages/team/components/user/UserAvatar.vue";
 import { toRefs } from "vue";
 import TeamInvite from "../components/widgets/TeamInvite.vue";
-import calc_auth from "src/pages/team/hooks/useCalcPermission.js";
+import useAuths from "src/pages/team/hooks/useAuths.js";
 import { teamStore } from "src/hooks/global/useStore.js";
 
 const props = defineProps({
@@ -330,7 +326,7 @@ watchEffect(
       },
     ];
     if (
-      calc_auth(authBase.value.collection, "manageMember", authBase.value.of)
+      useAuths('manageMember', [authBase.value.collection], __members.value, member_roles.value)
     ) {
       members.value.push({
         group: "blocked",
@@ -352,7 +348,7 @@ const member_roles_forChange = computed(() => {
     hideRoles = [...hideRoles, "external"];
   }
   // 如果拥有管理成员权限，那么角色设置下拉菜单中，应该包含 block 分组
-  if (calc_auth(authBase.value.collection, "manageMember", authBase.value.of)) {
+  if (useAuths('manageMember', [authBase.value.collection], __members.value, member_roles.value)) {
     hideRoles = hideRoles.filter((i) => i !== "blocked");
   }
   return member_roles.value?.filter((i) => !hideRoles.includes(i.subject));

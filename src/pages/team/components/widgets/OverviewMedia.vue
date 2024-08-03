@@ -54,7 +54,7 @@
         </template>
       </q-responsive>
       <q-toolbar
-        v-if="calc_auth('overview', 'media', authBase.of)"
+        v-if="auth"
         class="absolute-top transparent z-fab"
       >
         <q-space v-if="!uiStore.activeReel" />
@@ -103,7 +103,7 @@
           <StrapiUpload
             :label="upload_label"
             :max-files="1"
-            :readonly="!calc_auth('overview', 'media', authBase.of)"
+            :readonly="!auth"
             class="full-width"
             @uploaded="fileUploaded"
           ></StrapiUpload>
@@ -151,6 +151,10 @@ const props = defineProps({
   mediaWidth: {
     type: Number,
     default: NaN,
+  },
+  auth: {
+    type: Boolean,
+    default: false,
   },
 });
 const { mediaWidth } = toRefs(props);

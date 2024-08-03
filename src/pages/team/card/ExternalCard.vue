@@ -159,14 +159,14 @@
             <q-separator
               v-if="
                 useAuths(
-                  'name',
                   'type',
+                  ['card'],
                   card?.card_members,
                   card?.member_roles
                 ) ||
                 useAuths(
-                  'name',
                   'status',
+                  ['card'],
                   card?.card_members,
                   card?.member_roles
                 )
@@ -176,7 +176,7 @@
             />
             <q-item
               v-if="
-                useAuths('name', 'type', card?.card_members, card?.member_roles)
+                useAuths('type', ['card'], card?.card_members, card?.member_roles)
               "
               class="radius-xs"
               clickable
@@ -210,12 +210,7 @@
             </q-item>
             <q-item
               v-if="
-                useAuths(
-                  'name',
-                  'status',
-                  card?.card_members,
-                  card?.member_roles
-                ) &&
+                useAuths('status',['card'],card?.card_members,card?.member_roles) &&
                 card.type === 'task' &&
                 show_byPreference?.status?.value
               "
@@ -229,6 +224,7 @@
               <q-menu auto-close anchor="top end" self="top start">
                 <StatusMenu
                   :status="card.status"
+                  :modify="false"
                   @statusChange="_card_statusChange"
                   :isList="true"
                 />
@@ -237,8 +233,8 @@
             <template
               v-if="
                 useAuths(
-                  'name',
                   'delete',
+                  ['card'],
                   card?.card_members,
                   card?.member_roles
                 )

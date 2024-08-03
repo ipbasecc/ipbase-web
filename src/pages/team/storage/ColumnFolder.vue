@@ -39,7 +39,7 @@
               !readOnly &&
               storage_idRef === teamStore.active_folder &&
               teamStore.create_folder_ing &&
-              calc_auth(authBase?.collection, 'sub_folders', authBase?.of)
+              useAuths('sub_folders', [authBase?.collection], members, roles)
             "
             v-slot:create_folder
           >
@@ -162,6 +162,8 @@ const splitterModel = ref(240);
 const limits = ref([180, 800]);
 const { subs: subsRef, storage_id: storage_idRef, belonged } = toRefs(props);
 const by = inject("by");
+const members = inject("members");
+const roles = inject("roles");
 const authBase = ref({
   collection: "",
   of: "",

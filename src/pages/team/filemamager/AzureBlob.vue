@@ -19,7 +19,7 @@
     @menuClick="onMenuClick($event)"
   ></ejs-filemanager>
   <link
-    :href="$q.dark.mode ? $pathService('css/dark.css') : $pathService('/public/css/light.css')"
+    :href="$q.dark.mode ? $pathService('/css/dark.css') : $pathService('/public/css/light.css')"
     rel="stylesheet"
   />
 </template>
@@ -51,7 +51,7 @@ const cssLoaded = ref(false);
 const loadCss = () => {
   const link = document.createElement("link");
   link.rel = "stylesheet";
-  link.href = $q.dark.mode ? $pathService('css/dark.css') : $pathService('css/light.css');
+  link.href = $q.dark.mode ? $pathService('/css/dark.css') : $pathService('/css/light.css');
   link.onload = () => (cssLoaded.value = true);
   document.head.appendChild(link);
 };

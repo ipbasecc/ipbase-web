@@ -7,7 +7,7 @@
         "
         class="row no-wrap"
       >
-        <BoradToggler :isEmpty />
+        <BoradToggler :isEmpty :members :roles />
       </div>
       <q-scroll-area
         class="q-space"
@@ -142,7 +142,7 @@
                 @end="kanbanDraging = false"
               >
                 <template #item="{ element: kanban }">
-                  <KanbanListitem :kanban="kanban" @enterKanban="enterKanban" />
+                  <KanbanListitem :kanban="kanban" :members :roles @enterKanban="enterKanban" />
                 </template>
                 <template
                   #footer
@@ -300,13 +300,13 @@ import {teamStore, mm_wsStore, userStore, uiStore} from 'src/hooks/global/useSto
 
 import { i18n } from 'src/boot/i18n.js';
 
+const members = computed(() => teamStore.project?.project_members);
+const roles = computed(() => teamStore.project?.member_roles);
+
 const $t = i18n.global.t;
 
 const router = useRouter();
 const route = useRoute();
-
-const members = computed(() => teamStore.project?.project_members);
-const roles = computed(() => teamStore.project?.member_roles);
 
 const multiple_boards = computed(
   () =>

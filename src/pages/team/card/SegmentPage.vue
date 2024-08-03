@@ -122,7 +122,7 @@
           <q-btn dense round flat icon="close" size="sm" @click="close()" />
         </div>
         <KeepAlive>
-          <OverView wasAttached_to="card" :onlyMedia="true" />
+          <OverView wasAttached_to="card" :onlyMedia="true" :members :roles />
         </KeepAlive>
       </q-page>
     </q-page-container>
@@ -143,6 +143,7 @@ import StoragePage from "src/pages/team/storage/StoragePage.vue";
 
 import ThreadContainer from "../chat/ThreadContainer.vue";
 import { teamStore, mm_wsStore, uiStore } from "src/hooks/global/useStore.js";
+import { uniqueById } from "src/hooks/utilits.js";
 
 const emit = defineEmits(["closeCardList"]);
 const route = useRoute();
@@ -238,10 +239,10 @@ watchEffect(async () => {
   //   document_id.value = void 0
   // }
 
-  const _cardMembers = cardRef.value?.card_members || [];
+  const _cardMembers = teamStore?.card?.card_members || [];
   members.value = uniqueById([...project_members.value, ..._cardMembers]);
   const _projectRoles = teamStore?.project?.member_roles || [];
-  const _cardRoles = cardRef.value?.member_roles || [];
+  const _cardRoles = teamStore?.card?.member_roles || [];
   // 卡片鉴权需要从project、card判定两个主体，这里直接合并以便UI中判断
   roles.value = [..._projectRoles, ..._cardRoles];
 });

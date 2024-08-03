@@ -451,6 +451,7 @@
                 <q-menu auto-close anchor="top end" self="top start">
                   <StatusMenu
                     :status="cardRef.status"
+                    :modify="useAuths('status', ['card'], members, roles)"
                     @statusChange="_card_statusChange"
                     :isList="true"
                   />

@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="calc_auth('overview', 'name', authBase.of)"
+    v-if="auth"
     class="font-large font-bold-600 relative-position hovered-item"
     style="min-height: 24px"
     @dblclick="change_ing = true"
@@ -65,6 +65,10 @@ const props = defineProps({
   wasAttached_to: {
     type: String,
     default: "project",
+  },
+  auth: {
+    type: Boolean,
+    default: false,
   },
 });
 

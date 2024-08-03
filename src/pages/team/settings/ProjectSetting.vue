@@ -53,12 +53,14 @@
         </q-item>
       </q-list>
       <div class="column q-space q-pa-sm scroll-y">
-        <OverView v-if="settingforRef === 'basic'" wasAttached_to="project" />
+        <OverView v-if="settingforRef === 'basic'"
+          wasAttached_to="project"
+          :members="teamStore.project?.project_members" :roles="teamStore.project?.member_roles" />
         <EnableSetting v-if="settingforRef === 'enable'" />
         <PreferencesSetting v-if="settingforRef === 'preferences'" />
-        <roleSettings v-if="settingforRef === 'role'" />
+        <roleSettings v-if="settingforRef === 'role'" :members :roles />
         <MemberManager v-if="settingforRef === 'members'" :byInfo />
-        <MoreOptions v-if="settingforRef === 'more'" />
+        <MoreOptions v-if="settingforRef === 'more'" :members :roles />
       </div>
     </div>
     <div
@@ -87,6 +89,8 @@ const props = defineProps({
   },
 });
 const settingforRef = ref("basic");
+const members = computed(() => teamStore.project?.project_members);
+const roles = computed(() => teamStore.project?.member_roles);
 
 const byInfo = ref({
   by: "project",

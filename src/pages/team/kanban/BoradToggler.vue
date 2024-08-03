@@ -84,7 +84,7 @@
             >
               <q-icon
                 name="task_alt"
-                :class="calc_auth('board', 'order', 'project') ? 'dragBar' : ''"
+                :class="useAuths('order', ['board'], members, roles) ? 'dragBar' : ''"
               />
               <span
                 class="q-space cursor-pointer"
@@ -94,8 +94,8 @@
               >
               <q-btn
                 v-if="
-                  calc_auth('board', 'name', 'project') ||
-                  calc_auth('board', 'delete', 'project')
+                  useAuths('name', ['board'], members, roles) ||
+                  useAuths('delete', ['board'], members, roles)
                 "
                 dense
                 size="sm"
@@ -108,7 +108,7 @@
                   <q-list dense bordered class="radius-sm q-pa-xs">
                     <q-item
                       class="no-padding"
-                      v-if="calc_auth('board', 'name', 'project')"
+                      v-if="useAuths('name', ['board'], members, roles)"
                     >
                       <q-input
                         v-model="rename_text"
@@ -134,7 +134,7 @@
                         </template>
                       </q-input>
                     </q-item>
-                    <template v-if="calc_auth('board', 'delete', 'project')">
+                    <template v-if="useAuths('delete', ['board'], members, roles)">
                       <q-separator spaced />
                       <q-item
                         clickable
@@ -155,7 +155,7 @@
             </div>
           </template>
         </draggable>
-        <template v-if="calc_auth('board', 'create', 'project')">
+        <template v-if="useAuths('create', ['board'], members, roles)">
           <q-separator v-if="!isEmpty" spaced />
           <q-item
             v-if="!create_board_ing"
@@ -222,6 +222,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  members: {
+    type: Array,
+    default: void 0
+  },
+  roles: {
+    type: Array,
+    default: void 0
+  }
 });
 const { isEmpty } = toRefs(props);
 

@@ -2,7 +2,7 @@
   <div class="q-pa-xs radius-xs border q-space font-small">
     <q-icon size="xs" name="mdi-calendar-clock" />
     {{ $t('examine') }}：{{ date.formatDate(deadline, "MM/DD - HH:mm") }}
-    <q-popup-proxy v-if="calc_auth('overview', 'deadline', authBase.of)">
+    <q-popup-proxy v-if="auth">
       <q-date
         v-model="deadline"
         minimal
@@ -38,6 +38,10 @@ const props = defineProps({
   wasAttached_to: {
     type: String,
     default: "project",
+  },
+  auth: {
+    type: Boolean,
+    default: false,
   },
 });
 const authBase = inject("authBase");

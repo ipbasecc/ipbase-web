@@ -200,7 +200,7 @@
         <q-tab-panels v-model="side_pannel" class="q-space">
           <q-tab-panel name="overview" class="no-padding">
             <KeepAlive>
-              <OverView wasAttached_to="card" class="absolute-full" />
+              <OverView wasAttached_to="card" class="absolute-full" :members :roles />
             </KeepAlive>
           </q-tab-panel>
           <q-tab-panel
@@ -409,7 +409,7 @@
     </q-toolbar>
     <q-tab-panels v-if="teamStore?.card" v-model="current_model" animated class="q-space">
         <q-tab-panel name="card_overview" class="no-padding">
-          <OverView wasAttached_to="card" class="absolute-full" />
+          <OverView wasAttached_to="card" class="absolute-full" :members :roles />
         </q-tab-panel>
         <q-tab-panel name="card_chat" class="no-padding">
           <ThreadContainer
@@ -533,6 +533,7 @@ import {
 } from "src/hooks/global/useStore.js";
 import localforage from "localforage";
 import {useQuasar} from 'quasar';
+import { uniqueById } from "src/hooks/utilits.js";
 
 const props = defineProps({
   isExternal: {
@@ -628,10 +629,10 @@ watchEffect(async () => {
     document_id.value = void 0
   }
 
-  const _cardMembers = cardRef.value?.card_members || [];
+  const _cardMembers = teamStore?.card?.card_members || [];
   members.value = uniqueById([...project_members.value, ..._cardMembers]);
   const _projectRoles = teamStore?.project?.member_roles || [];
-  const _cardRoles = cardRef.value?.member_roles || [];
+  const _cardRoles = teamStore?.card?.member_roles || [];
   // 卡片鉴权需要从project、card判定两个主体，这里直接合并以便UI中判断
   roles.value = [..._projectRoles, ..._cardRoles];
 });

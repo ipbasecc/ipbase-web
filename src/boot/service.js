@@ -11,7 +11,7 @@ export function $pathService(_path) {
   } else {
     res = appURI + _path;
   }
-  // console.log('$pathService', res)
+  console.log('$pathService', res)
   return res;
 }
 

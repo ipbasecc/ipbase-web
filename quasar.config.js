@@ -53,7 +53,6 @@ export default configure((ctx) => {
       "hevueImgPreview",
       "dragscroll",
       "dragselect",
-      "calcPermission",
       "auth",
       "dexie",
       "ej2",

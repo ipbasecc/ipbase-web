@@ -23,6 +23,7 @@ import { findShareCardStorage } from "src/api/strapi/project.js";
 import { computed } from "vue";
 import AzureBlob from "../filemamager/AzureBlob.vue";
 import {teamStore, uiStore} from 'src/hooks/global/useStore';
+import { uniqueById } from "src/hooks/utilits.js";
 
 const props = defineProps({
   project_id: {
@@ -30,8 +31,8 @@ const props = defineProps({
     default: "",
   },
   storage_id: {
-    type: String,
-    default: "",
+    type: Number,
+    default: NaN,
   },
   by: {
     type: String,
@@ -43,6 +44,19 @@ const props = defineProps({
 const { project_id, storage_id, by } = toRefs(props);
 const _storage_id = computed(() => Number(storage_id.value));
 provide("by", by.value);
+
+const members = computed(() => {
+  const _cardMembers = teamStore?.card?.card_members || [];
+  const _projectMembers = teamStore?.project?.project_members || [];
+  return uniqueById([..._projectMembers, ..._cardMembers])
+});
+const roles = computed(() => {
+  const _projectRoles = teamStore?.project?.member_roles || [];
+  const _cardRoles =teamStore?.card?.member_roles || [];
+  return [..._projectRoles, ..._cardRoles]
+});
+provide("members", members.value);
+provide("roles", roles.value);
 
 const readOnly = computed(() => uiStore.isShared)
 

@@ -587,8 +587,7 @@
                 <q-popup-proxy
                   cover
                   v-if="
-                    (calc_auth(authBase.collection, 'name', authBase.of) ||
-                      isCreator) &&
+                    useAuths('name', [authBase.collection], members, roles) &&
                     !uiStore.edittingTodo
                   "
                   @show="toggle_updateTodogroup(i)"
@@ -624,10 +623,7 @@
               </div>
               <div class="row no-wrap gap-xs hover-show transition">
                 <q-btn
-                  v-if="
-                    calc_auth(authBase.collection, 'delete', authBase.of) ||
-                    isCreator
-                  "
+                  v-if="useAuths('delete', [authBase.collection], members, roles)"
                   flat
                   dense
                   size="sm"
@@ -641,13 +637,7 @@
                       class="radius-sm q-pa-xs text-no-wrap"
                     >
                       <template
-                        v-if="
-                          calc_auth(
-                            authBase.collection,
-                            'create',
-                            authBase.of
-                          ) || isCreator
-                        "
+                        v-if="useAuths('create', [authBase.collection], members, roles)"
                       >
                         <q-item
                           clickable
@@ -677,13 +667,7 @@
                         </q-item>
                       </template>
                       <template
-                        v-if="
-                          calc_auth(
-                            authBase.collection,
-                            'delete',
-                            authBase.of
-                          ) || isCreator
-                        "
+                        v-if="useAuths('delete', [authBase.collection], members, roles)"
                       >
                         <q-separator spaced />
                         <q-item
@@ -765,13 +749,7 @@
                   />
                 </template>
                 <template
-                  v-if="
-                    calc_auth(
-                      `${authBase.of === 'card' ? 'card' : 'card_todo'}`,
-                      'create',
-                      authBase.of
-                    ) || isCreator
-                  "
+                  v-if="useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'], members, roles)"
                   #footer
                 >
                   <div
@@ -819,15 +797,7 @@
                         <ClasslessInput
                           v-if="todo_add_ing === i.id"
                           v-model="todo_params.data.content"
-                          :auth="
-                            calc_auth(
-                              `${
-                                authBase.of === 'card' ? 'card' : 'card_todo'
-                              }`,
-                              'create',
-                              authBase.of
-                            ) || isCreator
-                          "
+                          :auth="useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'], members, roles)"
                           :todogroup="i"
                           :baseClass="`q-space q-pa-xs`"
                           :autofocus="true"
@@ -878,17 +848,12 @@
         </template>
       </draggable>
       <template
-        v-if="
-          calc_auth(authBase.collection, 'create', authBase.of) || isCreator
-        "
+        v-if="useAuths('create', [authBase.collection], members, roles)"
       >
         <template v-if="todogroups?.length > 0">
           <div v-if="!createTodogroup_ing" class="q-px-xs">
             <q-btn
-              v-if="
-                calc_auth(authBase.collection, 'create', authBase.of) ||
-                isCreator
-              "
+              v-if="useAuths('create', [authBase.collection], members, roles)"
               dense
               size="sm"
               flat
@@ -1079,10 +1044,6 @@ const props = defineProps({
     type: Object,
     default: void 0,
   },
-  authArgs: {
-    type: Array,
-    default: void 0,
-  },
   /*
   定义todo的附加对象：
     @card_todo - 卡片的todo；
@@ -1110,8 +1071,7 @@ const {
   hideToolbar,
   isFeedback,
   byInfo,
-  _for,
-  authArgs
+  _for
 } = toRefs(props);
 // 确定判断鉴权的字段
 // 只有在todogroups是属于卡片的时候需要鉴权

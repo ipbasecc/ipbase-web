@@ -1,8 +1,8 @@
 <template>
   <div class="q-pa-xs radius-xs border q-space font-small">
     <q-icon size="xs" name="event" />
-    {{ $t('satrt') }} ：{{ start }}
-    <q-popup-proxy v-if="calc_auth('overview', 'start', authBase.of)">
+    {{ $t('start') }} ：{{ start }}
+    <q-popup-proxy v-if="auth">
       <q-date
         v-model="start"
         minimal
@@ -27,6 +27,10 @@ const props = defineProps({
   wasAttached_to: {
     type: String,
     default: "project",
+  },
+  auth: {
+    type: Boolean,
+    default: false,
   },
 });
 const current_versionRef = toRef(props, "current_version");

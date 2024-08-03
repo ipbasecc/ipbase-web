@@ -58,7 +58,6 @@ export default defineStore("team", {
     isExternal: false,
     isFocusMode: false,
     shareInfo: null,
-    authArgs: void 0,
     all_kanbans: [],
     all_columns: [],
     all_cards: [],

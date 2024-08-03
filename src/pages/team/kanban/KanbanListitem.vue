@@ -5,7 +5,7 @@
         class="hovered-item radius-xs q-pa-xs"
         :class="`
         ${isActived ? 'border' : 'border-placeholder'} ${
-        calc_auth('kanban', 'order', 'project') && $q.screen.gt.xs ? ' dragBar' : ''}
+        useAuths('order', ['kanban'], members, roles) && $q.screen.gt.xs ? ' dragBar' : ''}
       `"
         clickable
         v-ripple
@@ -13,10 +13,10 @@
       <q-item-section>{{ kanbanRef.title }}</q-item-section>
       <q-item-section side>
         <q-btn
-            v-if="
-          calc_auth('kanban', 'title', 'project') ||
-          calc_auth('kanban', 'delete', 'project')
-        "
+          v-if="
+            useAuths('title', ['kanban'], members, roles) ||
+            useAuths('delete', ['kanban'], members, roles)
+          "
             dense
             size="sm"
             flat
@@ -56,7 +56,7 @@
                 </div>
               </q-item>
               <q-item
-                  v-if="calc_auth('kanban', 'title', 'project')"
+                  v-if="useAuths('title', ['kanban'], members, roles)"
                   class="no-padding"
               >
                 <q-input
@@ -83,7 +83,7 @@
                   </template>
                 </q-input>
               </q-item>
-              <template v-if="calc_auth('kanban', 'delete', 'project')">
+              <template v-if="useAuths('delete', ['kanban'], members, roles)">
                 <q-separator spaced />
                 <q-item
                     clickable
@@ -119,7 +119,16 @@ const props = defineProps({
       return {};
     },
   },
+  members: {
+    type: Array,
+    default: void 0
+  },
+  roles: {
+    type: Array,
+    default: void 0
+  }
 });
+
 const emit = defineEmits(["enterKanban"]);
 const kanbanRef = toRef(props, "kanban");
 const isActived = computed(
