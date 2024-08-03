@@ -1,7 +1,27 @@
-import { userStore } from "src/hooks/global/useStore.js";
+import { userStore, uiStore } from "src/hooks/global/useStore.js";
+
+// 缓存Map
+const authsCache = new Map();
+
+// 辅助函数，用于生成唯一的缓存键
+function getCacheKey(field, collections, members, roles) {
+  const memberIDs = members.map(i => i.id);
+  const roleIDs = roles.map(i => i.id);
+  return JSON.stringify({field, collections, memberIDs, roleIDs})
+}
 
 // 优化前的useAuths hook
 function useAuths(field, collections, members, roles) {
+  if(uiStore.draging) return true;
+  // 生成缓存键
+  const cacheKey = getCacheKey(field, collections, members, roles);
+
+  // 检查缓存中是否有结果
+  if (authsCache.has(cacheKey)) {
+    console.log('返回缓存结果');
+    return authsCache.get(cacheKey);
+  }
+
   if (!members || !roles) return false;
 
   // 优化：将成员角色的筛选提前到只有当用户ID匹配时才进行
@@ -42,8 +62,11 @@ function useAuths(field, collections, members, roles) {
     // 确保ACLs是一个数组，然后调用__calc_auth
     return ACLs.length > 0 ? __calc_auth(ACLs) : false;
   });
-
-  return _Auths.some(auth => auth); // 使用some替代includes，一旦找到true即可终止循环
+  const result = _Auths.some(auth => auth); // 使用some替代includes，一旦找到true即可终止循环
+  
+  // 缓存结果
+  authsCache.set(cacheKey, result);
+  return result
 }
 
 export default useAuths;
