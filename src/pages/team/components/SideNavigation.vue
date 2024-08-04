@@ -243,71 +243,7 @@
       >{{ $t('project') }}</q-item-label>
       <template v-if="team.projects?.length > 0">
         <template v-for="project in team.projects" :key="project.id">
-          <q-expansion-item
-            v-if="project.sub_projects?.length > 0"
-            icon="perm_identity"
-          >
-            <template v-slot:header>
-              <q-item-section side style="width: 44px" class="q-pr-sm">
-                <q-img
-                  :src="project.overviews[0]?.media?.url"
-                  :ratio="1"
-                  sizes="24"
-                  spinner-color="primary"
-                  spinner-size="24px"
-                  class="radius-xs"
-                />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>
-                  <div class="row no-wrap gap-xs">
-                    <span>{{ project.name }}</span>
-                    <UnreadBlock :mm_channel_id="project.mm_channel?.id" />
-                  </div>
-                </q-item-label>
-                <q-item-label v-if="i.description" caption lines="1">
-                  {{ i.description }}
-                </q-item-label>
-              </q-item-section>
-              <div
-                v-if="teamStore?.project?.id === project.id"
-                class="bg-primary absolute-left"
-                style="width: 3px"
-              ></div>
-            </template>
-            <q-item
-              clickable
-              v-ripple
-              v-for="i in project.sub_projects"
-              :key="i.id"
-              :class="`${
-                teamStore?.project?.id === project.id
-                  ? 'border'
-                  : 'border-placeholder'
-              } ${i.auth && !i.auth?.read ? 'op-5' : ''}`"
-              class="overflow-hidden radius-xs q-pa-xs"
-            >
-              <q-item-section>
-                <q-item-label>
-                  <div class="row no-wrap gap-xs">
-                    <span>{{ project.name }}</span>
-                    <UnreadBlock :mm_channel_id="project.mm_channel?.id" />
-                  </div>
-                </q-item-label>
-                <q-item-label v-if="i.description" caption lines="1">
-                  {{ i.description }}
-                </q-item-label>
-              </q-item-section>
-              <div
-                v-if="teamStore?.project?.id === project.id"
-                class="bg-primary absolute-left"
-                style="width: 3px"
-              ></div>
-            </q-item>
-          </q-expansion-item>
-
           <q-item
-            v-else
             clickable
             v-ripple
             :class="`${
@@ -526,7 +462,6 @@ const enterProject = async (project) => {
 
   teamStore.channel = null; // 重置频道，聊天组件是否显示频道成员管理依赖此判断
   teamStore.$reset_project();
-  teamStore.project = project;
   teamStore.project_id = project.id;
   if (teamStore?.team?.isExternal) {
     await router.push(`/teams/external/${project.id}`);
