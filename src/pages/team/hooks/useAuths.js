@@ -11,7 +11,7 @@ function getCacheKey(field, collections, members, roles) {
 }
 
 // 优化前的useAuths hook
-function useAuths(field, collections, members, roles) {
+export function useAuths(field, collections, members, roles) {
   if(uiStore.draging) return true;
   // 生成缓存键
   const cacheKey = getCacheKey(field, collections, members, roles);
@@ -22,16 +22,19 @@ function useAuths(field, collections, members, roles) {
   }
 
   if (!members || !roles) return false;
-
   // 优化：将成员角色的筛选提前到只有当用户ID匹配时才进行
   // 这样可以减少不必要的计算
   const userId = Number(userStore.userId);
   const filteredMembers = members.filter(member => member.by_user?.id === userId);
+  // console.log(filteredMembers);
+  
   const _userMember_roles = filteredMembers
     .map(member => member.member_roles?.map(role => role.id))
     .flat(3);
 
+  // console.log(_userMember_roles);
   const _member_roles = roles.filter(role => _userMember_roles.includes(role.id))?.filter(Boolean);
+  // console.log(_member_roles);
 
     // 立即执行函数，返回一个函数
   const __calc_auth = ((_ACLs) => {
@@ -67,5 +70,3 @@ function useAuths(field, collections, members, roles) {
   authsCache.set(cacheKey, result);
   return result
 }
-
-export default useAuths;
