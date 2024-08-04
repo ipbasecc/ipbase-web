@@ -1,6 +1,7 @@
 <template>
   <q-list dense class="full-width q-pa-xs">
     <q-item
+      v-if="teamMode === 'OneToMany'"
       clickable
       v-ripple
       @click="gotoChannel(project_mm_channel)"
@@ -64,6 +65,7 @@ import {teamStore, uiStore} from 'src/hooks/global/useStore.js';
 const router = useRouter();
 const route = useRoute();
 const channel_id = computed(() => route.params?.channel_id || null);
+const teamMode = computed(() => teamStore.team?.config?.mode || 'OneToMany')
 
 const project = computed(() => teamStore?.project);
 const overview = computed(

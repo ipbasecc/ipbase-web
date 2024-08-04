@@ -225,7 +225,8 @@
           class="absolute-full flex flex-center"
           :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-3'"
         >
-          <WelcomePage />
+          <WelcomePage v-if="!disabled?.includes('project')" />
+          <BgBrand v-else />
         </div>
       </q-page>
       <q-dialog v-model="createing" persistent>
@@ -263,8 +264,10 @@ import { useMouse } from "@vueuse/core";
 import { useQuasar } from "quasar";
 import WindowToggle from "src/pages/team/components/widgets/icons/WindowToggle.vue";
 import FileTransfer from "pages/team/components/widgets/icons/FileTransfer.vue";
+import BgBrand from "src/components/VIewComponents/BgBrand.vue";
 
 const $q = useQuasar();
+const disabled = computed(() => teamStore.team?.config?.disabled)
 
 const route = useRoute();
 const router = useRouter();

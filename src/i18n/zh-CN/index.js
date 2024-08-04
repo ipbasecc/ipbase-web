@@ -605,4 +605,15 @@ export default {
   Initial_Group: '初始分组',
   Workspace: '工作空间',
   Project_schedule: '项目规划',
+
+  interact: '沟通',
+  toManyMode_team: '团队协作',
+  toOneMode_team: '一对一服务',
+  channels_teamFunc: '频道功能',
+  projects_teamFunc: '项目功能',
+  disable_teamFunc_labe: '禁用功能',
+  no_disable_teamFunc: '无禁用功能',
+  team_toOne_mode_tip: '禁用：新建项目、频道、非相关卡片',
+  team_disableProjects_tip: '项目功能将不可用',
+  team_disableChanel_tip: '频道功能将不可用',
 };

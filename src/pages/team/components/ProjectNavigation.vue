@@ -20,6 +20,7 @@ import { watchEffect } from "vue";
 import {teamStore, uiStore} from 'src/hooks/global/useStore.js';
 
 const project = computed(() => teamStore?.project);
+const teamMode = computed(() => teamStore.team?.config?.mode || 'OneToMany')
 const router = useRouter();
 const route = useRoute();
 
@@ -42,7 +43,7 @@ watchEffect(() => {
   tabs.value = [
     {
       name: "chat",
-      label: "chat",
+      label: teamMode.value === 'OneToMay' ? "chat" : 'interact',
       to: `/teams/projects/${project.value.id}/chat`,
       icon: "forum",
     },

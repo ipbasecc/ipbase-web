@@ -605,4 +605,15 @@ export default {
   Initial_Group: 'Initial Group',
   Workspace: 'Workspace',
   Project_schedule: 'Project Schedule',
+
+  interact: 'Interact',
+  toManyMode_team: 'Team Collaboration',
+  toOneMode_team: 'One-to-One Service',
+  channels_teamFunc: 'Channels',
+  projects_teamFunc: 'Projects',
+  disable_teamFunc_labe: 'Disable Team Function',
+  no_disable_teamFunc: 'No disabled functions',
+  team_toOne_mode_tip: 'Disabled: Creating new projects, channels, and unrelated cards',
+  team_disableProjects_tip: 'The project function will be unavailable',
+  team_disableChanel_tip: 'The channel function will be unavailable'
 }

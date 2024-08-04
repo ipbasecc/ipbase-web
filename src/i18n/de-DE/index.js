@@ -604,5 +604,17 @@ export default {
   Initial_Kanban: 'Anfangs-Kanban',
   Initial_Group: 'Anfangsgruppe',
   Workspace: 'Arbeitsbereich',
-  Project_schedule: 'Projektplanung'
+  Project_schedule: 'Projektplanung',
+
+  interact: 'Interagieren',
+  toManyMode_team: 'Zusammenarbeit im Team',
+  toOneMode_team: 'Ein-zu-Eins-Service',
+  channels_teamFunc: 'Kanalfunktion',
+  projects_teamFunc: 'Projektfunktion',
+  disable_teamFunc_labe: 'Deaktivieren',
+  no_disable_teamFunc: 'Keine deaktivierten Funktionen',
+  team_toOne_mode_tip: 'Deaktiviert: Neue Projekte, Kanäle und nicht zugeordnete Karten erstellen',
+  team_disableProjects_tip: 'Die Projektfunktion ist nicht verfügbar',
+  team_disableChanel_tip: 'Die Kanalfunktion ist nicht verfügbar'
+
 };

@@ -4,7 +4,7 @@
       <template v-if="$q.screen.gt.xs">
         <!-- 讨论主题-->
         <q-item
-          v-if="!isExternal"
+          v-if="!isExternal && (!disabled?.includes('channels') || !disabled?.includes('projects'))"
           :class="`${
             teamStore?.mm_channel?.id === 'threads'
               ? 'border'
@@ -28,6 +28,7 @@
         </q-item>
         <!-- 事务沙盘-->
         <q-item
+          v-if="!disabled?.includes('channels')"
           :class="`${
             teamStore?.mm_channel?.id === 'intro' || !teamStore?.mm_channel
               ? 'border'
@@ -50,7 +51,7 @@
           ></div>
         </q-item>
       </template>
-      <template v-if="!isExternal">
+      <template v-if="!isExternal && !disabled?.includes('channels') && teamMode === 'toMany'">
         <q-item-label header class="q-pa-sm" :class="$q.screen.gt.xs ? 'text-grey-1' : `text-grey-1${$q.dark.mode ? '' : '0'}`">
           {{ $t('channel') }}
         </q-item-label>
@@ -238,70 +239,72 @@
         </q-item>
       </template>
 
-      <q-item-label header class="q-pa-sm"
-        :class="$q.screen.gt.xs ? 'text-grey-1' : `text-grey-1${$q.dark.mode ? '' : '0'}`"
-      >{{ $t('project') }}</q-item-label>
-      <template v-if="team.projects?.length > 0">
-        <template v-for="project in team.projects" :key="project.id">
-          <q-item
-            clickable
-            v-ripple
-            :class="`${
-              teamStore?.project?.id === project.id
-                ? 'border'
-                : 'border-placeholder'
-            } ${project.auth && !project.auth?.read ? 'op-5' : ''}`"
-            class="overflow-hidden radius-xs q-pa-xs"
-            @click="enterProject(project)"
-          >
-            <q-item-section side style="width: 44px" class="q-pr-sm">
-              <q-img
-                :src="project.overviews[0]?.media?.url"
-                :ratio="1"
-                sizes="24"
-                spinner-color="primary"
-                spinner-size="24px"
-                class="radius-xs"
-              />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>
-                <div class="row no-wrap gap-xs">
-                  <span>{{ project.name }}</span>
-                  <UnreadBlock :mm_channel_id="project.mm_channel?.id" />
-                </div>
-              </q-item-label>
-              <q-item-label
-                v-if="project.description"
-                caption
-                lines="1"
-                class="text-grey-5"
-              >
-                {{ project.description }}
-              </q-item-label>
-            </q-item-section>
-            <div
-              v-if="teamStore?.project?.id === project.id"
-              class="bg-primary absolute-left"
-              style="width: 3px"
-            ></div>
-          </q-item>
+      <template v-if="!disabled?.includes('projects')">
+        <q-item-label header class="q-pa-sm"
+          :class="$q.screen.gt.xs ? 'text-grey-1' : `text-grey-1${$q.dark.mode ? '' : '0'}`"
+        >{{ $t('project') }}</q-item-label>
+        <template v-if="team.projects?.length > 0">
+          <template v-for="project in team.projects" :key="project.id">
+            <q-item
+              clickable
+              v-ripple
+              :class="`${
+                teamStore?.project?.id === project.id
+                  ? 'border'
+                  : 'border-placeholder'
+              } ${project.auth && !project.auth?.read ? 'op-5' : ''}`"
+              class="overflow-hidden radius-xs q-pa-xs"
+              @click="enterProject(project)"
+            >
+              <q-item-section side style="width: 44px" class="q-pr-sm">
+                <q-img
+                  :src="project.overviews[0]?.media?.url"
+                  :ratio="1"
+                  sizes="24"
+                  spinner-color="primary"
+                  spinner-size="24px"
+                  class="radius-xs"
+                />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>
+                  <div class="row no-wrap gap-xs">
+                    <span>{{ project.name }}</span>
+                    <UnreadBlock :mm_channel_id="project.mm_channel?.id" />
+                  </div>
+                </q-item-label>
+                <q-item-label
+                  v-if="project.description"
+                  caption
+                  lines="1"
+                  class="text-grey-5"
+                >
+                  {{ project.description }}
+                </q-item-label>
+              </q-item-section>
+              <div
+                v-if="teamStore?.project?.id === project.id"
+                class="bg-primary absolute-left"
+                style="width: 3px"
+              ></div>
+            </q-item>
+          </template>
         </template>
+        <q-item
+          v-else
+          clickable
+          v-ripple
+          class="border-dashed radius-xs"
+          @click="createProject()"
+        >
+          <q-item-section side>
+            <q-icon name="add" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>{{ $t('create_project') }}</q-item-label>
+          </q-item-section>
+        </q-item>
       </template>
-      <q-item
-        v-else
-        clickable
-        v-ripple
-        class="border-dashed radius-xs"
-        @click="createProject()"
-      >
-        <q-item-section side>
-          <q-icon name="add" />
-        </q-item-section>
-        <q-item-section>
-          <q-item-label>{{ $t('create_project') }}</q-item-label>
-        </q-item-section>
-      </q-item>
     </q-list>
     <q-dialog v-model="invite" persistent>
       <TeamInvite :byInfo />
@@ -348,6 +351,8 @@ const $t = i18n.global.t;
 const $q = useQuasar();
 const router = useRouter();
 const route = useRoute();
+const disabled = computed(() => teamStore.team?.config?.disabled)
+const teamMode = computed(() => teamStore.team?.config?.mode)
 
 const byInfo = ref();
 
