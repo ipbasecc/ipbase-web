@@ -52,6 +52,11 @@ export default defineStore("ui", {
     unreads: {
       team: void 0,
       channels: []
+    },
+    authChangedCount: {
+      team: 0,
+      project: 0,
+      card: 0
     }
   }),
   actions: {
