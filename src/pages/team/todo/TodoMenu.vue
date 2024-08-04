@@ -16,7 +16,7 @@
       <q-separator spaced class="op-3" />
     </template>
     <template
-      v-if="!inCard || (useAuths('content', ['card_todo', 'todo'], members, roles) || isCreator)"
+      v-if="!inCard || (useAuths('content', ['card_todo', 'todo']) || isCreator)"
     >
       <q-item>
         <q-item-section>
@@ -56,7 +56,7 @@
       </q-item>
     </template>
     <template
-      v-if="!inCard || (useAuths('delete', ['card_todo', 'todo'], members, roles) || isCreator)"
+      v-if="!inCard || (useAuths('delete', ['card_todo', 'todo']) || isCreator)"
     >
       <q-separator spaced class="op-3" />
       <q-item
@@ -94,21 +94,13 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  members: {
-    type: Object,
-    default: void 0,
-  },
-  roles: {
-    type: Object,
-    default: void 0,
-  },
   inCard: {
     type: Boolean,
     default: true
   }
 });
 
-const { element, todogroup, isCreator, members, roles, inCard } = toRefs(props);
+const { element, todogroup, isCreator, inCard } = toRefs(props);
 const emit = defineEmits(['addAttachment', 'updateTodoColorMarker', 'deleteTodoFn']);
 const colorMarks = [
   "primary",

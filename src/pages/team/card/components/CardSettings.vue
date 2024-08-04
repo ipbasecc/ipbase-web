@@ -26,13 +26,13 @@
           }}</q-item-section>
         </q-item>
       </q-list>
-      <roleSettings v-if="active_item === 'role'" :isCard="true" :members :roles />
+      <roleSettings v-if="active_item === 'role'" :isCard="true" />
       <div
         v-if="active_item === 'private_setting'"
         class="q-space"
       >
         <div
-          v-if="useAuths('private', [authBase.collection], members, roles)"
+          v-if="useAuths('private', [authBase.collection])"
           class="full-width row no-wrap gap-lg q-pa-md"
         >
           <q-card v-for="(i, index) in isPrivate_items" :key="index" bordered>
@@ -67,18 +67,6 @@ const props = defineProps({
   settingfor: {
     type: String,
     default: "role",
-  },
-  members: {
-    type: Object,
-    default() {
-      return undefined;
-    },
-  },
-  roles: {
-    type: Object,
-    default() {
-      return undefined;
-    },
   },
 });
 const authBase = computed(() => {

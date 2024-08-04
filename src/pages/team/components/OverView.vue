@@ -3,7 +3,7 @@
     v-if="onlyMedia"
     :current_version="current_version"
     :mediaWidth="mediaWidth"
-    :auth="useAuths('media', ['overview'], members, roles)"
+    :auth="useAuths('media', ['overview'])"
     class="fit"
     @mediaChanged="mediaChanged"
   />
@@ -17,17 +17,17 @@
       v-if="!hideMedia"
       :current_version="current_version"
       :isClassroom
-      :auth="useAuths('media', ['overview'], members, roles)"
+      :auth="useAuths('media', ['overview'])"
       @mediaChanged="mediaChanged"
     />
     <div
       class="column no-wrap q-px-sm gap-sm q-pt-sm"
       :class="isClassroom ? 'q-pb-sm' : ''"
     >
-      <OverviewName v-if="name" :wasAttached_to="wasAttached_toRef" :auth="useAuths('name', ['overview'], members, roles)" />
+      <OverviewName v-if="name" :wasAttached_to="wasAttached_toRef" :auth="useAuths('name', ['overview'])" />
       <OverviewDesc
         v-if="wasAttached_toRef === 'project'"
-        :auth="useAuths('description', ['overview'], members, roles)"
+        :auth="useAuths('description', ['overview'])"
         :wasAttached_to="wasAttached_toRef"
       />
     </div>
@@ -37,26 +37,26 @@
       <OverviewStart
         :wasAttached_to="wasAttached_toRef"
         :current_version="current_version"
-        :auth="useAuths('start', ['overview'], members, roles)"
+        :auth="useAuths('start', ['overview'])"
         @startChanged="startChanged"
       />
       <OverviewEnd
         :wasAttached_to="wasAttached_toRef"
         :current_version="current_version"
-        :auth="useAuths('end', ['overview'], members, roles)"
+        :auth="useAuths('end', ['overview'])"
         @endChanged="endChanged"
       />
       <OverviewDeadline
         :wasAttached_to="wasAttached_toRef"
         :current_version="current_version"
-        :auth="useAuths('deadline', ['overview'], members, roles)"
+        :auth="useAuths('deadline', ['overview'])"
         @deadlineChanged="deadlineChanged"
       />
     </div>
     <div
       class="row no-wrap gap-md q-pa-sm q-mx-sm items-center radius-xs border"
     >
-      <template v-if="useAuths('start', ['overview'], members, roles)">
+      <template v-if="useAuths('start', ['overview'])">
         <span
           v-if="!version_update_ing"
           class="q-space q-ml-sm"
@@ -107,7 +107,7 @@
             :class="$q.dark.mode ? 'bg-grey-10' : 'bg-white'"
             style="min-width: 9rem"
           >
-            <template v-if="useAuths('modify', [authBase.collection], members, roles)">
+            <template v-if="useAuths('modify', [authBase.collection])">
               <q-item class="radius-xs" clickable v-close-popup @click="version_update_ing = current_version?.id">
                 <q-item-section side>
                   <ReName />
@@ -134,17 +134,17 @@
                   <q-avatar size="sm">{{ index }}</q-avatar>
                 </q-item-section>
                 <q-item-section>{{ i.name }}</q-item-section>
-                <q-item-section side v-if="useAuths('default_version', [authBase.collection], members, roles)">
+                <q-item-section side v-if="useAuths('default_version', [authBase.collection])">
                   <q-btn dense size="sm" flat round icon="star" :color="overView_attachedTo.default_version === i.id
                         ? 'yellow'
                         : ''"
-                    :disable="!useAuths('default_version', [authBase.collection], members, roles)"
+                    :disable="!useAuths('default_version', [authBase.collection])"
                     @click.stop="set_defaultVersion(i.id)"
                   />
                 </q-item-section>
               </q-item>
             </template>
-            <template v-if="useAuths('create_version', [authBase.collection], members, roles)">
+            <template v-if="useAuths('create_version', [authBase.collection])">
               <q-separator v-if="overView_attachedTo.overviews?.length > 0" spaced />
               <q-item class="radius-xs no-padding">
                 <q-item-section class="q-pa-none radius-xs overflow-hidden">
@@ -167,7 +167,7 @@
             <template
               v-if="
                 overView_attachedTo.overviews?.length > 1 &&
-                useAuths('remove_version', [authBase.collection], members, roles)
+                useAuths('remove_version', [authBase.collection])
               "
             >
               <q-separator spaced />
@@ -193,7 +193,7 @@
       <CardContent
         v-if="wasAttached_toRef === 'card'"
         :wasAttached_to="wasAttached_toRef"
-        :contentAuth="useAuths('jsonContent', ['overview'], members, roles)"
+        :contentAuth="useAuths('jsonContent', ['overview'])"
       />
     </div>
   </div>
@@ -257,14 +257,6 @@ const props = defineProps({
     type: Object,
     default: null,
   },
-  members: {
-    type: Array,
-    default: void 0,
-  },
-  roles: {
-    type: Array,
-    default: void 0,
-  }
 });
 const { current_versionRef } = toRefs(props)
 const emit = defineEmits(['current_version'])

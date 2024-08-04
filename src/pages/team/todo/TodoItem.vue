@@ -29,7 +29,7 @@
             dense
             :disable="
               (inCard &&
-                !useAuths('status', ['card_todo', 'todo'], members, roles)) ||
+                !useAuths('status', ['card_todo', 'todo'])) ||
               uiStore.isShared
             "
             :color="teamStore.thread?.id === element.mm_thread?.id ? 'white' : ''"
@@ -52,7 +52,7 @@
             <template
               v-if="
                 !inCard ||
-                ((useAuths('content', ['card_todo', 'todo'], members, roles) ||
+                ((useAuths('content', ['card_todo', 'todo']) ||
                   isCreator) &&
                   (!uiStore.edittingTodo ||
                     uiStore.edittingTodo === element.id))
@@ -105,12 +105,7 @@
                 <q-btn
                   v-if="
                     !inCard ||
-                    useAuths(
-                      'content',
-                      ['card_todo', 'todo'],
-                      members,
-                      roles
-                    ) ||
+                    useAuths('content',['card_todo', 'todo']) ||
                     isCreator
                   "
                   color="orange"
@@ -134,8 +129,8 @@
           <q-btn
             v-if="
               !inCard ||
-              useAuths('content', ['card_todo', 'todo'], members, roles) ||
-              useAuths('delete', ['card_todo', 'todo'], members, roles) ||
+              useAuths('content', ['card_todo', 'todo']) ||
+              useAuths('delete', ['card_todo', 'todo']) ||
               isCreator
             "
             round
@@ -152,8 +147,6 @@
                 :todogroup
                 :isCreator
                 :inCard
-                :members
-                :roles
                 @updateTodoColorMarker="updateTodoColorMarker"
                 @addAttachment="addAttachment"
                 @deleteTodoFn="deleteTodoFn"
@@ -215,8 +208,6 @@
         :todogroup
         :isCreator
         :inCard
-        :members
-        :roles
         @updateTodoColorMarker="updateTodoColorMarker"
         @addAttachment="addAttachment"
         @deleteTodoFn="deleteTodoFn"
@@ -278,14 +269,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  members: {
-    type: Object,
-    default: void 0,
-  },
-  roles: {
-    type: Object,
-    default: void 0,
-  },
   inCard: {
     type: Boolean,
     default: true,
@@ -310,8 +293,6 @@ const {
   authBase,
   byInfo,
   isCreator,
-  members,
-  roles,
   inCard,
   card,
 } = toRefs(props);

@@ -9,7 +9,7 @@
     <td class="status">
       <StatusMenu
         v-if="show_byPreference?.status?.value || teamStore.shareInfo"
-        :modify="useAuths('status', ['card'], members, roles) || isCreator"
+        :modify="useAuths('status', ['card']) || isCreator"
         :status="cardRef.status"
         @statusChange="_card_statusChange"
         class="undrag"
@@ -62,7 +62,7 @@
         :jsonContent="cardRef.jsonContent"
         :editable="
           content_channging &&
-          (useAuths('jsonContent', ['card'], members, roles) || isCreator) &&
+          (useAuths('jsonContent', ['card']) || isCreator) &&
           !teamStore.shareInfo
         "
         :need="'json'"
@@ -106,8 +106,6 @@
                 :isCreator="isCreator"
                 :isPrivate="cardRef.private"
                 :uiOptions="uiOptions"
-                :members="members"
-                :roles="roles"
                 @todogroupSort="_todogroupSort"
                 @todogroupUpdate="_todogroupUpdate"
                 @deleteTodogroup="deleteTodogroup"
@@ -131,7 +129,7 @@
         icon="score"
         class="font-small"
         :class="
-          useAuths('score', ['card'], members, roles) || isCreator
+          useAuths('score', ['card']) || isCreator
             ? 'cursor-pointer'
             : ''
         "
@@ -139,7 +137,7 @@
         {{ $t('score') }}：{{ cardRef.score }}
         <q-popup-proxy
           cover
-          v-if="useAuths('score', ['card'], members, roles) || isCreator"
+          v-if="useAuths('score', ['card']) || isCreator"
           class="shadow-24"
         >
           <q-card bordered flat class="row no-wrap gap-xs items-center q-pa-xs">
@@ -185,7 +183,7 @@
         <q-btn
           v-if="
             !is_followed &&
-            (useAuths('followed_bies', ['card'], members, roles) || isCreator)
+            (useAuths('followed_bies', ['card']) || isCreator)
           "
           dense
           round
@@ -233,7 +231,7 @@
                       padding="sm"
                       @click="
                         _enterCard(
-                          useAuths('read', ['card'], members, roles) || isCreator
+                          useAuths('read', ['card']) || isCreator
                         )
                       "
                     >
@@ -242,7 +240,7 @@
                       </q-tooltip>
                     </q-btn>
                     <q-btn
-                      v-if="useAuths('name', ['card'], members, roles) || isCreator"
+                      v-if="useAuths('name', ['card']) || isCreator"
                       flat
                       dense
                       size="sm"
@@ -264,7 +262,7 @@
             <q-item
               v-if="
                 show_byPreference?.color_marker?.value &&
-                (useAuths('color_marker', ['card'], members, roles) || isCreator)
+                (useAuths('color_marker', ['card']) || isCreator)
               "
             >
               <q-item-section>
@@ -292,15 +290,15 @@
             </q-item>
             <q-separator
               v-if="
-                useAuths('type', ['card'], members, roles) ||
-                useAuths('status', ['card'], members, roles) ||
+                useAuths('type', ['card']) ||
+                useAuths('status', ['card']) ||
                 isCreator
               "
               spaced
               class="op-5"
             />
             <q-item
-              v-if="useAuths('type', ['card'], members, roles) || isCreator"
+              v-if="useAuths('type', ['card']) || isCreator"
               class="radius-xs"
               clickable
             >
@@ -333,7 +331,7 @@
             </q-item>
             <q-item
               v-if="
-                (useAuths('status', ['card'], members, roles) || isCreator) &&
+                (useAuths('status', ['card']) || isCreator) &&
                 cardRef.type === 'task' &&
                 show_byPreference?.status?.value
               "
@@ -354,7 +352,7 @@
               </q-menu>
             </q-item>
             <template
-              v-if="useAuths('delete', ['card'], members, roles) || isCreator"
+              v-if="useAuths('delete', ['card']) || isCreator"
             >
               <q-separator spaced class="op-5" />
               <q-item
@@ -403,7 +401,7 @@
                   padding="sm"
                   @click="
                     _enterCard(
-                      useAuths('read', ['card'], members, roles) || isCreator
+                      useAuths('read', ['card']) || isCreator
                     )
                   "
                 >
@@ -412,7 +410,7 @@
                   </q-tooltip>
                 </q-btn>
                 <q-btn
-                  v-if="useAuths('name', ['card'], members, roles) || isCreator"
+                  v-if="useAuths('name', ['card']) || isCreator"
                   flat
                   dense
                   size="sm"
@@ -434,7 +432,7 @@
         <q-item
           v-if="
             show_byPreference?.color_marker?.value &&
-            (useAuths('color_marker', ['card'], members, roles) || isCreator)
+            (useAuths('color_marker', ['card']) || isCreator)
           "
         >
           <q-item-section>
@@ -462,15 +460,15 @@
         </q-item>
         <q-separator
           v-if="
-            useAuths('type', ['card'], members, roles) ||
-            useAuths('status', ['card'], members, roles) ||
+            useAuths('type', ['card']) ||
+            useAuths('status', ['card']) ||
             isCreator
           "
           spaced
           class="op-5"
         />
         <q-item
-          v-if="useAuths('type', ['card'], members, roles) || isCreator"
+          v-if="useAuths('type', ['card']) || isCreator"
           class="radius-xs"
           clickable
         >
@@ -501,7 +499,7 @@
         </q-item>
         <q-item
           v-if="
-            (useAuths('status', ['card'], members, roles) || isCreator) &&
+            (useAuths('status', ['card']) || isCreator) &&
             cardRef.type === 'task' &&
             show_byPreference?.status?.value
           "
@@ -521,7 +519,7 @@
             />
           </q-menu>
         </q-item>
-        <template v-if="useAuths('delete', ['card'], members, roles) || isCreator">
+        <template v-if="useAuths('delete', ['card']) || isCreator">
           <q-separator spaced class="op-5" />
           <q-item
             class="radius-xs"
@@ -676,12 +674,10 @@ watch(cardRef, () => {
   belong_card.value = teamStore.card || null;
 });
 
-const members = ref();
-const roles = ref();
 const executor = ref();
 const { style, highlight } = clac_cardEdgeStyle(cardRef.value);
 
-const { todo_process, todo_processColor } = clac_todoData(cardRef.value);
+const { todo_process } = clac_todoData(cardRef.value);
 
 const is_followed = computed(() =>
   cardRef.value?.followed_bies
@@ -697,10 +693,6 @@ const color_marker = computed(
 );
 watchEffect(() => {
   isInCard.value = teamStore.card != null;
-  // jsonContent.value = cardRef.value.jsonContent;
-  const _projectMembers = teamStore?.project?.project_members || [];
-  const _cardMembers = cardRef.value?.card_members || [];
-  members.value = uniqueById([..._projectMembers, ..._cardMembers]);
   const executorRole = cardRef.value?.member_roles?.find(
     (i) => i.subject === "executor"
   );
@@ -708,10 +700,6 @@ watchEffect(() => {
   executor.value = cardRef.value?.card_members?.find((i) =>
     i.member_roles.map((j) => j.id)?.includes(executorRole.id)
   );
-  const _projectRoles = teamStore?.project?.member_roles || [];
-  const _cardRoles = cardRef.value?.member_roles || [];
-  // 卡片鉴权需要从project、card判定两个主体，这里直接合并以便UI中判断
-  roles.value = [..._projectRoles, ..._cardRoles];
 });
 
 const updateParmars = reactive({

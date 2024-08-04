@@ -11,6 +11,7 @@ import {
   toRefs,
   watch,
   computed,
+  onBeforeMount,
   onBeforeUnmount,
   provide,
 } from "vue";
@@ -26,7 +27,7 @@ import {
   putProjectCache,
 } from "src/hooks/project/useProcess.js";
 
-import { teamStore, userStore, mm_wsStore } from "src/hooks/global/useStore.js";
+import { teamStore, userStore, mm_wsStore, uiStore } from "src/hooks/global/useStore.js";
 
 const props = defineProps({
   project_id: {
@@ -61,20 +62,15 @@ const getProject = async (_id) => {
   }
   loading.value = false;
 };
-
-watch(
-  project_id,
-  async () => {
-    if (project_id.value) {
-      const id = Number(project_id.value);
-      if(id){
-        await getProject(id);
-        teamStore.mm_channel = project.value?.mm_channel
-      }
+onBeforeMount(async () => {
+  if (project_id.value) {
+    const id = Number(project_id.value);
+    if(id){
+      await getProject(id);
+      teamStore.mm_channel = project.value?.mm_channel
     }
-  },
-  { immediate: true, deep: false }
-);
+  }
+})
 
 const projectRemoved = ref(false);
 const projectRemovedFn = () => {

@@ -20,7 +20,7 @@
       <div
         v-if="
           name_changing &&
-          useAuths('name', ['card'], card?.card_members, card?.member_roles)
+          useAuths('name', ['card'])
         "
         class="undrag text-medium q-space cursor-text q-px-sm z-fab"
         style="
@@ -74,16 +74,16 @@
       >
         <q-menu
           v-if="
-            useAuths('name', ['card'], card?.card_members, card?.member_roles) ||
+            useAuths('name', ['card']) ||
             useAuths(
               'color_marker',
               ['card'],
               card?.card_members,
               card?.member_roles
             ) ||
-            useAuths('type', ['card'], card?.card_members, card?.member_roles) ||
-            useAuths('status', ['card'], card?.card_members, card?.member_roles) ||
-            useAuths('delete', ['card'], card?.card_members, card?.member_roles)
+            useAuths('type', ['card']) ||
+            useAuths('status', ['card']) ||
+            useAuths('delete', ['card'])
           "
           class="shadow-24"
         >
@@ -96,9 +96,7 @@
                       v-if="
                         useAuths(
                           'name',
-                          ['card'],
-                          card?.card_members,
-                          card?.member_roles
+                          ['card']
                         )
                       "
                       flat
@@ -124,9 +122,7 @@
                 show_byPreference?.color_marker?.value &&
                 useAuths(
                   'color_marker',
-                  ['card'],
-                  card?.card_members,
-                  card?.member_roles
+                  ['card']
                 )
               "
             >
@@ -160,15 +156,11 @@
               v-if="
                 useAuths(
                   'type',
-                  ['card'],
-                  card?.card_members,
-                  card?.member_roles
+                  ['card']
                 ) ||
                 useAuths(
                   'status',
-                  ['card'],
-                  card?.card_members,
-                  card?.member_roles
+                  ['card']
                 )
               "
               spaced
@@ -176,7 +168,7 @@
             />
             <q-item
               v-if="
-                useAuths('type', ['card'], card?.card_members, card?.member_roles)
+                useAuths('type', ['card'])
               "
               class="radius-xs"
               clickable
@@ -210,7 +202,7 @@
             </q-item>
             <q-item
               v-if="
-                useAuths('status',['card'],card?.card_members,card?.member_roles) &&
+                useAuths('status',['card']) &&
                 card.type === 'task' &&
                 show_byPreference?.status?.value
               "
@@ -234,9 +226,7 @@
               v-if="
                 useAuths(
                   'delete',
-                  ['card'],
-                  card?.card_members,
-                  card?.member_roles
+                  ['card']
                 )
               "
             >

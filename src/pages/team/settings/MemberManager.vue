@@ -7,7 +7,7 @@
           dense
           unelevated
           class="full-width"
-          :disable="!useAuths('invite_uris', [authBase.collection], __members, member_roles)"
+          :disable="!useAuths('invite_uris', [authBase.collection])"
           @click="inviteFn(teamStore.project)"
         >
           <q-icon name="group_add" size="xs" />
@@ -17,7 +17,7 @@
           <TeamInvite :byInfo />
         </q-dialog>
         <q-tooltip
-          v-if="!useAuths('invite_uris', [authBase.collection], __members, member_roles)"
+          v-if="!useAuths('invite_uris', [authBase.collection])"
           class="bg-black font-smaller"
         >
           {{ $t('no_premission_to_invite') }}
@@ -46,7 +46,7 @@
                 </q-item-section>
                 <q-item-section
                   v-if="
-                    useAuths('manageMember', [authBase.collection], __members, member_roles) && !protectedRoles.includes(g.group)
+                    useAuths('manageMember', [authBase.collection]) && !protectedRoles.includes(g.group)
                   "
                   side
                 >
@@ -326,7 +326,7 @@ watchEffect(
       },
     ];
     if (
-      useAuths('manageMember', [authBase.value.collection], __members.value, member_roles.value)
+      useAuths('manageMember', [authBase.value.collection])
     ) {
       members.value.push({
         group: "blocked",
@@ -348,7 +348,7 @@ const member_roles_forChange = computed(() => {
     hideRoles = [...hideRoles, "external"];
   }
   // 如果拥有管理成员权限，那么角色设置下拉菜单中，应该包含 block 分组
-  if (useAuths('manageMember', [authBase.value.collection], __members.value, member_roles.value)) {
+  if (useAuths('manageMember', [authBase.value.collection])) {
     hideRoles = hideRoles.filter((i) => i !== "blocked");
   }
   return member_roles.value?.filter((i) => !hideRoles.includes(i.subject));

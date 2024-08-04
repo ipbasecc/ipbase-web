@@ -35,7 +35,7 @@
         <q-tooltip> {{ $t('pinned_messages') }} </q-tooltip>
       </q-btn>
       <q-btn
-        v-if="strapi_channel_id && useAuths('manageMember', 'channel', teamStore.team?.members, teamStore.team?.member_roles)"
+        v-if="strapi_channel_id && useAuths('manageMember', ['channel'])"
         dense
         flat
         :color="powerPannel === 'MemberManager' ? 'green' : ''"

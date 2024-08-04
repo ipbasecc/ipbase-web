@@ -1,5 +1,5 @@
 <template>
-  <template v-if="members && roles || isShared">
+  <template v-if="useAuths('read', ['kanban']) || isShared">
     <q-scroll-area
       v-bind="$attrs"
       v-dragscroll="{
@@ -82,7 +82,7 @@
           </template>
           <template
             v-if="
-              useAuths('create', [authBase.collection], members, roles) &&
+              useAuths('create', [authBase.collection]) &&
               !uiStore.activeReel && !isShared
             "
             #footer
@@ -241,17 +241,6 @@ const authBase = computed(() => {
   return res;
 });
 provide("authBase", authBase.value);
-const members = ref();
-const roles = ref();
-const project_members = computed(() => teamStore.project?.members || []);
-watchEffect(async () => {
-  const _cardMembers = teamStore?.card?.card_members || [];
-  members.value = uniqueById([...project_members.value, ..._cardMembers]);
-  const _projectRoles = teamStore?.project?.member_roles || [];
-  const _cardRoles = teamStore?.card?.member_roles || [];
-  // 卡片鉴权需要从project、card判定两个主体，这里直接合并以便UI中判断
-  roles.value = [..._projectRoles, ..._cardRoles];
-});
 
 const kanban = ref();
 const loading = ref(false);

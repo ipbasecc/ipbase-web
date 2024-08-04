@@ -1,18 +1,18 @@
 <template>
-  <q-list v-if="teamStore.project && boards && members && roles" class="fit column no-wrap q-pa-xs">
-    <template v-if="useAuths('read', ['board'], members, roles)">
+  <q-list v-if="teamStore.project && boards" class="fit column no-wrap q-pa-xs">
+    <template v-if="useAuths('read', ['board'])">
       <div
         v-if="
           multiple_boards || isEmpty || teamStore.navigation === 'classroom'
         "
         class="row no-wrap"
       >
-        <BoradToggler :isEmpty :members :roles />
+        <BoradToggler :isEmpty />
       </div>
       <q-scroll-area
         class="q-space"
         v-if="
-          useAuths('read', ['group'], members, roles) &&
+          useAuths('read', ['group']) &&
           teamStore.board?.groups?.length > 0
         "
       >
@@ -43,21 +43,21 @@
                   size="sm"
                   name="tag"
                   :class="
-                    useAuths('order', ['group'], members, roles) ? 'dragBar' : ''
+                    useAuths('order', ['group']) ? 'dragBar' : ''
                   "
                 />
                 <span
                   class="q-space q-pa-sm"
                   :class="
-                    useAuths('order', ['group'], members, roles) ? 'dragBar' : ''
+                    useAuths('order', ['group']) ? 'dragBar' : ''
                   "
                 >
                   {{ element.name }}
                 </span>
                 <q-btn
                   v-if="
-                    useAuths('name', ['group'], members, roles) ||
-                    useAuths('delete', ['group'], members, roles)
+                    useAuths('name', ['group']) ||
+                    useAuths('delete', ['group'])
                   "
                   class="hover-show transition"
                   dense
@@ -69,7 +69,7 @@
                   <q-menu class="radius-sm shadow-24" ref="more_vert_menu">
                     <q-list dense bordered class="radius-sm q-pa-xs">
                       <q-item
-                        v-if="useAuths('name', ['group'], members, roles)"
+                        v-if="useAuths('name', ['group'])"
                         class="no-padding"
                       >
                         <q-input
@@ -100,7 +100,7 @@
                           </template>
                         </q-input>
                       </q-item>
-                      <template v-if="useAuths('delete', ['group'], members, roles)">
+                      <template v-if="useAuths('delete', ['group'])">
                         <q-separator spaced />
                         <q-item
                           clickable
@@ -142,11 +142,11 @@
                 @end="kanbanDraging = false"
               >
                 <template #item="{ element: kanban }">
-                  <KanbanListitem :kanban="kanban" :members :roles @enterKanban="enterKanban" />
+                  <KanbanListitem :kanban="kanban" @enterKanban="enterKanban" />
                 </template>
                 <template
                   #footer
-                  v-if="useAuths('create', ['kanban'], members, roles)"
+                  v-if="useAuths('create', ['kanban'])"
                 >
                   <div
                     v-if="!addKanban_targetId"
@@ -236,7 +236,7 @@
       <div v-else class="q-space flex flex-center">
         <span class="op-5">
           {{
-            useAuths('read', ['group'], members, roles)
+            useAuths('read', ['group'])
               ? isEmpty
                 ? $t('click_btn_above')
                 : $t('click_btn_bellow')
@@ -245,7 +245,7 @@
         </span>
       </div>
       <q-btn
-        v-if="useAuths('create', ['group'], members, roles) && !isEmpty"
+        v-if="useAuths('create', ['group']) && !isEmpty"
         size="md"
         flat
         class="full-width"
@@ -299,9 +299,6 @@ import { useQuasar } from "quasar";
 import {teamStore, mm_wsStore, userStore, uiStore} from 'src/hooks/global/useStore.js';
 
 import { i18n } from 'src/boot/i18n.js';
-
-const members = computed(() => teamStore.project?.project_members);
-const roles = computed(() => teamStore.project?.member_roles);
 
 const $t = i18n.global.t;
 

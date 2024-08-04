@@ -51,7 +51,7 @@
       <template v-if="inDilg">
         <q-space />
         <div
-          v-if="useAuths('manageRole', ['card'], members, roles)"
+          v-if="useAuths('manageRole', ['card'])"
           class="flex flex-center q-mb-md"
         >
           <q-btn
@@ -200,7 +200,7 @@
         <q-tab-panels v-model="side_pannel" class="q-space">
           <q-tab-panel name="overview" class="no-padding">
             <KeepAlive>
-              <OverView wasAttached_to="card" class="absolute-full" :members :roles />
+              <OverView wasAttached_to="card" class="absolute-full" />
             </KeepAlive>
           </q-tab-panel>
           <q-tab-panel
@@ -307,7 +307,7 @@
           <template v-if="current_model === 'card_kanban'">
             <KanbanContainer
               v-if="
-                !teamStore.card?.private || useAuths('read', ['column'], members, roles)
+                !teamStore.card?.private || useAuths('read', ['column'])
               "
               :project_id="teamStore.project?.id"
               :kanban_id="teamStore.card?.card_kanban?.id"
@@ -332,7 +332,7 @@
             <q-splitter
               v-if="
                 !teamStore.card.private ||
-                useAuths('read', ['card_document'], members, roles)
+                useAuths('read', ['card_document'])
               "
               v-model="splitterModel"
               :limits
@@ -382,9 +382,7 @@
     <q-dialog v-model="card_setting" persistent>
       <q-card bordered style="min-width: 61dvw">
         <CardSettings
-          :isCard="true" 
-          :members="members"
-          :roles="roles"
+          :isCard="true"
         />
       </q-card>
     </q-dialog>
@@ -409,7 +407,7 @@
     </q-toolbar>
     <q-tab-panels v-if="teamStore?.card" v-model="current_model" animated class="q-space">
         <q-tab-panel name="card_overview" class="no-padding">
-          <OverView wasAttached_to="card" class="absolute-full" :members :roles />
+          <OverView wasAttached_to="card" class="absolute-full" />
         </q-tab-panel>
         <q-tab-panel name="card_chat" class="no-padding">
           <ThreadContainer
@@ -436,7 +434,7 @@
         <q-tab-panel name="card_kanban" class="no-padding">
           <KanbanContainer
               v-if="
-                !teamStore.card?.private || useAuths('read', ['column'], members, roles)
+                !teamStore.card?.private || useAuths('read', ['column'])
               "
               :project_id="teamStore.project?.id"
               :kanban_id="teamStore.card?.card_kanban?.id"
@@ -461,7 +459,7 @@
           />
         </q-tab-panel>
         <q-tab-panel name="card_documents" class="no-padding">
-          <template v-if="!teamStore.card.private || useAuths('read', ['card_document'], members, roles)">
+          <template v-if="!teamStore.card.private || useAuths('read', ['card_document'])">
             <DocumentList
                 v-if="!document_id"
                 :documents="teamStore.card.card_documents"
@@ -611,8 +609,6 @@ const refetchFeedback = async (card_id) => {
 }
 const isIntro = ref(false);
 
-const members = ref();
-const roles = ref();
 watchEffect(async () => {
   if (route.name === "teams") {
     isIntro.value = true;
@@ -628,13 +624,6 @@ watchEffect(async () => {
   if(uiStore.showMainContentList){
     document_id.value = void 0
   }
-
-  const _cardMembers = teamStore?.card?.card_members || [];
-  members.value = uniqueById([...project_members.value, ..._cardMembers]);
-  const _projectRoles = teamStore?.project?.member_roles || [];
-  const _cardRoles = teamStore?.card?.member_roles || [];
-  // 卡片鉴权需要从project、card判定两个主体，这里直接合并以便UI中判断
-  roles.value = [..._projectRoles, ..._cardRoles];
 });
 
 const closeCard = (id, index) => {

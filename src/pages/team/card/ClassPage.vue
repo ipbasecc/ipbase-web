@@ -118,7 +118,7 @@
           <template v-if="current_classExtend === 'card_kanban'">
             <KanbanContainer
               v-if="
-                !teamStore.card?.private || useAuths('read', ['column'], members, roles)
+                !teamStore.card?.private || useAuths('read', ['column'])
               "
               :project_id="teamStore.project?.id"
               :kanban_id="teamStore.card?.card_kanban?.id"
@@ -132,7 +132,7 @@
             <q-splitter
               v-if="
                 !teamStore.card.private ||
-                useAuths('read', ['card_document'], members, roles)
+                useAuths('read', ['card_document'])
               "
               v-model="splitterModel"
               :limits
@@ -175,7 +175,7 @@
       <q-page-container>
         <q-page :key="teamStore.card?.id">
           <KeepAlive>
-            <OverView wasAttached_to="card" :members :roles />
+            <OverView wasAttached_to="card" />
           </KeepAlive>
         </q-page>
       </q-page-container>
@@ -241,15 +241,8 @@ const chatInfo = computed(() => ({
   post_id: teamStore.card?.mm_thread?.id,
 }));
 
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
-};
-
-const project_members = computed(() => teamStore.project?.project_members);
 const card_members = ref();
 
-const members = ref();
-const roles = ref();
 watchEffect(async () => {
   if (route.name === "teams") {
     isIntro.value = true;
@@ -266,12 +259,6 @@ watchEffect(async () => {
     document_id.value = void 0
   }
 
-  const _cardMembers = teamStore?.card?.card_members || [];
-  members.value = uniqueById([...project_members.value, ..._cardMembers]);
-  const _projectRoles = teamStore?.project?.member_roles || [];
-  const _cardRoles = teamStore?.card?.member_roles || [];
-  // 卡片鉴权需要从project、card判定两个主体，这里直接合并以便UI中判断
-  roles.value = [..._projectRoles, ..._cardRoles];
 });
 
 

@@ -1,7 +1,7 @@
 <template>
-  <div v-if="authBase && members && roles" class="fit q-space column no-wrap q-pb-lg">
+  <div v-if="authBase" class="fit q-space column no-wrap q-pb-lg">
     <template
-      v-if="useAuths('manageRole', [authBase?.collection], members, roles)"
+      v-if="useAuths('manageRole', [authBase?.collection])"
     >
       <q-toolbar class="transparent overflow-hidden full-width" :class="isCardRef ? 'border-bottom' : ''">
         <q-tabs v-model="active_role" dense outside-arrows align="left" class="q-space scroll-x">
@@ -180,14 +180,6 @@ const props = defineProps({
   isCard: {
     type: Boolean,
     default: false,
-  },
-  members: {
-    type: Array,
-    default: void 0,
-  },
-  roles: {
-    type: Array,
-    default: void 0,
   },
 });
 const $t = i18n.global.t;

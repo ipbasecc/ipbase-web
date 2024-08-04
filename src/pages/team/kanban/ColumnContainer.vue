@@ -12,22 +12,22 @@
       >
         <StatusMenu
           :status="column_status"
-          :modify="useAuths('status', ['column'], members, roles)"
+          :modify="useAuths('status', ['column'])"
           :dense="true"
           class="flex"
           @statusChange="statusChange"
         />
         <span
           class="q-space unselected"
-          :class="useAuths('order', ['column'], members, roles) ? 'dragBar' : ''"
+          :class="useAuths('order', ['column']) ? 'dragBar' : ''"
           @mouseenter="uiStore.dragKanbanScrollEnable = false"
           @mouseleave="uiStore.dragKanbanScrollEnable = true"
           >{{ column_name }}</span
         >
         <q-btn
           v-if="
-            useAuths('name', ['column'], members, roles) ||
-            useAuths('delete', ['column'], members, roles) ||
+            useAuths('name', ['column']) ||
+            useAuths('delete', ['column']) ||
             isCreator
           "
           dense
@@ -39,7 +39,7 @@
           <q-menu class="border shadow-24" ref="column_menu">
             <q-list dense class="q-pa-xs radius-sm" style="min-width: 100px">
               <template
-                v-if="useAuths('name', ['column'], members, roles)"
+                v-if="useAuths('name', ['column'])"
               >
                 <q-item class="no-padding">
                   <q-item-section>
@@ -129,7 +129,7 @@
                 </q-menu>
               </q-item>
               <template
-                v-if="useAuths('delete', ['column'], members, roles)"
+                v-if="useAuths('delete', ['column'])"
               >
                 <q-separator spaced />
                 <q-item
@@ -146,7 +146,7 @@
         </q-btn>
       </div>
       <q-btn-group
-        v-if="useAuths('create', ['column'], members, roles)"
+        v-if="useAuths('create', ['column'])"
         dense
         unelevated
         size="sm"
@@ -196,7 +196,7 @@
       </q-btn-group>
       <CreateCard
         v-if="
-          createCard_in === columnRef.id && useAuths('create', ['card'], members, roles)
+          createCard_in === columnRef.id && useAuths('create', ['card'])
         "
         :column_id="columnRef.id"
         :DefaultCreateCardType="DefaultCreateCardType"
@@ -369,13 +369,13 @@
       >
         <StatusMenu
           :status="columnRef.status"
-          :modify="useAuths('status', ['column'], members, roles)"
+          :modify="useAuths('status', ['column'])"
           :dense="true"
           @statusChange="statusChange"
         />
         <span
           class="q-space"
-          :class=" useAuths('order', ['column'], members, roles)
+          :class=" useAuths('order', ['column'])
               ? 'dragBar'
               : ''
           "
@@ -383,7 +383,7 @@
         >
         <q-space />
         <q-btn
-          v-if="useAuths('create', ['card'], members, roles)"
+          v-if="useAuths('create', ['card'])"
           dense
           flat
           round
@@ -421,8 +421,8 @@
         />
         <q-btn
           v-if="
-            useAuths('name', ['column'], members, roles) ||
-            useAuths('delete', ['column'], members, roles) ||
+            useAuths('name', ['column']) ||
+            useAuths('delete', ['column']) ||
             isCreator
           "
           dense
@@ -434,7 +434,7 @@
           <q-menu class="border shadow-24">
             <q-list dense class="q-pa-xs radius-sm" style="min-width: 100px">
               <template
-                v-if="useAuths('name', ['column'], members, roles)"
+                v-if="useAuths('name', ['column'])"
               >
                 <q-item class="no-padding">
                   <q-item-section>
@@ -466,7 +466,7 @@
                 </q-item>
               </template>
               <template
-                v-if="useAuths('delete', ['column'], members, roles)"
+                v-if="useAuths('delete', ['column'])"
               >
                 <q-separator spaced />
                 <q-item
@@ -524,7 +524,7 @@
           <template #header>
             <div
               v-if="
-                createCard_in === columnRef.id && useAuths('create', ['card'], members, roles)
+                createCard_in === columnRef.id && useAuths('create', ['card'])
               "
               class="q-pa-sm"
             >
@@ -624,8 +624,6 @@ const isCreator = computed(
 );
 const kanban_idRef = toRef(props, "kanban_id");
 const view_modelRef = toRef(props, "view_model");
-const authBase = inject("authBase");
-const isShared = computed(() => uiStore.isShared);
 const isKanban = computed(() => board_type.value === "kanban");
 
 let filter_txt = ref();
@@ -636,17 +634,8 @@ let column_unread_count = ref();
 let column_status = ref();
 let column_type = ref();
 let column_executor = ref();
-const members = ref();
-const roles = ref();
 watchEffect(() => {
   filter_txt.value = teamStore.filter_txt;
-  const _projectMembers = teamStore?.project?.project_members || [];
-  const _cardMembers = teamStore?.card?.card_members || [];
-  members.value = uniqueById([..._projectMembers, ..._cardMembers]);
-  const _projectRoles = teamStore?.project?.member_roles || [];
-  const _cardRoles = teamStore?.card?.member_roles || [];
-  // 卡片鉴权需要从project、card判定两个主体，这里直接合并以便UI中判断
-  roles.value = [..._projectRoles, ..._cardRoles];
 });
 watch(
   columnRef,

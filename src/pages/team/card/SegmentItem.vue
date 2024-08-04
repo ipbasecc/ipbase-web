@@ -6,7 +6,7 @@
       flat
       class="column no-wrap cardBody overflow-hidden relative-position radius-sm hovered-item"
       :class="teamStore.card?.id === cardRef.id ? 'openedCard shadow-focus' : ''"
-      @mouseenter="AUTH = useAuths('read', ['card'], members, roles)"
+      @mouseenter="AUTH = useAuths('read', ['card'])"
       @mouseleave="AUTH = void 0"
     >
       <!-- 卡片顶部 -->
@@ -14,7 +14,7 @@
         class="row no-wrap q-pa-xs q-pr-sm items-center hovered-item absolute-top z-fab"
         :class="`
             ${
-              useAuths('order', ['card'], members, roles) &&
+              useAuths('order', ['card']) &&
               !name_changing &&
               !isExternal
                 ? 'dragBar'
@@ -45,13 +45,13 @@
           icon="score"
           class="font-small"
           :class="
-            useAuths('score', ['card'], members, roles) ? 'cursor-pointer' : ''
+            useAuths('score', ['card']) ? 'cursor-pointer' : ''
           "
         >
           分值：{{ cardRef.score }}
           <q-popup-proxy
             cover
-            v-if="useAuths('score', ['card'], members, roles)"
+            v-if="useAuths('score', ['card'])"
             class="shadow-24"
           >
             <q-card
@@ -75,7 +75,7 @@
           </q-popup-proxy>
         </q-chip>
         <div
-          v-if="name_changing && useAuths('name', ['card'], members, roles)"
+          v-if="name_changing && useAuths('name', ['card'])"
           class="undrag text-medium q-space cursor-text q-px-sm z-fab"
           style="
             writing-mode: lr;
@@ -106,8 +106,6 @@
           v-if="show_byPreference?.executor?.value && !isExternal"
           :card="cardRef"
           :executor="executor"
-          :members="members"
-          :roles="roles"
           :isCreator="isCreator"
           @attachExecutor="attachExecutorFn"
         />
@@ -128,7 +126,7 @@
         <div
           class="absolute-full bg-gradient-bottom-black hover-show transition"
           @dblclick.stop="
-            _enterSegment(useAuths('read', ['card'], members, roles))
+            _enterSegment(useAuths('read', ['card']))
           "
         ></div>
       </q-card-section>
@@ -137,11 +135,11 @@
         v-show="cardRef?.expand !== 'collapse'"
         class="row no-wrap gap-sm items-center q-px-sm q-py-xs hovered-item absolute-bottom z-fab q-mb-sm"
         :class="isExternal ? '' : 'dragBar'"
-        @dblclick="_enterSegment(useAuths('read', ['card'], members, roles))"
+        @dblclick="_enterSegment(useAuths('read', ['card']))"
       >
         <StatusMenu
           v-if="show_byPreference?.status?.value"
-          :modify="useAuths('status', ['card'], members, roles)"
+          :modify="useAuths('status', ['card'])"
           :status="cardRef.status"
           @statusChange="_card_statusChange"
           class="undrag"
@@ -168,7 +166,7 @@
           </overlappingAvatar>
           <q-btn
             v-if="
-              !is_followed && useAuths('followed_bies', ['card'], members, roles)
+              !is_followed && useAuths('followed_bies', ['card'])
             "
             dense
             round
@@ -195,7 +193,7 @@
             round
             icon="fullscreen"
             class="op-5"
-            @click="_enterSegment(useAuths('read', ['card'], members, roles))"
+            @click="_enterSegment(useAuths('read', ['card']))"
           />
         </div>
         <q-icon
@@ -227,7 +225,7 @@
                         padding="sm"
                         v-close-popup
                         @click="
-                          _enterSegment(useAuths('read', ['card'], members, roles))
+                          _enterSegment(useAuths('read', ['card']))
                         "
                       >
                         <q-tooltip>
@@ -235,7 +233,7 @@
                         </q-tooltip>
                       </q-btn>
                       <q-btn
-                        v-if="useAuths('name', ['card'], members, roles)"
+                        v-if="useAuths('name', ['card'])"
                         flat
                         dense
                         size="sm"
@@ -265,7 +263,7 @@
               <template
                 v-if="
                   show_byPreference?.color_marker?.value &&
-                  useAuths('color_marker', ['card'], members, roles)
+                  useAuths('color_marker', ['card'])
                 "
               >
                 <q-separator spaced class="op-5" />
@@ -298,15 +296,15 @@
               </template>
               <q-separator
                 v-if="
-                  useAuths('type', ['card'], members, roles) ||
-                  useAuths('status', ['card'], members, roles)
+                  useAuths('type', ['card']) ||
+                  useAuths('status', ['card'])
                 "
                 spaced
                 class="op-5"
               />
               <q-item
                 v-if="
-                  useAuths('status', ['card'], members, roles) &&
+                  useAuths('status', ['card']) &&
                   show_byPreference?.status?.value
                 "
                 class="radius-xs"
@@ -325,7 +323,7 @@
                   />
                 </q-menu>
               </q-item>
-              <template v-if="useAuths('delete', ['card'], members, roles)">
+              <template v-if="useAuths('delete', ['card'])">
                 <q-item
                   class="radius-xs"
                   clickable
@@ -340,12 +338,12 @@
         </q-icon>
         <q-popup-proxy
           v-if="
-            useAuths('read', ['card'], members, roles) ||
-            useAuths('name', ['card'], members, roles) ||
-            useAuths('color_marker', ['card'], members, roles) ||
-            useAuths('type', ['card'], members, roles) ||
-            useAuths('status', ['card'], members, roles) ||
-            useAuths('delete', ['card'], members, roles)
+            useAuths('read', ['card']) ||
+            useAuths('name', ['card']) ||
+            useAuths('color_marker', ['card']) ||
+            useAuths('type', ['card']) ||
+            useAuths('status', ['card']) ||
+            useAuths('delete', ['card'])
           "
           context-menu
           ref="cardCtxMenu"
@@ -364,7 +362,7 @@
                     padding="sm"
                     v-close-popup
                     @click="
-                      _enterSegment(useAuths('read', ['card'], members, roles))
+                      _enterSegment(useAuths('read', ['card']))
                     "
                   >
                     <q-tooltip>
@@ -372,7 +370,7 @@
                     </q-tooltip>
                   </q-btn>
                   <q-btn
-                    v-if="useAuths('name', ['card'], members, roles)"
+                    v-if="useAuths('name', ['card'])"
                     flat
                     dense
                     size="sm"
@@ -401,7 +399,7 @@
             <template
               v-if="
                 show_byPreference?.color_marker?.value &&
-                useAuths('color_marker', ['card'], members, roles)
+                useAuths('color_marker', ['card'])
               "
             >
               <q-separator spaced class="op-5" />
@@ -433,7 +431,7 @@
             </template>
             <q-item
               v-if="
-                useAuths('status', ['card'], members, roles) &&
+                useAuths('status', ['card']) &&
                 show_byPreference?.status?.value
               "
               class="radius-xs"
@@ -452,7 +450,7 @@
                 />
               </q-menu>
             </q-item>
-            <template v-if="useAuths('delete', ['card'], members, roles)">
+            <template v-if="useAuths('delete', ['card'])">
               <q-separator spaced class="op-5" />
               <q-item
                 class="radius-xs"
@@ -637,8 +635,6 @@ watch(cardRef, () => {
   belong_card.value = teamStore.card || null;
 });
 
-const members = ref();
-const roles = ref();
 const executor = ref();
 const { style, highlight } = clac_cardEdgeStyle(cardRef.value);
 
@@ -658,10 +654,6 @@ const color_marker = computed(
 );
 watchEffect(() => {
   isInCard.value = teamStore.card != null;
-  // jsonContent.value = cardRef.value.jsonContent;
-  const _projectMembers = teamStore?.project?.project_members || [];
-  const _cardMembers = cardRef.value?.card_members || [];
-  members.value = uniqueById([..._projectMembers, ..._cardMembers]);
   const executorRole = cardRef.value?.member_roles.find(
     (i) => i.subject === "executor"
   );
@@ -669,10 +661,6 @@ watchEffect(() => {
   executor.value = cardRef.value?.card_members?.find((i) =>
     i.member_roles.map((j) => j.id)?.includes(executorRole.id)
   );
-  const _projectRoles = teamStore?.project?.member_roles || [];
-  const _cardRoles = cardRef.value?.member_roles || [];
-  // 卡片鉴权需要从project、card判定两个主体，这里直接合并以便UI中判断
-  roles.value = [..._projectRoles, ..._cardRoles];
 });
 
 const updateParmars = reactive({

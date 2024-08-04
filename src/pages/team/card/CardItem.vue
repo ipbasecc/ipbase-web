@@ -39,7 +39,7 @@
         class="row no-wrap items-center q-pa-xs gap-xs border-bottom hovered-item q-px-xs"
         :class="`
           ${
-            useAuths('order', ['card'], members, roles) &&
+            useAuths('order', ['card']) &&
             !name_changing &&
             isDilgMode
               ? 'dragBar'
@@ -52,7 +52,7 @@
       >
         <StatusMenu
           v-if="show_byPreference?.status?.value"
-          :modify="useAuths('status', ['card'], members, roles)"
+          :modify="useAuths('status', ['card'])"
           :status="cardRef.status"
           @statusChange="_card_statusChange"
           class="undrag"
@@ -60,7 +60,7 @@
         <div
           v-if="
             name_changing &&
-            useAuths('name', ['card'], members, roles) &&
+            useAuths('name', ['card']) &&
             !isShared
           "
           class="undrag text-medium q-space cursor-text q-px-sm z-fab"
@@ -116,8 +116,7 @@
           "
           :card="cardRef"
           :executor="executor"
-          :members="members"
-          :roles="roles"
+          :cardMembers="cardMembers"
           :isCreator="isCreator"
           @attachExecutor="attachExecutorFn"
         />
@@ -146,7 +145,7 @@
         <TipTap
           :jsonContent="cardRef.jsonContent"
           :editable="
-            useAuths('jsonContent', ['card'], members, roles) && !isShared
+            useAuths('jsonContent', ['card']) && !isShared
           "
           :need="'json'"
           :square="true"
@@ -158,7 +157,7 @@
           @tiptapBlur="tiptapBlur"
           @tiptapClose="toggleOffEditting()"
           @click.stop="
-            clickContent(useAuths('jsonContent', ['card'], members, roles))
+            clickContent(useAuths('jsonContent', ['card']))
           "
           @keydown.esc="uiStore.edittingCard = void 0"
         />
@@ -183,8 +182,6 @@
           :isCreator="isCreator"
           :isPrivate="cardRef.private"
           :uiOptions="uiOptions"
-          :members="members"
-          :roles="roles"
           @todogroupSort="_todogroupSort"
           @todogroupUpdate="_todogroupUpdate"
           @deleteTodogroup="deleteTodogroup"
@@ -199,7 +196,7 @@
         :class="`
           ${isDilgMode ? 'dragBar' : ''}
         `"
-        @dblclick="_enterCard(useAuths('read', ['card'], members, roles))"
+        @dblclick="_enterCard(useAuths('read', ['card']))"
       >
         <ThreadBtn
           v-if="
@@ -227,7 +224,7 @@
           </overlappingAvatar>
           <q-btn
             v-if="
-              !is_followed && useAuths('followed_bies', ['card'], members, roles)
+              !is_followed && useAuths('followed_bies', ['card'])
             "
             dense
             round
@@ -254,7 +251,7 @@
             round
             icon="mdi-import"
             class="op-5"
-            @click="_enterCard(useAuths('read', ['card'], members, roles))"
+            @click="_enterCard(useAuths('read', ['card']))"
           />
         </div>
         <div
@@ -268,7 +265,7 @@
             round
             icon="fullscreen"
             class="op-5"
-            @click="_enterCard(useAuths('read', ['card'], members, roles))"
+            @click="_enterCard(useAuths('read', ['card']))"
           >
             <q-tooltip
               :class="
@@ -311,7 +308,7 @@
                         padding="sm"
                         v-close-popup
                         @click="
-                          _enterCard(useAuths('read', ['card'], members, roles))
+                          _enterCard(useAuths('read', ['card']))
                         "
                       >
                         <q-tooltip>
@@ -319,7 +316,7 @@
                         </q-tooltip>
                       </q-btn>
                       <q-btn
-                        v-if="useAuths('name', ['card'], members, roles)"
+                        v-if="useAuths('name', ['card'])"
                         flat
                         dense
                         size="sm"
@@ -360,7 +357,7 @@
               <template
                 v-if="
                   show_byPreference?.color_marker?.value &&
-                  useAuths('color_marker', ['card'], members, roles)
+                  useAuths('color_marker', ['card'])
                 "
               >
                 <q-separator spaced class="op-5" />
@@ -393,8 +390,8 @@
               </template>
               <q-separator
                 v-if="
-                  (useAuths('type', ['card'], members, roles) ||
-                    useAuths('status', ['card'], members, roles)) &&
+                  (useAuths('type', ['card']) ||
+                    useAuths('status', ['card'])) &&
                   cardRef.type !== 'classroom'
                 "
                 spaced
@@ -402,7 +399,7 @@
               />
               <q-item
                 v-if="
-                  useAuths('type', ['card'], members, roles) &&
+                  useAuths('type', ['card']) &&
                   cardRef.type !== 'classroom'
                 "
                 class="radius-xs"
@@ -437,7 +434,7 @@
               </q-item>
               <q-item
                 v-if="
-                  useAuths('status', ['card'], members, roles) &&
+                  useAuths('status', ['card']) &&
                   cardRef.type === 'task' &&
                   show_byPreference?.status?.value
                 "
@@ -451,13 +448,13 @@
                 <q-menu auto-close anchor="top end" self="top start">
                   <StatusMenu
                     :status="cardRef.status"
-                    :modify="useAuths('status', ['card'], members, roles)"
+                    :modify="useAuths('status', ['card'])"
                     @statusChange="_card_statusChange"
                     :isList="true"
                   />
                 </q-menu>
               </q-item>
-              <template v-if="useAuths('delete', ['card'], members, roles)">
+              <template v-if="useAuths('delete', ['card'])">
                 <q-separator spaced class="op-5" />
                 <q-item
                   class="radius-xs"
@@ -480,7 +477,7 @@
         <div
           class="absolute-bottom bg-gradient-bottom-unfold_card full-width"
           style="height: calc(100% - 34px)"
-          @dblclick="_enterCard(useAuths('read', ['card'], members, roles))"
+          @dblclick="_enterCard(useAuths('read', ['card']))"
         ></div>
         <q-btn
           dense
@@ -673,6 +670,7 @@ const toggleOffEditting = () => {
   uiStore.edittingCard = void 0;
 };
 
+const cardMembers = computed(() => cardRef.value?.card_members || []);
 const isCreator = computed(() => {
   // 卡片所有角色
   const _member_roles = cardRef.value?.member_roles;
@@ -715,8 +713,6 @@ watch(cardRef, () => {
   belong_card.value = teamStore.card || null;
 });
 
-const members = ref();
-const roles = ref();
 const executor = ref();
 const { style, highlight } = clac_cardEdgeStyle(cardRef.value);
 
@@ -734,14 +730,6 @@ const color_marker = computed(
 );
 watchEffect(() => {
   isInCard.value = teamStore.card != null;
-  // jsonContent.value = cardRef.value.jsonContent;
-  const _projectMembers = teamStore?.project?.project_members || [];
-  const _cardMembers = cardRef.value?.card_members || [];
-  members.value = uniqueById([..._projectMembers, ..._cardMembers]);
-  const _projectRoles = teamStore?.project?.member_roles || [];
-  const _cardRoles = cardRef.value?.member_roles || [];
-  // 卡片鉴权需要从project、card判定两个主体，这里直接合并以便UI中判断
-  roles.value = [..._projectRoles, ..._cardRoles];
 
   const executorRole = cardRef.value?.member_roles?.find(
     (i) => i.subject === "executor"

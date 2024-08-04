@@ -8,7 +8,7 @@
       :class="$q.dark.mode ? 'bg-grey-10 text-grey-1' : 'bg-white text-grey-10'"
     >
       <q-item
-        v-if="useAuths('invite_uris', ['team'], members, roles)"
+        v-if="useAuths('invite_uris', ['team'])"
         clickable
         v-close-popup
         @click="inviteFn()"
@@ -20,7 +20,7 @@
         <q-item-section>{{ $t('invite_member') }}</q-item-section>
       </q-item>
       <q-item
-        v-if="useAuths('manageMember', ['team'], members, roles)"
+        v-if="useAuths('manageMember', ['team'])"
         @click="memberManager = true"
         clickable
         v-close-popup
@@ -32,7 +32,7 @@
         <q-item-section>{{ $t('manage_member') }}</q-item-section>
       </q-item>
       <q-item
-        v-if="useAuths('modify', ['team'], members, roles)"
+        v-if="useAuths('modify', ['team'])"
         @click="teamSettings = true"
         clickable
         v-close-popup
@@ -45,9 +45,9 @@
       </q-item>
       <q-separator
         v-if="
-          useAuths('invite_uris', ['team'], members, roles) ||
-          useAuths('manageMember', ['team'], members, roles) || 
-          useAuths('modify', ['team'], members, roles)
+          useAuths('invite_uris', ['team']) ||
+          useAuths('manageMember', ['team']) || 
+          useAuths('modify', ['team'])
         "
         spaced
       />
@@ -172,8 +172,6 @@ const props = defineProps({
 const emit = defineEmits(["teamUpdated"]);
 const router = useRouter();
 const { team } = toRefs(props);
-const members = computed(() => teamStore.team?.members);
-const roles = computed(() => teamStore.team?.member_roles);
 
 const menu = ref(null);
 const invite = ref(false);

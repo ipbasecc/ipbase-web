@@ -1,8 +1,8 @@
 <template>
   <div class="q-pa-md">
-    <q-list v-if="members && roles" class="q-pa-sm">
+    <q-list class="q-pa-sm">
       <q-item
-        v-if="useAuths('delete', ['project'], members, roles)"
+        v-if="useAuths('delete', ['project'])"
         clickable
         v-ripple
         v-close-popup
@@ -15,7 +15,7 @@
         <q-item-section class="q-pr-lg">{{ $t('archive_project') }}</q-item-section>
       </q-item>
       <q-item
-        v-if="useAuths('delete', ['project'], members, roles)"
+        v-if="useAuths('delete', ['project'])"
         clickable
         v-ripple
         @click="deleteProjectFn('delete')"
@@ -36,17 +36,6 @@ import { deleteProject } from "src/api/strapi/project.js";
 
 import { deleteProjectCache } from "src/hooks/project/useProcess.js";
 import { teamStore, uiStore } from "src/hooks/global/useStore.js";
-
-const props = defineProps({
-  members: {
-    type: Array,
-    default: void 0,
-  },
-  roles: {
-    type: Array,
-    default: void 0,
-  },
-});
 
 const emit = defineEmits(["projectDeleted"]);
 const router = useRouter();

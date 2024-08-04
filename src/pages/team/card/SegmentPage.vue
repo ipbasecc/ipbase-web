@@ -57,7 +57,7 @@
           <q-splitter
             v-if="
               !teamStore.card.private ||
-              useAuths('read', ['card_document'], members, roles)
+              useAuths('read', ['card_document'])
             "
             v-model="splitterModel"
             :limits
@@ -122,7 +122,7 @@
           <q-btn dense round flat icon="close" size="sm" @click="close()" />
         </div>
         <KeepAlive>
-          <OverView wasAttached_to="card" :onlyMedia="true" :members :roles />
+          <OverView wasAttached_to="card" :onlyMedia="true" />
         </KeepAlive>
       </q-page>
     </q-page-container>
@@ -220,9 +220,6 @@ const getCard = async (card_id) => {
   }
 };
 const isIntro = ref(false);
-const members = ref();
-const roles = ref();
-const project_members = computed(() => teamStore.project?.project_members);
 watchEffect(async () => {
   if (route.name === "teams") {
     isIntro.value = true;
@@ -235,16 +232,6 @@ watchEffect(async () => {
       teamStore.project_id = res.data.id;
     }
   }
-  // if(uiStore.showMainContentList){
-  //   document_id.value = void 0
-  // }
-
-  const _cardMembers = teamStore?.card?.card_members || [];
-  members.value = uniqueById([...project_members.value, ..._cardMembers]);
-  const _projectRoles = teamStore?.project?.member_roles || [];
-  const _cardRoles = teamStore?.card?.member_roles || [];
-  // 卡片鉴权需要从project、card判定两个主体，这里直接合并以便UI中判断
-  roles.value = [..._projectRoles, ..._cardRoles];
 });
 
 const document_id = ref();

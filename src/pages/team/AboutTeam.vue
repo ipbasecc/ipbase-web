@@ -21,7 +21,7 @@
         </q-toolbar>
         <q-card-section v-if="team" class="q-space q-pa-none">
             <TipTap
-                :editable="useAuths('modify', ['team'], members, roles)"
+                :editable="useAuths('modify', ['team'])"
                 :jsonContent="team.introduce"
                 :need="'json'"
                 :square="true"
@@ -43,8 +43,6 @@ import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
 import { updateTeam } from "src/api/strapi/team.js";
 
 const team = computed(() => teamStore.team);
-const members = computed(() => teamStore.team?.members);
-const roles = computed(() => teamStore.team?.member_roles);
 const params = ref({
   data: {
     introduce: null

@@ -320,8 +320,6 @@
                       :uiOptions
                       :element="element"
                       :authBase
-                      :members="members"
-                      :roles="roles"
                       :inCard="false"
                       :isFeedback
                       :byInfo
@@ -539,7 +537,7 @@
     <template
       v-if="
         card &&
-        (useAuths('read', ['card_todogroups', 'todogroups'], members, roles) ||
+        (useAuths('read', ['card_todogroups', 'todogroups']) ||
           isCreator ||
           isPrivate)
       "
@@ -547,7 +545,7 @@
       <draggable
         :list="todogroups"
         :disabled="
-          !useAuths('order', ['card_todogroups', 'todogroups'], members, roles)
+          !useAuths('order', ['card_todogroups', 'todogroups'])
         "
         animation="300"
         :delay="30"
@@ -587,7 +585,7 @@
                 <q-popup-proxy
                   cover
                   v-if="
-                    useAuths('name', [authBase.collection], members, roles) &&
+                    useAuths('name', [authBase.collection]) &&
                     !uiStore.edittingTodo
                   "
                   @show="toggle_updateTodogroup(i)"
@@ -623,7 +621,7 @@
               </div>
               <div class="row no-wrap gap-xs hover-show transition">
                 <q-btn
-                  v-if="useAuths('delete', [authBase.collection], members, roles)"
+                  v-if="useAuths('delete', [authBase.collection])"
                   flat
                   dense
                   size="sm"
@@ -637,7 +635,7 @@
                       class="radius-sm q-pa-xs text-no-wrap"
                     >
                       <template
-                        v-if="useAuths('create', [authBase.collection], members, roles)"
+                        v-if="useAuths('create', [authBase.collection])"
                       >
                         <q-item
                           clickable
@@ -667,7 +665,7 @@
                         </q-item>
                       </template>
                       <template
-                        v-if="useAuths('delete', [authBase.collection], members, roles)"
+                        v-if="useAuths('delete', [authBase.collection])"
                       >
                         <q-separator spaced />
                         <q-item
@@ -709,7 +707,7 @@
               <draggable
                 :list="i.todos"
                 :disabled="
-                  !useAuths('order', ['card_todo', 'todo'], members, roles) &&
+                  !useAuths('order', ['card_todo', 'todo']) &&
                   !isCreator
                 "
                 animation="300"
@@ -741,15 +739,13 @@
                     :uiOptions
                     :element="element"
                     :authBase
-                    :members="members"
-                    :roles="roles"
                     @todoDeleted="todoDeleted"
                     @editing="editting_todosGroup = i.id"
                     @unediting="uneditting()"
                   />
                 </template>
                 <template
-                  v-if="useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'], members, roles)"
+                  v-if="useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])"
                   #footer
                 >
                   <div
@@ -797,7 +793,7 @@
                         <ClasslessInput
                           v-if="todo_add_ing === i.id"
                           v-model="todo_params.data.content"
-                          :auth="useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'], members, roles)"
+                          :auth="useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])"
                           :todogroup="i"
                           :baseClass="`q-space q-pa-xs`"
                           :autofocus="true"
@@ -848,12 +844,12 @@
         </template>
       </draggable>
       <template
-        v-if="useAuths('create', [authBase.collection], members, roles)"
+        v-if="useAuths('create', [authBase.collection])"
       >
         <template v-if="todogroups?.length > 0">
           <div v-if="!createTodogroup_ing" class="q-px-xs">
             <q-btn
-              v-if="useAuths('create', [authBase.collection], members, roles)"
+              v-if="useAuths('create', [authBase.collection])"
               dense
               size="sm"
               flat
@@ -1015,14 +1011,6 @@ const props = defineProps({
   asTitle: {
     type: String,
     default: "备忘",
-  },
-  members: {
-    type: Object,
-    default: void 0,
-  },
-  roles: {
-    type: Object,
-    default: void 0,
   },
   layout: {
     type: String,

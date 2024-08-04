@@ -111,7 +111,7 @@
                           <q-item-section>{{ $t('download') }}</q-item-section>
                         </q-item>
                         <q-item
-                          v-if="useAuths('files', [authBase?.collection], members, roles)"
+                          v-if="useAuths('files', [authBase?.collection])"
                           clickable
                           v-ripple
                           v-close-popup
@@ -171,7 +171,7 @@
                     <q-item-section>{{ $t('download')}}</q-item-section>
                   </q-item>
                   <q-item
-                    v-if="useAuths('files', [authBase?.collection], members, roles)"
+                    v-if="useAuths('files', [authBase?.collection])"
                     clickable
                     v-ripple
                     v-close-popup
@@ -289,8 +289,6 @@ const {
 } = toRefs(props);
 
 const by = inject("by");
-const members = inject("members");
-const roles = inject("roles");
 
 const isActivedFolder = computed(
   () => teamStore.active_folder === storage_idRef.value

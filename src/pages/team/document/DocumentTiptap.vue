@@ -1,11 +1,11 @@
 <template>
   <TipTap
-    v-if="by_info && document && members && roles"
+    v-if="by_info && document"
     :jsonContent="document.jsonContent"
     :editable="
       !teamStore.shareInfo &&
       (by_info.user_id ||
-        useAuths('jsonContent', ['card', 'card_document'], members, roles))
+        useAuths('jsonContent', ['card', 'card_document']))
     "
     :need="'json'"
     :square="true"
@@ -46,28 +46,6 @@ const props = defineProps({
 });
 
 const { document, by_info } = toRefs(props);
-watchEffect(() => {});
-
-const members = ref([]);
-const roles = ref([]);
-
-const auth = ref();
-watchEffect(() => {
-  members.value = teamStore.project?.project_members;
-  roles.value = teamStore.project?.member_roles;
-  if (by_info.value?.by === "card") {
-    const card_members_ids = teamStore.card.card_members?.map(
-      (i) => i.by_user.id
-    );
-    if (card_members_ids?.includes(userId.value)) {
-      members.value = [...members.value, ...teamStore.card.card_members];
-      roles.value = [...roles.value, ...teamStore.card.member_roles];
-    }
-  }
-  if (by_info.value?.user_id) {
-    auth.value = true;
-  }
-});
 
 let updateChatMsg = void 0;
 let jsonContent = void 0;
