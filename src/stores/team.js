@@ -58,39 +58,8 @@ export default defineStore("team", {
     isExternal: false,
     isFocusMode: false,
     shareInfo: null,
-    all_kanbans: [],
-    all_columns: [],
-    all_cards: [],
-    all_todogroups: [],
-    all_todos: [], // 拖拽todo的时候，根据sort从此数组中提取出并组合出新的todos，需要在todo有增、删、改时更新此数组
   }),
   actions: {
-    $processItem_ofAll_byKey(_action, _key, _item) {
-      const _state = `all_${_key}s`;
-      this.$patch(state => {
-        switch (_action) {
-          case 'add':
-            if (!state[_state].some(item => item.id === _item.id)) {
-              state[_state].push(_item);
-            }
-            break;
-          case 'remove':
-            state[_state] = state[_state].filter(item => item.id !== _item.id);
-            break;
-          case 'update':
-            const index = state[_state].findIndex(item => item.id === _item.id);
-            if (index !== -1) {
-              // console.log('a', state[_state][index]);
-              state[_state][index] = _item;
-              // console.log('b', state[_state][index]);
-            }
-            break;
-          // 添加其他操作的处理逻辑
-          default:
-            throw new Error(`Unknown action: ${_action}`);
-        }
-      });
-    },
     $reset() {
       this.teams = null;
       this.init = null;

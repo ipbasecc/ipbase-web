@@ -757,7 +757,6 @@ const updateCannel = () => {
 
 const emit = defineEmits(["cardChange", "cardDelete", "orderCard"]);
 const dragCard_sort = async () => {
-  return
   let params = {
     project_id: teamStore.project.id,
     kanban_id: kanban_idRef.value,
@@ -916,21 +915,13 @@ const dragHandler = (val) => {
 };
 
 // this data are all for watch, do not use it in anywhere!
-const __all_cards = computed(() => teamStore.kanban?.columns?.map(i => i.cards)?.flat(2));
-const _all_cards = computed(() => teamStore.all_cards);
 const syncStoreByColumn = () => {
-  // 如果卡片在两个分栏之间移动，被动更新的客户端，会接收到两条ws消息
-  // 执行useSyncAtom()时会以当前状态生成新的teamStore.all_cards
-  // 如果被移出卡片的分栏ws消息后到，那么生成的teamStore.all_cards就会缺少被移出的卡片
-  // 因此先保留一份原始的teamStore.all_cards，最后用来恢复teamStore.all_cards
-  const _all_cards_for_restore = _all_cards.value
   teamStore.kanban = {
     ...teamStore.kanban,
     columns: teamStore.kanban.columns?.map((column) =>
       column.id === columnRef.value.id ? columnRef.value : column
     ),
   };
-  teamStore.all_cards = _all_cards_for_restore
 };
 const pushCard = (_card) => {
   if (teamStore.kanban?.type === "kanban") {
@@ -996,6 +987,7 @@ watch(
                 $q.notify($t('cant_view_private_card_tip'));
               }
             }
+            syncStoreByColumn();
           }
         }
         if (
@@ -1011,6 +1003,7 @@ watch(
               pushCard(card);
             }
           }
+          syncStoreByColumn();
         }
         if (
           strapi.data?.is === "column" &&
@@ -1018,13 +1011,26 @@ watch(
           strapi.data.action === "orderCard"
         ) {
           const order = strapi.data.order;
+          let _all_cards = teamStore.kanban.columns?.map(column => column.cards).flat();
+
+          // 如果 从 分栏 a 中移动卡片到 分栏 b,
+          // a 的移出行为将导致 store 中 card 被移出
+          // b 重新获取 all_cards时将不会得到被移出的卡片
+          // 所以 将a中被移出的卡片添加到流浪卡片中
+          // b 在获取all_cards后检查流浪卡片是否存在，如果存在则添加到all_cards中
+          const _notExit_cards_inOrder = columnRef.value.cards.filter(i => !order.includes(i.id));
+          if(_notExit_cards_inOrder.length > 0){
+            teamStore.kanban.wandringCards = _notExit_cards_inOrder;
+          }
+          if(teamStore.kanban.wandringCards){
+            _all_cards = [..._all_cards, ...teamStore.kanban.wandringCards];
+          }
           const syncCards = async (_order) => {
             const targetIds = _order;
-            const cardMap = new Map(__all_cards.value.map(card => [card.id, card]));
-
             // 根据目标顺序，重新构建卡片数组
             columnRef.value.cards = targetIds.map(id => {
-              const card = cardMap.get(id);
+              const card = _all_cards.find(i => i.id === id);
+              console.log('ws card', card);
               if (!card) {
                 const res = findCard(id);
                 if (res?.data) {
@@ -1040,7 +1046,7 @@ watch(
             });
           }
           await syncCards(order);
-          // syncStoreByColumn();
+          syncStoreByColumn();
         }
       }
     }

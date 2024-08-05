@@ -175,7 +175,6 @@ import {
   getKanban,
   putKanbanCache,
 } from "src/hooks/project/useProcess.js";
-import { useSyncAtom } from 'src/pages/team/hooks/useSyncAtom.js'
 import LoadingBlock from "../../../components/VIewComponents/LoadingBlock.vue";
 import {
   userStore,
@@ -189,7 +188,6 @@ import ReelContainer from "./ReelContainer.vue";
 import SegmentPage from "../card/SegmentPage.vue";
 import { onKeyStroke } from "@vueuse/core";
 import { i18n } from 'src/boot/i18n.js';
-import { uniqueById } from "src/hooks/utilits.js";
 
 const $t = i18n.global.t;
 
@@ -482,28 +480,14 @@ const dragscrollend = () => {
   uiStore.draging = false;
 };
 
-const syncStoreByKanban = () => {
+const syncStoreByKanban = async () => {
   if(teamStore.card){
     teamStore.cardKanban = kanban.value;
   } else {
     teamStore.kanban = kanban.value;
   }
-  useSyncAtom(kanban.value);
+  await putKanbanCache(kanban.value);
 }
-
-const _store_kanban = computed(() => teamStore.kanban)
-const _store_cardKanban = computed(() => teamStore.cardKanban)
-watch([_store_kanban, _store_cardKanban], async () => {
-  await nextTick();
-  setTimeout(async () => {
-    if(_store_kanban.value){
-      await putKanbanCache(_store_kanban.value);
-    }
-    if(_store_cardKanban.value){
-      await putKanbanCache(_store_cardKanban.value);
-    }
-  }, 500);
-},{immediate:true,deep:true})
 
 // -----------------------------------------
 // ws data update line
@@ -552,10 +536,16 @@ watch(
           strapi.data.kanban_id === kanban_id.value &&
           strapi.data.action === "orderColumn"
         ) {
-          // console.log('strapi', strapi)
-          kanban.value.columns = strapi.data.body.order.map((i) =>
-            kanban.value.columns.find((c) => c.id === i)
+          const order = strapi.data.body.order
+          let _all_columns = kanban.value.columns
+          teamStore.kanban.wanderingColumns = kanban.value.columns.filter((i) => !order.includes(i.id));
+          if(teamStore.kanban.wanderingColumns){
+            _all_columns = [...teamStore.kanban.wanderingColumns, ..._all_columns]
+          }
+          kanban.value.columns = order.map((i) =>
+            _all_columns.find((c) => c.id === i)
           );
+          syncStoreByKanban();
         }
         if (
           strapi.data?.is === "card" &&

@@ -206,7 +206,6 @@ watch(
             let res = await findCard(strapi.data.card_id);
             if (res?.data) {
               teamStore.card.member_roles = res.data.member_roles;
-              teamStore.$processItem_ofAll_byKey('update','card', res.data);
             }
           } catch (error) {
             console.error(error);

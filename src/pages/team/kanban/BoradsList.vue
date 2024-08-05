@@ -540,7 +540,6 @@ watch(
             ...group,
             kanbans: group.kanbans.map((kanban) => kanban.id === strapi.data.kanban_id ? strapi.data.body : kanban)
           }))
-          teamStore.$processItem_ofAll_byKey('update','kanban', strapi.data.body);
         }
         if (
           strapi.data?.is === "kanban" &&
@@ -550,7 +549,6 @@ watch(
             ...group,
             kanbans: group.kanbans.filter((kanban) => kanban.id !== strapi.data.kanban_id)
           }))
-          teamStore.$processItem_ofAll_byKey('remove','kanban', strapi.data.kanban_id);
           await deleteKanbanCache(strapi.data.kanban_id);
         }
         if (
@@ -561,7 +559,6 @@ watch(
             ...group,
             kanbans: group.id === strapi.data.group_id ? [...group.kanbans, strapi.data.body] : group.kanbans
           }))
-          teamStore.$processItem_ofAll_byKey('add','kanban', strapi.data.body);
         }
         if (
           strapi.data?.is === "kanban_group" &&

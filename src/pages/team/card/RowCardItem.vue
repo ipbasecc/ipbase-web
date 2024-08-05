@@ -929,11 +929,7 @@ watch(
           };
           const index = cardRef.value.todogroups.findIndex(isSameId);
           if (index !== -1) {
-            let todos = cardRef.value.todogroups[index].todos;
-            cardRef.value.todogroups[index] = {
-              ...strapi.data.body,
-              todos: todos,
-            };
+            cardRef.value.todogroups[index] = strapi.data.body
           }
         }
         if (

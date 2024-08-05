@@ -1327,7 +1327,7 @@ const dragTodogroup_sort = async () => {
   dragging.value = false;
   const sort = todogroups.value.map((i) => i.id);
   if (card.value || _for.value === "card_todo") {
-    console.log('dragTodogroup_sort', todogroups.value)
+    // console.log('dragTodogroup_sort', todogroups.value)
     emit("todogroupSort", sort);
   }
   let params = {

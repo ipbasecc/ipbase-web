@@ -1011,11 +1011,7 @@ watch(
           };
           const index = teamStore.card.todogroups.findIndex(isSameId);
           if (index !== -1) {
-            let todos = teamStore.card.todogroups[index].todos;
-            teamStore.card.todogroups[index] = {
-              ...strapi.data.body,
-              todos: todos,
-            };
+            teamStore.card.todogroups[index] = strapi.data.body
           }
           syncCardInList();
         }

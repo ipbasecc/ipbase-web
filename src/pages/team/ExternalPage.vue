@@ -234,23 +234,6 @@ onBeforeMount(() => {
   sync_uiOptions();
 });
 
-const activedCard = computed(() => teamStore.card)
-watch([cards,activedCard], () => {
-  if(cards.value?.length > 0) {
-    teamStore.all_cards = cards.value;
-    // console.log('teamStore.all_cards', teamStore.all_cards)
-  }
-  if(activedCard.value){
-    teamStore.all_todogroups = activedCard.value?.todogroups
-      ? [...teamStore.all_todogroups, ...activedCard.value?.todogroups]
-      : teamStore.all_todogroups
-    // console.log('teamStore.all_todogroups', teamStore.all_todogroups)
-    teamStore.all_todos = teamStore.all_todogroups?.length > 0 &&
-      teamStore.all_todogroups?.filter(i => i.todos?.length > 0)?.map((j) => j.todos)
-    // console.log('teamStore.all_todos', teamStore.all_todos)
-  }
-},{immediate:true,deep:true})
-
 watch(
   mm_wsStore,
   async () => {

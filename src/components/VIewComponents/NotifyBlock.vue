@@ -34,41 +34,8 @@
   </div>
 </template>
 <script setup>
-import { computed } from "vue";
-import { teamStore, uiStore } from "src/hooks/global/useStore";
+import { uiStore } from "src/hooks/global/useStore";
 
-const todo_completed = computed(() => {
-  let percent;
-  const _completed = teamStore.all_todos?.filter((i) => i.status);
-  // console.log("all_todos _completed", _completed);
-  if (
-    !teamStore.all_todos ||
-    teamStore.all_todos?.length === 0 ||
-    !_completed
-  ) {
-    percent = 0;
-  } else {
-    percent = _completed.length / teamStore.all_todos.length;
-  }
-  return Math.round(percent * 100);
-});
-const card_completed = computed(() => {
-  let percent;
-  const _completed = teamStore.all_cards?.filter(
-    (i) => i.status === "completed"
-  );
-  // console.log("all_cards _completed", _completed);
-  if (
-    !teamStore.all_cards ||
-    teamStore.all_cards?.length === 0 ||
-    !_completed
-  ) {
-    percent = 0;
-  } else {
-    percent = _completed.length / teamStore.all_cards.length;
-  }
-  return Math.round(percent * 100);
-});
 </script>
 <style scoped>
 .container {

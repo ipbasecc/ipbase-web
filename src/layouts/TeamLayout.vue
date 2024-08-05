@@ -1,69 +1,75 @@
 <template>
-  <q-layout
-    v-if="!needLogin"
-    v-bind="$attrs"
-    view="lHr LpR lfr"
-    class="absolute-full border-negative"
-  >
-    <q-drawer
-      v-if="$q.screen.gt.xs"
-      side="left"
-      v-model="uiStore.appDrawer"
-      :breakpoint="640"
-      :width="appListWidth"
-      :class="`${
-        $q.dark.mode ? 'bg-darker' : 'bg-primary-darker text-grey-1'
-      } ${$q.screen.gt.md ? 'q-pa-sm' : 'q-pa-xs'}`"
-      class="border-right"
+  <template v-if="!initialization">
+    <q-layout
+      v-if="!needLogin"
+      v-bind="$attrs"
+      view="lHr LpR lfr"
+      class="absolute-full border-negative"
     >
-      <div class="fit column no-wrap gap-md items-center q-py-md">
-        <AppList />
-        <q-space
-          class="full-width"
-          :class="$q.platform.is.electron ? 'q-electron-drag' : ''"
-        />
-        <AppUtils />
-        <AccountMenu
-          menu_anchor="bottom end"
-          menu_self="bottom left"
-          :menu_offset="[10, 0]"
-          :avatarSize="$q.screen.gt.md ? 36 : 28"
-          show="slide-up"
-          hide="slide-down"
-          :vertical="true"
-          :revers="true"
-        />
-      </div>
-    </q-drawer>
-    <q-page-container>
-      <q-page>
-        <RouterView />
-      </q-page>
-    </q-page-container>
-    <q-footer
-      v-if="!$q.screen.gt.xs && !uiStore.hide_footer"
-      class="transparent border-top q-pa-xs"
-    >
-      <AppList />
-    </q-footer>
-  </q-layout>
-  <div v-else class="absolute-full column flex-center">
-    <q-card bordered class="focus-form" style="min-width: 16rem">
-      <q-card-section
-        class="font-xx-large font-bold-600 flex flex-center q-py-mg"
+      <q-drawer
+        v-if="$q.screen.gt.xs"
+        side="left"
+        v-model="uiStore.appDrawer"
+        :breakpoint="640"
+        :width="appListWidth"
+        :class="`${
+          $q.dark.mode ? 'bg-darker' : 'bg-primary-darker text-grey-1'
+        } ${$q.screen.gt.md ? 'q-pa-sm' : 'q-pa-xs'}`"
+        class="border-right"
       >
-        请先登陆
-      </q-card-section>
-      <q-card-section class="q-pa-sm border-top">
-        <q-btn
-          color="primary"
-          icon="login"
-          label="点此登陆"
-          class="full-width"
-          @click="toLogin()"
-        />
-      </q-card-section>
-    </q-card>
+        <div class="fit column no-wrap gap-md items-center q-py-md">
+          <AppList />
+          <q-space
+            class="full-width"
+            :class="$q.platform.is.electron ? 'q-electron-drag' : ''"
+          />
+          {{ initialization }}
+          <AppUtils />
+          <AccountMenu
+            menu_anchor="bottom end"
+            menu_self="bottom left"
+            :menu_offset="[10, 0]"
+            :avatarSize="$q.screen.gt.md ? 36 : 28"
+            show="slide-up"
+            hide="slide-down"
+            :vertical="true"
+            :revers="true"
+          />
+        </div>
+      </q-drawer>
+      <q-page-container>
+        <q-page>
+          <RouterView />
+        </q-page>
+      </q-page-container>
+      <q-footer
+        v-if="!$q.screen.gt.xs && !uiStore.hide_footer"
+        class="transparent border-top q-pa-xs"
+      >
+        <AppList />
+      </q-footer>
+    </q-layout>
+    <div v-else class="absolute-full column flex-center">
+      <q-card bordered class="focus-form" style="min-width: 16rem">
+        <q-card-section
+          class="font-xx-large font-bold-600 flex flex-center q-py-mg"
+        >
+          请先登陆
+        </q-card-section>
+        <q-card-section class="q-pa-sm border-top">
+          <q-btn
+            color="primary"
+            icon="login"
+            label="点此登陆"
+            class="full-width"
+            @click="toLogin()"
+          />
+        </q-card-section>
+      </q-card>
+    </div>
+  </template>
+  <div v-else class="absolute-full" :style="$q.screen.gt.md ? 'padding: 10vh 10vw' : 'padding: 4rem'">
+    <InitializationUser class="fit" />
   </div>
   <q-dialog v-model="connect_refused" persistent>
     <q-card bordered>
@@ -96,6 +102,7 @@ import useWatcher from "src/pages/team/wsWatcher.js";
 import { _ws, closeWs } from "src/pages/team/ws.js";
 import AppUtils from "src/components/VIewComponents/AppUtils.vue";
 import {clearLocalDB} from "pages/team/hooks/useUser";
+import InitializationUser from 'src/pages/team/settings/initialization/InitializationUser.vue'
 
 const $q = useQuasar();
 
@@ -106,15 +113,18 @@ watchEffect(() => {
   }
 });
 
+const initialization = ref(false);
 const todogroups = ref();
 const init = async () => {
   const process = (res) => {
     teamStore.init = res.data;
-    teamStore.team = res.data?.default_team;
-    teamStore.mm_team = res.data?.default_team?.mm_team;
+    if(res.data?.default_team){
+      teamStore.team = res.data?.default_team;
+      teamStore.mm_team = res.data?.default_team?.mm_team;
+    }
     teamStore.need_refecth_projects = false;
-
     todogroups.value = res.data.todogroups;
+    initialization.value = res.data.initialization;
   };
   const cache = await localforage.getItem("init");
   if (cache) {
