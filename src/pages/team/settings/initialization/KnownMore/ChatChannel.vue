@@ -1,0 +1,29 @@
+<template>
+    <q-carousel
+      animated
+      v-model="slide"
+      arrows
+      navigation
+      infinite
+      class="fit"
+    >
+      <q-carousel-slide :name="1" img-src="public/images/Channel.png">
+        <div class="absolute-bottom q-pa-xl column flex-center blur-xs">
+          <div class="text-h2">独立的讨论频道</div>
+        </div>
+      </q-carousel-slide>
+      <q-carousel-slide :name="2" img-src="public/images/Project_chat.png">
+        <div class="absolute-bottom q-pa-xl column flex-center blur-xs">
+          <div class="text-h2">与项目关联的讨论频道</div>
+        </div>
+      </q-carousel-slide>
+    </q-carousel>
+  </template>
+  
+  <script setup>
+  import { ref } from 'vue'
+  const slide = ref(1)
+  </script>
+  
+  <style scoped>
+  </style>

@@ -59,6 +59,11 @@
 import { ref, computed } from 'vue'
 import { teamStore } from "src/hooks/global/useStore.js";
 import { createChannel } from "src/pages/team/hooks/useCreateChannel.js";
+import { useQuasar } from 'quasar'
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
+const $q = useQuasar()
 
 const emit = defineEmits(['closePopup'])
 const loading = ref(false);
@@ -76,7 +81,21 @@ const CHANNEL_TYPES = [
 const findIconByType = (type) => {
     return CHANNEL_TYPES.find(item => item.val === type)?.icon || 'public'
 }
+let lossTeamID_count = 0
 const createChannelFn = async () => {
+  if(!createChannelparams.value.team_id) {
+    lossTeamID_count++
+    if(lossTeamID_count > 3) {
+      lossTeamID_count = 0;
+      $q.notify({
+        message: $t('team_id_cant_lose'),
+        color: 'negative',
+        position: 'top',
+        timeout: 2000,
+      })
+    }
+    return
+  };
   loading.value = true;
 
   await createChannel(createChannelparams.value);

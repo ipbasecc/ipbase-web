@@ -1,99 +1,85 @@
 <template>
     <div class="row q-space gap-md">
-        <div class="column no-wrap gap-sm justify-end">
-            <span class="font-large">您可以在团队中创建讨论频道、协作项目！</span>
-            <q-form
-                v-if="initMode === 'create_team'"
-                @submit="createTeam()"
-                class="q-gutter-md"
-            >
-                <q-input
-                    filled
-                    v-model="team.name"
-                    label="Your name *"
-                    hint="Name and surname"
-                    lazy-rules
-                    :rules="[ val => val && val.length > 0 || 'Please type something']"
-                />
+        <div class="flex flex-center">
+            <div class="column no-wrap gap-sm">
+                <span class="font-large text-h1">团队</span>
+                <span class="font-large">您可以在团队中创建讨论频道、协作项目！</span>
 
-                <q-input
-                    filled
-                    type="textarea"
-                    v-model="team.introduce"
-                    label="introduce *"
-                    lazy-rules
-                    :rules="[
-                    val => val !== null && val !== '' || 'Please type introduce'
-                    ]"
-                />
-
-                <template v-for="i in modes" :key="i.value">
-                    <q-radio v-model="team.config.mode" :val="i.value" :label="$t(i.label)" @update:model-value="syncParams()">
-                    <q-tooltip v-if="i.value === 'toOne'">
-                        {{ $t('team_toOne_mode_tip') }}
-                    </q-tooltip>
-                    </q-radio>
+                <q-card v-if="teamStore?.team" bordered class="q-mt-md">
+                    <q-card-section class="q-px-lg">
+                        <div class="text-h6">您已完成了团队初始化</div>
+                        <div class="text-x-large">现在可以进行下一步了</div>
+                    </q-card-section>
+                </q-card>
+                <template v-else>
+                    <template v-if="initMode === 'create_team'">
+                        <CreateTeam
+                            ref="createTeamRef"
+                            :hideHeader="true"
+                            :hideFooter="true"
+                            @completedCreate=completedCreate
+                        />
+                        <div>
+                            <q-btn label="创建团队" size="lg" padding="sm xl" type="submit" color="primary" @click="createTeamRef.create()"/>
+                            <q-btn label="加入团队" size="lg" padding="sm xl" color="primary" flat class="q-ml-sm" @click="initMode = 'join_team'" />
+                        </div>
+                    </template>
+                    <q-form
+                        v-if="initMode === 'join_team'"
+                        @submit="joinTeam()"
+                        class="q-gutter-md"
+                    >
+                        <q-input
+                            filled
+                            square
+                            v-model="invite_link"
+                            label="邀请连接"
+                            lazy-rules
+                            :rules="[ val => val && isValidUrl(val) || '请输入正确的邀请连接']"
+                        />
+                        <div>
+                            <q-btn label="加入团队" size="lg" padding="sm xl" type="submit" color="primary" />
+                            <q-btn label="创建团队" size="lg" padding="sm xl" color="primary" flat class="q-ml-sm" @click="initMode = 'create_team'" />
+                        </div>
+                    </q-form>
                 </template>
-
-                <div>
-                    <q-btn label="创建团队" size="lg" padding="sm xl" type="submit" color="primary"/>
-                    <q-btn label="加入团队" size="lg" padding="sm xl" color="primary" flat class="q-ml-sm" @click="initMode = 'join_team'" />
-                </div>
-            </q-form>
-            <q-form
-                v-if="initMode === 'join_team'"
-                @submit="joinTeam()"
-                class="q-gutter-md"
-            >
-                <q-input
-                    filled
-                    v-model="team.name"
-                    label="Your name *"
-                    hint="Name and surname"
-                    lazy-rules
-                    :rules="[ val => val && val.length > 0 || 'Please type something']"
-                />
-                <div>
-                    <q-btn label="加入团队" size="lg" padding="sm xl" type="submit" color="primary" />
-                    <q-btn label="创建团队" size="lg" padding="sm xl" color="primary" flat class="q-ml-sm" @click="initMode = 'create_team'" />
-                </div>
-            </q-form>
+            </div>
         </div>
-        <div class="column flex-center col">
-            <div class="text-h5 q-mb-md">Create a new user</div>
-            <div class="text-subtitle1">This is the first step</div>
+        <div class="column flex-center col relative-position">
+            <q-img
+                src="public/images/Team.png"
+                spinner-color="primary"
+                spinner-size="82px"
+                class="absolute-full"
+            />
         </div>
     </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { teamStore } from "src/hooks/global/useStore";
+import CreateTeam from '../../components/CreateTeam.vue'
+import { isValidUrl, parseUrl } from 'src/hooks/utilits.js'
+import { join } from 'src/pages/team/hooks/useInvite.js'
 const emit = defineEmits(['teamInitialized'])
 
-const team = ref({
-    name: '',
-    introduce: '',
-    config: {
-        mode: 'toMany',
-        disabled: []
-    }
-})
-const modes = [
-  {
-    label: "toManyMode_team",
-    value: "toMany",
-  },
-  {
-    label: "toOneMode_team",
-    value: "toOne",
-  },
-]
+const createTeamRef = ref(null);
+const invite_link = ref('');
 const initMode = ref('create_team');
-const createTeam = async () => {    
-    emit('teamInitialized')
+const completedCreate = async () => {
+   emit('teamInitialized', {
+    create: val
+   })
 }
-const joinTeam = async () => {    
-    emit('teamInitialized')
+const joinTeam = async () => {
+    if(isValidUrl(invite_link.value)){
+        const { team_id, channel_id, project_id, invite_code } = parseUrl(invite_link.value)
+        const Msg = await join(team_id, channel_id, project_id, invite_code)
+        emit('teamInitialized', {
+            join: Msg
+        })
+    }
 }
 </script>
 

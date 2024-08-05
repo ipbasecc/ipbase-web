@@ -154,3 +154,16 @@ export async function modifyConfig(params) {
     return error;
   }
 }
+
+
+//更新用户数据
+export async function updateUser(user_id,params) {
+  try {
+    const res = await api.put(`users/${user_id}`, params);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}

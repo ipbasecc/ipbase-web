@@ -616,4 +616,12 @@ export default {
   team_toOne_mode_tip: '禁用：新建项目、频道、非相关卡片',
   team_disableProjects_tip: '项目功能将不可用',
   team_disableChanel_tip: '频道功能将不可用',
+
+  team_id_cant_lose: '团队ID参数不能缺少',
+  initialization_step3_label_1: '运营模式：团队协作 VS 一对一服务',
+  initialization_step3_label_2: '讨论频道',
+  initialization_step3_label_3: '项目管理',
+  initialization_step3_label_4: '“对象型”讨论',
+  initialization_step3_label_5: '数据共享与反馈收集',
+  initialization_step3_label_6: '有机整合“团队”与“个人”',
 };

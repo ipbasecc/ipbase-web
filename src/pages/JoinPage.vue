@@ -69,7 +69,7 @@
             color="primary"
             class="full-width"
             v-close-popup
-            @click="join()"
+            @click="joinFn()"
           />
         </q-card-section>
       </template>
@@ -89,6 +89,7 @@ import {
 import { ref, watch } from "vue";
 import localforage from "localforage";
 import { computed } from "vue";
+import { join, get_inviteInfo } from 'src/pages/team/hooks/useInvite.js'
 
 const route = useRoute();
 const router = useRouter();
@@ -104,48 +105,21 @@ const jwt = computed(() => localStorage.getItem("jwt"));
 
 const errorMsg = ref();
 const inviteInfo = ref();
-const get_inviteInfo = async () => {
+const get_inviteInfoFn = async () => {
   if (!jwt.value) {
     return;
   }
-  try {
-    let res;
-    if (team_id) {
-      res = await visitTeamInvite(team_id, invite_code);
-    }
-    if (channel_id) {
-      res = await visitChannelInvite(channel_id, invite_code);
-    }
-    if (project_id) {
-      res = await visitInvite(project_id, invite_code);
-    }
-    if (res) {
-      console.log("res.data?.props", res.data?.props);
-      if (res.data?.props === "isCreator") {
-        errorMsg.value = res.data?.message;
-      } else if (res.data?.error) {
-        let __ = res.data?.error?.name;
-        if (__ === "NotFoundError") {
-          errorMsg.value = `未找到与该邀请码匹配的${target.value}，请检查邀请链接是否完整、有效。`;
-        } else {
-          errorMsg.value = res.data?.error?.message;
-        }
-      } else {
-        inviteInfo.value = res.data;
-      }
-      setTimeout(() => {
-        // join();
-      }, 1000);
-    }
-  } catch (error) {
-    console.log("error", error);
+  let { errorMsg, inviteInfo } = await get_inviteInfo(team_id, channel_id, project_id, invite_code, target.value);
+  if(res){
+    errorMsg.value = errorMsg;
+    inviteInfo.value = inviteInfo;
   }
 };
 watch(
   jwt,
   () => {
     if (jwt.value) {
-      get_inviteInfo();
+      get_inviteInfoFn();
     }
   },
   { immediate: true, deep: false }
@@ -161,23 +135,10 @@ const getMe = async () => {
 getMe();
 
 const joinInfo = ref();
-const join = async () => {
-  let res;
-  if (team_id) {
-    res = await acceptTeamInvite(team_id, invite_code);
-  }
-  if (channel_id) {
-    res = await acceptChannelInvite(channel_id, invite_code);
-  }
-  if (project_id) {
-    res = await acceptInvite(project_id, invite_code);
-  }
-  if (res?.data) {
-    // 此时管理人员应该收到ws消息，有人申请加入，
-    // 但是此刻成员还没有正式进入项目/团队，因此不能在前端发送ws消息，此处消息发送由后端完成
-    setTimeout(() => {
-      joinInfo.value = res.data.message;
-    }, 200);
+const joinFn = async () => {
+  let res = await join(team_id, channel_id, project_id, invite_code);
+  if(res){
+    joinInfo.value = res.message;
   }
 };
 

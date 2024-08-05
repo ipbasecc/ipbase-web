@@ -264,12 +264,8 @@ export function objectsIsEqual(obj1, obj2) {
 }
 
 export function isValidUrl(string) {
-  try {
-    new URL(string);
-    return true;
-  } catch (err) {
-    return false;
-  }
+  const pattern = /^(https?:\/\/)?[\w-]+(\.[\w-]+)+[/#?]?.*$/;
+  return pattern.test(string);
 }
 export function isValidHttpUrl(string) {
   try {
@@ -278,4 +274,18 @@ export function isValidHttpUrl(string) {
   } catch (err) {
     return false;
   }
+}
+export function parseTeamParams(url) {
+  // 创建一个URL对象
+  const parsedUrl = new URL(url);
+  // 获取查询参数
+  return parsedUrl;
+}
+export function parseUrl(url) {
+  const urlParams = new URLSearchParams(new URL(url).search);
+  const params = {};
+  for (const [key, value] of urlParams.entries()) {
+      params[key] = value;
+  }
+  return params;
 }
