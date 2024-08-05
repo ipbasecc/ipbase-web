@@ -89,7 +89,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watchEffect, onUnmounted, nextTick } from "vue";
+import { ref, onMounted, computed, watchEffect, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import AccountMenu from "../pages/team/components/AccountMenu.vue";
 import AppList from "components/VIewComponents/AppList.vue";

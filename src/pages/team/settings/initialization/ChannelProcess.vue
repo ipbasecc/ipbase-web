@@ -21,7 +21,7 @@
     </div>
     <div class="column flex-center col relative-position">
         <q-img
-            src="public/images/Channel.png"
+            src="https://airspace.oss-cn-shanghai.aliyuncs.com/ipbase/public/images/Channel.png"
             spinner-color="primary"
             spinner-size="82px"
             class="absolute-full"

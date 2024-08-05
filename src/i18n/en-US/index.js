@@ -615,5 +615,14 @@ export default {
   no_disable_teamFunc: 'No disabled functions',
   team_toOne_mode_tip: 'Disabled: Creating new projects, channels, and unrelated cards',
   team_disableProjects_tip: 'The project function will be unavailable',
-  team_disableChanel_tip: 'The channel function will be unavailable'
+  team_disableChanel_tip: 'The channel function will be unavailable',
+
+  team_id_cant_lose: 'Team ID parameter cannot be missing',
+  initialization_step3_label_1: 'Operation mode: Team collaboration VS One-on-one service',
+  initialization_step3_label_2: 'Discussion Channel',
+  initialization_step3_label_3: 'Project Management',
+  initialization_step3_label_4: '"Object-oriented" Discussion',
+  initialization_step3_label_5: 'Data Sharing and Feedback Collection',
+  initialization_step3_label_6: 'Organic Integration of "Team" and "Individual"'
+  
 }

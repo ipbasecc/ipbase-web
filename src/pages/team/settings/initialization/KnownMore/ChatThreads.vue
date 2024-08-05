@@ -7,7 +7,7 @@
       infinite
       class="fit"
     >
-      <q-carousel-slide :name="1" img-src="public/images/Project_atomChat.png">
+      <q-carousel-slide :name="1" img-src="https://airspace.oss-cn-shanghai.aliyuncs.com/ipbase/public/images/Project_atomChat.png">
         <div class="absolute-bottom q-pa-xl column flex-center blur-xs">
           <div class="text-h2">“对象型”讨论</div>
           <div class="text-subtitle1">“就事说事”讨论互不干扰</div>

@@ -7,12 +7,12 @@
       infinite
       class="fit"
     >
-      <q-carousel-slide :name="1" img-src="public/images/Channel.png">
+      <q-carousel-slide :name="1" img-src="https://airspace.oss-cn-shanghai.aliyuncs.com/ipbase/public/images/Channel.png">
         <div class="absolute-bottom q-pa-xl column flex-center blur-xs">
           <div class="text-h2">独立的讨论频道</div>
         </div>
       </q-carousel-slide>
-      <q-carousel-slide :name="2" img-src="public/images/Project_chat.png">
+      <q-carousel-slide :name="2" img-src="https://airspace.oss-cn-shanghai.aliyuncs.com/ipbase/public/images/Project_chat.png">
         <div class="absolute-bottom q-pa-xl column flex-center blur-xs">
           <div class="text-h2">与项目关联的讨论频道</div>
         </div>

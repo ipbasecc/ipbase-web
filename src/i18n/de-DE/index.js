@@ -615,6 +615,14 @@ export default {
   no_disable_teamFunc: 'Keine deaktivierten Funktionen',
   team_toOne_mode_tip: 'Deaktiviert: Neue Projekte, Kanäle und nicht zugeordnete Karten erstellen',
   team_disableProjects_tip: 'Die Projektfunktion ist nicht verfügbar',
-  team_disableChanel_tip: 'Die Kanalfunktion ist nicht verfügbar'
+  team_disableChanel_tip: 'Die Kanalfunktion ist nicht verfügbar',
+
+  team_id_cant_lose: 'Team-ID-Parameter darf nicht fehlen',
+  initialization_step3_label_1: 'Betriebsmodus: Teamarbeit VS Einzelservice',
+  initialization_step3_label_2: 'Diskussionskanal',
+  initialization_step3_label_3: 'Projektmanagement',
+  initialization_step3_label_4: '"Objektorientierte" Diskussion',
+  initialization_step3_label_5: 'Datenfreigabe und Feedback-Sammlung',
+  initialization_step3_label_6: 'Organische Integration von "Team" und "Individuum"'
 
 };

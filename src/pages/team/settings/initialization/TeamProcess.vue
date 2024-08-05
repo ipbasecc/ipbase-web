@@ -47,7 +47,7 @@
         </div>
         <div class="column flex-center col relative-position">
             <q-img
-                src="public/images/Team.png"
+                src="https://airspace.oss-cn-shanghai.aliyuncs.com/ipbase/public/images/Team.png"
                 spinner-color="primary"
                 spinner-size="82px"
                 class="absolute-full"
