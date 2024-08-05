@@ -263,7 +263,7 @@ const isChanged = computed(() => share_code.value?.code !== user_shareCode.value
   || modulesChanged.value
 )
 const genShareUrl = (code) => {
-  share_url.value = `${process.env.APP_URI}${is.value}/share/${share_item.value?.id}?share_code=${code}&share_by=${userStore.userId}`;
+  share_url.value = `${process.env.APP_URI}/${is.value}/share/${share_item.value?.id}?share_code=${code}&share_by=${userStore.userId}`;
 };
 const share_url = ref();
 const createShare = async (share_code) => {
