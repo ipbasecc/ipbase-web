@@ -26,7 +26,6 @@
         </q-list>
       </q-menu>
     </q-btn>
-    <q-btn v-if="false" flat dense round label="ws" @click="closeWs()" />
     <q-btn
       v-if="is_development"
       flat
@@ -77,7 +76,6 @@
 </template>
 <script setup>
 import { ref, computed, onBeforeMount } from "vue";
-import { closeWs } from "src/pages/team/ws.js";
 import { useI18n } from "vue-i18n";
 import AppManual from "src/components/VIewComponents/AppManual.vue";
 import AppShortcut from "src/components/VIewComponents/AppShortcut.vue";

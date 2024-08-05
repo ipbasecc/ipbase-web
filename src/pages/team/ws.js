@@ -14,10 +14,17 @@ const getPoint = async () => {
   }
   wsLink = ws_api_endpoint
 }
-export function _ws() {
+export async function _ws() {
   // console.log("ws token",token);
   if (!token) return;
   function reConnect() {
+    // 检查WebSocket是否处于CONNECTING状态
+    if (ws && ws.readyState === WebSocket.CONNECTING) {
+      // 如果处于CONNECTING状态，则放弃并关闭连接
+      console.log("WebSocket is already connecting. Aborting and closing the connection.");
+      ws.close();
+      ws = void 0;
+    }
     reConnectCount++;
     token = localStorage.getItem("mmtoken");
     if (!token) return
@@ -93,9 +100,8 @@ export function _ws() {
       }
     });
   }
-  getPoint().then(() => {
-    wsConnect();
-  })
+  await getPoint();
+  wsConnect();
 }
 
 // 定义一个closeWs函数，用来关闭ws连接
