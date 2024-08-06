@@ -633,4 +633,13 @@ export default {
   userStatus_byTeam_blocked: 'You have been blocked by the current team and cannot view team content.',
   userStatus_byTeam_unconfirmed: 'Please wait for the review by the administrative staff.',
   userStatus_byTeam_tip: 'You can switch or create a team through the button in the upper left or lower right corner of the window.',
+
+  onboarding_step1_title: 'Team Initialization',
+  onboarding_step1_caption: 'Create or join a team',
+  onboarding_step2_title: 'Channels',
+  onboarding_step2_caption: 'Understand channels or add new ones',
+  onboarding_step3_title: 'Discover All Features in 30 Seconds',
+  onboarding_step4_caption: 'Quickly learn about platform features',
+  onboarding_completed_tip: 'Congratulations, initialization is complete!',
+  onboarding_completed_btn_label: 'Start your team journey now',
 }

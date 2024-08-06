@@ -633,4 +633,13 @@ export default {
   userStatus_byTeam_blocked: 'Sie wurden vom aktuellen Team blockiert und können den Teaminhalt nicht sehen.',
   userStatus_byTeam_unconfirmed: 'Bitte warten Sie auf die Überprüfung durch das Verwaltungspersonal.',
   userStatus_byTeam_tip: 'Sie können über die Schaltfläche in der oberen linken oder unteren rechten Ecke des Fensters ein Team wechseln oder erstellen.',
+
+  onboarding_step1_title: 'Team-Initialisierung',
+  onboarding_step1_caption: 'Ein Team erstellen oder beitreten',
+  onboarding_step2_title: 'Kanäle',
+  onboarding_step2_caption: 'Kanäle verstehen oder neue hinzufügen',
+  onboarding_step3_title: 'Alle Funktionen in 30 Sekunden entdecken',
+  onboarding_step4_caption: 'Schnelle Einführung in die Plattform-Funktionen',
+  onboarding_completed_tip: 'Glückwunsch, die Initialisierung ist abgeschlossen!',
+  onboarding_completed_btn_label: 'Starte jetzt deine Team-Reise'
 };

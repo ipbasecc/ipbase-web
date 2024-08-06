@@ -128,7 +128,7 @@
 </template>
 
 <script setup>
-import {ref, watch, computed, onBeforeMount, reactive} from "vue";
+import {ref, watch, computed, onBeforeMount, reactive, provide, watchEffect} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useMouse } from '@vueuse/core'
 
@@ -145,13 +145,20 @@ import MemberManager from "src/pages/team/settings/MemberManager.vue";
 import ProjectHeader from "./components/ProjectHeader.vue";
 
 import { uiStore, teamStore } from "src/hooks/global/useStore.js";
+import { findRoles } from 'src/pages/team/hooks/useMember.js'
 import SideNavigation from "pages/team/components/SideNavigation.vue";
 import TeamList from "pages/team/components/TeamList.vue";
 
 const route = useRoute();
 const router = useRouter();
 
-const team = computed(() => teamStore.team);
+const isExternal = ref();
+watchEffect(() => {
+  const team = computed(() => teamStore.team);
+  const user_roles = computed(() => findRoles(team.value?.members, team.value?.member_roles));
+  console.log('user_roles',user_roles.value);
+  isExternal.value = user_roles.value?.includes('external')
+})
 
 const rightDrawer = ref();
 const toggleRightpannel = (val) => {
@@ -237,6 +244,8 @@ watch(
   },
   { immediate: true, deep: true }
 );
+
+provide('isExternal', isExternal.value)
 </script>
 
 <style lang="scss" scoped></style>

@@ -633,4 +633,13 @@ export default {
   userStatus_byTeam_blocked: '您已被当前团队屏蔽，无法查看团队内容',
   userStatus_byTeam_unconfirmed: '请等待管理人员的审核',
   userStatus_byTeam_tip: '您可以通过窗口左上角或右下角按钮切换或创建团队',
+  
+  onboarding_step1_title: '团队初始化',
+  onboarding_step1_caption: '创建、或加入一个团队',
+  onboarding_step2_title: '频道',
+  onboarding_step2_caption: '了解频道，或新增频道',
+  onboarding_step3_title: '30秒通关',
+  onboarding_step4_caption: '快速了解平台功能',
+  onboarding_completed_tip: '恭喜，初始化完成 ！',
+  onboarding_completed_btn_label: '立刻开启团队之旅',
 };

@@ -10,8 +10,8 @@
   >
     <q-step
       :name="1"
-      title="团队初始化"
-      caption="创建、或加入一个团队"
+      :title="$t('onboarding_step1_title')"
+      :caption="$t('onboarding_step1_caption')"
       icon="settings"
       :done="teamStore.team && step > 1"
     >
@@ -20,8 +20,8 @@
 
     <q-step
       :name="2"
-      title="频道"
-      caption="了解频道，或新增频道"
+      :title="$t('onboarding_step2_title')"
+      :caption="$t('onboarding_step2_caption')"
       icon="forum"
       :done="step > 2"
     >
@@ -30,8 +30,8 @@
 
     <q-step
       :name="3"
-      title="30秒通关"
-      caption="快速了解平台功能"
+      :title="$t('onboarding_step3_title')"
+      :caption="$t('onboarding_step3_caption')"
       icon="mdi-developer-board"
       :done="step > 3"
     >
@@ -45,8 +45,8 @@
           <q-btn v-if="step > 1" flat color="primary" @click="back()" label="上一步" class="q-ml-md" />
         <template v-if="step > 2 && Initialized">
           <q-space />
-          <span class="q-mr-lg op-6">恭喜，初始化完成 ！</span>
-          <q-btn color="primary" padding="sm lg" label="立刻开启团队之旅" @click="complateInit()" />
+          <span class="q-mr-lg op-6">{{$t('onboarding_completed_tip')}}</span>
+          <q-btn color="primary" padding="sm lg" :label="$t('onboarding_completed_btn_label')" @click="complateInit()" />
         </template>
       </div>
       </q-stepper-navigation>
