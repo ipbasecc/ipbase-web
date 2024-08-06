@@ -4,7 +4,6 @@
             <q-space />
             <q-btn flat round dense icon="close" v-close-popup/>
         </q-toolbar>
-        {{ server }}
         <q-card-section>
             <div class="row q-pa-lg justify-around">
                 <div v-for="i in packages" :key="i.Platform" class="column no-wrap items-center gap-md q-pa-xl">
@@ -14,14 +13,14 @@
                         <div v-for="j in i.formats" :key="j.Format" class="row no-wrap q-mb-sm">
                             <q-chip square :label="`${j.Format} :`" class="q-px-sm q-py-none" />
                             <div class="row" style="max-width: 24rem;">
-                                <q-chip
+                                <q-btn
                                     v-for="k in j.versions"
                                     :key="k.Version"
-                                    square :label="k.Version"
-                                    icon-right="mdi-download"
+                                    dense
                                     color="primary"
-                                    class="cursor-pointer q-py-none"
-                                    @click="downloadFile(k.url)"
+                                    icon-right="mdi-download"
+                                    :label="k.Version"
+                                    @click="downloadFile(k.url)" 
                                 />
                             </div>
                         </div>
@@ -44,7 +43,7 @@ $server().then((res) => {
 })
 const downloadFile = (val) => {
     const urlObj = new URL(val);
-    const fileName = urlObj.pathname.split('/').pop();
+    const fileName = urlObj.pathname.split('/').pop();    
     FileSaver.saveAs(val, fileName);
 };
 </script>
