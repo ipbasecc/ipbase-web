@@ -11,17 +11,21 @@
                     <span class="text-h4 q-mb-xl">{{ i.Platform }}</span>
                     <div v-if="i.formats?.length > 0">
                         <div v-for="j in i.formats" :key="j.Format" class="row no-wrap q-mb-sm">
-                            <q-chip square :label="`${j.Format} :`" class="q-px-sm q-py-none" />
+                            <q-chip square :label="`${j.Format} :`" class="q-px-sm q-py-none" style="min-width: 6rem;" />
                             <div class="row" style="max-width: 24rem;">
                                 <q-btn
                                     v-for="k in j.versions"
                                     :key="k.Version"
                                     dense
+                                    padding="none md"
                                     color="primary"
-                                    icon-right="mdi-download"
-                                    :label="k.Version"
                                     @click="downloadFile(k.url)" 
-                                />
+                                >
+                                    <div class="row no-wrap gap-sm items-center">
+                                        <span>{{ k.Version }}</span>
+                                        <q-icon name="mdi-download" size="sm"/>
+                                    </div>
+                                </q-btn>
                             </div>
                         </div>
                     </div>
