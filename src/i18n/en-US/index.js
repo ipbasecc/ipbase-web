@@ -273,6 +273,8 @@ export default {
   copy_error: 'copy error, please copy it manualy',
   create_team: 'create team',
   team_name: 'team title',
+  team_introduce: 'Team Introduce',
+  operation_mode: 'Operation Mode',
   update_channel: 'update channel',
   update: 'update',
   double_click_change_name: 'double click to change name',
@@ -623,6 +625,12 @@ export default {
   initialization_step3_label_3: 'Project Management',
   initialization_step3_label_4: '"Object-oriented" Discussion',
   initialization_step3_label_5: 'Data Sharing and Feedback Collection',
-  initialization_step3_label_6: 'Organic Integration of "Team" and "Individual"'
+  initialization_step3_label_6: 'Organic Integration of "Team" and "Individual"',
   
+  "town-square": 'Business Discussion',
+  "off-topic": 'Lounge Area',
+
+  userStatus_byTeam_blocked: 'You have been blocked by the current team and cannot view team content.',
+  userStatus_byTeam_unconfirmed: 'Please wait for the review by the administrative staff.',
+  userStatus_byTeam_tip: 'You can switch or create a team through the button in the upper left or lower right corner of the window.',
 }

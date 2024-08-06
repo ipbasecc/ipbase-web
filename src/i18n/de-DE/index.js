@@ -273,6 +273,8 @@ export default {
   copy_error: 'Fehler beim Kopieren, bitte kopieren Sie manuell',
   create_team: 'Team erstellen',
   team_name: 'Teamname',
+  team_introduce: 'Teamvorstellung',
+  operation_mode: 'Betriebsmodus',
   update_channel: 'Kanal aktualisieren',
   update: 'Aktualisieren',
   double_click_change_name: 'Doppelklicken zum Umbenennen',
@@ -623,6 +625,12 @@ export default {
   initialization_step3_label_3: 'Projektmanagement',
   initialization_step3_label_4: '"Objektorientierte" Diskussion',
   initialization_step3_label_5: 'Datenfreigabe und Feedback-Sammlung',
-  initialization_step3_label_6: 'Organische Integration von "Team" und "Individuum"'
+  initialization_step3_label_6: 'Organische Integration von "Team" und "Individuum"',
+  
+  "town-square": 'Geschäftsbesprechung',
+  "off-topic": 'Plauderbereich',
 
+  userStatus_byTeam_blocked: 'Sie wurden vom aktuellen Team blockiert und können den Teaminhalt nicht sehen.',
+  userStatus_byTeam_unconfirmed: 'Bitte warten Sie auf die Überprüfung durch das Verwaltungspersonal.',
+  userStatus_byTeam_tip: 'Sie können über die Schaltfläche in der oberen linken oder unteren rechten Ecke des Fensters ein Team wechseln oder erstellen.',
 };

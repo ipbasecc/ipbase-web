@@ -1,6 +1,6 @@
 <template>
     <q-card bordered style="min-width: 24rem;">
-        <q-card-section class="row no-wrap q-pa-sm border-bottom">
+        <q-card-section v-if="!hiddeHeader" class="row no-wrap q-pa-sm border-bottom">
             <div class="font-larger q-ml-sm">{{ $t('create_chat_channel') }}</div>
             <q-space />
             <q-btn icon="close" flat round dense size="sm" v-close-popup />
@@ -62,16 +62,24 @@ import { createChannel } from "src/pages/team/hooks/useCreateChannel.js";
 import { useQuasar } from 'quasar'
 import { i18n } from 'src/boot/i18n.js';
 
+const props = defineProps({
+  hiddeHeader: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 const $t = i18n.global.t;
 const $q = useQuasar()
 
-const emit = defineEmits(['closePopup'])
+const emit = defineEmits(['closePopup', 'created'])
 const loading = ref(false);
 const createChannelparams = ref({
   team_id: computed(() => teamStore.team?.id),
   data: {
     name: "",
     type: "P",
+    purpose: ""
   },
 });
 const CHANNEL_TYPES = [
@@ -98,11 +106,17 @@ const createChannelFn = async () => {
   };
   loading.value = true;
 
-  await createChannel(createChannelparams.value);
+  const res = await createChannel(createChannelparams.value);
 
   createChannelparams.value.data.name = "";
+  createChannelparams.value.data.purpose = "";
   loading.value = false;
 
+  console.log('res', res);
+  
+  if(res){
+    emit('created', res)
+  }
   closePopup();
 };
 const closePopup = () => {

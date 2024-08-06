@@ -155,13 +155,34 @@
                     <TeamMenu :team />
                   </q-btn>
                   <q-space />
-                  <q-btn dense size="sm" flat round icon="add">
+                  <q-btn v-if="!userStatus_byTeam" dense size="sm" flat round icon="add">
                     <TeamAddmenu />
                   </q-btn>
                 </div>
               </q-item-section>
             </q-item>
-            <SideNavigation
+            <div v-if="userStatus_byTeam" class="q-px-md full-width">
+              <q-card class="bg-purple" bordered>
+                <q-card-section>
+                  <div class="text-h4">
+                    {{ userStatus_byTeam === 'blocked' ? $t('field_blocked')
+                      : userStatus_byTeam === 'unconfirmed' ? $t('field_unconfirmed') : ''}}
+                  </div>
+                  <div class="q-mt-sm">
+                    <template v-if="userStatus_byTeam === 'blocked'">
+                      {{ $t("userStatus_byTeam_blocked") }}
+                    </template>
+                    <template v-else-if="userStatus_byTeam === 'unconfirmed'">
+                      {{ $t("userStatus_byTeam_unconfirmed") }}
+                    </template>
+                  </div>
+                  <div class="q-mt-sm">
+                    {{ $t("userStatus_byTeam_tip") }}
+                  </div>
+                </q-card-section>
+              </q-card>
+            </div>
+            <SideNavigation v-else
               class="q-space"
               :class="team.isExternal ? 'q-pt-sm' : ''"
             />
@@ -259,12 +280,14 @@ import WelcomePage from "src/pages/team/WelcomePage.vue";
 import TeamList from "src/pages/team/components/TeamList.vue";
 import TodoPage from "src/pages/team/todo/TodoPage.vue";
 import localforage from "localforage";
-import { ossStore, teamStore, uiStore } from "src/hooks/global/useStore.js";
+import { ossStore, teamStore, uiStore, userStore } from "src/hooks/global/useStore.js";
 import { useMouse } from "@vueuse/core";
 import { useQuasar } from "quasar";
 import WindowToggle from "src/pages/team/components/widgets/icons/WindowToggle.vue";
 import FileTransfer from "pages/team/components/widgets/icons/FileTransfer.vue";
 import BgBrand from "src/components/VIewComponents/BgBrand.vue";
+
+const userStatus_byTeam = computed(() => teamStore.team?.status);
 
 const $q = useQuasar();
 const disabled = computed(() => teamStore.team?.config?.disabled)

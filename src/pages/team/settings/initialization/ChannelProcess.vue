@@ -14,22 +14,47 @@
             </ol>
           </section>
           <section class="column gap-sm">
-            <span>创建更多频道？</span>
-            <CreateChannel />
+            <q-btn color="primary" dense flat
+              :label="showContinueCreate ? '继续创建？' : showCreate ? '放弃创建' :'创建更多频道？'"
+              align="left" @click="toggleShowCreate()"
+            />
+            <template v-if="createdChannels.length > 0">
+              <span>已创建的频道</span>
+              <ul>
+                <li v-for="i in createdChannels" :key="i">
+                  {{i.name}}
+                </li>
+              </ul>
+            </template>
+            <CreateChannel v-if="showCreate" :hiddeHeader="true" @created="created" />
           </section>
       </div>
     </div>
     <div class="column flex-center col relative-position">
         <q-img
-            src="https://airspace.oss-cn-shanghai.aliyuncs.com/ipbase/public/images/Channel.png"
-            spinner-color="primary"
-            spinner-size="82px"
-            class="absolute-full"
+          src="https://airspace.oss-cn-shanghai.aliyuncs.com/ipbase/public/images/Channel.png"
+          spinner-color="primary"
+          spinner-size="82px"
+          class="absolute-full"
         />
     </div>
   </div>
 </template>
 
 <script setup>
-import CreateChannel from '../../components/CreateChannel.vue'
+import { ref, nextTick } from 'vue';
+import CreateChannel from '../../components/CreateChannel.vue';
+import { teamStore } from 'src/hooks/global/useStore';
+const showCreate = ref(false);
+const toggleShowCreate = () => {
+  showCreate.value = !showCreate.value;
+};
+const showContinueCreate = ref(false);
+const createdChannels = ref([]);
+const created = async (val) => {
+  createdChannels.value.push(val)
+  await nextTick();
+  showCreate.value = false;
+  showContinueCreate.value = true;
+};
 </script>

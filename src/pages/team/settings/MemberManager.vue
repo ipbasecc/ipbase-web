@@ -24,10 +24,7 @@
         </q-tooltip>
       </div>
       <div class="q-space relative-position">
-        <q-scroll-area v-if="members?.filter(i => i.group.members?.length > 0)?.length > 0" class="absolute-full">
-          <ul>
-            <li>members: {{ members?.filter(i => i.group.members?.length > 0) }}</li>
-          </ul>
+        <q-scroll-area v-if="members?.filter(i => i.members?.length > 0)?.length > 0" class="absolute-full">
           <template v-for="g in members" :key="g.group">
             <template v-if="g.members?.length > 0">
               <q-item-label header>{{ translate(g.group) }}</q-item-label>

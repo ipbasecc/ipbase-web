@@ -22,11 +22,8 @@ export async function join(team_id, channel_id, project_id, invite_code) {
         res = await acceptInvite(project_id, invite_code);
     }
     if (res?.data) {
-        // 此时管理人员应该收到ws消息，有人申请加入，
-        // 但是此刻成员还没有正式进入项目/团队，因此不能在前端发送ws消息，此处消息发送由后端完成
-        setTimeout(() => {
-            return res.data;
-        }, 200);
+      console.log("res.data", res.data);
+      return res.data;
     }
 }
 

@@ -111,13 +111,13 @@
             </q-item-section>
             <q-item-section @mouseenter="deEnter = false">
               <div class="row no-wrap gap-xs q-pr-xs">
-                <span class="row flex-center">{{ i.name }}</span>
+                <span class="row flex-center">{{ initedChannelByMM.includes(i.name) ? $t(i.name) : i.name }}</span>
                 <UnreadBlock :mm_channel_id="i.mm_channel?.id" />
               </div>
               <q-tooltip class="transparent radius-sm">
-                <q-card bordered>
+                <q-card bordered :class="$q.dark.mode ? 'text-grey-1' : 'text-grey-10'">
                   <q-card-section class="q-py-sm q-px-md">
-                    <div class="font-large">{{ i.name }}</div>
+                    <div class="font-large">{{ initedChannelByMM.includes(i.name) ? $t(i.name) : i.name }}</div>
                   </q-card-section>
                   <q-card-section v-if="i.purpose" class="border-top font-medium q-py-sm q-px-md op-5">
                     {{ i.purpose }}
@@ -355,6 +355,7 @@ const disabled = computed(() => teamStore.team?.config?.disabled)
 const teamMode = computed(() => teamStore.team?.config?.mode)
 
 const byInfo = ref();
+const initedChannelByMM = ['town-square', 'off-topic']
 
 const routeName = computed(() => route.name);
 watch(

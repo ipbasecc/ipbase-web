@@ -28,10 +28,10 @@
           filled
           square
           type="textarea"
-          :label="$t('team_name')"
+          :label="$t('team_introduce')"
         />
         <div class="row no-wrap gap-sm items-center q-mt-md">
-          <span>运营模式：</span>
+          <span>{{ $t('operation_mode') }}：</span>
             <q-radio
               v-for="i in modes" :key="i.value"
               v-model="create_params.config.mode"

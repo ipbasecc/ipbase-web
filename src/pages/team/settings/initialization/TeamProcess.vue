@@ -5,7 +5,7 @@
                 <span class="font-large text-h1">团队</span>
                 <span class="font-large">您可以在团队中创建讨论频道、协作项目！</span>
 
-                <q-card v-if="teamStore?.team" bordered class="q-mt-md">
+                <q-card v-if="teamStore?.team" bordered class="q-mt-md bg-purple text-white">
                     <q-card-section class="q-px-lg">
                         <div class="text-h6">您已完成了团队初始化</div>
                         <div class="text-x-large">现在可以进行下一步了</div>
@@ -17,7 +17,7 @@
                             ref="createTeamRef"
                             :hideHeader="true"
                             :hideFooter="true"
-                            @completedCreate=completedCreate
+                            @completedCreate="completedCreate"
                         />
                         <div>
                             <q-btn label="创建团队" size="lg" padding="sm xl" type="submit" color="primary" @click="createTeamRef.create()"/>
@@ -62,20 +62,36 @@ import { teamStore } from "src/hooks/global/useStore";
 import CreateTeam from '../../components/CreateTeam.vue'
 import { isValidUrl, parseUrl } from 'src/hooks/utilits.js'
 import { join } from 'src/pages/team/hooks/useInvite.js'
+import { setDefaultTeam, getTeamByID } from 'src/api/strapi/team.js'
 const emit = defineEmits(['teamInitialized'])
 
 const createTeamRef = ref(null);
 const invite_link = ref('');
 const initMode = ref('create_team');
-const completedCreate = async () => {
+const completedCreate = async (val) => {
    emit('teamInitialized', {
     create: val
    })
+   await setDefaultTeamFn(val.id)
 }
+const setDefaultTeamFn = async (_team_id) => {
+  const params = {
+    data: {
+      default_team: _team_id,
+    },
+  };
+  const res = await setDefaultTeam(params);
+  if (res?.data) {
+    teamStore.$reset_team();
+    teamStore.team = res.data;
+    teamStore.mm_team = res.data.mm_team;
+  }
+};
 const joinTeam = async () => {
     if(isValidUrl(invite_link.value)){
         const { team_id, channel_id, project_id, invite_code } = parseUrl(invite_link.value)
         const Msg = await join(team_id, channel_id, project_id, invite_code)
+        await setDefaultTeamFn(team_id)
         emit('teamInitialized', {
             join: Msg
         })

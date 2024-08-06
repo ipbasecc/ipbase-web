@@ -5,6 +5,8 @@
   "productName": "ipbase",
   "author": "auxcc <jerr@foxmail.com>",
   "private": true,
+  "homepage": "https://github.com/ipbasecc/ipbase-web",
+  "license": "Apache-2.0",
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
     "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",

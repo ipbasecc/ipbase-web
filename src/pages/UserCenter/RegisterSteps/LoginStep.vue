@@ -56,14 +56,8 @@ const initLogin = async () => {
     });
     let res = await mmLogin(loginParmars.value);
     if (res?.data) {
+      emit("emitLoginData");
       await useFetchAvatar(res.data.id, "force");
-      let mm_profile = me.value?.mm_profile;
-      let user_id = me.value?.id;
-
-      let init_mm_res = await init_mm(user_id, mm_profile);
-      if (init_mm_res) {
-        emit("emitLoginData", init_mm_res);
-      }
     }
   } catch (error) {
     console.log(error);

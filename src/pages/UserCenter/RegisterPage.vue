@@ -189,12 +189,10 @@ import { useRouter } from "vue-router";
 import { inject, ref, watch } from "vue";
 import { register } from "src/api/strapi.js";
 import LoginStep from "src/pages/UserCenter/RegisterSteps/LoginStep.vue";
-import BgBrand from 'src/components/VIewComponents/BgBrand.vue'
 import useUserStore from "src/stores/user.js";
 import { useQuasar } from "quasar";
 import { uiStore } from "src/hooks/global/useStore.js";
 import ServerList from "src/pages/team/settings/ServerList.vue";
-import { isOfficalServer } from 'src/boot/server.js'
 import ExtendInfo from './ExtendInfo.vue'
 
 uiStore.topbarClass = "transparent";
@@ -274,8 +272,7 @@ const startCountdown = () => {
 };
 
 // 获取登陆信息
-const emitLoginData = async (val) => {
-  console.log("接收到初始化数据", val);
+const emitLoginData = async () => {
   if (me.value?.confirmed) {
     step.value = 2;
     startCountdown();

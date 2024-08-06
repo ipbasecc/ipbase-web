@@ -273,6 +273,8 @@ export default {
   copy_error: '复制出错，请手动复制',
   create_team: '创建团队',
   team_name: '团队名称',
+  team_introduce: '团队介绍',
+  operation_mode: '运营模式',
   update_channel: '更新频道',
   update: '更新',
   double_click_change_name: '双击改名',
@@ -624,4 +626,11 @@ export default {
   initialization_step3_label_4: '“对象型”讨论',
   initialization_step3_label_5: '数据共享与反馈收集',
   initialization_step3_label_6: '有机整合“团队”与“个人”',
+
+  "town-square": '事务讨论',
+  "off-topic": '闲聊区',
+
+  userStatus_byTeam_blocked: '您已被当前团队屏蔽，无法查看团队内容',
+  userStatus_byTeam_unconfirmed: '请等待管理人员的审核',
+  userStatus_byTeam_tip: '您可以通过窗口左上角或右下角按钮切换或创建团队',
 };
