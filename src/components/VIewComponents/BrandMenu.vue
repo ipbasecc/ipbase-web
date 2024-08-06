@@ -47,7 +47,7 @@
             </q-item-section>
             <q-item-section>
               <q-item-label>{{ $t(i.label) }}</q-item-label>
-              <q-item-label caption>{{ $t(i.description) }}</q-item-label>
+              <q-item-label caption class="op-7">{{ $t(i.description) }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
@@ -90,14 +90,6 @@ const apps = [
     icon: "mdi-calendar-clock",
     description: 'app_affairs_purpose',
     to: "affairs",
-    enable: true,
-  },
-  {
-    val: "threads",
-    label: 'threads',
-    icon: "mdi-forum",
-    description: 'app_threads_purpose',
-    to: "teams/threads",
     enable: true,
   },
 ];

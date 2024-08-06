@@ -110,7 +110,7 @@ const complateInit = async () => {
     },
   };
   const res = await updateUser(userStore?.me?.id, params);
-  console.log('res', res);
+  // console.log('res', res);
   
   if(res?.data){
     teamStore.init.initialization = res.data.initialization

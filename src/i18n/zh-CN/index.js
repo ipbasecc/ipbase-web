@@ -5,7 +5,7 @@ export default {
   App_Lang: 'zh-CN', //用于页面切换语言时，页面重新获取语言，不要直接翻译，应该直接设置对应语言代号
   Language: "语言",
   app_loading: "应用加载中",
-  app_loading_tip: "首次加载需要较长时间，请稍等",
+  app_loading_tip: "谈正事 用易乎APP!",
   upload_file: "文件上传",
   upload: "上传",
   download: "下载",

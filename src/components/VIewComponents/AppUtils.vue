@@ -34,6 +34,14 @@
       icon="dark_mode"
       @click="$q.dark.toggle()"
     />
+    <q-btn
+      v-if="!$q.platform.is.electron"
+      flat
+      dense
+      round
+      icon="browser_updated"
+      @click="showDownloadApp = true"
+    />
     <q-btn flat dense round icon="translate">
       <q-menu anchor="bottom right" self="bottom left" class="transparent">
         <q-list
@@ -72,6 +80,11 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="showDownloadApp" persistent maximized class="z-max">
+      <div class="flex flex-center">
+        <DownloadApp />
+      </div>
+    </q-dialog>
   </div>
 </template>
 <script setup>
@@ -81,8 +94,11 @@ import AppManual from "src/components/VIewComponents/AppManual.vue";
 import AppShortcut from "src/components/VIewComponents/AppShortcut.vue";
 import localforage from "localforage";
 import "/node_modules/flag-icons/css/flag-icons.min.css";
+import DownloadApp from './DownloadApp.vue'
+import AppIcon from 'src/pages/team/components/widgets/icons/AppIcon.vue'
 
 const is_development = process.env.DEV;
+const showDownloadApp = ref(false);
 const { locale } = useI18n({ useScope: "global" });
 
 const localeOptions = [

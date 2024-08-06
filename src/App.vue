@@ -19,7 +19,7 @@
       v-if="ossStore.showList"
       class="absolute column no-wrap z-max"
       bordered
-      style="bottom: 1rem; right: 1rem; min-width: 360px"
+      style="bottom: 1rem; right: 1rem; min-width: 28rem"
     >
       <q-toolbar class="border-bottom">
         <q-tabs
@@ -50,31 +50,33 @@
         <q-scroll-area style="height: 33vh">
           <q-list>
             <template v-if="($q.platform.is.electron && fileTab === 'upload') || !$q.platform.is.electron">
-              <q-item v-for="i in upload_query" :key="i.id" class="border-bottom">
-              <q-item-section class="z-fab">{{ i.name }}</q-item-section>
-              <q-item-section side class="z-fab">
-                <q-spinner-ios
-                  v-if="upload_process?.find((j) => j.id === i.id)?.percent < 1"
-                  color="primary"
-                  size="2em"
+              <q-item v-for="i in upload_query" :key="i.id" class="radius-xs overflow-hidden border q-mb-xs">
+                <q-item-section side class="z-fab">
+                  <q-spinner-ios
+                    v-if="upload_process?.find((j) => j.id === i.id)?.percent < 1"
+                    color="primary"
+                    size="2em"
+                  />
+                  <q-icon
+                    v-else
+                    color="green"
+                    name="mdi-checkbox-marked-circle"
+                  />
+                </q-item-section>
+                <q-item-section class="z-fab">{{ i.name }}</q-item-section>
+                <q-item-section side class="z-fab">
+                  {{ `${upload_process?.find((j) => j.id === i.id)?.percent * 100}%` }}
+                </q-item-section>
+                <div
+                  class="absolute-left bg-primary full-height op-3"
+                  :style="`left: 0;width: ${
+                    upload_process?.find((j) => j.id === i.id)?.percent * 100
+                  }%;`"
                 />
-                <q-icon
-                  v-else
-                  color="green"
-                  name="mdi-checkbox-marked-circle"
-                />
-              </q-item-section>
-              <div
-                class="absolute-left bg-primary full-height op-3"
-                :style="`left: 0;width: ${
-                  upload_process?.find((j) => j.id === i.id)?.percent * 100
-                }%;`"
-              ></div>
-            </q-item>
+              </q-item>
             </template>
             <template v-if="$q.platform.is.electron && fileTab === 'download'">
-                <q-item v-for="i in downloadFiles" :key="i.id" class="border-bottom">
-                  <q-item-section class="z-fab">{{ i.name }}</q-item-section>
+                <q-item v-for="i in downloadFiles" :key="i.id" class="radius-xs overflow-hidden border q-mb-xs">
                   <q-item-section side class="z-fab">
                     <q-spinner-ios
                       v-if="i.percent < 100"
@@ -87,6 +89,8 @@
                       name="mdi-checkbox-marked-circle"
                     />
                   </q-item-section>
+                  <q-item-section class="z-fab">{{ i.name }}</q-item-section>
+                  <q-item-section side class="z-fab">{{ `${i.percent}%` }}</q-item-section>
                   <div
                     class="absolute-left bg-primary full-height op-3"
                     :style="`left: 0;width: ${i.percent}%;`"

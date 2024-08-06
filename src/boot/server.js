@@ -1,5 +1,7 @@
 import localforage from "localforage";
+import { ref } from "vue";
 
+const serverInfo = ref();
 const fetchServerInfo = async (_url) => {
   try {
     // console.log('fetch start');
@@ -18,18 +20,14 @@ const fetchServerInfo = async (_url) => {
   }
 };
 export async function $server() {
-  const cache = await localforage.getItem('serverInfo');
-  if(cache){
-    // console.log('server cache', cache)
-    return cache
-  } else {
-    let _url = await localforage.getItem('backend_url') || process.env.BACKEND_URI;
-    // console.log('fetchServerInfo', _url)
-    const server = await fetchServerInfo(_url);
-    if(server){
-      // console.log('server', server)
-      return server
-    }
+  if(serverInfo.value) return serverInfo.value;
+  let _url = await localforage.getItem('backend_url') || process.env.BACKEND_URI;
+  // console.log('fetchServerInfo', _url)
+  const server = await fetchServerInfo(_url);
+  if(server){
+    serverInfo.value = server;
+    console.log('server', server)
+    return server
   }
 }
 

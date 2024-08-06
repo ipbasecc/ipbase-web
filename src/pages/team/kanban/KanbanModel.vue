@@ -21,7 +21,7 @@
         :class="`${view_model !== 'list' ? '' : ''} ${
           uiStore.activeReel ? 'column no-wrap' : 'q-pa-sm '
         }`"
-        :style="`height: calc(100vh - ${teamStore.card ? 126 : 116}px);`"
+        :style="`height: calc(100vh - ${teamStore.card ? 128 : 118}px);`"
       >
         <SegmentPage v-if="uiStore.activeReel" />
         <!-- {{ view_model }} -->
