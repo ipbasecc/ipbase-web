@@ -1,16 +1,18 @@
 <template>
   <div class="absolute-full column flex-center">
     <div v-if="$q.platform.is.electron" class="absolute-full q-electron-drag" />
-    <q-card v-if="!code" style="width: 420px"
-            :bordered="$q.screen.gt.xs"
+    <q-card v-if="!code"
+      :bordered="$q.screen.gt.xs"
       :flat="!$q.screen.gt.xs"
       class="q-electron-drag--exception"
-      :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'">
+      :style="$q.screen.gt.xs ? 'width: 32rem' : ''"
+      :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10 fit q-px-lg'"
+      >
       <template v-if="!resetSuccess">
-        <q-card-section class="border-bottom font-large">
+        <q-card-section :class="$q.screen.gt.xs ? 'border-bottom font-large' : 'q-mt-xl q-pt-xl'">
           重设你的密码
         </q-card-section>
-        <q-card-section class="column no-wrap gap-xs">
+        <q-card-section class="column no-wrap gap-sm">
           <q-input
             v-model="resetPasswordParmas.password"
             square
@@ -44,9 +46,10 @@
             </template>
           </q-input>
         </q-card-section>
-        <q-card-section class="row no-wrap q-pa-sm border-top">
+        <q-card-section class="row no-wrap q-pa-sm" :class="$q.screen.gt.xs ? 'border-top' : ''">
           <q-btn
               padding="xs md"
+              flat
               label="返回登陆"
               @click="back"
           />

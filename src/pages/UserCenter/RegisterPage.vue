@@ -3,11 +3,11 @@
     <div v-if="$q.platform.is.electron" class="absolute-full q-electron-drag" />
       <q-card
         v-if="(step === 0 && logged) || step === 2"
-        style="width: 420px"
         :bordered="$q.screen.gt.xs"
         :flat="!$q.screen.gt.xs"
         class="q-electron-drag--exception"
-        :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'"
+        :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10 fit'"
+        :style="$q.screen.gt.xs ? 'width: 48rem' : ''"
       >
         <q-card-section
           v-if="step === 2"
@@ -35,8 +35,8 @@
         class="overflow-hidden ipbase q-electron-drag--exception"
         :bordered="$q.screen.gt.xs"
         :flat="!$q.screen.gt.xs"
-        :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'"
-        style="width: 48rem"
+        :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10 fit'"
+        :style="$q.screen.gt.xs ? 'width: 48rem' : ''"
       >
         <q-card-section :horizontal="$q.screen.gt.sm">
           <q-card-section :class="$q.screen.gt.sm ? logged ? 'col-12' : 'col-6' : ''" :style="$q.screen.gt.sm ? 'order: 99;' : ''">

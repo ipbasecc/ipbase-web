@@ -1,6 +1,6 @@
 <template>
     <q-list dense class="full-width q-px-xl">
-      <BgBrand styleClass="op-none" />
+      <BgBrand v-if="$q.screen.gt.xs" styleClass="op-none" />
 
         <q-item class="q-mt-xl">
           <q-item-section side>

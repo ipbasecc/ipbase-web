@@ -2,14 +2,14 @@
   <div class="absolute-full column flex-center">
     <div v-if="$q.platform.is.electron" class="absolute-full q-electron-drag" />
     <q-card
-      style="width: 420px"
+      :style="$q.screen.gt.xs ? 'width: 32rem' : ''"
       :bordered="$q.screen.gt.xs"
       :flat="!$q.screen.gt.xs"
       class="q-electron-drag--exception"
-      :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'"
+      :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10 fit q-px-lg'"
     >
       <template v-if="!forgotSuccess && !isLoading">
-        <q-card-section class="border-bottom">
+        <q-card-section :class="$q.screen.gt.xs ? 'border-bottom' : 'q-mt-xl q-pt-xl'">
           请输入你的注册邮箱地址
         </q-card-section>
         <q-card-section class="column no-wrap gap-xs">
@@ -33,7 +33,7 @@
             </template>
           </q-input>
         </q-card-section>
-        <q-card-section class="row no-wrap q-pa-sm border-top">
+        <q-card-section class="row no-wrap q-pa-sm" :class="$q.screen.gt.xs ? 'border-top' : ''">
           <q-btn
             flat
             padding="xs md"

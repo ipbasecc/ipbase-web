@@ -5,8 +5,8 @@
       :bordered="$q.screen.gt.xs"
       :flat="!$q.screen.gt.xs"
       class="q-electron-drag--exception"
-      :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10'"
-      style="width: 48rem"
+      :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10 fit'"
+      :style="$q.screen.gt.xs ? 'width: 48rem' : ''"
     >
       <q-card-section :horizontal="$q.screen.gt.sm">
         <q-card-section :class="$q.screen.gt.sm ?  showExtanInfo ? 'col-6' : 'col-12' : ''" :style="$q.screen.gt.sm ? 'order: 99;' : ''">
