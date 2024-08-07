@@ -123,6 +123,7 @@
     "universalify": "^2.0.1",
     "vue": "^3.4.25",
     "vue-demi": "0.13.11",
+    "vue-draggable-plus": "^0.5.3",
     "vue-dragscroll": "^4.0.5",
     "vue-hooks": "^0.3.2",
     "vue-i18n": "^9.13.1",

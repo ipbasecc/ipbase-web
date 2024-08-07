@@ -37,57 +37,39 @@
           v-if="filteredCards?.length > 0 && !uiStore.activeReel"
           style="height: 100%; width: 40vw; max-width: 39%"
         ></div>
-        <draggable
-          :list="filteredCards"
-          animation="300"
-          :delay="100"
+        <VueDraggable
+          v-model="filteredCards"
+          :animation="300"
+          :delay="50"
           :fallbackTolerance="2"
-          :force-fallback="true"
-          :fallbackOnBody="true"
-          :item-key="(key) => key"
-          :sort="true"
-          :touchStartThreshold="2"
-          :scroll="true"
-          ghost-class="ghostColumn"
-          chosen-class="chosenGroupClass"
-          drag-class="dragClass"
-          group="tasks"
+          :forceFallback="true"
           handle=".dragItem"
           filter=".undrag"
+          :fallbackOnBody="true"
+          group="reel"
+          chosenClass="chosenGroupClass"
+          ghostClass="ghostColumn"
+          fallbackClass="chosenGroupClass"
           class="row no-wrap gap-sm forbid"
           :class="isMounted ? uiStore.activeReel ? 'items-center' : 'flex-center' : 'op-0'"
           :style="`height: ${uiStore.reelHeight + 8}px; min-width: 100%`"
-          @change="dragCard_sort()"
           @start="dragStart()"
+          @update="dragCard_sort()"
           @end="dragEnd()"
         >
-          <template #item="{ element }">
-            <SegmentItem
-              class="dragItem"
-              :card="element"
-              :isCreator_column="isCreator"
-              :column="columnRef"
-              @cardChange="cardChange"
-              @cardDelete="cardDelete"
-              @mouseenter="disableUpload = true"
-              @mouseleave="disableUpload = false"
-            ></SegmentItem>
-          </template>
-          <template #header> </template>
-          <template
-            v-if="
-              uiStore.createCard_in === columnRef.id && useAuths('create', ['card'])
-            "
-            #footer
-          >
-            <CreateSegment
-              :column_id="columnRef.id"
-              @createCannel="createCannel"
-              @closeCreate="closeCreate"
-              ref="CreateSegmentRef"
-            />
-          </template>
-        </draggable>
+          <SegmentItem
+            v-for="element in filteredCards"
+            :key="element.id"
+            class="dragItem"
+            :card="element"
+            :isCreator_column="isCreator"
+            :column="columnRef"
+            @cardChange="cardChange"
+            @cardDelete="cardDelete"
+            @mouseenter="disableUpload = true"
+            @mouseleave="disableUpload = false"
+          ></SegmentItem>
+        </VueDraggable>
         <div
           v-if="filteredCards?.length > 0 && !uiStore.activeReel"
           style="height: 100%; width: 40vw; max-width: 39%"
@@ -199,7 +181,6 @@ import {
   computed,
   onMounted,
   onUnmounted,
-  inject,
   nextTick,
 } from "vue";
 import draggable from "vuedraggable";
@@ -228,7 +209,7 @@ import SegmentItem from "../card/SegmentItem.vue";
 import CreateSegment from "../card/components/CreateSegment.vue";
 import Bottleneck from "bottleneck";
 import { i18n } from 'src/boot/i18n.js';
-import { uniqueById } from "src/hooks/utilits.js";
+import { VueDraggable } from 'vue-draggable-plus'
 
 const $t = i18n.global.t;
 

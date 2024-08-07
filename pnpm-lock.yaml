@@ -332,6 +332,9 @@ importers:
       vue-demi:
         specifier: 0.13.11
         version: 0.13.11(@vue/composition-api@1.7.2(vue@3.4.33(typescript@5.5.3)))(vue@3.4.33(typescript@5.5.3))
+      vue-draggable-plus:
+        specifier: ^0.5.3
+        version: 0.5.3(@types/sortablejs@1.15.8)(@vue/composition-api@1.7.2(vue@3.4.33(typescript@5.5.3)))
       vue-dragscroll:
         specifier: ^4.0.5
         version: 4.0.5(typescript@5.5.3)
@@ -6376,6 +6379,15 @@ packages:
     peerDependencies:
       '@vue/composition-api': ^1.0.0-rc.1
       vue: ^3.0.0-0 || ^2.6.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+
+  vue-draggable-plus@0.5.3:
+    resolution: {integrity: sha512-dwKDzZ8io3y7k2iuIwVwiGrdiq5C0S7Et7nt5Gz5KjpBS9MtZGFP+L4FJPWGSLYleOT8HmVuCXTZYjGet7wC0g==}
+    peerDependencies:
+      '@types/sortablejs': ^1.15.0
+      '@vue/composition-api': '*'
     peerDependenciesMeta:
       '@vue/composition-api':
         optional: true
@@ -13742,6 +13754,12 @@ snapshots:
   vue-demi@0.14.8(@vue/composition-api@1.7.2(vue@3.4.33(typescript@5.5.3)))(vue@3.4.33(typescript@5.5.3)):
     dependencies:
       vue: 3.4.33(typescript@5.5.3)
+    optionalDependencies:
+      '@vue/composition-api': 1.7.2(vue@3.4.33(typescript@5.5.3))
+
+  vue-draggable-plus@0.5.3(@types/sortablejs@1.15.8)(@vue/composition-api@1.7.2(vue@3.4.33(typescript@5.5.3))):
+    dependencies:
+      '@types/sortablejs': 1.15.8
     optionalDependencies:
       '@vue/composition-api': 1.7.2(vue@3.4.33(typescript@5.5.3))
 

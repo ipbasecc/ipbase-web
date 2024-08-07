@@ -1231,14 +1231,14 @@ body.body--dark .mm_message.active {
   border: 0px solid rgb(165, 165, 165);
   border-radius: 5px;
   background: rgb(3, 65, 115) !important;
-  opacity: 1;
+  opacity: 1 !important;
   border-radius: 0.25rem;
 }
 .body--light .ghostColumn {
   border: 0px solid rgb(165, 165, 165);
   border-radius: 5px;
   background: rgb(23, 143, 241) !important;
-  opacity: 1;
+  opacity: 1 !important;
   border-radius: 0.25rem;
 }
 .ghostColumn * {
