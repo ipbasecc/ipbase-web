@@ -24,7 +24,7 @@
       v-else-if="cardRef && viewTypeRef === 'card'"
       bordered
       flat
-      class="full-height column no-wrap overflow-hidden"
+      class="full-width column no-wrap overflow-hidden"
       :class="`${content_channging ? 'focus' : ''}
         ${$q.screen.gt.xs ? 'cardBody' : ''}
         ${actived

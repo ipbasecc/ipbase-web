@@ -309,23 +309,23 @@
                 window.addEventListener('mousemove', function (e) {
                     this.toX = (e.clientX - canvas.width / 2) * -0.8;
                     this.toY = (e.clientY - canvas.height / 2) * 0.8;
-                }.bind(this));
+                }.bind(this), {passive: false});
                 window.addEventListener('touchmove', function (e) {
                     e.preventDefault();
                     this.toX = (e.touches[0].clientX - canvas.width / 2) * -0.8;
                     this.toY = (e.touches[0].clientY - canvas.height / 2) * 0.8;
-                }.bind(this));
+                }.bind(this), {passive: false});
                 window.addEventListener('mousedown', function (e) {
                     for (var i = 0; i < 100; i++) {
                         this.add();
                     }
-                }.bind(this));
+                }.bind(this), {passive: false});
                 window.addEventListener('touchstart', function (e) {
                     e.preventDefault();
                     for (var i = 0; i < 100; i++) {
                         this.add();
                     }
-                }.bind(this));
+                }.bind(this), {passive: false});
             };
             var app = new Build();
             app.run();
@@ -335,12 +335,12 @@
                 window.removeEventListener('mousemove', function (e) {
                     this.toX = (e.clientX - canvas.width / 2) * -0.8;
                     this.toY = (e.clientY - canvas.height / 2) * 0.8;
-                }.bind(this));
+                }.bind(this), {passive: false});
                 window.removeEventListener('touchmove', function (e) {
                     e.preventDefault();
                     this.toX = (e.touches[0].clientX - canvas.width / 2) * -0.8;
                     this.toY = (e.touches[0].clientY - canvas.height / 2) * 0.8;
-                }.bind(this));
+                }.bind(this), {passive: false});
                 window.removeEventListener('mousedown', function (e) {
                     for (var i = 0; i < 100; i++) {
                         this.add();
@@ -351,7 +351,7 @@
                     for (var i = 0; i < 100; i++) {
                         this.add();
                     }
-                }.bind(this));
+                }.bind(this), {passive: false});
             })
         })();
         window.addEventListener('resize', function () {
