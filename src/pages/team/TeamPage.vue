@@ -153,10 +153,10 @@ const route = useRoute();
 const router = useRouter();
 
 const isExternal = ref();
+const team = computed(() => teamStore.team);
+const user_roles = computed(() => findRoles(team.value?.members, team.value?.member_roles));
 watchEffect(() => {
-  const team = computed(() => teamStore.team);
-  const user_roles = computed(() => findRoles(team.value?.members, team.value?.member_roles));
-  console.log('user_roles',user_roles.value);
+  // console.log('user_roles',user_roles.value);
   isExternal.value = user_roles.value?.includes('external')
 })
 
@@ -228,13 +228,6 @@ watch(
   { immediate: true, deep: true }
 );
 
-onBeforeMount(() => {
-  const jwt = localStorage.getItem("jwt");
-  const mmtoken = localStorage.getItem("mmtoken");
-  if (!jwt || !mmtoken) {
-    // router.push("/login");
-  }
-});
 watch(
   teamStore,
   () => {

@@ -638,9 +638,13 @@ watch(
 );
 
 const backList = async () => {
-  await removeLastChannel(teamStore.project?.id);
-  uiStore.showMainContentList = true;
-  await router.push(`/teams/projects/${teamStore.project?.id}/chat`);
+  if(teamStore.project){
+    await removeLastChannel(teamStore.project?.id);
+    uiStore.showMainContentList = true;
+    await router.push(`/teams/projects/${teamStore.project?.id}/chat`);
+  } else {
+    await router.push('/teams');
+  }
 };
 
 const thumbStyle = {
