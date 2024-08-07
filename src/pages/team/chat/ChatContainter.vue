@@ -266,7 +266,7 @@ const chatInfo = computed(() => ({
 }));
 
 const page = ref(0);
-const per_page = ref(5);
+const per_page = ref(60);
 const before = computed(() => messages.value?.order[0]);
 const after = ref();
 const options = computed(() => {

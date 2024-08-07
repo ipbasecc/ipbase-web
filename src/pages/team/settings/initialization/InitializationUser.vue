@@ -5,8 +5,10 @@
     color="primary"
     keep-alive
     animated
-    bordered
+    :bordered="!$q.screen.lt.sm"
+    :vertical="$q.screen.lt.sm"
     class="initialization column no-wrap"
+    :class="$q.screen.lt.sm ? 'transparent q-pb-xl' : ''"
   >
     <q-step
       :name="1"

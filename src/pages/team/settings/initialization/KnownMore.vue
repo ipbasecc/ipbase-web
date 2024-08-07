@@ -1,6 +1,6 @@
 <template>
-    <div class="row q-space gap-md">
-        <div class="column flex-center q-pa-lg">
+    <div class="q-space gap-md" :class="$q.screen.lt.sm ? 'column gap-md' : 'row'">
+        <div class="column flex-center q-pa-lg" :style="$q.screen.lt.sm ? 'order: 2' : ''">
           <section class="column q-mb-md">
             <span class="font-large text-h2" style="line-height: 1.3;">了解更多</span>
             <span class="font-medium">请逐个点击下方内容查看后完成初始化</span>
@@ -25,7 +25,7 @@
                 </template>
             </q-list>
         </div>
-        <div class="column flex-center col">
+        <div v-if="!$q.screen.lt.sm" class="column flex-center col">
             <TeamMode v-if="actived === 'team_mode'" />
             <ChatChannel v-if="actived === 'channel'" />
             <ProjectManager v-if="actived === 'project'" />
@@ -33,6 +33,14 @@
             <ShareFeedback  v-if="actived === 'share_feedback'" />
             <TeamPerson  v-if="actived === 'team_person'" />
         </div>
+        <q-responsive v-else :ratio="16/9" style="order: 1" class="full-width">
+            <TeamMode v-if="actived === 'team_mode'" />
+            <ChatChannel v-if="actived === 'channel'" />
+            <ProjectManager v-if="actived === 'project'" />
+            <ChatThreads  v-if="actived === 'threads'" />
+            <ShareFeedback  v-if="actived === 'share_feedback'" />
+            <TeamPerson  v-if="actived === 'team_person'" />
+        </q-responsive>
     </div>
   </template>
   

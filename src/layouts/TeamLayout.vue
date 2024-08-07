@@ -1,7 +1,7 @@
 <template>
   <template v-if="teamStore.init">
     <div v-if="!teamStore.init.initialization" class="absolute-full"
-    :style="$q.screen.gt.md ? 'padding: 10vh 10vw' : 'padding: 4rem'">
+    :style="$q.screen.gt.md ? 'padding: 10vh 10vw' : 'padding: 0'">
         <InitializationUser class="fit" />
     </div>
     <template v-else>

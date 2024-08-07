@@ -9,22 +9,22 @@
     >
       <q-carousel-slide :name="1" img-src="https://airspace.oss-cn-shanghai.aliyuncs.com/ipbase/public/images/Project_chat.png">
         <div class="absolute-bottom q-pa-xl column flex-center blur-xs">
-          <div class="text-h2">项目讨论</div>
+          <div :class="$q.screen.lt.sm ? '' : 'text-h2'">项目讨论</div>
         </div>
       </q-carousel-slide>
       <q-carousel-slide :name="2" img-src="https://airspace.oss-cn-shanghai.aliyuncs.com/ipbase/public/images/Project_kanban.png">
         <div class="absolute-bottom q-pa-xl column flex-center blur-xs">
-          <div class="text-h2">事务看板</div>
+          <div :class="$q.screen.lt.sm ? '' : 'text-h2'">事务看板</div>
         </div>
       </q-carousel-slide>
       <q-carousel-slide :name="3" img-src="https://airspace.oss-cn-shanghai.aliyuncs.com/ipbase/public/images/Project_segment.png">
         <div class="absolute-bottom q-pa-xl column flex-center blur-xs">
-          <div class="text-h2">影像生产</div>
+          <div :class="$q.screen.lt.sm ? '' : 'text-h2'">影像生产</div>
         </div>
       </q-carousel-slide>
       <q-carousel-slide :name="4" img-src="https://airspace.oss-cn-shanghai.aliyuncs.com/ipbase/public/images/Project_storage.png">
         <div class="absolute-bottom q-pa-xl column flex-center blur-xs">
-          <div class="text-h2">文件共享</div>
+          <div :class="$q.screen.lt.sm ? '' : 'text-h2'">文件共享</div>
         </div>
       </q-carousel-slide>
     </q-carousel>

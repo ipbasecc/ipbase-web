@@ -1,5 +1,5 @@
 <template>
-    <q-card bordered style="min-width: 24rem;">
+    <q-card bordered :style="$q.screen.lt.sm ? '' : `min-width: 24rem;`">
         <q-card-section v-if="!hiddeHeader" class="row no-wrap q-pa-sm border-bottom">
             <div class="font-larger q-ml-sm">{{ $t('create_chat_channel') }}</div>
             <q-space />

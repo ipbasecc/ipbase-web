@@ -640,6 +640,6 @@ export default {
   onboarding_step2_caption: '了解频道，或新增频道',
   onboarding_step3_title: '30秒通关',
   onboarding_step4_caption: '快速了解平台功能',
-  onboarding_completed_tip: '恭喜，初始化完成 ！',
-  onboarding_completed_btn_label: '立刻开启团队之旅',
+  onboarding_completed_tip: '恭喜，初始化完成',
+  onboarding_completed_btn_label: '开启团队之旅',
 };

@@ -1,6 +1,6 @@
 <template>
-    <div class="row q-space gap-md">
-        <div class="flex flex-center">
+    <div class="q-space gap-md" :class="$q.screen.lt.sm ? 'column gap-md' : 'row'">
+        <div class="flex flex-center" :class="$q.screen.lt.sm ? '' : 'col-4'">
             <div class="column no-wrap gap-sm">
                 <span class="font-large text-h1">团队</span>
                 <span class="font-large">您可以在团队中创建讨论频道、协作项目！</span>
@@ -45,12 +45,11 @@
                 </template>
             </div>
         </div>
-        <div class="column flex-center col relative-position">
-            <q-img
+        <div :class="$q.screen.lt.sm ? '' : 'column flex-center col relative-position'">
+            <img
                 src="https://airspace.oss-cn-shanghai.aliyuncs.com/ipbase/public/images/Team.png"
-                spinner-color="primary"
-                spinner-size="82px"
-                class="absolute-full"
+                class="full-width"
+                alt="Team"
             />
         </div>
     </div>
