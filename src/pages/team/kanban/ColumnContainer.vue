@@ -560,7 +560,6 @@ import {
   watchEffect,
   computed,
   onBeforeMount,
-  inject,
 } from "vue";
 import draggable from "vuedraggable";
 import CardItem from "src/pages/team/card/CardItem.vue";

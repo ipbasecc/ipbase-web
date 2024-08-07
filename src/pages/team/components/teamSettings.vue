@@ -60,7 +60,7 @@
         <div class="row items-center">
           {{ $t('disable_teamFunc_labe') }}: 
           <div class="row items-center q-pa-sm border radius-xs q-ml-md">
-            <span v-if="disabed_func.length === 0" class="q-px-md q-py-xs op-5">{{ $t('no_disable_teamFunc') }}</span>
+            <span v-if="disabed_func?.length === 0" class="q-px-md q-py-xs op-5">{{ $t('no_disable_teamFunc') }}</span>
             <template v-else>
               <q-chip v-for="i in disabed_func" :key="i"
                 :label="$t(functions.find(j => j.value === i).label)"
@@ -144,10 +144,10 @@ const functions = [
   }
 ]
 const toggleChose = (val) => {
-  if (disabed_func.value.includes(val)) {
+  if (disabed_func.value?.length> 0 && disabed_func.value?.includes(val)) {
     disabed_func.value = disabed_func.value.filter((i) => i !== val);
   } else {
-    disabed_func.value.push(val);
+    disabed_func.value = [val]
   }
   syncParams();
 };
