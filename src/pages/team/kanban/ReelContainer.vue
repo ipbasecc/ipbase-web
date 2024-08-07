@@ -37,43 +37,22 @@
           v-if="filteredCards?.length > 0 && !uiStore.activeReel"
           style="height: 100%; width: 40vw; max-width: 39%"
         ></div>
-        <VueDraggable
-          v-model="filteredCards"
-          :animation="300"
-          :delay="50"
-          :fallbackTolerance="5"
-          :forceFallback="true"
-          handle=".dragItem"
-          filter=".undrag"
-          :fallbackOnBody="true"
-          group="reel"
-          chosenClass="chosenGroupClass"
-          ghostClass="ghostColumn"
-          fallbackClass="chosenGroupClass"
+        <VueDraggable v-model="filteredCards"
+          :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+          handle=".dragItem" filter=".undrag" group="reel"
+          chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
           class="row no-wrap gap-sm forbid"
           :class="isMounted ? uiStore.activeReel ? 'items-center' : 'flex-center' : 'op-0'"
           :style="`height: ${uiStore.reelHeight + 8}px; min-width: 100%`"
-          @start="dragStart()"
-          @update="dragCard_sort()"
-          @end="dragEnd()"
+          @start="dragStart()" @update="dragCard_sort()" @end="dragEnd()"
         >
           <SegmentItem
-            v-for="element in filteredCards"
-            :key="element.id"
-            class="dragItem"
-            :card="element"
-            :isCreator_column="isCreator"
-            :column="columnRef"
-            @cardChange="cardChange"
-            @cardDelete="cardDelete"
-            @mouseenter="disableUpload = true"
-            @mouseleave="disableUpload = false"
+            v-for="element in filteredCards" :key="element.id"
+            class="dragItem" :card="element" :isCreator_column="isCreator" :column="columnRef"
+            @cardChange="cardChange" @cardDelete="cardDelete"
+            @mouseenter="disableUpload = true" @mouseleave="disableUpload = false"
           ></SegmentItem>
-          <template
-            v-if="
-              uiStore.createCard_in === columnRef.id && useAuths('create', ['card'])
-            "
-          >
+          <template v-if="uiStore.createCard_in === columnRef.id && useAuths('create', ['card'])">
             <CreateSegment
               :column_id="columnRef.id"
               @createCannel="createCannel"
@@ -486,8 +465,6 @@ const dragEnd = () => {
   uiStore.draging = false;
 };
 
-// 使用ref函数或shallowRef函数来创建cards变量
-// 使用ref函数或shallowRef函数来创建filteredCards变量
 watch(
   filter_txt,
   () => {
