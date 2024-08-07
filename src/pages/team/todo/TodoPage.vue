@@ -6,7 +6,6 @@
     `"
     :style="isFeedback ? 'max-width: 36rem' : ''"
   >
-  isFeedback: {{isFeedback}}
     <template v-if="!card">
       <q-bar
         v-if="

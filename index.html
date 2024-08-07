@@ -17,54 +17,60 @@
   </head>
   <body>
     <!-- quasar:entry-point -->
+    <canvas v-show="false" id="fingerprintCanvas" width="200" height="200"></canvas>
   </body>
 
   <script>
     setTimeout(() => {
-      // 创建一个离线音频上下文用于音频指纹分析
-      var context = new (window.OfflineAudioContext ||
-        window.webkitOfflineAudioContext)(1, 44100, 44100);
+      // 准备绘图环境
+      var canvas = document.getElementById("fingerprintCanvas");
+      var ctx = canvas.getContext("2d");
 
-      // 创建一个振荡器节点
-      var oscillator = context.createOscillator();
-      oscillator.type = "triangle"; // 设置振荡器的类型
-      oscillator.frequency.setValueAtTime(10000, context.currentTime); // 设置频率
+      // 设置文本属性
+      ctx.textBaseline = "top";
+      ctx.font = "14px 'Arial'";
+      ctx.textBaseline = "alphabetic";
+      ctx.fillStyle = "#f60";
+      ctx.fillRect(125, 1, 62, 20);
 
-      // 创建增益（音量）节点
-      var gainNode = context.createGain();
-      gainNode.gain.setValueAtTime(0, context.currentTime); // 设置增益值
-      gainNode.gain.linearRampToValueAtTime(1, context.currentTime + 0.01); // 在0.01秒内增加增益
+      // 设置渐变色
+      var gradient = ctx.createLinearGradient(2, 0, 150, 0);
+      gradient.addColorStop(0, "rgba(102, 204, 0, 0.7)");
+      gradient.addColorStop(1, "rgba(255, 102, 0, 0.7)");
+      ctx.fillStyle = gradient;
 
-      // 将振荡器连接到增益节点，然后连接到离线上下文
-      oscillator.connect(gainNode);
-      gainNode.connect(context.destination);
+      // 绘制文字
+      ctx.fillText("Hello, world!", 2, 15);
 
-      // 开始振荡
-      oscillator.start(0);
-      oscillator.stop(0.1); // 0.1秒后停止振荡
+      // 绘制一个蓝色的点
+      ctx.fillStyle = "rgba(0, 0, 255, 0.6)";
+      ctx.fillRect(80, 4, 10, 10);
 
-      // 渲染音频并分析结果
-      context
-        .startRendering()
-        .then(function (buffer) {
-          var channelData = buffer.getChannelData(0); // 获取渲染的音频缓冲区数据
-          var fingerprint = hashFunction(channelData); // 假定存在一个hashFunction函数来生成哈希
-          window.fingerprint = fingerprint
-          console.log("Audio Fingerprint:",  typeof window.fingerprint);
-        })
-        .catch(function (e) {
-          console.error(e);
-        });
+      // 将Canvas的数据转换为一个哈希值，用以标识指纹
+      // 例如，通过取Canvas的toDataURL来获取图像数据的base64编码，然后进行哈希
+      // 使用这个函数
+      const dataURL = canvas.toDataURL();
+      hashFunction(dataURL).then((canvasFingerprint) => {
+        window.fingerprint = canvasFingerprint;
+        // 删除指纹获取的canvas元素
+        var parentElement = canvas.parentNode;
+        parentElement.removeChild(canvas);
+      });
 
-      // 哈希函数实现，这里使用了一个简化的方法仅作示例
-      function hashFunction(data) {
-        return data
-          .slice(0, 100)
-          .reduce(function (acc, value) {
-            return acc + Math.abs(value * 10000);
-          }, 0)
-          .toString();
+      async function hashFunction(data) {
+        // 将字符串转换成Uint8Array
+        const dataBuffer = new TextEncoder().encode(data);
+
+        // 使用SubtleCrypto的digest方法进行哈希
+        const hashBuffer = await crypto.subtle.digest("SHA-256", dataBuffer);
+
+        // 将哈希值转换为16进制字符串
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");        
+        return hashHex;
       }
-    }, 3000);
+    }, 300);
   </script>
 </html>
