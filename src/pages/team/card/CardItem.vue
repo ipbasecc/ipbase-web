@@ -153,7 +153,6 @@
           styleClass="q-px-md q-py-sm"
           :hideScroll="cardRef.expand === 'collapse'"
           class="undrag"
-          contentStyle="max-height: 540px;"
           @tiptapBlur="tiptapBlur"
           @tiptapClose="toggleOffEditting()"
           @click.stop="
@@ -542,6 +541,7 @@ import {
   watch,
   watchEffect,
   computed,
+  onMounted
 } from "vue";
 import { useMagicKeys } from "@vueuse/core";
 import StatusMenu from "src/pages/team/components/user/StatusMenu.vue";

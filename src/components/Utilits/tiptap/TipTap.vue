@@ -1,7 +1,6 @@
 <template>
   <div class="fit column no-wrap q-space" ref="tiptap">
     <template v-if="isEditable">
-      <q-resize-observer @resize="onResize" />
       <div
         v-if="show_toolbar && isEditable"
         class="full-width row no-wrap gap-xs items-center justify-start border q-py-xs q-px-sm"
@@ -12,7 +11,7 @@
       >
         <template v-for="(i, index) in menu" :key="index">
           <q-separator
-            v-if="i.type === '|' && (i.always_show || is_large)"
+            v-if="i.type === '|' && i.always_show"
             spaced
             inset
             vertical
@@ -20,7 +19,7 @@
           <q-btn
             v-else-if="
               i.type === 'Botton' &&
-              (i.always_show || is_large) &&
+              i.always_show &&
               !i.disable &&
               !disable_btn.includes(i.label)
             "
@@ -36,7 +35,7 @@
             /></template>
           </q-btn>
           <q-btn
-            v-else-if="i.type === 'menu' && (i.always_show || is_large)"
+            v-else-if="i.type === 'menu' && i.always_show"
             dense
             flat
             padding="xs"
@@ -61,7 +60,7 @@
             </q-menu>
           </q-btn>
           <q-btn
-            v-else-if="i.type === 'set_color' && (i.always_show || is_large)"
+            v-else-if="i.type === 'set_color' && i.always_show"
             dense
             flat
             padding="xs"
@@ -127,7 +126,6 @@ import {
   toRef,
   toRefs,
   watch,
-  watchEffect,
   computed,
 } from "vue";
 
@@ -203,7 +201,7 @@ const props = defineProps({
   },
   contentStyle: {
     type: String,
-    default: "max-height: 540px",
+    default: "",
   },
   asDocument: {
     type: Boolean,
@@ -246,18 +244,8 @@ const emit = defineEmits([
   "tiptapClose",
   "tiptapUpdate",
   "tiptapChanged",
-  "mmMsgChange",
+  "mmMsgChange"
 ]);
-
-const is_large = ref();
-const send_box = ref();
-const onResize = (size) => {
-  send_box.value = size;
-};
-
-watchEffect(() => {
-  is_large.value = send_box.value && send_box.value.width > 582;
-});
 
 const tiptap = ref(null);
 const editor = ref();
