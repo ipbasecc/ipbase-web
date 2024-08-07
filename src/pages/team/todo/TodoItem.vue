@@ -347,6 +347,8 @@ const updateContent = (content) => {
 };
 
 const statusChange = async (todo) => {
+  console.log('statusChange', todo);
+  
   todo_params.value.data = todo;
   todo_params.value = {
     data: { status: todo.status },
@@ -364,7 +366,9 @@ const updateTodoFn = async (todo) => {
     };
   }
   if(isFeedback.value){
-    todo_params.value.props.fingerprint = window?.fingerprint
+    todo_params.value.props = {
+      fingerprint: window?.fingerprint
+    };
   }
   let res = await updateTodo(todo.id, todo_params.value);
   updating.value = false;
