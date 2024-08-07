@@ -20,7 +20,7 @@ import { watchEffect } from "vue";
 import {teamStore, uiStore} from 'src/hooks/global/useStore.js';
 
 const project = computed(() => teamStore?.project);
-const teamMode = computed(() => teamStore.team?.config?.mode || 'OneToMany')
+const teamMode = computed(() => teamStore.team?.config?.mode || 'toMany')
 const router = useRouter();
 const route = useRoute();
 

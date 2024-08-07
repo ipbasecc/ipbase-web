@@ -1175,16 +1175,14 @@ watch(
           strapi.data.card_id === cardRef.value.id &&
           strapi.data.action === "card_todo_created"
         ) {
-          // console.log("card_todo_created ws", strapi.data);
+          // console.log("card_todo_created post", post);
+          strapi.data.body.mm_thread = post
           cardRef.value.todogroups = cardRef.value.todogroups.map((g) => ({
             ...g,
-            todos:
-              (g.id === Number(strapi.data.group_id) &&
-                (g.todos?.length > 0 &&
-                !g.todos.map((todo) => todo.id).includes(strapi.data.body.id)
+            todos:g.id === Number(strapi.data.group_id)
+                  && !g.todos?.map((todo) => todo.id).includes(strapi.data.body.id)
                   ? [...g.todos, strapi.data.body]
-                  : [strapi.data.body])) ||
-              g.todos,
+                  : g.todos
           }));
           syncCardStore();
         }

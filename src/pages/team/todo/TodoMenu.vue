@@ -1,6 +1,6 @@
 <template>
   <q-list bordered dense class="radius-sm q-pa-xs">
-    <template v-if="element.mm_thread">
+    <template v-if="element.mm_thread && !uiStore.isShared">
       <q-item
         clickable
         v-ripple
@@ -16,7 +16,7 @@
       <q-separator spaced class="op-3" />
     </template>
     <template
-      v-if="!inCard || (useAuths('content', ['card_todo', 'todo']) || isCreator)"
+      v-if="!inCard || (useAuths('content', ['card_todo', 'todo']) || isCreator) || isFeedbackOwner"
     >
       <q-item>
         <q-item-section>
@@ -56,7 +56,7 @@
       </q-item>
     </template>
     <template
-      v-if="!inCard || (useAuths('delete', ['card_todo', 'todo']) || isCreator)"
+      v-if="!inCard || (useAuths('delete', ['card_todo', 'todo']) || isCreator) || isFeedbackOwner"
     >
       <q-separator spaced class="op-3" />
       <q-item
@@ -75,7 +75,7 @@
 </template>
 <script setup>
 import {toRefs} from "vue";
-import {teamStore} from "src/hooks/global/useStore";
+import {teamStore,uiStore} from "src/hooks/global/useStore";
 
 const props = defineProps({
   element: {
@@ -97,10 +97,14 @@ const props = defineProps({
   inCard: {
     type: Boolean,
     default: true
+  },
+  isFeedbackOwner: {
+    type: Boolean,
+    default: true
   }
 });
 
-const { element, todogroup, isCreator, inCard } = toRefs(props);
+const { element, todogroup, isCreator, inCard, isFeedbackOwner } = toRefs(props);
 const emit = defineEmits(['addAttachment', 'updateTodoColorMarker', 'deleteTodoFn']);
 const colorMarks = [
   "primary",

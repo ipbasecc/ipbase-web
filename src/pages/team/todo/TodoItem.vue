@@ -122,12 +122,11 @@
           </template>
         </div>
         <span
-          v-if="!uiStore.isShared"
           style="height: 30px"
           class="flex flex-center"
         >
           <q-btn
-            v-if="
+            v-if="element.fingerprint ||
               !inCard ||
               useAuths('content', ['card_todo', 'todo']) ||
               useAuths('delete', ['card_todo', 'todo']) ||
@@ -146,6 +145,7 @@
                 :element
                 :todogroup
                 :isCreator
+                :isFeedbackOwner="element.fingerprint === window?.fingerprint"
                 :inCard
                 @updateTodoColorMarker="updateTodoColorMarker"
                 @addAttachment="addAttachment"
@@ -295,6 +295,7 @@ const {
   isCreator,
   inCard,
   card,
+  isFeedback
 } = toRefs(props);
 const authBaseOf = computed(() =>
   authBase.value?.of === "card" ? "todo" : "card_todo"
@@ -328,6 +329,7 @@ const todo_params = ref({
     content: "",
     status: false,
   },
+  props: {}
 });
 const hoverOn = ref(null);
 
@@ -361,9 +363,12 @@ const updateTodoFn = async (todo) => {
       card_id: byInfo.value?.card_id,
     };
   }
+  if(isFeedback.value){
+    todo_params.value.props.fingerprint = window?.fingerprint
+  }
   let res = await updateTodo(todo.id, todo_params.value);
   updating.value = false;
-  if (res.data) {
+  if (res?.data) {
     if (card.value || teamStore.card) {
       const _card = card.value || teamStore.card;
       // 发送ws消息
@@ -409,8 +414,12 @@ const clickAttachmentItem = () => {
 const oldVal = ref(null);
 const deleteTodoFn = async (i, todo) => {
   oldVal.value = null;
-  let res = await deleteTodo(todo.id);
-  if (res) {
+  let props = {}
+  if(uiStore.isShared){
+    props.fingerprint = window?.fingerprint
+  }
+  let res = await deleteTodo(todo.id, props);
+  if (res?.data) {    
     if (card.value || teamStore.card) {
       const _card = card.value || teamStore.card;
       await todoDeleted(_card, todogroup.value?.id, todo.id);

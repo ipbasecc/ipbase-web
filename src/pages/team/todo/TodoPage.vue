@@ -6,6 +6,7 @@
     `"
     :style="isFeedback ? 'max-width: 36rem' : ''"
   >
+  isFeedback: {{isFeedback}}
     <template v-if="!card">
       <q-bar
         v-if="
@@ -948,7 +949,7 @@
 // 实现效果：
 // 1.卡片上可以独立展示自己的todogroups
 // 2.用户针对不同的看板可以自己增加todogroups，作为对应的私有内容，仅供自己查阅
-import { computed, onBeforeMount, ref, toRefs, watch, watchEffect, inject } from "vue";
+import { computed, onBeforeMount, ref, toRefs, watch, watchEffect } from "vue";
 import {
   createTodo,
   createTodogroup,
@@ -1395,6 +1396,7 @@ const createAddTodo = (_id) => {
     todo_add_ing.value = _id;
   }
 };
+
 const createTodoFn = async (i) => {
   if (!i.todos) {
     i.todos = [];
@@ -1410,15 +1412,19 @@ const createTodoFn = async (i) => {
     data: {},
   };
   create_params.data.content = todo_params.value.data.content;
-  // console.log('teamStore.shareInfo', teamStore.shareInfo)
-  if (teamStore.shareInfo) {
+  console.log('window.fingerprint', window.fingerprint)
+  if (teamStore.shareInfo) {    
     create_params.shareInfo = teamStore.shareInfo;
+    create_params.data.fingerprint = window.fingerprint;
   }
 
   todo_creating.value = true;
   let res = await createTodo(create_params);
   todo_params.value.data.content = "";
   if (res?.data) {
+    console.log('createTodo',res?.data);
+    
+    // backend send ws data but
     // always create at here, when get ws create event, check exits item, current user no need create
     i.todos = [...i.todos, res.data];
   }
@@ -1426,6 +1432,7 @@ const createTodoFn = async (i) => {
   todo_creating.value = false;
   return res?.data;
 };
+
 const keepCreate = async (i) => {
   const _create = await createTodoFn(i);
   if (_create) {

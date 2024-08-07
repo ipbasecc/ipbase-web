@@ -6,19 +6,20 @@
         </q-toolbar>
         <q-card-section>
             <div class="row q-pa-lg justify-around">
-                <div v-for="i in packages" :key="i.Platform" class="column no-wrap items-center gap-md q-pa-xl">
+                <div v-for="i in packages" :key="i.Platform" class="column no-wrap items-center gap-md q-pa-xl" :style="`flex: 0 0 ${100 / packages.length}%;`">
                     <q-icon :name="i.poster" size="164px" />
                     <span class="text-h4 q-mb-xl">{{ i.Platform }}</span>
                     <div v-if="i.formats?.length > 0">
                         <div v-for="j in i.formats" :key="j.Format" class="row no-wrap q-mb-sm">
-                            <q-chip square :label="`${j.Format} :`" class="q-px-sm q-py-none" style="min-width: 6rem;" />
-                            <div class="row" style="max-width: 24rem;">
+                            <q-chip square :label="`${j.Format} :`" class="q-px-sm q-py-none" />
+                            <div class="row items-center" style="max-width: 24rem;">
                                 <q-btn
                                     v-for="k in j.versions"
                                     :key="k.Version"
-                                    dense
-                                    padding="none md"
+                                    dense no-caps
+                                    padding="none sm"
                                     color="primary"
+                                    class="q-ma-xs"
                                     @click="downloadFile(k.url)" 
                                 >
                                     <div class="row no-wrap gap-sm items-center">

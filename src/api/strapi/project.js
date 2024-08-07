@@ -704,6 +704,8 @@ export async function deleteTodo(todo_id,props) {
       res = await api.delete(`/todos/${todo_id}?card_id=${props?.card_id}`);
     } else if(props?.project_id){
       res = await api.delete(`/todos/${todo_id}?project_id=${props?.project_id}`);
+    } else if(props?.fingerprint){
+      res = await api.delete(`/todos/${todo_id}?fingerprint=${props?.fingerprint}`);
     } else {
       res = await api.delete(`/todos/${todo_id}`);
     }
