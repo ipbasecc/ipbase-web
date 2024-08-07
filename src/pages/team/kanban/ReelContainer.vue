@@ -13,7 +13,7 @@
       class="full-width q-space scroll-container flex-content"
       v-dragscroll="{
         target: '.q-scrollarea__container',
-        active: uiStore.dragRellscrollenable
+        active: uiStore.dragReelscrollEnable
       }"
       v-dragscroll.x="true"
       v-dragscroll.y="false"
@@ -41,7 +41,7 @@
           v-model="filteredCards"
           :animation="300"
           :delay="50"
-          :fallbackTolerance="2"
+          :fallbackTolerance="5"
           :forceFallback="true"
           handle=".dragItem"
           filter=".undrag"
@@ -69,6 +69,18 @@
             @mouseenter="disableUpload = true"
             @mouseleave="disableUpload = false"
           ></SegmentItem>
+          <template
+            v-if="
+              uiStore.createCard_in === columnRef.id && useAuths('create', ['card'])
+            "
+          >
+            <CreateSegment
+              :column_id="columnRef.id"
+              @createCannel="createCannel"
+              @closeCreate="closeCreate"
+              ref="CreateSegmentRef"
+            />
+          </template>
         </VueDraggable>
         <div
           v-if="filteredCards?.length > 0 && !uiStore.activeReel"
@@ -183,9 +195,9 @@ import {
   onUnmounted,
   nextTick,
 } from "vue";
-import draggable from "vuedraggable";
+import { i18n } from 'src/boot/i18n.js';
+import { VueDraggable } from 'vue-draggable-plus'
 import StatusMenu from "src/pages/team/components/user/StatusMenu.vue";
-
 import { useQuasar } from "quasar";
 import {
   updateColumn,
@@ -208,8 +220,6 @@ import { useMagicKeys } from "@vueuse/core";
 import SegmentItem from "../card/SegmentItem.vue";
 import CreateSegment from "../card/components/CreateSegment.vue";
 import Bottleneck from "bottleneck";
-import { i18n } from 'src/boot/i18n.js';
-import { VueDraggable } from 'vue-draggable-plus'
 
 const $t = i18n.global.t;
 
@@ -467,12 +477,12 @@ const cardDelete = (card_id) => {
 };
 const dragStart = () => {
   teamStore.cardDragging = true;
-  uiStore.dragRellscrollenable = false;
+  uiStore.dragReelscrollEnable = false;
   uiStore.draging = true;
 };
 const dragEnd = () => {
   teamStore.cardDragging = false;
-  uiStore.dragRellscrollenable = true;
+  uiStore.dragReelscrollEnable = true;
   uiStore.draging = false;
 };
 

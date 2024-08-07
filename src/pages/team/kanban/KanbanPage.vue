@@ -107,7 +107,7 @@
 
     <q-page-container>
       <q-page :class="uiStore?.draging ? 'unselected' : ''">
-        <q-resize-observer v-if="view_model === 'segment'" @resize="onResize" />
+        <q-resize-observer @resize="onResize" />
         <KanbanModel
           v-if="kanban_id"
           ref="KanbanModelRef"

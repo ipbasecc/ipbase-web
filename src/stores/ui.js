@@ -18,9 +18,10 @@ export default defineStore("ui", {
     enterCardID: void 0,
     activeReel: NaN,
     mainWindowSize: void 0,
+    mainWindowOffset: void 0,
     reelHeight: 160,
     reelHeight_SC: NaN,
-    dragRellscrollenable: true, // Reel拖拽横向滚动
+    dragReelscrollEnable: true, // Reel拖拽横向滚动
     dragKanbanScrollEnable: true, // 看板拖拽横向滚动
     dragscrollmove: false,
     dropIn: void 0,
