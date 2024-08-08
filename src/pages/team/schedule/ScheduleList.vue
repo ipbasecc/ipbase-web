@@ -24,7 +24,7 @@
             clickable
             v-ripple
             class="col radius-xs dragBar hovered-item overflow-hidden"
-            :class="actived_id === element.id ? 'border' : 'border-placeholder'"
+            :class="actived_id === element.id ? 'border active-sublistitem' : 'border-placeholder'"
             :active-class="` ${
               findColor_byIcon(element.icon)
                 ? `text-${findColor_byIcon(element.icon)}`

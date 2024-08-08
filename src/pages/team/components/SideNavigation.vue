@@ -7,7 +7,7 @@
           v-if="!isExternal && (!disabled?.includes('channels') || !disabled?.includes('projects'))"
           :class="`${
             teamStore?.mm_channel?.id === 'threads'
-              ? 'border'
+              ? 'border active-listitem'
               : 'border-placeholder'
           }
                   `"
@@ -31,7 +31,7 @@
           v-if="!disabled?.includes('channels')"
           :class="`${
             teamStore?.mm_channel?.id === 'intro' || !teamStore?.mm_channel
-              ? 'border'
+              ? 'border active-listitem'
               : 'border-placeholder'
           }
                 `"
@@ -63,7 +63,7 @@
             v-ripple
             :class="`${
               teamStore?.mm_channel?.id === i.mm_channel?.id
-                ? 'border'
+                ? 'border active-listitem'
                 : 'border-placeholder'
             }
                 ${i.auth && !i.auth?.read ? 'op-5' : ''}
@@ -250,7 +250,7 @@
               v-ripple
               :class="`${
                 teamStore?.project?.id === project.id
-                  ? 'border'
+                  ? 'border active-listitem'
                   : 'border-placeholder'
               } ${project.auth && !project.auth?.read ? 'op-5' : ''}`"
               class="overflow-hidden radius-xs q-pa-xs"

@@ -6,7 +6,7 @@
       v-ripple
       @click="gotoChannel(project_mm_channel)"
       class="radius-xs overflow-hidden q-mb-xs"
-      :class="channel_id === project_mm_channel?.id ? 'border' : ''"
+      :class="channel_id === project_mm_channel?.id ? 'border active-sublistitem' : ''"
     >
       <q-item-section avatar>
         <q-avatar square :size="`32`" class="radius-xs">
@@ -33,7 +33,7 @@
         v-ripple
         @click="showDirectChat(i)"
         class="radius-xs overflow-hidden q-mb-xs"
-        :class="directTargetID === i.mm_profile?.id ? 'border' : ''"
+        :class="directTargetID === i.mm_profile?.id ? 'border active-sublistitem' : ''"
       >
         <q-item-section avatar>
           <UserAvatar

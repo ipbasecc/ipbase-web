@@ -7,7 +7,7 @@
         clickable
         v-ripple
         class="radius-xs overflow-hidden"
-        :class="activeStorage === i.id ? 'border' : 'border-placeholder'"
+        :class="activeStorage === i.id ? 'border active-sublistitem' : 'border-placeholder'"
         :active-class="`${$q.dark.mode ? 'text-grey-3' : 'text-grey-9'}`"
         @click="enterStorage(i.id)"
       >

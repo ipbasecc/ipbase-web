@@ -4,7 +4,7 @@
         v-if="kanbanRef"
         class="hovered-item radius-xs q-pa-xs"
         :class="`
-        ${isActived ? 'border' : 'border-placeholder'} ${
+        ${isActived ? 'border active-sublistitem' : 'border-placeholder'} ${
         useAuths('order', ['kanban']) && $q.screen.gt.xs ? ' dragBar' : ''}
       `"
         clickable

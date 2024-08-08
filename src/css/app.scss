@@ -11,7 +11,16 @@ a {
   overflow: hidden;
 }
 .body--light.desktop.electron{
-  background-color: #003569;
+  background: #003569;
+}
+.body--dark.desktop.electron{
+  background: #000000;
+}
+.body--dark .app_edge{
+  border-color: #5f5f5f;
+}
+.body--light .app_edge{
+  border-color: #727272 !important;
 }
 ::-webkit-scrollbar {
   width: 6px;
@@ -815,7 +824,22 @@ input:-internal-autofill-selected {
   background: linear-gradient(90deg, transparent, white 80%);
 }
 .active-listitem {
-  background: linear-gradient(107deg, #0091ff, #004dff 80%);
+  background: linear-gradient(45deg, #001223, #001855 80%);
+  box-shadow: 4px 4px 20px -10px #000a2d;
+}
+
+.body--dark .active-listitem {
+  background: linear-gradient(45deg, #2a2727, #373737 80%);
+  box-shadow: 4px 4px 20px -10px #00222c;
+}
+.active-sublistitem {
+  background: linear-gradient(45deg, #ffffff, #ebebeb 80%);
+  box-shadow: -3px 8px 40px -14px #002f71;
+}
+
+.body--dark .active-sublistitem {
+  background: linear-gradient(45deg, #0e0e0e, #222222 80%);
+  box-shadow: 4px 4px 20px -10px #00060e;
 }
 .bg-primary-active {
   background: rgb(25 118 210 / 8%) !important;
