@@ -120,9 +120,9 @@ watchEffect(() => {
 const isInititalized = ref(true);
 // 必须有token时才判断要不要显示初始化用户组件
 const hasToken = computed(() => {
-  _strapi_token = localStorage.getItem('');
-  _mm_token = localStorage.getItem('');
-  return _strapi_token && _mm_token
+  let _strapi_jwt = localStorage.getItem('jwt');
+  let _mm_token = localStorage.getItem('mmtoken');
+  return _strapi_jwt && _mm_token
 })
 
 const todogroups = ref();
@@ -149,7 +149,7 @@ const init = async () => {
     await localforage.setItem("init", JSON.parse(JSON.stringify(_res?.data)));
   }
 };
-onMounted(async() => {
+const loginAndInit = async () => {
   let strapiLoged;
   let mmLoged;
 
@@ -167,6 +167,14 @@ onMounted(async() => {
     userStore.logged = true;
     init();
   }
+}
+onMounted(async() => {
+  await loginAndInit();
+  setTimeout(async() => {
+    if(!hasToken.value || !teamStore.init){
+      await loginAndInit();
+    }
+  }, 1000);
 });
 const needLogin = computed(() => 
   uiStore.axiosError?.response?.data?.id === 'api.context.session_expired.app_error'
