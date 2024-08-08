@@ -236,9 +236,6 @@ importers:
       file-saver:
         specifier: ^2.0.5
         version: 2.0.5
-      fingerprintjs2:
-        specifier: ^2.1.4
-        version: 2.1.4
       flag-icons:
         specifier: ^7.2.3
         version: 7.2.3
@@ -3706,10 +3703,6 @@ packages:
   find-up@5.0.0:
     resolution: {integrity: sha512-78/PXT1wlLLDgTzDs7sjq9hzz0vXD+zn+7wypEe4fXQxCmdmqfGsEPQxmiCSQI3ajFV91bVSsvNtrJRiW6nGng==}
     engines: {node: '>=10'}
-
-  fingerprintjs2@2.1.4:
-    resolution: {integrity: sha512-veP2yVsnYvjDVkzZMyIEwpqCAQfsBLH+U4PK5MlFAnLjZrttbdRqEArE1fPcnJFz5oS5CrdONbsV7J6FGpIJEQ==}
-    deprecated: Package has been renamed to @fingerprintjs/fingerprintjs. Install @fingerprintjs/fingerprintjs to get updates.
 
   flag-icons@7.2.3:
     resolution: {integrity: sha512-X2gUdteNuqdNqob2KKTJTS+ZCvyWeLCtDz9Ty8uJP17Y4o82Y+U/Vd4JNrdwTAjagYsRznOn9DZ+E/Q52qbmqg==}
@@ -10717,8 +10710,6 @@ snapshots:
     dependencies:
       locate-path: 6.0.0
       path-exists: 4.0.0
-
-  fingerprintjs2@2.1.4: {}
 
   flag-icons@7.2.3: {}
 
