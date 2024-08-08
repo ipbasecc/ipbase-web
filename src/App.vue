@@ -1,10 +1,10 @@
 <template>
-<!--   <div class="absolute z-max">serverInfo： {{ uiStore.serverInfo }}</div>-->
   <router-view
     :class="`
       ${uiStore?.draging ? 'unselected' : ''}
     `"
   />
+  <div class="absolute-full z-max border pointer-cross radius-xs overflow-hidden" />
   <transition>
     <div
       v-if="!uiStore.pageLoaded"

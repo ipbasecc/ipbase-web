@@ -27,7 +27,7 @@ let mainWindow;
 // 读取或初始化缩放设置
 function getZoomFactor() {
   const userDataPath = app.getPath("userData");
-  const configPath = path.join(userDataPath, "config.json");
+  const configPath = path.resolve(userDataPath, "config.json");
   try {
     const data = fs.readFileSync(configPath, "utf8");
     return JSON.parse(data).zoom || 1;

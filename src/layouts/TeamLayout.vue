@@ -1,6 +1,6 @@
 <template>
   <template v-if="teamStore.init">
-    <div v-if="!isInititalized" class="absolute-full"
+    <div v-if="!isInititalized" class="absolute-full radius-xs overflow-hidden"
     :style="$q.screen.gt.md ? 'padding: 10vh 10vw' : 'padding: 0'">
         <InitializationUser class="fit" />
     </div>
@@ -8,7 +8,7 @@
       <q-layout
         v-if="!needLogin"
         view="lHr LpR lfr"
-        class="absolute-full border-negative"
+        class="absolute-full border-negative radius-xs overflow-hidden"
       >
         <q-drawer
           v-if="$q.screen.gt.xs"

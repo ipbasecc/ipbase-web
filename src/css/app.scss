@@ -2,6 +2,17 @@
 a {
   text-decoration: none;
 }
+#q-app {
+  -webkit-border-radius: 0.35rem;
+  -moz-border-radius: 0.35rem;
+  -ms-border-radius: 0.35rem;
+  -o-border-radius: 0.35rem;
+  border-radius: 0.35rem;
+  overflow: hidden;
+}
+.body--light.desktop.electron{
+  background-color: #003569;
+}
 ::-webkit-scrollbar {
   width: 6px;
   color: rgba(50, 50, 50, 0);
@@ -41,6 +52,9 @@ body {
 .v-enter-from,
 .v-leave-to {
   opacity: 0;
+}
+.pointer-cross {
+  pointer-events: none;
 }
 
 input:-internal-autofill-selected {
