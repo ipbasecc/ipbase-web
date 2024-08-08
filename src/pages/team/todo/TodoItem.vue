@@ -163,6 +163,7 @@
       >
         <q-btn
           flat
+          no-caps
           dense
           :label="$t('cancel')"
           padding="xs sm"
@@ -170,8 +171,8 @@
         />
         <q-space />
         <q-btn
-          :disable="!todo_params.data.content"
           dense
+          no-caps
           color="primary"
           :label="$t('confirm')"
           padding="xs sm"

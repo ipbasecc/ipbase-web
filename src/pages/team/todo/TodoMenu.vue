@@ -1,5 +1,5 @@
 <template>
-  <q-list bordered dense class="radius-sm q-pa-xs">
+  <q-list bordered dense class="radius-sm q-pa-xs" :class="$q.dark.mode ? 'bg-grey-10' : 'bg-grey-1'">
     <template v-if="element.mm_thread && !uiStore.isShared">
       <q-item
         clickable

@@ -208,7 +208,6 @@
         v-if="$q.screen.gt.xs"
         class="full-width q-space scroll-container flex-content"
         :id="columnRef.id"
-        ref="scrollAreaRef"
         @scroll="scrollInfo"
       >
         <draggable
@@ -587,7 +586,6 @@ import {
 } from "src/hooks/global/useStore.js";
 import { useMagicKeys } from "@vueuse/core";
 import { i18n } from 'src/boot/i18n.js';
-import { uniqueById } from "src/hooks/utilits.js";
 
 const $t = i18n.global.t;
 
@@ -857,8 +855,6 @@ const setDefaultCreateCardType = async (val) => {
   }
 };
 
-// 使用ref函数或shallowRef函数来创建cards变量
-// 使用ref函数或shallowRef函数来创建filteredCards变量
 watch(
   filter_txt,
   () => {
@@ -902,7 +898,7 @@ const scrollInfo = ({ verticalSize, verticalContainerSize }) => {
   hasScrollBar.value = verticalSize > verticalContainerSize;
 };
 const dragHandler = (val) => {
-  if (uiStore.draging) return;
+  if (uiStore.draging || $q.screen.lt.sm) return;
   if (hasScrollBar.value) {
     uiStore.scrollX_byWheel = val;
   } else {
@@ -913,7 +909,6 @@ const dragHandler = (val) => {
   uiStore.dragKanbanScrollEnable = val;
 };
 
-// this data are all for watch, do not use it in anywhere!
 const syncStoreByColumn = () => {
   teamStore.kanban = {
     ...teamStore.kanban,

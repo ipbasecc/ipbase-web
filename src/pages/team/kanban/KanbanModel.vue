@@ -15,8 +15,7 @@
       ref="scrollAreaRef"
       @wheel="handleScroll"
     >
-      <div
-        v-if="kanban"
+      <div v-if="kanban"
         class="relative-position"
         :class="`${view_model !== 'list' ? '' : ''} ${
           uiStore.activeReel ? 'column no-wrap' : 'q-pa-sm '
@@ -186,10 +185,11 @@ import { genCardName } from "src/hooks/utilits.js";
 import localforage from "localforage";
 import ReelContainer from "./ReelContainer.vue";
 import SegmentPage from "../card/SegmentPage.vue";
-import { onKeyStroke } from "@vueuse/core";
 import { i18n } from 'src/boot/i18n.js';
+import { useQuasar } from "quasar";
 
 const $t = i18n.global.t;
+const $q = useQuasar();
 
 const userId = computed(() => teamStore.init?.id);
 const props = defineProps({
@@ -317,12 +317,6 @@ watch(kanban_id, async () => {
   }
 },{immediate: true,deep:false})
 
-onKeyStroke(["F5"], (e) => {
-  if (uiStore.disable_shortcut) return;
-  e.preventDefault();
-  initKanban(kanban_id.value);
-});
-
 const reelHeight = computed( () =>
   (uiStore.mainWindowSize?.height - 48) / _kanbanSource.value?.columns?.length - 64 || 240
 );
@@ -332,7 +326,7 @@ watch(reelHeight, () => {
 });
 const scrollAreaRef = ref(null);
 const handleScroll = (event) => {
-  if (!uiStore.scrollX_byWheel) return;
+  if (!uiStore.scrollX_byWheel || uiStore.draging || $q.screen.lt.sm) return;
   uiStore.draging = true;
   event.preventDefault();
   const scroolPosition = scrollAreaRef.value?.getScrollPosition();

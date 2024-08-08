@@ -53,6 +53,7 @@ export default {
   connect_refused_header: "连接被拒绝！",
   connect_refused_caption: "服务器可能离线，请返回登陆页面，修改服务器地址后重新连接",
   connect_refused_btn_label: "重新登陆",
+  connect_refused_btn_pageRefresh_label: "刷新重试",
   connect_refused_login_caption: "服务器可能离线，修改服务器地址后重新连接",
   connect_refused_login_btn_label: "修改服务器地址",
 

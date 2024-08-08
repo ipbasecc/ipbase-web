@@ -53,6 +53,7 @@ export default {
   connect_refused_header: "Connection refused!",
   connect_refused_caption: "The server may be offline. Please return to the login page, modify the server URL, and reconnect.",
   connect_refused_btn_label: "Relogin",
+  connect_refused_btn_pageRefresh_label: "Refresh and Retry",
   connect_refused_login_caption: "The server may be offline, please modify the server URL and reconnect.",
   connect_refused_login_btn_label: "Modify server URL",
 

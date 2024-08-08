@@ -53,6 +53,7 @@ export default {
   connect_refused_header: "Verbindung abgelehnt!",
   connect_refused_caption: "Server ist möglicherweise offline, bitte kehren Sie zur Anmeldeseite zurück, ändern Sie die Serveradresse und verbinden Sie sich erneut",
   connect_refused_btn_label: "Erneut anmelden",
+  connect_refused_btn_pageRefresh_label: "Aktualisieren und erneut versuchen",
   connect_refused_login_caption: "Server ist möglicherweise offline, ändern Sie die Serveradresse und verbinden Sie sich erneut",
   connect_refused_login_btn_label: "Serveradresse ändern",
 
