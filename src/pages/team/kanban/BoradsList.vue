@@ -52,7 +52,7 @@
                     useAuths('order', ['group']) ? 'dragBar' : ''
                   "
                 >
-                  {{ element.name }}
+                  {{ element.name === 'Initial_Group' ? $t(element.name) : element.name }}
                 </span>
                 <q-btn
                   v-if="

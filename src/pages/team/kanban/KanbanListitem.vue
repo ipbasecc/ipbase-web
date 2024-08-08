@@ -10,7 +10,7 @@
         clickable
         v-ripple
         @click.stop="enterKanban(kanbanRef)">
-      <q-item-section>{{ kanbanRef.title }}</q-item-section>
+      <q-item-section>{{ kanbanRef.title === 'Initial_Kanban' ? $t(kanbanRef.title) : kanbanRef.title }}</q-item-section>
       <q-item-section side>
         <q-btn
           v-if="

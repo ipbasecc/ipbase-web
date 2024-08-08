@@ -22,7 +22,7 @@
           :class="useAuths('order', ['column']) ? 'dragBar' : ''"
           @mouseenter="uiStore.dragKanbanScrollEnable = false"
           @mouseleave="uiStore.dragKanbanScrollEnable = true"
-          >{{ column_name }}</span
+          >{{ column_name === 'Initial_Column' ? $t(column_name) : column_name }}</span
         >
         <q-btn
           v-if="
