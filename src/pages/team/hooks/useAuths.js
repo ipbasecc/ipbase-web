@@ -8,6 +8,10 @@ const cardMembers = computed(() => teamStore.team?.card_members || []);
 const teamMemberRoles = computed(() => teamStore.team?.member_roles || []);
 const projectMemberRoles = computed(() => teamStore.project?.member_roles || []);
 const cardMemberRoles = computed(() => teamStore.team?.member_roles || []);
+
+const _members = computed(() => [...teamMembers.value, ...projectMembers.value, ...cardMembers.value]);
+const _roles = computed(() => [...teamMemberRoles.value, ...projectMemberRoles.value, ...cardMemberRoles.value]);
+
 // 缓存Map
 const authsCache = new Map();
 
@@ -19,23 +23,26 @@ function getCacheKey(field, collections, members, roles) {
 }
 
 // 优化前的useAuths hook
-export function useAuths(field, collections) {
-  const _members = uniqueById([...teamMembers.value, ...projectMembers.value, ...cardMembers.value]);
-  const _roles = uniqueById([...teamMemberRoles.value, ...projectMemberRoles.value, ...cardMemberRoles.value]);
+export function useAuths(field, collections, from) {
+  if(from){
+    console.log('_members', _members.value);
+    console.log('_roles', _roles.value);
+    
+  }
   // console.log('members', members);
   // 生成缓存键
-  const cacheKey = getCacheKey(field, collections, _members, _roles);
+  const cacheKey = getCacheKey(field, collections, _members.value, _roles.value);
 
   // 检查缓存中是否有结果
-  if (authsCache.has(cacheKey)) {
-    return authsCache.get(cacheKey);
-  }
+  // if (authsCache.has(cacheKey)) {
+  //   return authsCache.get(cacheKey);
+  // }
 
-  if (!_roles?.length === 0 || !_roles?.length === 0) return false;
+  if (!_roles.value?.length === 0 || !_roles.value?.length === 0) return false;
   // 优化：将成员角色的筛选提前到只有当用户ID匹配时才进行
   // 这样可以减少不必要的计算
   const userId = Number(userStore.userId);
-  const filteredMembers = _members.filter(member => member.by_user?.id === userId);
+  const filteredMembers = _members.value.filter(member => member.by_user?.id === userId);
   // console.log('projectMembers', projectMembers.value);
   
   const _userMember_roles = filteredMembers
@@ -43,7 +50,7 @@ export function useAuths(field, collections) {
     .flat(3);
 
   // console.log('_userMember_roles', _userMember_roles);
-  const _member_roles = _roles.filter(role => _userMember_roles.includes(role.id))?.filter(Boolean);
+  const _member_roles = _roles.value.filter(role => _userMember_roles.includes(role.id))?.filter(Boolean);
   // console.log('_member_roles', _member_roles);
 
     // 立即执行函数，返回一个函数

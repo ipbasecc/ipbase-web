@@ -1,6 +1,6 @@
 <template>
   <q-list v-if="teamStore.project && boards" class="fit column no-wrap q-pa-xs">
-    <template v-if="useAuths('read', ['board'])">
+    <template v-if="useAuths('read', ['board'], 'boardList')">
       <div
         v-if="
           multiple_boards || isEmpty || teamStore.navigation === 'classroom'
