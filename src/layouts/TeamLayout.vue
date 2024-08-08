@@ -1,6 +1,6 @@
 <template>
   <template v-if="teamStore.init">
-    <div v-if="!isInititalized" class="absolute-full radius-xs overflow-hidden"
+    <div v-if="!isInititalized && hasToken" class="absolute-full radius-xs overflow-hidden"
     :style="$q.screen.gt.md ? 'padding: 10vh 10vw' : 'padding: 0'">
         <InitializationUser class="fit" />
     </div>
@@ -118,6 +118,12 @@ watchEffect(() => {
 });
 
 const isInititalized = ref(true);
+// 必须有token时才判断要不要显示初始化用户组件
+const hasToken = computed(() => {
+  _strapi_token = localStorage.getItem('');
+  _mm_token = localStorage.getItem('');
+  return _strapi_token && _mm_token
+})
 
 const todogroups = ref();
 const init = async () => {
@@ -143,7 +149,7 @@ const init = async () => {
     await localforage.setItem("init", JSON.parse(JSON.stringify(_res?.data)));
   }
 };
-onBeforeMount(async() => {
+onMounted(async() => {
   let strapiLoged;
   let mmLoged;
 

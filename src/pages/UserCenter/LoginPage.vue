@@ -201,7 +201,7 @@ import {
   onMounted,
   onUnmounted,
   computed,
-  onBeforeMount,
+  nextTick,
 } from "vue";
 import { useRouter } from "vue-router";
 import { login } from "src/apollo/api/api.js";
@@ -219,9 +219,10 @@ const me = ref();
 
 const isLogined = ref(false);
 
-onBeforeMount(() => {
-  let strapi_jwt = computed(() => localStorage.getItem("jwt"));
-  let mm_token = computed(() => localStorage.getItem("mmtoken"));
+let strapi_jwt = computed(() => localStorage.getItem("jwt"));
+let mm_token = computed(() => localStorage.getItem("mmtoken"));
+onMounted(async() => {
+  await nextTick();
   if (strapi_jwt.value && mm_token.value) {
     isLogined.value = true;
     router.push("/teams");

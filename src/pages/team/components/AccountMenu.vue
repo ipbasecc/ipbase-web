@@ -308,8 +308,6 @@ getUserStatusFn();
 // 注销动作开始
 const confirmOut = ref(false);
 const logout = async () => {
-  await router.push("/login");
-  await clearLocalDB('AccountMenu.vue');
   localStorage.setItem(
     "isViewedIds",
     JSON.stringify(userStore.viewed.map((i) => i.id))
@@ -320,6 +318,8 @@ const logout = async () => {
   teamStore.$reset();
   await mmlogout();
   confirmOut.value = false;
+  await clearLocalDB('AccountMenu.vue');
+  await router.push("/login");
 };
 // 注销动作结束
 
