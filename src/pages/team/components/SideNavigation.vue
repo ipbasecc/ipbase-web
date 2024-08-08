@@ -28,7 +28,7 @@
         </q-item>
         <!-- 事务沙盘-->
         <q-item
-          v-if="!disabled?.includes('channels')"
+          v-if="!disabled?.includes('projects')"
           :class="`${
             teamStore?.mm_channel?.id === 'intro' || !teamStore?.mm_channel
               ? 'border active-listitem'

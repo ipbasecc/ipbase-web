@@ -4,7 +4,7 @@
       ${uiStore?.draging ? 'unselected' : ''}
     `"
   />
-  <div class="absolute-full z-max border app_edge pointer-cross radius-xs overflow-hidden" />
+  <div class="absolute-full z-max border app_edge pointer-cross" />
   <transition>
     <div
       v-if="!uiStore.pageLoaded"

@@ -411,18 +411,18 @@ const isMax = ref(false);
 onMounted(async () => {
   if (isElectron.value) {
     await nextTick();
-    isMax.value = window.windowAPI.isMaximized();
+    isMax.value = window.windowAPI?.isMaximized();
   }
 });
 function minimize() {
   if (isElectron.value) {
-    window.windowAPI.minimize();
+    window.windowAPI?.minimize();
   }
 }
 
 function toggleMaximize() {
   if (isElectron.value) {
-    window.windowAPI.toggleMaximize(isMax.value);
+    window.windowAPI?.toggleMaximize(isMax.value);
     isMax.value = !isMax.value;
   }
 }
@@ -430,7 +430,7 @@ function toggleMaximize() {
 const hoverClose = ref(false);
 function closeApp() {
   if (isElectron.value) {
-    window.windowAPI.close();
+    window.windowAPI?.close();
   }
 }
 
