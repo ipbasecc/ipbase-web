@@ -312,7 +312,7 @@ export default configure((ctx) => {
           ],
         },
         mac: {
-          icon: "build/icons/icon.icns",
+          icon: fileURLToPath(new URL("./src-electron/icons/icon.icns", import.meta.url)),
           target: ["dmg"],
           identity: null, // 跳过签名步骤
         },
