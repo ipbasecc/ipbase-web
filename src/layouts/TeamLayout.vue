@@ -1,6 +1,6 @@
 <template>
   <template v-if="teamStore.init">
-    <div v-if="!teamStore.init.initialization" class="absolute-full"
+    <div v-if="!isInititalized" class="absolute-full"
     :style="$q.screen.gt.md ? 'padding: 10vh 10vw' : 'padding: 0'">
         <InitializationUser class="fit" />
     </div>
@@ -89,7 +89,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watchEffect, onUnmounted } from "vue";
+import { ref, onMounted, computed, watchEffect, onUnmounted, onBeforeMount } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import AccountMenu from "../pages/team/components/AccountMenu.vue";
 import AppList from "components/VIewComponents/AppList.vue";
@@ -115,48 +115,55 @@ watchEffect(() => {
   }
 });
 
+const isInititalized = ref(true);
+
 const todogroups = ref();
 const init = async () => {
-  const process = (res) => {
-    teamStore.init = res.data;
-    if(res.data?.default_team){
-      teamStore.team = res.data?.default_team;
-      teamStore.mm_team = res.data?.default_team?.mm_team;
+  const process = (res, _from) => {
+    // console.log(_from, res);
+    isInititalized.value = res.initialization;
+    teamStore.init = res;
+    if(res.default_team){
+      teamStore.team = res.default_team;
+      teamStore.mm_team = res.default_team?.mm_team;
     }
-    todogroups.value = res.data.todogroups;
+    todogroups.value = res.todogroups;
     teamStore.need_refecth_projects = false;
   };
   const cache = await localforage.getItem("init");
   if (cache) {
-    let res = {};
-    res.data = cache;
-    process(res);
+    // console.log('cache', cache);
+    process(cache, 'cache');
   }
   const _res = await init_user();
-  if (_res) {
-    process(_res);
+  if (_res?.data) {
+    process(_res.data, 'fetch');
     await localforage.setItem("init", JSON.parse(JSON.stringify(_res?.data)));
   }
 };
+onBeforeMount(async() => {
+  let strapiLoged;
+  let mmLoged;
 
+  const _strapi_me =await fetch_StrapiMe();
+  if(_strapi_me) {
+    strapiLoged = true;
+  }
+
+  const _mm_me = await fetch_MmMe();
+  if(_mm_me) {
+    mmLoged = true;
+  }
+
+  if(strapiLoged && mmLoged) {
+    userStore.logged = true;
+    init();
+  }
+});
 const needLogin = computed(() => 
   uiStore.axiosError?.response?.data?.id === 'api.context.session_expired.app_error'
   || uiStore.axiosError?.response?.data?.error?.name === 'UnauthorizedError'
 );
-let strapiLoged;
-let mmLoged;
-fetch_StrapiMe().then(() => {
-  strapiLoged = true;
-  init();
-});
-fetch_MmMe().then(() => {
-  mmLoged = true;
-});
-watchEffect(() => {
-  if(strapiLoged && mmLoged) {
-    userStore.logged = true;
-  }
-});
 
 const need_show_footer = ["teams", "AffairsPage", "team_threads_homepage"];
 const route = useRoute();
