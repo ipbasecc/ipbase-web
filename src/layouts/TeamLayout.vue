@@ -130,6 +130,13 @@ const init = async () => {
   const process = (res, _from) => {
     // console.log(_from, res);
     isInititalized.value = res.initialization;
+    if(res.config?.theme === 'lighter'){
+      $q.dark.set(false);
+    } else if(res.config?.theme === 'dark'){
+      $q.dark.set(false);
+    } else {
+      $q.dark.set($q.dark.isActive);
+    }
     teamStore.init = res;
     if(res.default_team){
       teamStore.team = res.default_team;
