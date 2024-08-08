@@ -133,7 +133,7 @@ const init = async () => {
     if(res.config?.theme === 'lighter'){
       $q.dark.set(false);
     } else if(res.config?.theme === 'dark'){
-      $q.dark.set(false);
+      $q.dark.set(true);
     } else {
       $q.dark.set($q.dark.isActive);
     }
