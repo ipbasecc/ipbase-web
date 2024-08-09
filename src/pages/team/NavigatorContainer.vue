@@ -185,6 +185,7 @@
             </div>
             <SideNavigation v-else-if="enalbe_project || enalbe_channel"
               class="q-space"
+              :width="navDrawerWidth"
               :class="team.isExternal ? 'q-pt-sm' : ''"
             />
           </template>

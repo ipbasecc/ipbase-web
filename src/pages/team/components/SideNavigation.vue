@@ -1,6 +1,6 @@
 <template>
   <q-scroll-area class="q-px-sm">
-    <q-list dense class="column gap-xs">
+    <q-list dense class="column gap-xs" :style="`width: ${width - 16}px;`">
       <template v-if="$q.screen.gt.xs">
         <!-- 讨论主题-->
         <q-item v-if="enable_threads"
@@ -10,7 +10,7 @@
               : 'border-placeholder'
           }
                   `"
-          class="overflow-hidden radius-xs q-pa-xs hovered-item"
+          class="overflow-hidden radius-xs q-pa-xs hovered-item full-width"
           clickable
           v-ripple
           @click="enterThreads()"
@@ -18,7 +18,7 @@
           <q-item-section side class="q-pr-sm">
             <q-icon name="speaker_notes" :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`" />
           </q-item-section>
-          <q-item-section> {{ $t('navigation_threads') }} </q-item-section>
+          <q-item-section class="overflow-hidden"> {{ $t('navigation_threads') }} </q-item-section>
           <div
             v-if="teamStore?.mm_channel?.id === 'threads'"
             class="bg-primary absolute-left"
@@ -33,7 +33,7 @@
               : 'border-placeholder'
           }
                 `"
-          class="overflow-hidden radius-xs q-pa-xs hovered-item"
+          class="overflow-hidden radius-xs q-pa-xs hovered-item full-width"
           clickable
           v-ripple
           @click="enterIntro('intro')"
@@ -41,7 +41,7 @@
           <q-item-section side class="q-pr-sm">
             <q-icon name="developer_board" :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`" />
           </q-item-section>
-          <q-item-section> {{ $t('navigation_Quadrant') }} </q-item-section>
+          <q-item-section class="overflow-hidden"> {{ $t('navigation_Quadrant') }} </q-item-section>
           <div
             v-if="teamStore?.mm_channel?.id === 'intro'"
             class="bg-primary absolute-left"
@@ -66,7 +66,7 @@
             }
                 ${i.auth && !i.auth?.read ? 'op-5' : ''}
                 `"
-            class="radius-xs q-pa-xs hovered-item overflow-hidden"
+            class="radius-xs q-pa-xs hovered-item overflow-hidden full-width"
             @click="enterChannel(i)"
           >
             <q-item-section side class="q-pr-sm" @mouseenter="deEnter = false">
@@ -107,7 +107,7 @@
                 </q-menu>
               </q-btn>
             </q-item-section>
-            <q-item-section @mouseenter="deEnter = false">
+            <q-item-section @mouseenter="deEnter = false" class="overflow-hidden">
               <div class="row no-wrap gap-xs q-pr-xs">
                 <span class="row flex-center">{{ initedChannelByMM.includes(i.name) ? $t(i.name) : i.name }}</span>
                 <UnreadBlock :mm_channel_id="i.mm_channel?.id" />
@@ -192,13 +192,13 @@
           v-else-if="!openCreateChannel"
           clickable
           v-ripple
-          class="border-dashed radius-xs"
+          class="border-dashed radius-xs q-pa-xs hovered-item overflow-hidden full-width"
           @click="openCreateChannel = true"
         >
           <q-item-section side>
             <q-icon name="add" />
           </q-item-section>
-          <q-item-section>
+          <q-item-section class="overflow-hidden">
             <q-item-label>{{ $t('create_channel') }}</q-item-label>
           </q-item-section>
         </q-item>
@@ -251,7 +251,7 @@
                   ? 'border active-listitem'
                   : 'border-placeholder'
               } ${project.auth && !project.auth?.read ? 'op-5' : ''}`"
-              class="overflow-hidden radius-xs q-pa-xs"
+              class="overflow-hidden radius-xs q-pa-xs full-width"
               @click="enterProject(project)"
             >
               <q-item-section side style="width: 44px" class="q-pr-sm">
@@ -264,7 +264,7 @@
                   class="radius-xs"
                 />
               </q-item-section>
-              <q-item-section>
+              <q-item-section class="overflow-hidden">
                 <q-item-label>
                   <div class="row no-wrap gap-xs">
                     <span>{{ project.name }}</span>
@@ -292,13 +292,13 @@
           v-else
           clickable
           v-ripple
-          class="border-dashed radius-xs"
+          class="border-dashed radius-xs q-pa-xs hovered-item overflow-hidden full-width"
           @click="createProject()"
         >
           <q-item-section side>
             <q-icon name="add" />
           </q-item-section>
-          <q-item-section>
+          <q-item-section class="overflow-hidden">
             <q-item-label>{{ $t('create_project') }}</q-item-label>
           </q-item-section>
         </q-item>
@@ -350,6 +350,13 @@ import {
   enalbe_project,
   enalbe_channel,
 } from "src/pages/team/hooks/useConfig.js";
+
+const props = defineProps({
+  width: {
+    type: Number,
+    default: NaN,
+  },
+});
 
 const $t = i18n.global.t;
 
