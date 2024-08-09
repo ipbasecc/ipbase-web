@@ -43,11 +43,16 @@ function saveZoomFactor(zoom) {
   fs.writeFileSync(configPath, JSON.stringify({ zoom }));
 }
 function registerGlobalShortcuts() {
+  function setAndSaveZoomFactor(zoom) {
+    mainWindow.webContents.setZoomFactor(zoom);
+    saveZoomFactor(zoom);
+  }
   // 注册 Ctrl + = 缩放增加
   globalShortcut.register("CommandOrControl+=", () => {
     if (mainWindow) {
       const currentZoom = mainWindow.webContents.getZoomFactor();
-      mainWindow.webContents.setZoomFactor(currentZoom + 0.1);
+      const zoom = currentZoom + 0.1;
+      setAndSaveZoomFactor(zoom);
     }
   });
 
@@ -55,7 +60,14 @@ function registerGlobalShortcuts() {
   globalShortcut.register("CommandOrControl+-", () => {
     if (mainWindow) {
       const currentZoom = mainWindow.webContents.getZoomFactor();
-      mainWindow.webContents.setZoomFactor(currentZoom - 0.1);
+      const zoom = currentZoom - 0.1;
+      setAndSaveZoomFactor(zoom);
+    }
+  });
+
+  globalShortcut.register("CommandOrControl+0", () => {
+    if (mainWindow) {
+      setAndSaveZoomFactor(1);
     }
   });
 }
@@ -112,7 +124,7 @@ function createWindow() {
       contextIsolation: true, // 是否在独立 JavaScript 环境运行
       webSecurity: true,
       csp: csp,
-      zoomFactor: zoom,
+      // zoomFactor: zoom,
     },
   });
   enable(mainWindow.webContents);
@@ -122,9 +134,9 @@ function createWindow() {
     mainWindow.loadFile("index.html");
   }
   // // mainWindow.webContents.setZoomFactor(1.5);
-  // mainWindow.once('ready-to-show', () => {
-  //   mainWindow.webContents.setZoomFactor(1);
-  // });
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.webContents.setZoomFactor(zoom);
+  });
   // disable default menu of system
   const template = [];
   const menu = Menu.buildFromTemplate(template);
