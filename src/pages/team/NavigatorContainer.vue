@@ -42,7 +42,7 @@
           <q-btn
             v-if="
               teamStore.project &&
-              !teamStore.team?.isExternal &&
+              isExternal &&
               uiStore.app === 'teams'
             "
             :flat="!uiStore.isFocusMode"
@@ -186,7 +186,7 @@
             <SideNavigation v-else-if="enalbe_project || enalbe_channel"
               class="q-space"
               :width="navDrawerWidth"
-              :class="team.isExternal ? 'q-pt-sm' : ''"
+              :class="isExternal ? 'q-pt-sm' : ''"
             />
           </template>
           <TeamList
@@ -248,7 +248,7 @@
           class="absolute-full flex flex-center"
           :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-3'"
         >
-          <WelcomePage v-if="!disabled?.includes('project')" />
+          <WelcomePage v-if="enalbe_project" />
           <BgBrand v-else />
         </div>
       </q-page>
@@ -290,7 +290,6 @@ import FileTransfer from "pages/team/components/widgets/icons/FileTransfer.vue";
 import BgBrand from "src/components/VIewComponents/BgBrand.vue";
 import {
   isExternal,
-  disabled,
   enalbe_project,
   enalbe_channel,
 } from "src/pages/team/hooks/useConfig.js";

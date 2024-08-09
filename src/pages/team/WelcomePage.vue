@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="axisData?.length > 0"
+    v-if="axisData"
     v-bind="$attrs"
     class="absolute-full"
     ref="quadrantChartRef"
@@ -89,7 +89,7 @@ fetch_StrapiMe().then((res) => {
   me.value = res;
 });
 
-let axisData = ref();
+let axisData = ref([]);
 
 const cards = ref([]);
 const cards_page = ref(1);
