@@ -156,6 +156,7 @@ import {
   board_type,
 } from "./BoradsList.js";
 import { ensureTrailingSlash } from 'src/hooks/utilits.js'
+import { getProjectNav } from "src/pages/team/components/SideNavigation.js";
 
 const props = defineProps({
   project_id: {
@@ -172,11 +173,10 @@ const route = useRoute();
 const router = useRouter();
 onMounted(async() => {
   if(!kanban_id.value && project_id.value) {
-    const res = await localforage.getItem(`___last_kanban_of_project_${project_id.value}`);
+    let nva = await getProjectNav(project_id.value);
+    const res = await localforage.getItem(`___last_${nva}_of_project_${project_id.value}`);
     if(res) {
       await router.push(`${ensureTrailingSlash(route.path)}${res.id}`);
-      // console.log(route);
-      
     }
   }
 })

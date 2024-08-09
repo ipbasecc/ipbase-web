@@ -302,7 +302,6 @@ const initKanban = async (kid) => {
     }
     const fetch = await getKanban(kid);
     if (fetch) {
-      // init_yjs(fetch);
       await init(fetch);
     }
   }

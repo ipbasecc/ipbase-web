@@ -112,7 +112,7 @@
       </q-card-section>
       <!-- 封面 -->
       <q-card-section
-        v-if="default_version?.media?.url && cardRef.expand !== 'collapse'"
+        v-if="default_version?.media?.url"
         class="relative-position no-padding full-height"
       >
         <FileViewer
@@ -132,7 +132,6 @@
       </q-card-section>
       <!-- 卡片底部 -->
       <q-card-section
-        v-show="cardRef?.expand !== 'collapse'"
         class="row no-wrap gap-sm items-center q-px-sm q-py-xs hovered-item absolute-bottom z-fab q-mb-sm"
         :class="isExternal ? '' : 'dragBar'"
         @dblclick="_enterSegment(useAuths('read', ['card']))"
@@ -515,6 +514,7 @@ import {
   uiStore,
 } from "src/hooks/global/useStore.js";
 import FileViewer from "src/components/VIewComponents/FileViewer.vue";
+import useProject from 'src/hooks/project/useProject.js'
 
 const $q = useQuasar();
 const route = useRoute();
@@ -613,16 +613,10 @@ const canEnter = computed(() => {
   }
   return _can;
 });
-const default_version = computed(
-  () =>
-    (cardRef.value?.overviews?.length > 0 &&
-      cardRef.value?.overviews?.find(
-        (i) =>
-          i.version === cardRef.value.default_version ||
-          cardRef.value?.overviews[0]
-      )) ||
-    null
-);
+const default_version = computed(() => {
+  const { overview } = useProject(cardRef.value);
+  return overview
+});
 const media = ref();
 const belong_card = ref();
 watch(cardRef, () => {
