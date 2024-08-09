@@ -10,14 +10,14 @@ const teamMode = computed(() => teamStore.team?.config?.mode);
 const setFalse = computed(() => isExternal.value || userStatus_byTeam.value)
 
 const enalbe_project = computed(() => {
-  if(setFalse.value || disabled.value.includes('projects')){
+  if(setFalse.value || disabled.value?.includes('projects')){
     return false
   } else {
     return true
   }
 })
 const enalbe_channel = computed(() => {
-  if(setFalse.value || disabled.value.includes('channels') || teamMode.value === 'toOne'){
+  if(setFalse.value || disabled.value?.includes('channels') || teamMode.value === 'toOne'){
     return false
   } else {
     return true

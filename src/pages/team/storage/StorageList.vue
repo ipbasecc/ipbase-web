@@ -6,9 +6,10 @@
         :key="i.id"
         clickable
         v-ripple
-        class="radius-xs overflow-hidden"
+        class="radius-xs overflow-hidden hovered-item"
         :class="activeStorage === i.id ? 'border active-sublistitem' : 'border-placeholder'"
         :active-class="`${$q.dark.mode ? 'text-grey-3' : 'text-grey-9'}`"
+        style="min-height: 40px;"
         @click="enterStorage(i.id)"
       >
         <q-item-section side>
@@ -32,7 +33,7 @@
         <template v-else>
           <q-item-section>{{ i.name }}</q-item-section>
         </template>
-        <q-item-section side>
+        <q-item-section side class="hover-show transition absolute-right z-fab q-mr-xs">
           <q-btn
             flat
             dense
@@ -110,9 +111,11 @@
         v-if="!creating"
         clickable
         v-ripple
-        class="hovered-item radius-xs"
+        class="radius-xs q-pa-sm"
+        :class="storages?.length === 0 ? 'active-sublistitem border-dashed border-op-xl border-xs' : 'hovered-item'"
+        style="min-height: 40px;"
       >
-        <q-item-section side>
+        <q-item-section side class="q-pr-sm q-mr-xs">
           <q-icon name="add" />
         </q-item-section>
         <q-item-section class="hover-show transition">

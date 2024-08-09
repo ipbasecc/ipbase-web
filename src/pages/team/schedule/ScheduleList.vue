@@ -31,6 +31,7 @@
                 : `${$q.dark.mode ? 'text-grey-3' : 'text-grey-9'}`
             }`"
             :active="actived_id === element.id"
+            style="min-height: 40px;"
           >
             <q-item-section side @click="enterSchedule(element)">
               <q-icon
@@ -59,7 +60,7 @@
             <q-item-section @click="enterSchedule(element)">{{
               element.name
             }}</q-item-section>
-            <q-item-section side class="hover-show transition">
+            <q-item-section side class="hover-show transition absolute-right z-fab q-mr-xs">
               <q-btn flat round dense size="sm" icon="more_vert">
                 <q-menu
                   class="radius-sm"
@@ -166,10 +167,12 @@
             v-if="!creating"
             clickable
             v-ripple
-            class="hovered-item radius-xs"
+            class="radius-xs q-pa-sm"
+            :class="schedules?.length === 0 ? 'active-sublistitem border-dashed border-op-xl border-xs' : 'hovered-item'"
+            style="min-height: 40px;"
             @click="creating = true"
           >
-            <q-item-section side>
+            <q-item-section side class="q-pr-sm q-mr-xs">
               <q-icon name="add" />
             </q-item-section>
             <q-item-section class="hover-show transition">
@@ -298,6 +301,7 @@ const create = async () => {
   if (res) {
     creating.value = false;
     loading.value = false;
+    create_params.value.data.name = "";
     if (by_info.value?.by === "user" || !mm_wsStore.online) {
       process_createdData(val);
     }
@@ -515,7 +519,7 @@ const share = async (_schedule) => {
   share_item.value = _schedule;
 };
 const waring = (schedule) => {
-  return schedule.share_codes.filter((i) => i.max_count < 1)?.length > 0;
+  return schedule.share_codes?.filter((i) => i.max_count < 1)?.length > 0;
 };
 watch(
   mm_wsStore,

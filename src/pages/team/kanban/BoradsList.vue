@@ -9,12 +9,8 @@
       >
         <BoradToggler :isEmpty />
       </div>
-      <q-scroll-area
+      <q-scroll-area v-if="useAuths('read', ['group']) && teamStore.board?.groups?.length > 0"
         class="q-space"
-        v-if="
-          useAuths('read', ['group']) &&
-          teamStore.board?.groups?.length > 0
-        "
       >
         <draggable
           :list="teamStore.board?.groups"
@@ -145,10 +141,7 @@
                 <template #item="{ element: kanban }">
                   <KanbanListitem :kanban="kanban" @enterKanban="enterKanban" />
                 </template>
-                <template
-                  #footer
-                  v-if="useAuths('create', ['kanban'])"
-                >
+                <template #footer v-if="useAuths('create', ['kanban'])">
                   <div
                     v-if="!addKanban_targetId"
                     class="hovered-item radius-xs q-pa-xs border-placeholder"
@@ -157,14 +150,10 @@
                       class="row no-wrap gap-sm items-center q-px-xs indicator transition"
                       @click="addKanban_targetId = element.id"
                     >
-                      <q-icon
-                        name="add"
-                        size="xs"
-                        class="undrag cursor-pointer"
-                      ></q-icon>
-                      <span class="hover-show transition cursor-pointer"
-                        >{{ $t('new_kanban')}}</span
-                      >
+                      <q-icon name="add" size="xs" class="undrag cursor-pointer" />
+                      <span class="hover-show transition cursor-pointer">
+                        {{ $t('new_kanban')}}
+                      </span>
                     </div>
                   </div>
                   <div
@@ -234,17 +223,6 @@
           </template>
         </q-input>
       </q-scroll-area>
-      <div v-else class="q-space flex flex-center">
-        <span class="op-5">
-          {{
-            useAuths('read', ['group'])
-              ? isEmpty
-                ? $t('click_btn_above')
-                : $t('click_btn_bellow')
-              : $t('no_premission_to_view')
-          }}
-        </span>
-      </div>
       <q-btn
         v-if="useAuths('create', ['group']) && !isEmpty"
         size="md"

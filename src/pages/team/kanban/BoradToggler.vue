@@ -8,6 +8,7 @@
     :label="!isEmpty ? teamStore.board?.name : `${$t('create')}${space_name}`"
     align="left"
     class="full-width btn-fixed-width"
+    :class="isEmpty ? 'active-sublistitem border-dashed border-op-xl border-xs' : ''"
     padding="sm"
   >
     <q-menu

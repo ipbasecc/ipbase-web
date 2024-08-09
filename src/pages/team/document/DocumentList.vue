@@ -1,6 +1,6 @@
 <template>
   <q-scroll-area v-if="documents" class="fit">
-    <q-list>
+    <q-list dense>
       <draggable
         :list="documents"
         :disable="teamStore.shareInfo"
@@ -28,6 +28,7 @@
             :class="actived_id === element.id ? 'border' : 'border-placeholder'"
             :active-class="`${$q.dark.mode ? 'text-grey-3' : 'text-grey-9'}`"
             :active="actived_id === element.id"
+            style="min-height: 40px;"
             @click="enterDocument(element)"
           >
             <q-item-section side top>
@@ -39,7 +40,7 @@
             <q-item-section
               v-if="!teamStore.shareInfo"
               side top
-              class="hover-show transition no-padding"
+              class="hover-show transition no-padding absolute-right z-fab q-mr-xs q-mt-sm"
               @mouseenter="unEnter = true"
               @mouseleave="unEnter = false"
             >
@@ -94,21 +95,23 @@
           </q-item>
         </template>
         <template v-if="!teamStore.shareInfo" #footer>
-          <q-item
-            v-if="!creating"
+          <q-item v-if="!creating"
             clickable
             v-ripple
-            class="hovered-item radius-xs"
+            class="radius-xs q-pa-sm"
+            :class="documents?.length === 0 ? 'active-sublistitem border-dashed border-op-xl border-xs' : 'hovered-item'"
+            style="min-height: 40px;"
             @click="creating = true"
           >
-            <q-item-section side>
+            <q-item-section side class="q-pr-sm q-mr-xs">
               <q-icon name="add" />
             </q-item-section>
             <q-item-section class="hover-show transition">
               {{ $t('create_document') }}
             </q-item-section>
           </q-item>
-          <q-item v-else class="radius-xs border q-pa-xs">
+          <q-item v-else class="radius-xs border q-pa-xs"
+          >
             <q-item-section>
               <q-input
                 v-model="createDocument_title"
