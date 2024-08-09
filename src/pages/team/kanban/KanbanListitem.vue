@@ -11,7 +11,7 @@
         v-ripple
         @click.stop="enterKanban(kanbanRef)">
       <q-item-section>{{ kanbanRef.title === 'Initial_Kanban' ? $t(kanbanRef.title) : kanbanRef.title }}</q-item-section>
-      <q-item-section side>
+      <q-item-section side class="absolute-right z-fab q-mr-xs">
         <q-btn
           v-if="
             useAuths('title', ['kanban']) ||

@@ -38,7 +38,7 @@
         >
           <template #item="{ element }">
             <div class="column no-wrap">
-              <div class="row no-wrap items-center hovered-item op-5">
+              <div class="row no-wrap items-center hovered-item op-5 relative-position">
                 <q-icon
                   size="sm"
                   name="tag"
@@ -54,69 +54,70 @@
                 >
                   {{ element.name === 'Initial_Group' ? $t(element.name) : element.name }}
                 </span>
-                <q-btn
-                  v-if="
-                    useAuths('name', ['group']) ||
-                    useAuths('delete', ['group'])
-                  "
-                  class="hover-show transition"
-                  dense
-                  flat
-                  size="sm"
-                  round
-                  icon="more_vert"
-                >
-                  <q-menu class="radius-sm shadow-24" ref="more_vert_menu">
-                    <q-list dense bordered class="radius-sm q-pa-xs">
-                      <q-item
-                        v-if="useAuths('name', ['group'])"
-                        class="no-padding"
-                      >
-                        <q-input
-                          v-model="element.name"
-                          dense
-                          square
-                          filled
-                          type="text"
-                          class="radius-xs overflow-hidden"
-                          @keyup.enter="
-                            updateGroupFn(element.id, element, 'rename')
-                          "
-                          @keyup.ctrl.enter="
-                            updateGroupFn(element.id, element, 'rename')
-                          "
-                        >
-                          <template v-slot:append>
-                            <q-btn
-                              flat
-                              round
-                              dense
-                              size="sm"
-                              icon="check"
-                              @click="
-                                updateGroupFn(element.id, element, 'rename')
-                              "
-                            />
-                          </template>
-                        </q-input>
-                      </q-item>
-                      <template v-if="useAuths('delete', ['group'])">
-                        <q-separator spaced />
+                <div class="absolute-right z-fab q-mr-xs q-py-sm hover-show transition">
+                  <q-btn
+                    v-if="
+                      useAuths('name', ['group']) ||
+                      useAuths('delete', ['group'])
+                    "
+                    dense
+                    flat
+                    size="sm"
+                    round
+                    icon="more_vert"
+                  >
+                    <q-menu class="radius-sm shadow-24" ref="more_vert_menu">
+                      <q-list dense bordered class="radius-sm q-pa-xs">
                         <q-item
-                          clickable
-                          v-close-popup
-                          class="radius-xs"
-                          @click="groupDeleteFn(element)"
+                          v-if="useAuths('name', ['group'])"
+                          class="no-padding"
                         >
-                          <q-item-section side
-                            ><q-icon name="remove"
-                          /></q-item-section>
-                          <q-item-section>{{ $t('remove_this_group')}}</q-item-section>
+                          <q-input
+                            v-model="element.name"
+                            dense
+                            square
+                            filled
+                            type="text"
+                            class="radius-xs overflow-hidden"
+                            @keyup.enter="
+                              updateGroupFn(element.id, element, 'rename')
+                            "
+                            @keyup.ctrl.enter="
+                              updateGroupFn(element.id, element, 'rename')
+                            "
+                          >
+                            <template v-slot:append>
+                              <q-btn
+                                flat
+                                round
+                                dense
+                                size="sm"
+                                icon="check"
+                                @click="
+                                  updateGroupFn(element.id, element, 'rename')
+                                "
+                              />
+                            </template>
+                          </q-input>
                         </q-item>
-                      </template>
-                    </q-list>
-                  </q-menu>
-                </q-btn>
+                        <template v-if="useAuths('delete', ['group'])">
+                          <q-separator spaced />
+                          <q-item
+                            clickable
+                            v-close-popup
+                            class="radius-xs"
+                            @click="groupDeleteFn(element)"
+                          >
+                            <q-item-section side
+                              ><q-icon name="remove"
+                            /></q-item-section>
+                            <q-item-section>{{ $t('remove_this_group')}}</q-item-section>
+                          </q-item>
+                        </template>
+                      </q-list>
+                    </q-menu>
+                  </q-btn>
+                </div>
               </div>
               <draggable
                 :list="element.kanbans"

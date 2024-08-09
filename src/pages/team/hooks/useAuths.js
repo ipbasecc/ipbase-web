@@ -24,11 +24,9 @@ function getCacheKey(field, collections, members, roles) {
 
 // 优化前的useAuths hook
 export function useAuths(field, collections, from) {
-  if(from){
-    console.log('_members', _members.value);
-    console.log('_roles', _roles.value);
+  // if(from){
     
-  }
+  // }
   // console.log('members', members);
   // 生成缓存键
   const cacheKey = getCacheKey(field, collections, _members.value, _roles.value);
