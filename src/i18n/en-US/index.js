@@ -395,7 +395,7 @@ export default {
   new: 'new',
 
   workspace_kanban: 'workspace',
-  workspace_classroom: 'classroom',
+  workspace_classroom: 'course',
   workspace_segment: 'desktop',
 
   column: 'column',

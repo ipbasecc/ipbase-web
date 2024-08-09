@@ -395,7 +395,7 @@ export default {
   new: '新',
 
   workspace_kanban: '工作空间',
-  workspace_classroom: '班级',
+  workspace_classroom: '课程',
   workspace_segment: '桌面',
 
   column: '分栏',

@@ -394,9 +394,9 @@ export default {
   remove: 'Entfernen',
   new: 'Neu',
 
-  workspace_kanban: 'Arbeitsbereich Kanban',
-  workspace_classroom: 'Arbeitsbereich Klassenzimmer',
-  workspace_segment: 'Arbeitsbereich Desktop',
+  workspace_kanban: 'Arbeitsplatz',
+  workspace_classroom: 'Kurs',
+  workspace_segment: 'Desktop',
 
   column: 'Spalte',
   column_name: 'Spaltenname',
