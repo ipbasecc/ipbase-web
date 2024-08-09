@@ -6,7 +6,7 @@
       class="radius-sm q-pa-xs"
       :class="$q.dark.mode ? 'bg-grey-10 text-grey-1' : 'bg-white text-grey-10'"
     >
-      <q-item
+      <q-item v-if="enalbe_channel"
         clickable
         v-close-popup
         class="radius-xs"
@@ -17,8 +17,7 @@
         </q-item-section>
         <q-item-section class="q-pr-md">{{ $t('create_channel') }}</q-item-section>
       </q-item>
-      <q-item
-        v-if="!openCreateChannel"
+      <q-item v-if="enalbe_project"
         clickable
         v-close-popup
         class="radius-xs"
@@ -44,6 +43,11 @@ import { ref } from "vue";
 import { teamStore } from "src/hooks/global/useStore.js";
 import CreateProject from "./CreateProject.vue";
 import CreateChannel from "./CreateChannel.vue";
+
+import {
+  enalbe_project,
+  enalbe_channel,
+} from "src/pages/team/hooks/useConfig.js";
 
 const openCreateChannel = ref(false);
 

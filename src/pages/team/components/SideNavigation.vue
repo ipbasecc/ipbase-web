@@ -3,8 +3,7 @@
     <q-list dense class="column gap-xs">
       <template v-if="$q.screen.gt.xs">
         <!-- 讨论主题-->
-        <q-item
-          v-if="!isExternal && (!disabled?.includes('channels') || !disabled?.includes('projects'))"
+        <q-item v-if="enable_threads"
           :class="`${
             teamStore?.mm_channel?.id === 'threads'
               ? 'border active-listitem'
@@ -27,8 +26,7 @@
           ></div>
         </q-item>
         <!-- 事务沙盘-->
-        <q-item
-          v-if="!disabled?.includes('projects')"
+        <q-item v-if="enalbe_dashboard"
           :class="`${
             teamStore?.mm_channel?.id === 'intro' || !teamStore?.mm_channel
               ? 'border active-listitem'
@@ -51,7 +49,7 @@
           ></div>
         </q-item>
       </template>
-      <template v-if="!isExternal && !disabled?.includes('channels') && teamMode === 'toMany'">
+      <template v-if="enalbe_channel">
         <q-item-label header class="q-pa-sm" :class="$q.screen.gt.xs ? 'text-grey-1' : `text-grey-1${$q.dark.mode ? '' : '0'}`">
           {{ $t('channel') }}
         </q-item-label>
@@ -239,7 +237,7 @@
         </q-item>
       </template>
 
-      <template v-if="!disabled?.includes('projects')">
+      <template v-if="enalbe_project">
         <q-item-label header class="q-pa-sm"
           :class="$q.screen.gt.xs ? 'text-grey-1' : `text-grey-1${$q.dark.mode ? '' : '0'}`"
         >{{ $t('project') }}</q-item-label>
@@ -345,14 +343,19 @@ import { createChannel } from "src/pages/team/hooks/useCreateChannel.js";
 import { useQuasar } from "quasar";
 import {mm_wsStore, teamStore, uiStore} from 'src/hooks/global/useStore.js';
 import { i18n } from 'src/boot/i18n.js';
+import {
+  isExternal,
+  enable_threads,
+  enalbe_dashboard,
+  enalbe_project,
+  enalbe_channel,
+} from "src/pages/team/hooks/useConfig.js";
 
 const $t = i18n.global.t;
 
 const $q = useQuasar();
 const router = useRouter();
 const route = useRoute();
-const disabled = computed(() => teamStore.team?.config?.disabled)
-const teamMode = computed(() => teamStore.team?.config?.mode)
 
 const byInfo = ref();
 const initedChannelByMM = ['town-square', 'off-topic']
@@ -401,7 +404,6 @@ watch(
 );
 
 const team = computed(() => teamStore.team);
-const isExternal = computed(() => teamStore.team?.isExternal);
 
 watchEffect(() => {
   if(isExternal.value || uiStore.isFocusMode){

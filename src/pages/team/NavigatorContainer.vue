@@ -140,7 +140,7 @@
           :class="$q.dark.mode ? '' : 'bg-primary-9 text-grey-1'"
         >
           <template v-if="team">
-            <q-item v-if="!team.isExternal" class="q-px-sm">
+            <q-item v-if="!isExternal" class="q-px-sm">
               <q-item-section>
                 <div class="row no-wrap items-center">
                   <q-btn
@@ -152,10 +152,11 @@
                     icon-right="mdi-chevron-down"
                     class="no-wrap"
                   >
-                    <TeamMenu :team />
+                    <TeamMenu v-if="!userStatus_byTeam" :team />
                   </q-btn>
                   <q-space />
-                  <q-btn v-if="!userStatus_byTeam" dense size="sm" flat round icon="add">
+                  <q-btn v-if="enalbe_project || enalbe_channel"
+                  dense size="sm" flat round icon="add">
                     <TeamAddmenu />
                   </q-btn>
                 </div>
@@ -182,7 +183,7 @@
                 </q-card-section>
               </q-card>
             </div>
-            <SideNavigation v-else
+            <SideNavigation v-else-if="enalbe_project || enalbe_channel"
               class="q-space"
               :class="team.isExternal ? 'q-pt-sm' : ''"
             />
@@ -286,11 +287,17 @@ import { useQuasar } from "quasar";
 import WindowToggle from "src/pages/team/components/widgets/icons/WindowToggle.vue";
 import FileTransfer from "pages/team/components/widgets/icons/FileTransfer.vue";
 import BgBrand from "src/components/VIewComponents/BgBrand.vue";
+import {
+  isExternal,
+  disabled,
+  enalbe_project,
+  enalbe_channel,
+} from "src/pages/team/hooks/useConfig.js";
 
+// 团队状态是否存在 blocked 或 unconfirmed
 const userStatus_byTeam = computed(() => teamStore.team?.status);
 
 const $q = useQuasar();
-const disabled = computed(() => teamStore.team?.config?.disabled)
 
 const route = useRoute();
 const router = useRouter();
@@ -393,7 +400,6 @@ const toggleFocusMode = async () => {
   }
 };
 
-const isExternal = computed(() => teamStore.project?.isExternal);
 watch(
   isExternal,
   async () => {

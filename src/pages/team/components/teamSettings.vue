@@ -147,7 +147,7 @@ const toggleChose = (val) => {
   if (disabed_func.value?.length> 0 && disabed_func.value?.includes(val)) {
     disabed_func.value = disabed_func.value.filter((i) => i !== val);
   } else {
-    disabed_func.value = [val]
+    disabed_func.value.push(val)
   }
   syncParams();
 };
