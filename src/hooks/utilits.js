@@ -302,3 +302,7 @@ export function ensureTrailingSlash(path) {
 export function truncateText(text, length = 5) {
   return text.length > length ? text.substring(0, length) + '...' : text;
 }
+
+export function toFixedDecimal(num, decimalPlaces) {
+  return parseFloat(num.toFixed(decimalPlaces));
+}

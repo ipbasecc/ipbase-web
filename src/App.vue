@@ -26,8 +26,9 @@
           v-if="$q.platform.is.electron"
           v-model="fileTab"
           dense
+          no-caps
         >
-          <q-tab v-for="i in fileTabs" :key="i.name" :name="i.name" :label="i.label" />
+          <q-tab v-for="i in fileTabs" :key="i.name" :name="i.name" :label="$t(i.label)" />
         </q-tabs>
         <span v-else>{{ $t('upload_file') }}</span>
         <q-space />
@@ -90,10 +91,10 @@
                     />
                   </q-item-section>
                   <q-item-section class="z-fab">{{ i.name }}</q-item-section>
-                  <q-item-section side class="z-fab">{{ `${i.percent}%` }}</q-item-section>
+                  <q-item-section side class="z-fab">{{ `${toFixedDecimal(i.percent, 1)}%` }}</q-item-section>
                   <div
                     class="absolute-left bg-primary full-height op-3"
-                    :style="`left: 0;width: ${i.percent}%;`"
+                    :style="`left: 0;width: ${toFixedDecimal(i.percent, 1)}%;`"
                   ></div>
                 </q-item>
             </template>
@@ -111,6 +112,7 @@ import {useMeta, useQuasar} from "quasar";
 import useOss from "./stores/oss.js";
 import useUIStore from "./stores/ui.js";
 import { useI18n } from 'vue-i18n'
+import { toFixedDecimal } from 'src/hooks/utilits.js'
 
 const { t } = useI18n()
 
