@@ -44,10 +44,10 @@ const deleteProjectFn = async (option) => {
 
   let res = await deleteProject(teamStore.project.id, option);
   if (res?.data) {
-    await router.push("/teams");
     uiStore.project_settings = false;
     teamStore.team.projects = teamStore.team.projects.filter(i => i.id !== teamStore.project.id);
     teamStore.project.$reset_project;
+    await router.push("/teams");
   }
 };
 </script>
