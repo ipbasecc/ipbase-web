@@ -115,6 +115,7 @@ export default boot(async ({ app }) => {
   api.interceptors.request.use(
     async (config) => {
       uiStore.axiosStauts = 'pending';
+      config.headers['X-Fingerprint'] = window.fingerprint;
       const token = JSON.parse(localStorage.getItem("jwt"));
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
