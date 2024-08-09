@@ -332,6 +332,7 @@
                       </q-btn>
                       <q-space />
                       <q-btn
+                        v-if="!cardRef.disable_share"
                         flat
                         dense
                         size="sm"

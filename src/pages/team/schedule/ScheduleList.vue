@@ -109,6 +109,7 @@
                     </q-item>
                     <q-separator spaced />
                     <q-item
+                      v-if="!element.disable_share"
                       :clickable="!loading"
                       class="radius-xs q-px-sm q-py-xs"
                       v-close-popup

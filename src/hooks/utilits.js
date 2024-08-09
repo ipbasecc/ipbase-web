@@ -298,3 +298,7 @@ export function ensureTrailingSlash(path) {
   }
   return path;
 }
+
+export function truncateText(text, length = 5) {
+  return text.length > length ? text.substring(0, length) + '...' : text;
+}

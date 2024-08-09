@@ -54,6 +54,7 @@ export default defineStore("ui", {
       team: void 0,
       channels: []
     },
+    disableBgEffects: false,
   }),
   actions: {
     $reset() {

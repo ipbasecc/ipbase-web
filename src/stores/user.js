@@ -81,6 +81,9 @@ export default defineStore("user", {
     queryParmars: queryParmars,
     replyTo: null,
     storages: null,
+    todogroups: void 0,
+    affairsFilters: null,
+    affairsFilterIDs: null,
   }),
   actions: {
     $reset() {

@@ -14,8 +14,7 @@
         } ${$q.platform.is.electron ? 'q-electron-drag' : ''}`"
         style="height: 2.5rem"
       >
-        <div
-          v-if="uiStore.app !== 'affairs'"
+        <div v-if="uiStore.app === 'teams'"
           class="row no-wrap gap-sm items-center cursor-pointer"
         >
           <q-btn dense flat noCaps padding="xs" icon="apps" />
@@ -36,6 +35,9 @@
             color="green-10"
             size="1em"
           />
+        </div>
+        <div v-if="uiStore.app === 'affairs'" class="">
+          <AffairsFilter />
         </div>
         <q-space />
         <template v-if="$q.screen.gt.xs">
@@ -282,7 +284,7 @@ import WelcomePage from "src/pages/team/WelcomePage.vue";
 import TeamList from "src/pages/team/components/TeamList.vue";
 import TodoPage from "src/pages/team/todo/TodoPage.vue";
 import localforage from "localforage";
-import { ossStore, teamStore, uiStore, userStore } from "src/hooks/global/useStore.js";
+import { ossStore, teamStore, uiStore } from "src/hooks/global/useStore.js";
 import { useMouse } from "@vueuse/core";
 import { useQuasar } from "quasar";
 import WindowToggle from "src/pages/team/components/widgets/icons/WindowToggle.vue";
@@ -293,6 +295,7 @@ import {
   enalbe_project,
   enalbe_channel,
 } from "src/pages/team/hooks/useConfig.js";
+import AffairsFilter from './todo/affairs/AffairsFilter.vue'
 
 // 团队状态是否存在 blocked 或 unconfirmed
 const userStatus_byTeam = computed(() => teamStore.team?.status);

@@ -125,7 +125,6 @@ const hasToken = computed(() => {
   return _strapi_jwt && _mm_token
 })
 
-const todogroups = ref();
 const init = async () => {
   const process = (res, _from) => {
     // console.log(_from, res);
@@ -142,7 +141,7 @@ const init = async () => {
       teamStore.team = res.default_team;
       teamStore.mm_team = res.default_team?.mm_team;
     }
-    todogroups.value = res.todogroups;
+    userStore.todogroups = res.todogroups;
     teamStore.need_refecth_projects = false;
   };
   const cache = await localforage.getItem("init");

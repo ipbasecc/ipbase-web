@@ -39,7 +39,7 @@
 
     <q-page-container>
       <q-page class="overflow-hidden">
-        <BgEffects v-if="$q.screen.gt.xs" />
+        <BgEffects v-if="$q.screen.gt.xs && !uiStore.disableBgEffects" />
         <router-view />
       </q-page>
     </q-page-container>

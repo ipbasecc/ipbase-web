@@ -969,7 +969,7 @@ import PersonTip from "./tips/PersonTip.vue";
 import ProjectTip from "./tips/ProjectTip.vue";
 
 import TodoItem from "./TodoItem.vue";
-import { teamStore, uiStore } from "src/hooks/global/useStore.js";
+import { teamStore, uiStore, userStore } from "src/hooks/global/useStore.js";
 import localforage from "localforage";
 
 import { objectsIsEqual } from "src/hooks/utilits.js";
@@ -1179,17 +1179,14 @@ const todogroups = ref([]);
 //         用户关联的私有清单：从用户清单中提取
 // 个人规划：
 //         从用户初始化数据中提取
+const user_todogroups = computed(() => userStore.todogroups);
 const getTodogroups = async () => {
   let res;
-  const user_todogroups = teamStore.init?.todogroups || [];
-
-  if (_for.value === "user_todos") {
-    res = user_todogroups;
-  } else if (card.value) {
+  if(card.value) {
     // 看板上卡片的todo
     res = card.value.todogroups;
   } else if (kanban_id.value) {
-    res = user_todogroups?.filter(
+    res = user_todogroups.value?.filter(
       (i) => i.kanban?.id === kanban_id.value // 看板中，用户关联的私有todo
     );
   } else if (uiStore.isShared && teamStore.card && !assignData.value) {
@@ -1204,6 +1201,18 @@ const getTodogroups = async () => {
   // console.log('res', res)
   todogroups.value = res;
 };
+const filterUserTodo = (_todogroups) => {
+  if(userStore.affairsFilterIDs?.length > 0){
+    return _todogroups.filter((i) => userStore.affairsFilterIDs.includes(i.id))
+  } else {
+    return _todogroups;
+  }
+}
+watchEffect(() => {
+  if (_for.value === "user_todos") {
+    todogroups.value = filterUserTodo(user_todogroups.value);
+  }
+})
 watch(
   [card, assignData],
   async () => {

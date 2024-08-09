@@ -223,7 +223,12 @@ const genShareUrl = (code) => {
 const share_url = ref();
 const shareSchedule = async (schedule_id, share_code) => {
   if (!share_code.code) return;
-  share_code.up_time = share_code.up_time.replace(/\//g, "-");
+  if(share_code.up_time !== ''){
+    share_code.up_time = share_code.up_time.replace(/\//g, "-");
+  } else {
+    share_code.up_time = null;
+  }
+  
   let _params = {
     data: {
       share_code: share_code,

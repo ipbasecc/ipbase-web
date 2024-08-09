@@ -1,5 +1,4 @@
 <template>
-
   <div v-if="!shareInfo" class="absolute-full column flex-center">
     <span class="font-large font-bold-600 q-mb-md" >{{ $t('please_fill_code') }}</span>
     <q-card flat bordered style="min-width: 22rem" class="shadow-focus radius-sm">
@@ -42,6 +41,9 @@
     />
   </div>
   <ScheduleBody v-if="schedule" :isShare="true" :schedule />
+  <div v-if="errMsg" class="absolute-full flex flex-center font-x-large">
+    {{errMsg}}
+  </div>
 </template>
 
 <script setup>
@@ -75,8 +77,10 @@ const shareInfo = computed(() =>
 
 const schedule = ref();
 onBeforeMount(() => {
+  uiStore.disableBgEffects = true;
   uiStore.topbarClass = $q.dark.mode ? "bg-black" : "bg-primary";
 });
+const errMsg = ref();
 watchEffect(async () => {
   if (id && share_code.value && share_by.value) {
     const res = await getScheduleByShare(id, share_code.value, share_by.value);
@@ -84,7 +88,7 @@ watchEffect(async () => {
       schedule.value = res?.data;
       uiStore.pageTitle = schedule.value.name;
     } else {
-      console.log(res);
+      errMsg.value = res.response?.data?.error?.message
     }
   }
 });

@@ -1,6 +1,8 @@
 <template>
   <div
+    v-if="!errMsg"
     class="absolute-full q-space no-wrap radius-sm shadow-focus"
+    v-bind="$attrs"
     :class="`${$q.dark.mode ? 'bg-dark' : 'bg-grey-1'} ${$q.screen.gt.xs ? 'row' : 'column reverse'}`"
   >
     <section
@@ -188,6 +190,9 @@
       </q-page-container>
     </q-layout>
   </div>
+  <div v-else class="absolute-full flex flex-center font-x-large">
+    {{ errMsg }}
+  </div>
 </template>
 
 <script setup>
@@ -230,6 +235,7 @@ const byInfo = computed(() => ({
   card_id: current_card_id.value,
 }));
 const loading = ref(false);
+const errMsg = ref();
 const getCard = async () => {
   if(loading.value) return
   loading.value = true
@@ -238,10 +244,14 @@ const getCard = async () => {
     res = await findCardByShare(shareInfo.value.props.card_id,shareInfo.value.code,shareInfo.value.by);
   }
 
+  console.log('res', res);
+  
   if (res?.data) {
     loading.value = false
     teamStore.card = res.data;
     teamStore.cards = [res.data];
+  } else {
+    errMsg.value = res?.response?.data?.error?.message
   }
 };
 const refetchFeedback = async (card_id) => {

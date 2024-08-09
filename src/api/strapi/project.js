@@ -546,8 +546,8 @@ export async function findCardByShare(card_id, code, by) {
       return res;
     }
   } catch (error) {
-    Notify.create(error?.response?.data?.error?.message);
-    uiStore.message = error?.response?.data?.error?.message;
+    // Notify.create(error?.response?.data?.error?.message);
+    // uiStore.message = error?.response?.data?.error?.message;
     return error;
   }
 }
@@ -842,8 +842,8 @@ export async function getScheduleByShare(id, code, by) {
       return res;
     }
   } catch (error) {
-    Notify.create(error?.response?.data?.error?.message);
-    uiStore.message = error?.response?.data?.error?.message;
+    // Notify.create(error?.response?.data?.error?.message);
+    // uiStore.message = error?.response?.data?.error?.message;
     return error;
   }
 }
