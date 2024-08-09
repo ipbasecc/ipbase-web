@@ -823,6 +823,10 @@ watch(
             teamStore.project.overviews.find(
               (i) => i.id === current_version.value.id
             ).media = strapi.data.media;
+            const _index = teamStore.team.projects.findIndex((i) => i.id === teamStore.project.id);
+            if(_index !== -1){
+              teamStore.team.projects[_index] = teamStore.project;
+            }
           }
           if (wasAttached_toRef.value === "card") {
             teamStore.card.overviews.find(

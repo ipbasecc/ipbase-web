@@ -110,6 +110,7 @@
             <q-item-section @mouseenter="deEnter = false" class="overflow-hidden">
               <div class="row no-wrap gap-xs q-pr-xs">
                 <span class="row flex-center">{{ initedChannelByMM.includes(i.name) ? $t(i.name) : i.name }}</span>
+                <q-space />
                 <UnreadBlock :mm_channel_id="i.mm_channel?.id" />
               </div>
               <q-tooltip class="transparent radius-sm">
@@ -256,7 +257,7 @@
             >
               <q-item-section side style="width: 44px" class="q-pr-sm">
                 <q-img
-                  :src="project.overviews[0]?.media?.url"
+                  :src="getThumbnail(project)"
                   :ratio="1"
                   sizes="24"
                   spinner-color="primary"
@@ -268,6 +269,7 @@
                 <q-item-label>
                   <div class="row no-wrap gap-xs">
                     <span>{{ project.name }}</span>
+                    <q-space />
                     <UnreadBlock :mm_channel_id="project.mm_channel?.id" />
                   </div>
                 </q-item-label>
@@ -350,6 +352,7 @@ import {
   enalbe_project,
   enalbe_channel,
 } from "src/pages/team/hooks/useConfig.js";
+import useProject from 'src/hooks/project/useProject.js';
 
 const props = defineProps({
   width: {
@@ -411,6 +414,11 @@ watch(
 );
 
 const team = computed(() => teamStore.team);
+const getThumbnail = (project) => {
+  const { thumbnail } = useProject(project)
+  console.log('thumbnail', thumbnail);  
+  return thumbnail
+}
 
 watchEffect(() => {
   if(isExternal.value || uiStore.isFocusMode){
