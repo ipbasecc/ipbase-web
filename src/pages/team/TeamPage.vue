@@ -104,7 +104,7 @@
             />
           </div>
           <div class="absolute-full">
-            <router-view v-show="!uiStore.showMainContentList" />
+            <router-view v-show="$q.screen.gt.xs || !uiStore.showMainContentList" />
             <template v-if="!$q.screen.gt.xs && uiStore.showMainContentList">
               <BoradsList v-if="showBoard" />
               <ChatList v-if="teamStore.navigation === 'chat'" />

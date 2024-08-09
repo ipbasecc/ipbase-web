@@ -416,7 +416,6 @@ watch(
 const team = computed(() => teamStore.team);
 const getThumbnail = (project) => {
   const { thumbnail } = useProject(project)
-  console.log('thumbnail', thumbnail);  
   return thumbnail
 }
 

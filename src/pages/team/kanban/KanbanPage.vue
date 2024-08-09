@@ -142,7 +142,7 @@
 </template>
 
 <script setup>
-import {computed, watchEffect, ref, toRefs} from 'vue';
+import {computed, watchEffect, ref, toRefs, onMounted} from 'vue';
 import { useRouter, useRoute } from "vue-router";
 
 import KanbanModel from "./KanbanModel.vue";
@@ -155,6 +155,7 @@ import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 import {
   board_type,
 } from "./BoradsList.js";
+import { ensureTrailingSlash } from 'src/hooks/utilits.js'
 
 const props = defineProps({
   project_id: {
@@ -169,6 +170,16 @@ const props = defineProps({
 const { project_id, kanban_id } = toRefs(props);
 const route = useRoute();
 const router = useRouter();
+onMounted(async() => {
+  if(!kanban_id.value && project_id.value) {
+    const res = await localforage.getItem(`___last_kanban_of_project_${project_id.value}`);
+    if(res) {
+      await router.push(`${ensureTrailingSlash(route.path)}${res.id}`);
+      // console.log(route);
+      
+    }
+  }
+})
 const view_models = ref()
 const all_view_models = [
   { val: "kanban", label: "kanban", icon: "view_kanban" },

@@ -289,3 +289,12 @@ export function parseUrl(url) {
   }
   return params;
 }
+
+export function ensureTrailingSlash(path) {
+  // 检查路径是否以 '/' 结束
+  if (!path.endsWith('/')) {
+    // 如果不以 '/' 结束，添加一个 '/'
+    path += '/';
+  }
+  return path;
+}
