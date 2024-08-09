@@ -835,6 +835,22 @@ watch(
       if (strapi) {
         if (
           strapi.data?.is === "card" &&
+          strapi.data.body?.id === teamStore.card?.id &&
+          strapi.data.action === "delete"
+        ) {
+          teamStore.cards = teamStore.cards.filter(
+            (i) => i.id !== teamStore.card?.id
+          );
+          if (teamStore.card?.id === teamStore.card?.id) {
+            $q.notify({
+              type: "negative",
+              message: "当前卡片已经被删除，如果页面中有需要保存的内容，请立即复制到外部，关闭后卡片将不可访问",
+              position: "top",
+            });
+          }
+        }
+        if (
+          strapi.data?.is === "card" &&
           strapi.data.card_id === teamStore.card?.id &&
           strapi.data.action === "card_documentCreated"
         ) {

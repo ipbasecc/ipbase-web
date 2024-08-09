@@ -15,7 +15,7 @@
         style="height: 2.5rem"
       >
         <div v-if="uiStore.app === 'teams'"
-          class="row no-wrap gap-sm items-center cursor-pointer"
+          class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
         >
           <q-btn dense flat noCaps padding="xs" icon="apps" />
           <q-icon :name="teamStore?.project ? 'developer_board' : 'forum'" />

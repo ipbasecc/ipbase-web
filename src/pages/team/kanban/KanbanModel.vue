@@ -447,6 +447,7 @@ const cardDelete = (card_id) => {
     ...c,
     cards: c.cards.filter((card) => card.id !== card_id),
   }));
+  syncStoreByKanban();
 };
 
 const new_column_ing = ref(false);

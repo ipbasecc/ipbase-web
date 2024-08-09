@@ -909,21 +909,12 @@ const dragHandler = (val) => {
   uiStore.dragKanbanScrollEnable = val;
 };
 
-const syncStoreByColumn = () => {
-  teamStore.kanban = {
-    ...teamStore.kanban,
-    columns: teamStore.kanban.columns?.map((column) =>
-      column.id === columnRef.value.id ? columnRef.value : column
-    ),
-  };
-};
 const pushCard = (_card) => {
   if (teamStore.kanban?.type === "kanban") {
     columnRef.value.cards = [_card, ...columnRef.value?.cards];
   } else {
     columnRef.value.cards = [...columnRef.value?.cards, _card];
   }
-  syncStoreByColumn();
 }
 watch(
   mm_wsStore,
@@ -945,7 +936,6 @@ watch(
         ) {
           // console.log(strapi);
           columnRef.value.name = strapi.data?.name;
-          syncStoreByColumn();
         }
         if (
           strapi.data?.is === "column" &&
@@ -953,7 +943,6 @@ watch(
           strapi.data?.action === "columnStatusUpdated"
         ) {
           columnRef.value.status = strapi.data?.status;
-          syncStoreByColumn();
         }
         // todo 接收到卡片被设置为私有后，检查当前用户是否包含在该卡片用户成员中，如果不在，删除此卡片
         if (
@@ -981,7 +970,6 @@ watch(
                 $q.notify($t('cant_view_private_card_tip'));
               }
             }
-            syncStoreByColumn();
           }
         }
         if (
@@ -992,12 +980,10 @@ watch(
           const _card_ids = columnRef.value.cards.map(i => i.id);
           if(!_card_ids.includes(strapi.data.body.id)){
             let res = await findCard(strapi.data.body.id);
-            if (res) {
-              let card = res.data;
-              pushCard(card);
+            if (res?.data) {
+              pushCard(res.data);
             }
           }
-          syncStoreByColumn();
         }
         if (
           strapi.data?.is === "column" &&
@@ -1040,7 +1026,6 @@ watch(
             });
           }
           await syncCards(order);
-          syncStoreByColumn();
         }
       }
     }

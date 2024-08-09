@@ -924,20 +924,25 @@ const _leaveCard = () => {
   // console.log('_leaveCard')
   // cardRef.value.todogroups = teamStore.card.todogroups
   leaveCard();
+  syncDeletedByWS();
 };
 
 // ws data line -------------------------
 let strapi;
-const detialOpened = computed(() => cardRef.value && teamStore.card?.id === strapi.data.card_id)
 const syncCardStore = () => {
-  if (detialOpened.value) {
+  if (teamStore.card) {
     // teamStore.card = cardRef.value
     Object.keys(cardRef.value).forEach((key) => {
       teamStore.card[key] = cardRef.value[key];
     });
   }
 };
-
+const syncDeletedByWS = () => {
+  if (deletedCards.value.includes(cardRef.value.id)) {
+    emit("cardDelete", cardRef.value.id);
+  }
+};
+const deletedCards = ref([]);
 watch(
   mm_wsStore,
   async () => {
@@ -957,13 +962,10 @@ watch(
           strapi.data.body?.id === cardRef.value.id &&
           strapi.data.action === "delete"
         ) {
-          emit("cardDelete", cardRef.value.id);
-          if (detialOpened.value) {
-            $q.notify({
-              type: "info",
-              message: "当前卡片已经被删除，如果页面中有需要保存的内容，请立即复制到外部，关闭后卡片将不可访问",
-              position: "top",
-            });
+          if(!teamStore.card){
+            emit("cardDelete", cardRef.value.id);
+          } else {
+            deletedCards.value.push(cardRef.value.id)
           }
         }
         if (
