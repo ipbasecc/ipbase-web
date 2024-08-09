@@ -3,6 +3,7 @@ import axios from "axios";
 import { Notify } from "quasar";
 import { ossStore } from "src/hooks/global/useStore.js";
 import { i18n } from 'src/boot/i18n.js';
+import { manualDecimal } from 'src/hooks/utilits.js'
 
 const $t = i18n.global.t;
 export default function oss() {
@@ -72,7 +73,7 @@ export default function oss() {
     function progressCallback(percentage) {
       if (!_id) return;
       // console.log(`Upload progress: ${percentage}%`);
-      ossStore.process.find((i) => i.id === id).percent = percentage;
+      ossStore.process.find((i) => i.id === id).percent = manualDecimal(percentage, 2);
     }
 
     try {

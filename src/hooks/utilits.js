@@ -306,3 +306,7 @@ export function truncateText(text, length = 5) {
 export function toFixedDecimal(num, decimalPlaces) {
   return parseFloat(num.toFixed(decimalPlaces));
 }
+export function manualDecimal(num, decimalPlaces) {
+  const factor = Math.pow(10, decimalPlaces);
+  return Math.floor(num * factor) / factor;
+}
