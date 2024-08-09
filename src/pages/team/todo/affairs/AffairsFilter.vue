@@ -1,5 +1,5 @@
 <template>
-    <div class="row no-wrap items-center text-white">
+    <div class="row no-wrap items-center text-white q-electron-drag--exception">
         <q-select
             dense
             borderless
