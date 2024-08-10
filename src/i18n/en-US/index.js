@@ -643,4 +643,7 @@ export default {
   onboarding_step4_caption: 'Quickly learn about platform features',
   onboarding_completed_tip: 'Congratulations, initialization is complete!',
   onboarding_completed_btn_label: 'Start your team journey now',
+
+  team_deleted_tip_title: 'Team has been deleted',
+  team_deleted_tip_caption: 'Please switch or create a team through the button in the upper left or lower left corner'
 }

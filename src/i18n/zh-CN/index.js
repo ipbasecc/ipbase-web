@@ -643,4 +643,7 @@ export default {
   onboarding_step4_caption: '快速了解平台功能',
   onboarding_completed_tip: '恭喜，初始化完成',
   onboarding_completed_btn_label: '开启团队之旅',
+
+  team_deleted_tip_title: '团队已被删除',
+  team_deleted_tip_caption: '请通过左上或左下角按钮切换或创建团队',
 };

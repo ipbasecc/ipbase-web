@@ -642,5 +642,8 @@ export default {
   onboarding_step3_title: 'Alle Funktionen in 30 Sekunden entdecken',
   onboarding_step4_caption: 'Schnelle Einführung in die Plattform-Funktionen',
   onboarding_completed_tip: 'Glückwunsch, die Initialisierung ist abgeschlossen!',
-  onboarding_completed_btn_label: 'Starte jetzt deine Team-Reise'
+  onboarding_completed_btn_label: 'Starte jetzt deine Team-Reise',
+
+  team_deleted_tip_title: 'Team wurde gelöscht',
+  team_deleted_tip_caption: 'Bitte wechseln oder erstellen Sie ein Team über die Schaltfläche in der oberen linken oder unteren linken Ecke'
 };

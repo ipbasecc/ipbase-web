@@ -1,6 +1,4 @@
 import { defineStore } from "pinia";
-import {removeDuplicatesById} from "src/hooks/utilits";
-import {nextTick, ref, watch} from "vue";
 
 export default defineStore("team", {
   state: () => ({
@@ -32,7 +30,7 @@ export default defineStore("team", {
     create_folder_ing: false,
     active_folder: null,
     selected: null,
-    status: [
+    process_status: [
       {
         name: "待处理",
         val: "pending",
@@ -58,6 +56,7 @@ export default defineStore("team", {
     isExternal: false,
     isFocusMode: false,
     shareInfo: null,
+    status: 'deleted'
   }),
   actions: {
     $reset() {

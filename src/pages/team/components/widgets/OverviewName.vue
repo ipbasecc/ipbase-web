@@ -15,7 +15,7 @@
         square
         filled
         autofocus
-        :placeholder="belonged?.name"
+        :placeholder="teamStore.project?.name"
         type="text"
         @keyup.esc="change_ing = false"
         @blur="updateNameFn"
@@ -29,7 +29,7 @@
     <template v-else>
       <span class="row no-wrap items-center gap-md">
         <span
-          >{{ belonged?.name }}
+          >{{ teamStore.project?.name }}
           <q-tooltip
             class="bg-black text-white"
             anchor="top middle"
@@ -103,7 +103,7 @@ const updateNameFn = async () => {
     try {
       res = await updateProject(belonged.value.id, params.value);
       if (res?.data) {
-        // console.log(res);
+        teamStore.project.name = _input_text.value
         let chat_Msg = {
           body: `${userStore.me.username} ${$t('chang_project_title_to')} ${res.data.name}`,
           props: {

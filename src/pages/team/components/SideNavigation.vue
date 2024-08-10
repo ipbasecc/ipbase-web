@@ -325,6 +325,7 @@ import {
   fetch_userPreferences,
   getTeamMembers,
 } from "src/hooks/mattermost/useMattermost.js";
+import { getTeamByID } from 'src/api/strapi/team.js'
 import {
   deleteChannel as deleteMmChannel,
   getChannelByID as getMmChannelByID,
@@ -342,7 +343,7 @@ import UnreadBlock from 'src/pages/team/components/widgets/UnreadBlock.vue'
 import CreateProject from "./CreateProject.vue";
 import EditChannel from "./EditChannel.vue";
 import { createChannel } from "src/pages/team/hooks/useCreateChannel.js";
-import { useQuasar } from "quasar";
+import { useQuasar, debounce } from "quasar";
 import {mm_wsStore, teamStore, uiStore} from 'src/hooks/global/useStore.js';
 import { i18n } from 'src/boot/i18n.js';
 import {
@@ -645,6 +646,15 @@ const projectCreated = (val) => {
   openCreateProject.value = false;
 };
 
+const callbackChannelRefreshEvents = [
+  'channel_created',
+  'channel_deleted',
+  'channel_updated',
+  'channel_converted',
+  'update_team',
+  'leave_team',
+  'added_to_team'
+]
 watch(
   mm_wsStore,
   async () => {
@@ -659,8 +669,12 @@ watch(
         strapi?.data?.project_id
       ) {
         const _pid = strapi.data.project_id;
-        teamStore.team.projects.find((i) => i.id === _pid).name =
-          strapi.data?.body;
+        // teamStore.team.projects.find((i) => i.id === _pid).name = strapi.data?.body;
+        const project = teamStore.team.projects.find((i) => i.id === _pid);
+        console.log('project', project);
+        if (project) {
+          project.name = strapi.data?.body;
+        }
       }
       if (
         strapi?.data?.action === "overview_mediaChanged" &&
@@ -677,6 +691,24 @@ watch(
           })),
         } : i);
       }
+    } else if(callbackChannelRefreshEvents.includes(mm_wsStore?.event?.event)){
+      
+      const reGetTeam = async () => {
+        // console.log('callbackChannelRefreshEvents');
+        const res = await getTeamByID(teamStore.team.id);
+        if (res?.data) {
+          teamStore.team = res.data;
+        } else {
+          $q.notify({
+            type: "negative",
+            message: "获取团队信息失败,请刷新页面重试",
+          })
+        }
+      }
+      debounce(reGetTeam(),1000)
+    } else if(mm_wsStore?.event?.event === 'delete_team'){
+      teamStore.status = 'deleted'
+      teamStore.teams = teamStore.teams.filter(i => i.id !== teamStore.team.id)
     }
   },
   { immediate: true, deep: true }

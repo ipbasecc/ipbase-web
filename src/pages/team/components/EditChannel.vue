@@ -81,7 +81,7 @@ const params = ref({
   },
 });
 const updateChannelFn = async () => {
-    loading.value = true
+  loading.value = true
   params.value.data = channel.value;
   params.value.channel_id = channel.value.id;
   delete params.value.id;

@@ -24,7 +24,7 @@ export async function getTeamByID(team_id) {
     }
   } catch (error) {
     if (error.response && error.response.status === 404) {
-      return res;
+      return error;
     } else {
       console.log(error);
     }
