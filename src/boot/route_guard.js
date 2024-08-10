@@ -27,8 +27,10 @@ export default boot(({ router, store }) => {
 
     // 判断当前路由是否需要登录
     if (to.meta.requireAuth) {
+      const _jwt = localStorage.getItem("jwt");
+      const _mmtoken = localStorage.getItem("mmtoken");
       // 判断用户是否登录
-      if (authed.value) {
+      if (_jwt && _mmtoken) {
         // 已登录，正常访问
         next();
       } else {

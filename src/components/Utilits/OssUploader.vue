@@ -98,7 +98,7 @@ const uploadQueue = new Bottleneck({ maxConcurrent: 5 });
 
 const me = ref();
 const getMe = async () => {
-  let res = await localforage.getItem("__strapi_me");
+  let res = await localforage.getItem("init");
   if (res) {
     me.value = res;
   } else {

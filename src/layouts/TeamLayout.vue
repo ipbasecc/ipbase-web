@@ -2,7 +2,7 @@
   <template v-if="teamStore.init">
     <div v-if="!isInititalized && hasToken" class="absolute-full radius-xs overflow-hidden"
     :style="$q.screen.gt.md ? 'padding: 10vh 10vw' : 'padding: 0'">
-        <InitializationUser class="fit" />
+        <InitializationUser class="fit" @Initialized="Initialized" />
     </div>
     <template v-else>
       <q-layout
@@ -124,6 +124,9 @@ const hasToken = computed(() => {
   let _mm_token = localStorage.getItem('mmtoken');
   return _strapi_jwt && _mm_token
 })
+const Initialized = (val) => {
+  isInititalized.value = val;
+}
 
 const init = async () => {
   const process = (res, _from) => {

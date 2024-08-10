@@ -194,6 +194,7 @@ import { useQuasar } from "quasar";
 import { uiStore } from "src/hooks/global/useStore.js";
 import ServerList from "src/pages/team/settings/ServerList.vue";
 import ExtendInfo from './ExtendInfo.vue'
+import { clearLocalDB } from "src/pages/team/hooks/useUser.js";
 
 uiStore.topbarClass = "transparent";
 
@@ -222,6 +223,7 @@ const loading = ref(false);
 // 提交注册信息
 const submitRegister = async () => {
   loading.value = true;
+  await clearLocalDB("RegisterPage submitRegister event");
 
   let _params = {
     email: email.value,

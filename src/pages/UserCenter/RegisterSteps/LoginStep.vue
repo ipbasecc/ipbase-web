@@ -25,7 +25,6 @@
 <script setup>
 import { ref, toRefs, watch } from "vue";
 import { login as mmLogin } from "src/api/mattermost.js";
-import { init_mm } from "src/hooks/chat/useInitChatservice.js";
 import { useFetchAvatar } from "src/pages/Chat/hooks/useFetchAvatar.js";
 
 const props = defineProps({

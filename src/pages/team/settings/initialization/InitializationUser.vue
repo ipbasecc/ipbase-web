@@ -101,6 +101,7 @@ const teamInitialized = (val) => {
     nextStep.value = 2;
   }
 }
+const emit = defineEmits(['Initialized']);
 const Initialized = ref(false);
 const KnownMoreInitialized = () => {
   Initialized.value = true;
@@ -111,11 +112,12 @@ const complateInit = async () => {
       initialization: true,
     },
   };
-  const res = await updateUser(userStore?.me?.id, params);
+  const res = await updateUser(teamStore?.init?.id, params);
   // console.log('res', res);
   
   if(res?.data){
     teamStore.init.initialization = res.data.initialization
+    emit('Initialized', teamStore.init.initialization);
   }
 }
 

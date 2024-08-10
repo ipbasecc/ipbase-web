@@ -308,10 +308,12 @@ getUserStatusFn();
 // 注销动作开始
 const confirmOut = ref(false);
 const logout = async () => {
-  localStorage.setItem(
-    "isViewedIds",
-    JSON.stringify(userStore.viewed.map((i) => i.id))
-  ); //将userStore中已阅读ID清单存入本地存储
+  if(userStore.viewed?.length > 0){
+    localStorage.setItem(
+      "isViewedIds",
+      JSON.stringify(userStore.viewed.map((i) => i.id))
+    ); //将userStore中已阅读ID清单存入本地存储
+  }
   userStore.$reset(); //重置store
   channelStore.$reset();
   teamStore.$reset_project();

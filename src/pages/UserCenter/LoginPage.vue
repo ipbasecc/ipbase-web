@@ -211,6 +211,7 @@ import { useFetchAvatar } from "src/pages/Chat/hooks/useFetchAvatar.js";
 import { uiStore } from "src/hooks/global/useStore.js";
 import ServerList from "pages/team/settings/ServerList.vue";
 import ExtendInfo from './ExtendInfo.vue'
+import { clearLocalDB } from "src/pages/team/hooks/useUser.js";
 
 uiStore.topbarClass = "transparent";
 const store = useUserStore();
@@ -258,6 +259,7 @@ const {
 } = login(loginParams);
 // 登录动作
 const submitLogin = async () => {
+  await clearLocalDB("LoginPage submitLogin event");
   start.value = true;
   loginParams.value.password = password.value;
   loginParams.value.identifier = identifier.value;
