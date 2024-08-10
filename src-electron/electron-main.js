@@ -171,6 +171,15 @@ function createWindow() {
   mainWindow.on("closed", () => {
     unregisterGlobalShortcuts();
   });
+  mainWindow.on("will-quit", () => {
+    unregisterGlobalShortcuts();
+  });
+  mainWindow.on("blur", () => {
+    unregisterGlobalShortcuts();
+  });
+  mainWindow.on("focus", () => {
+    registerGlobalShortcuts();
+  });
 
   // 注册全局快捷键
   registerGlobalShortcuts();
