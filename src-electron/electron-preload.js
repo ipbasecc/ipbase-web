@@ -56,3 +56,21 @@ contextBridge.exposeInMainWorld("pathAPI", {
     return __path;
   },
 });
+contextBridge.exposeInMainWorld('osAPI', {
+  async isWin11() {
+    const isWindows = process.platform === 'win32';
+    if (!isWindows) {
+      return false;
+    }
+  
+    try {
+      // 检查 Windows 版本，Windows 11 的版本号是 10.0.22000 或更高
+      const osReleaseInfo = await ipcRenderer.invoke('get-windows-version');
+      const isWindows11 = osReleaseInfo.major >= 10 && osReleaseInfo.minor >= 0 && osReleaseInfo.build >= 22000;
+      return isWindows11;
+    } catch (error) {
+      console.error('Failed to determine Windows version:', error);
+      return false;
+    }
+  }
+});

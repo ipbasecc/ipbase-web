@@ -4,7 +4,7 @@
       ${uiStore?.draging ? 'unselected' : ''}
     `"
   />
-  <div class="absolute-full z-max border app_edge pointer-cross" />
+  <div v-if="!$q.platform.is.mac && !isWin11" class="absolute-full z-max border app_edge pointer-cross" />
   <transition>
     <div
       v-if="!uiStore.pageLoaded"
@@ -225,8 +225,9 @@ const fileTabs = [
   { name: 'download', icon: '', label: t('download')}
 ]
 const downloadFiles = ref([]);
+const isWin11 = ref(false);
 // 在组件挂载后订阅下载进度事件
-onMounted(() => {
+onMounted(async() => {
   if($q.platform.is.electron){
     window.windowAPI.downloadMessage('download-progress', (fileInfo) => {
       ossStore.showList = true;
@@ -246,6 +247,7 @@ onMounted(() => {
         percent: i.path === fileInfo.path ? 100 : i.percent
       }));
     });
+    isWin11.value = await window.isWin11
   }
 });
 

@@ -295,3 +295,19 @@ ipcMain.on("stop-download", async (event, fileInfo) => {
     stoped.push(fileInfo);
   }
 });
+
+function getWindowsVersion() {
+  if (process.platform !== 'win32') {
+    throw new Error('Not running on Windows');
+  }
+
+  const version = os.release();
+  const [major, minor, build] = version.split('.').map(Number);
+
+  return { major, minor, build };
+}
+
+// 将方法暴露给渲染进程
+ipcMain.on('get-windows-version', (event) => {
+  event.returnValue = getWindowsVersion();
+});
