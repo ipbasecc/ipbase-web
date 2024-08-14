@@ -276,6 +276,7 @@
 
 <script setup>
 import { ref, computed, watch, inject, watchEffect } from "vue";
+import useGetMyMatedate from "src/hooks/global/useGetMyMatedata.js";
 import { updateUsersBasicinfo } from "src/apollo/api/api.js";
 import UploadFile from "src/components/Utilits/UploadFile.vue";
 import UpdateAvatar from "src/pages/Chat/components/user/Settings/UpdateAvatar.vue";
@@ -284,7 +285,6 @@ import useUserStore from "src/stores/user.js";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import localforage from "localforage";
-import { teamStore } from "src/hooks/global/useStore.js";
 
 const props = defineProps({
   style: {
@@ -295,7 +295,7 @@ const props = defineProps({
 
 const $q = useQuasar();
 const userStore = useUserStore();
-const me = computed(() => teamStore.init);
+const { me, userId } = useGetMyMatedate;
 
 const imageType = inject("imageType");
 
@@ -372,9 +372,9 @@ const showAddCover = ref(false);
 const mm_profile = ref();
 
 watch(
-  me,
+  [me, userId],
   () => {
-    if (me.value) {
+    if (me && me.value && userId) {
       mm_profile.value = me.value.mm_profile;
       avatar.value = me.value?.profile?.avatar?.data?.attributes.url || "";
       title.value = me.value?.profile?.title || "";
@@ -382,14 +382,14 @@ watch(
       bio.value = me.value?.profile?.bio || "";
       self_tags.value = me.value?.self_tags || [];
       theme.value = tehmeItems.value[0];
-      brand.value = me.value?.profile?.brand?.data || [];
+      brand.value = me.value?.profile?.brand.data || [];
       cover.value = me.value?.profile?.cover?.data?.attributes.url || null;
 
-      updateUsersBasicinfoParams.value.updateUsersPermissionsUserId = me.value.id;
+      updateUsersBasicinfoParams.value.updateUsersPermissionsUserId = userId;
       updateUsersBasicinfoParams.value.data.profile.avatar =
-        me.value?.profile?.avatar?.data?.id || null;
+        me.value?.profile?.avatar?.data.id || null;
       updateUsersBasicinfoParams.value.data.profile.brand =
-        me.value?.profile?.brand?.data?.map((i) => i.id) || [];
+        me.value?.profile?.brand?.data.map((i) => i.id) || [];
       updateUsersBasicinfoParams.value.data.profile.cover =
         me.value?.profile?.cover?.data?.id || null;
     }
