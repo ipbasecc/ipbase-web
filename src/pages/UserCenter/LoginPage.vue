@@ -157,7 +157,7 @@
               @click="reLogin"
             />
           </q-card-section>
-          <template v-else-if="errorStats === 'ERR_NETWORK'">
+          <template v-else-if="errorStats === 'ERR_NETWORK' || connect_refused">
             <q-card-section class="column no-wrap gap-sm">
               <span class="font-larger">{{ $t('connect_refused_header') }}</span>
               <span class="op-6">{{ $t('connect_refused_login_caption') }}</span>

@@ -276,7 +276,6 @@
 
 <script setup>
 import { ref, computed, watch, inject, watchEffect } from "vue";
-import useGetMyMatedate from "src/hooks/global/useGetMyMatedata.js";
 import { updateUsersBasicinfo } from "src/apollo/api/api.js";
 import UploadFile from "src/components/Utilits/UploadFile.vue";
 import UpdateAvatar from "src/pages/Chat/components/user/Settings/UpdateAvatar.vue";
@@ -285,6 +284,7 @@ import useUserStore from "src/stores/user.js";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import localforage from "localforage";
+import { teamStore } from "src/hooks/global/useStore.js";
 
 const props = defineProps({
   style: {
@@ -295,7 +295,8 @@ const props = defineProps({
 
 const $q = useQuasar();
 const userStore = useUserStore();
-const { me, userId } = useGetMyMatedate;
+const me = computed(() => teamStore.init);
+const userId = computed(() =>teamStore.init?.id);
 
 const imageType = inject("imageType");
 
