@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, toRefs, nextTick } from "vue";
+import { ref, onMounted, onUnmounted, toRefs, nextTick, computed } from "vue";
 import { confirmUpload } from "src/hooks/utilits/useConfirmUpload.js";
 import { useQuasar, uid } from "quasar";
 import { useUploadAvatar } from "src/pages/UserCenter/hooks/useUploadAvatar.js";

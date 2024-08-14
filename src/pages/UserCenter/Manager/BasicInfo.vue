@@ -296,7 +296,6 @@ const props = defineProps({
 const $q = useQuasar();
 const userStore = useUserStore();
 const me = computed(() => teamStore.init);
-const userId = computed(() =>teamStore.init?.id);
 
 const imageType = inject("imageType");
 
@@ -373,9 +372,9 @@ const showAddCover = ref(false);
 const mm_profile = ref();
 
 watch(
-  [me, userId],
+  me,
   () => {
-    if (me && me.value && userId) {
+    if (me.value) {
       mm_profile.value = me.value.mm_profile;
       avatar.value = me.value?.profile?.avatar?.data?.attributes.url || "";
       title.value = me.value?.profile?.title || "";
@@ -383,14 +382,14 @@ watch(
       bio.value = me.value?.profile?.bio || "";
       self_tags.value = me.value?.self_tags || [];
       theme.value = tehmeItems.value[0];
-      brand.value = me.value?.profile?.brand.data || [];
+      brand.value = me.value?.profile?.brand?.data || [];
       cover.value = me.value?.profile?.cover?.data?.attributes.url || null;
 
-      updateUsersBasicinfoParams.value.updateUsersPermissionsUserId = userId;
+      updateUsersBasicinfoParams.value.updateUsersPermissionsUserId = me.value.id;
       updateUsersBasicinfoParams.value.data.profile.avatar =
-        me.value?.profile?.avatar?.data.id || null;
+        me.value?.profile?.avatar?.data?.id || null;
       updateUsersBasicinfoParams.value.data.profile.brand =
-        me.value?.profile?.brand?.data.map((i) => i.id) || [];
+        me.value?.profile?.brand?.data?.map((i) => i.id) || [];
       updateUsersBasicinfoParams.value.data.profile.cover =
         me.value?.profile?.cover?.data?.id || null;
     }
