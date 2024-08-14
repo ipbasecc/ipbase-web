@@ -20,17 +20,15 @@
 <script setup>
 import { ref, onMounted, onUnmounted, toRefs, nextTick } from "vue";
 import { confirmUpload } from "src/hooks/utilits/useConfirmUpload.js";
-import useGetMyMatedate from "src/hooks/global/useGetMyMatedata.js";
 import { useQuasar, uid } from "quasar";
 import { useUploadAvatar } from "src/pages/UserCenter/hooks/useUploadAvatar.js";
 import { updateUserAvatar } from "src/api/strapi.js";
 import localforage from "localforage";
-import useUserStore from "src/stores/user.js";
+import { teamStore, userStore } from "src/hooks/global/useStore";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
-const userStore = useUserStore();
-const { me } = useGetMyMatedate;
+const me = computed(() => teamStore.init)
 
 const $q = useQuasar();
 

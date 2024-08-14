@@ -130,7 +130,7 @@
             的邮件，点击其中的激活链接！
           </q-card-section>
 
-          <q-card-section v-else-if="errorStats === 'wrongPassword'"
+          <q-card-section v-else-if="errorStats === 'ValidationError'"
             class="row no-wrap gap-sm items-center"
           >
             <span>账号或密码错误！</span
@@ -144,7 +144,7 @@
             />
           </q-card-section>
 
-          <q-card-section v-else-if="errorStats === 'wrongAuth'"
+          <q-card-section v-else-if="errorStats === 'Unauthorized'"
             class="row no-wrap gap-sm items-center"
           >
             <span>授权已过期，请重新登陆</span
@@ -204,7 +204,7 @@ import {
   nextTick,
 } from "vue";
 import { useRouter } from "vue-router";
-import { login } from "src/apollo/api/api.js";
+import { login as strapi_login } from 'src/api/strapi.js'
 import { login as mmLogin } from "src/api/mattermost.js";
 import useUserStore from "src/stores/user.js";
 import { useFetchAvatar } from "src/pages/Chat/hooks/useFetchAvatar.js";
@@ -244,19 +244,14 @@ const loginParams = ref({
   password: "",
   identifier: "",
 });
-const Rsps = ref();
+
 const hasError = ref(false);
 const errorStats = ref();
 const start = ref(false);
 const strapi_loading = ref(false);
 const mm_loading = ref(false);
 const showExtanInfo = ref(true);
-//提交登录数据登录方法
-const {
-  mutate: loginMutate,
-  onDone: loginOnDone,
-  onError: loginError,
-} = login(loginParams);
+
 // 登录动作
 const submitLogin = async () => {
   await clearLocalDB("LoginPage submitLogin event");
@@ -264,53 +259,45 @@ const submitLogin = async () => {
   loginParams.value.password = password.value;
   loginParams.value.identifier = identifier.value;
 
-  try {
-    strapi_loading.value = true;
-    // 提交登录数据并拿回Apollo返回数据
-    const { data, error } = await loginMutate();
-    // 填充本地JWT数据，填充store数据
-    if (data) {
-      strapi_loading.value = false;
-      Rsps.value = data;
-      localStorage.setItem("jwt", JSON.stringify(data.login.jwt));
-      me.value = data.login.user;
-      store.logged = true;
-      store.needRefetch = true;
-      // 登录mattermost
-      try {
-        mm_loading.value = true;
-        const loginParmars = ref({
-          login_id: identifier.value,
-          password: password.value,
-        });
-        let res = await mmLogin(loginParmars.value);
-        if (res?.data) {
-          await useFetchAvatar(res.data.id, "force");
-          mm_loading.value = false;
-          start.value = false;
-          showExtanInfo.value = false
-          startCountdown();
-        }
-      } catch (error) {
-        console.log(error);
+  strapi_loading.value = true;
+  const res = await strapi_login(loginParams.value);
+  if (res?.data) {      
+    strapi_loading.value = false;
+    
+    store.logged = true;
+    store.needRefetch = true;
+    // 登录mattermost
+    try {
+      mm_loading.value = true;
+      const loginParmars = ref({
+        login_id: identifier.value,
+        password: password.value,
+      });
+      let res = await mmLogin(loginParmars.value);
+      if (res?.data) {
+        await useFetchAvatar(res.data.id, "force");
+        mm_loading.value = false;
+        start.value = false;
+        showExtanInfo.value = false
+        startCountdown();
       }
+    } catch (error) {
+      console.log(error);
     }
-    if(error){
-      console.log('error', error);
-    }
-  } catch (error) {
-    hasError.value = true;
-    if (error === "ApolloError: Your account email is not confirmed") {
-      errorStats.value = "noneConfirmed";
-    } else if (error === "ApolloError: Invalid identifier or password") {
-      errorStats.value = "wrongPassword";
-    } else if(error.code === 'ERR_NETWORK' || connect_refused.value) {
-      errorStats.value = "ERR_NETWORK";
+  } else if (res?.response?.data?.error) {
+    const err = res.response.data.error;
+    if(err.name === 'ValidationError'){
+      errorStats.value = "ValidationError";
+    } else if (err.name === "Unauthorized") {
+      errorStats.value = "Unauthorized";
+    } else if (err.name === "Forbidden") {
+      errorStats.value = "Forbidden";
     } else {
-      errorStats.value = "wrongAuth";
+      errorStats.value = err.message;
     }
-    console.log(error);
-    Rsps.value = error;
+    hasError.value = true;
+    strapi_loading.value = false;
+    start.value = false;
   }
 };
 const enterListener = (event) => {

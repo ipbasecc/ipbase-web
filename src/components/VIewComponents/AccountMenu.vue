@@ -4,7 +4,7 @@
       userStore?.logged &&
       $route.name !== 'login' &&
       $route.name !== 'register' &&
-      me
+      teamStore?.init
     "
     class="cursor-pointer"
   >
@@ -74,19 +74,6 @@
             <q-item-section>{{ i.name }}</q-item-section>
           </q-item>
         </template>
-
-        <q-separator spaced class="op-3" />
-        <q-item
-          clickable
-          v-close-popup
-          class="radius-xs"
-          @click="$router.push(ipbase_uri)"
-        >
-          <q-item-section side>
-            <q-icon name="contacts" />
-          </q-item-section>
-          <q-item-section>{{ $t('my_channel') }}</q-item-section>
-        </q-item>
         <q-separator spaced class="op-3" />
         <q-item
           clickable
@@ -198,13 +185,12 @@
 <script setup>
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
-import useGetMyMatedate from "src/hooks/global/useGetMyMatedata.js";
-import useUserStore from "src/stores/user.js";
 import {
   logout as mmlogout,
   updateUserStatus,
   getUserStatus,
 } from "src/api/mattermost.js";
+import { teamStore, userStore } from "src/hooks/global/useStore";
 
 import useChannelStore from "src/stores/channel.js";
 
@@ -254,23 +240,14 @@ const props = defineProps({
 });
 
 const avatarSizeRef = toRef(props, "avatarSize");
-
-const { me, userChannelId } = useGetMyMatedate;
-const avatar = computed(() => me.value?.profile?.avatar?.data.attributes.url);
-const userStore = useUserStore();
+const avatar = computed(() => teamStore.init?.profile?.avatar?.url);
 const router = useRouter();
 const channelStore = useChannelStore();
 const mmUser = mmUserStore();
 const projectStore = useProjectStore();
 
-const ipbase_uri = computed(() => {
-  return `/${userChannelId.value}/posts` || "/";
-});
-
 const getUserStatusFn = async () => {
-  if (!me) return;
   const mmUserId = localStorage.getItem("mmUserId");
-  if (!mmUserId) return;
   const res = await getUserStatus(mmUserId);
   if (res) {
     mmUser.status = res;

@@ -91,13 +91,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watchEffect, onUnmounted, onBeforeMount } from "vue";
+import { ref, onMounted, computed, watchEffect, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import AccountMenu from "../pages/team/components/AccountMenu.vue";
 import AppList from "components/VIewComponents/AppList.vue";
-import { teamStore, uiStore, userStore } from "src/hooks/global/useStore";
 import shortcut from "src/pages/team/hooks/useShortcut.js";
-import { fetch_MmMe, fetch_StrapiMe } from "src/hooks/global/useFetchme";
+import { fetch_MmMe } from "src/hooks/global/useFetchme";
 import localforage from "localforage";
 import { init_user } from "src/api/strapi/project";
 import { useQuasar } from "quasar";
@@ -106,6 +105,7 @@ import { _ws, closeWs } from "src/pages/team/ws.js";
 import AppUtils from "src/components/VIewComponents/AppUtils.vue";
 import {clearLocalDB} from "pages/team/hooks/useUser";
 import InitializationUser from 'src/pages/team/settings/initialization/InitializationUser.vue'
+import { teamStore, uiStore, userStore } from "src/hooks/global/useStore";
 
 const $q = useQuasar();
 
@@ -159,21 +159,8 @@ const init = async () => {
   }
 };
 const loginAndInit = async () => {
-  let strapiLoged;
-  let mmLoged;
-
-  const _strapi_me =await fetch_StrapiMe();
-  if(_strapi_me) {
-    strapiLoged = true;
-  }
-
   const _mm_me = await fetch_MmMe();
   if(_mm_me) {
-    mmLoged = true;
-  }
-
-  if(strapiLoged && mmLoged) {
-    userStore.logged = true;
     init();
   }
 }

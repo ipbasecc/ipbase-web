@@ -393,10 +393,6 @@ const routes = [
     component: () => import("src/pages/JoinPage.vue"),
     props: true,
   },
-  {
-    path: "/middleware",
-    component: () => import("src/pages/MiddleWare.vue"),
-  },
 
   {
     path: "/test",

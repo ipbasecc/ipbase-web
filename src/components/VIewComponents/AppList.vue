@@ -75,7 +75,6 @@
 <script setup>
 import { ref, computed, watchEffect, onBeforeMount } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import useGetMyMatedate from "src/hooks/global/useGetMyMatedata.js";
 import localforage from "localforage";
 
 import { uiStore, teamStore } from "src/hooks/global/useStore";
@@ -88,15 +87,6 @@ const $q = useQuasar();
 
 const router = useRouter();
 const route = useRoute();
-
-const { logged, userChannelId } = useGetMyMatedate;
-const ipbase_uri = computed(() => {
-  // console.log('logged',logged.value);
-  return (
-    (logged.value && userChannelId.value && `${userChannelId.value}/posts`) ||
-    "/"
-  );
-});
 const apps = [
   {
     val: "teams",
@@ -113,14 +103,6 @@ const apps = [
     description: 'app_affairs_purpose',
     to: "affairs",
     enable: true,
-  },
-  {
-    val: "ipbase",
-    label: 'brand',
-    icon: "contacts",
-    description: 'app_brand_purpose',
-    to: ipbase_uri.value,
-    enable: false,
   },
   {
     val: "threads",

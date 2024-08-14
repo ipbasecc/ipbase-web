@@ -1,16 +1,7 @@
 import { db } from "src/boot/dexie.js";
 import { getOneKanban, getProjects } from "src/api/strapi/project.js";
 import { useGetProject } from "src/hooks/project/useGetProject.js";
-import { fetch_StrapiMe } from "src/hooks/global/useFetchme.js";
-import { nextTick, ref } from "vue";
-
-const me = ref();
-const _StrapiMe = async () => {
-  let res = await fetch_StrapiMe();
-  if (res) {
-    me.value = res;
-  }
-};
+import { nextTick } from "vue";
 
 const processVal = (data) => {
   // if (data != null || data != undefined || data != NaN || !data) {
@@ -37,21 +28,12 @@ const processVal = (data) => {
   return JSON.parse(JSON.stringify(data));
 };
 
-const _getProjectsCache = async (user_id) => {
-  if (!user_id) return;
-  try {
-    return await db.matedata.get(user_id);
-  } catch (error) {
-    console.log(error);
-    return {};
-  }
-};
 const _putProjectsCache = async (user_id, val) => {
   if (val === null || val === undefined || isNaN(val) || !val) return;
   // console.log("user_id", user_id);
   const _val = processVal(val);
   await nextTick();
-  const cache = await _getProjectsCache(user_id);
+  const cache = await getProjectsCache(user_id);
   if (cache) {
     const newCache = {
       ...cache,
@@ -76,13 +58,8 @@ const _putProjectsCache = async (user_id, val) => {
 };
 
 export async function getProjectsCache(user_id) {
-  if (!user_id) {
-    await _StrapiMe().then(async () => {
-      return await _getProjectsCache(me.value?.id);
-    });
-  } else {
-    return await _getProjectsCache(user_id);
-  }
+  if (!user_id) return;
+  return await db.matedata.get(user_id);
 }
 export async function putProjectsCache(user_id, val) {
   if (val === null || val === undefined || isNaN(val) || !val) return;

@@ -90,11 +90,12 @@ export async function updateUserAvatar(params) {
 }
 
 //忘记密码
-export async function forgotPassword(email) {
+// params: {
+//   email: 'user@strapi.io', // user's email
+// }
+export async function forgotPassword(params) {
   try {
-    const res = await api.post(`auth/forgot-password`, {
-      email: email, // user's email
-    });
+    const res = await api.post(`auth/forgot-password`, params);
     if (res) {
       return res;
     }

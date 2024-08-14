@@ -69,7 +69,6 @@ import { ref, watch, watchEffect, computed } from "vue";
 import { getCards, getFollowedCards } from "src/api/strapi/project.js";
 import localforage from "localforage";
 
-import { fetch_StrapiMe } from "src/hooks/global/useFetchme.js";
 import { teamStore } from "src/hooks/global/useStore.js";
 
 import QuadrantBackgroud from "src/pages/team/card/components/QuadrantBackgroud.vue";
@@ -83,11 +82,6 @@ const quadrantChartRef = ref();
 const onResize = (size) => {
   taskContainerSIze.value = size;
 };
-
-const me = ref();
-fetch_StrapiMe().then((res) => {
-  me.value = res;
-});
 
 let axisData = ref([]);
 
@@ -118,7 +112,7 @@ const getCardsFn = async () => {
 };
 const getMoreCardsFn = async () => {
   cards_page.value++;
-  await getCardsFn(me.value.id);
+  await getCardsFn(teamStore.init?.id);
 };
 
 const followedCards = ref([]);
@@ -151,7 +145,7 @@ const getFollowedCardsCardsFn = async () => {
 };
 const getMoreFollowedCardsFn = async () => {
   followedCards_page.value++;
-  await getFollowedCardsCardsFn(me.value.id);
+  await getFollowedCardsCardsFn(teamStore.init?.id);
 };
 
 const team = computed(() => teamStore.team);
@@ -175,7 +169,7 @@ const _followedCards = computed(() => followedCards.value);
 const _executorCards = computed(() =>
   cards.value?.filter((i) =>
     i.member_roles?.filter(
-      (j) => j.subject === "executor" && j.by_user?.id === me.value?.id
+      (j) => j.subject === "executor" && j.by_user?.id === teamStore.init?.id
     )
   )
 );

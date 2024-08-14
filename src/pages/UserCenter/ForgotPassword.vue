@@ -69,7 +69,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { forgotPassword } from "src/apollo/api/api.js";
+import { forgotPassword } from "src/api/strapi.js";
 import { uiStore } from "src/hooks/global/useStore.js";
 import {useRouter} from "vue-router";
 
@@ -80,18 +80,13 @@ const forgotPasswordParmas = ref({
   email: null,
 });
 const forgotSuccess = ref(false);
-const {
-  mutate: forgotPasswordMutate,
-  onDone: forgotPasswordOnDone,
-  onError: forgotPasswordError,
-} = forgotPassword(forgotPasswordParmas);
 
 const isLoading = ref(false);
 const isOk = ref(false);
 const forgot = async () => {
   isLoading.value = true;
   try {
-    const { data } = await forgotPasswordMutate();
+    const { data } = await forgotPassword(forgotPasswordParmas.value);
     if (data) {
       isLoading.value = false;
       forgotSuccess.value = true;
