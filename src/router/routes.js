@@ -158,81 +158,6 @@ const routes = [
         props: true,
       },
       {
-        path: "/brand",
-        component: () => import("pages/IndexPage.vue"),
-        props: true,
-      },
-      {
-        path: "/brand/:id",
-        component: () => import("pages/ChannelPage/IndexPage.vue"),
-        props: true,
-        name: "channel_homepage",
-        children: [
-          {
-            path: "/brand/:id/posts",
-            component: () =>
-              import("src/pages/ChannelPage/Discover/DiscoverIndex.vue"),
-            props: true,
-            name: "posts",
-          },
-          {
-            path: "/brand/:id/articles",
-            component: () =>
-              import("src/pages/ChannelPage/Elements/IndexPage.vue"),
-            props: true,
-            name: "article",
-          },
-          {
-            path: "/brand/:id/videos",
-            component: () =>
-              import("src/pages/ChannelPage/Elements/IndexPage.vue"),
-            props: true,
-            name: "video",
-          },
-          {
-            path: "/brand/:id/audios",
-            component: () =>
-              import("src/pages/ChannelPage/Elements/IndexPage.vue"),
-            props: true,
-            name: "audio",
-          },
-          {
-            path: "/brand/:id/element/:elementid",
-            component: () =>
-              import("src/pages/ChannelPage/Elements/DetialPage.vue"),
-            props: true,
-            name: "element",
-            meta: {
-              showMaker: true,
-            },
-          },
-          {
-            path: "/brand/:id/sales",
-            component: () => import("pages/ChannelPage/Sales/IndexPage.vue"),
-            props: true,
-            name: "sales",
-          },
-          {
-            path: "/brand/:id/bizcard",
-            component: () => import("src/pages/BizCard/IndexPage.vue"),
-            props: true,
-            name: "bizcard",
-          },
-          {
-            path: "/brand/:id/favorite",
-            component: () =>
-              import(
-                "src/pages/ChannelPage/Elements/Components/Favorite/FavoriteManager.vue"
-              ),
-            props: true,
-            name: "favorite",
-          },
-        ],
-        meta: {
-          title: "易乎品牌",
-        },
-      },
-      {
         path: "/userinfo",
         component: () => import("src/pages/UserCenter/UserInfo.vue"),
         props: true,
@@ -293,6 +218,81 @@ const routes = [
     ],
   },
 
+  {
+    path: "/brand",
+    component: () => import("pages/IndexPage.vue"),
+    props: true,
+  },
+  {
+    path: "/brand/:id",
+    component: () => import("pages/ChannelPage/IndexPage.vue"),
+    props: true,
+    name: "channel_homepage",
+    children: [
+      {
+        path: "/brand/:id/posts",
+        component: () =>
+          import("src/pages/ChannelPage/Discover/DiscoverIndex.vue"),
+        props: true,
+        name: "posts",
+      },
+      {
+        path: "/brand/:id/articles",
+        component: () =>
+          import("src/pages/ChannelPage/Elements/IndexPage.vue"),
+        props: true,
+        name: "article",
+      },
+      {
+        path: "/brand/:id/videos",
+        component: () =>
+          import("src/pages/ChannelPage/Elements/IndexPage.vue"),
+        props: true,
+        name: "video",
+      },
+      {
+        path: "/brand/:id/audios",
+        component: () =>
+          import("src/pages/ChannelPage/Elements/IndexPage.vue"),
+        props: true,
+        name: "audio",
+      },
+      {
+        path: "/brand/:id/element/:elementid",
+        component: () =>
+          import("src/pages/ChannelPage/Elements/DetialPage.vue"),
+        props: true,
+        name: "element",
+        meta: {
+          showMaker: true,
+        },
+      },
+      {
+        path: "/brand/:id/sales",
+        component: () => import("pages/ChannelPage/Sales/IndexPage.vue"),
+        props: true,
+        name: "sales",
+      },
+      {
+        path: "/brand/:id/bizcard",
+        component: () => import("src/pages/BizCard/IndexPage.vue"),
+        props: true,
+        name: "bizcard",
+      },
+      {
+        path: "/brand/:id/favorite",
+        component: () =>
+          import(
+            "src/pages/ChannelPage/Elements/Components/Favorite/FavoriteManager.vue"
+          ),
+        props: true,
+        name: "favorite",
+      },
+    ],
+    meta: {
+      title: "易乎品牌",
+    },
+  },
 
   {
     path: "/",

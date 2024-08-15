@@ -68,7 +68,11 @@ export default defineStore("user", {
     me: null,
     init: null,
     profile: null,
-    avatar: "",
+    avatar: "", // 暂时使用Mattermost头像
+    brand: "",
+    cover: "",
+    config: null,
+    self_tags: null,
     mm_profile: null,
     favorites: null, //登陆者的收藏夹，可以有多个收藏夹，收藏夹下关联收藏的内容
     viewed: null, // 查看过的内容，读取用户的内容来判断是否读过，用户内容数据量小，效率更好
@@ -108,5 +112,18 @@ export default defineStore("user", {
       this.replyTo = null;
       this.storages = null;
     },
+    $process(_init) {
+      this.logged = true;
+      this.me = _init;
+      this.userId = _init.id;
+      this.init = _init;
+      this.profile = _init.profile;
+      this.avatar = _init.profile?.avatar?.url;
+      this.brand = _init.profile?.brand;
+      this.cover = _init.profile?.cover?.url;
+      this.config = _init.config;
+      this.self_tags = _init.self_tags;
+      this.mm_profile = _init.mm_profile;
+    }
   },
 });

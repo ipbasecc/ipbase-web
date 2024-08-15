@@ -33,7 +33,6 @@
   import useChannelStore from 'src/stores/channel.js';
   import useStore from 'src/stores/user.js';
 
-  console.log();
   const workStore = useWorkStore();
   const channelStore = useChannelStore();
   const userStore = useStore();

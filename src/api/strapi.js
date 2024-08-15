@@ -161,7 +161,7 @@ export async function modifyConfig(params) {
 export async function updateUser(user_id,params) {
   try {
     const res = await api.put(`users/${user_id}`, params);
-    if (res) {
+    if (res?.data) {
       return res;
     }
   } catch (error) {

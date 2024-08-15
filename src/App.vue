@@ -199,7 +199,6 @@ let navigationBase = [
   { name: t('channel_nav_articles'), val: "articles", icon: "", activeClass: "", enable: true },
   { name: t('channel_nav_videos'), val: "videos", icon: "", activeClass: "", enable: true },
   { name: t('channel_nav_audios'), val: "audios", icon: "", activeClass: "", enable: true },
-  { name: t('channel_nav_chat'), val: "chat", icon: "", activeClass: "", enable: false },
   { name: t('channel_nav_sales'), val: "sales", icon: "", activeClass: "", enable: false },
 ];
 provide("navigationBase", navigationBase);

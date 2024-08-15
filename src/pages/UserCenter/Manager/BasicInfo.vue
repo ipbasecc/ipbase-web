@@ -20,29 +20,29 @@
           dense
           icon="done_all"
           label="确认"
-          @click="updateBasicinfo"
+          @click="updateUserFn()"
         />
       </q-toolbar>
       <q-input
-        v-model="title"
+        v-model="update_params.data.profile.title"
         type="text"
         label="头衔 / 职业称谓"
         stack-label
-        :placeholder="title"
+        :placeholder="update_params.data.profile.title"
       />
       <q-input
-        v-model="bio"
+        v-model="update_params.data.profile.bio"
         type="text"
         label="个性签名"
         stack-label
-        :placeholder="bio"
+        :placeholder="update_params.data.profile.bio"
       />
       <q-input
-        v-model="description"
+        v-model="update_params.data.profile.description"
         type="text"
         label="简介"
         stack-label
-        :placeholder="description"
+        :placeholder="update_params.data.profile.description"
       />
 
       <div class="row no-wrap gap-sm items-center">
@@ -275,16 +275,15 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, inject, watchEffect } from "vue";
-import useGetMyMatedate from "src/hooks/global/useGetMyMatedata.js";
-import { updateUsersBasicinfo } from "src/apollo/api/api.js";
+import { ref, computed, watch, inject } from "vue";
+import { updateUser } from "src/api/strapi.js";
 import UploadFile from "src/components/Utilits/UploadFile.vue";
 import UpdateAvatar from "src/pages/Chat/components/user/Settings/UpdateAvatar.vue";
 
-import useUserStore from "src/stores/user.js";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import localforage from "localforage";
+import { userStore } from "src/hooks/global/useStore";
 
 const props = defineProps({
   style: {
@@ -294,27 +293,38 @@ const props = defineProps({
 });
 
 const $q = useQuasar();
-const userStore = useUserStore();
-const { me, userId } = useGetMyMatedate;
 
 const imageType = inject("imageType");
 
-const updateUsersBasicinfoParams = ref({
-  updateUsersPermissionsUserId: null,
-  data: {
-    config: {},
-    profile: {},
-  },
-});
-
 const submitDisable = ref(true);
+const { profile, avatar, cover, brand, config, self_tags, mm_profile } = userStore;
+const { title, description, bio } = profile;
+const update_params = ref({
+  data: {
+    profile: {
+      title: title,
+      description: description,
+      bio: bio,
+      avatar: avatar?.id,
+      cover: cover?.id,
+      brand: brand?.length > 0 ? brand.map(i => i.id) : [],
+    },
+    self_tags: self_tags,
+    config: config,
+  }
+});
+watch(update_params, () => {
+  if(update_params.value){
+    submitDisable.value = false;
+  }
+},{deep: true});
 
-const title = ref();
-const description = ref();
-const bio = ref();
-const self_tags = ref();
 const newTagName = ref();
 const addingTag = ref(false);
+const addBrand = ref(false);
+const showRemoveBrand = ref(null);
+const removedBrand = ref([]);
+
 const newTag = () => {
   self_tags.value.push(newTagName.value);
   newTagName.value = "";
@@ -336,7 +346,7 @@ const localeOptions = [
 ];
 const setLocale = async (val) => {
   locale.value = val;
-  updateUsersBasicinfoParams.value.data.config.lang = val
+  update_params.value.data.config.lang = val
   await localforage.setItem("locale", val);
 };
 const language = computed(() => locale.value)
@@ -352,117 +362,44 @@ const langLabel = computed(() => {
   }
 })
 
-const avatar = ref();
-const cover = ref();
-const brand = ref();
-const addBrand = ref(false);
-const showRemoveBrand = ref(null);
-const removedBrand = ref([]);
 const removeBrand = (val) => {
   removedBrand.value.push(val);
-  updateUsersBasicinfoParams.value.data.profile.brand =
-    updateUsersBasicinfoParams.value.data.profile.brand.filter((i) => i !== val);
+  update_params.value.data.profile.brand =
+  update_params.value.data.profile.brand.filter((i) => i !== val);
 };
 const reCoverRemovedBrand = (val) => {
   removedBrand.value = removedBrand.value.filter((i) => i !== val);
-  updateUsersBasicinfoParams.value.data.profile.brand.push(val);
+  update_params.value.data.profile.brand.push(val);
 };
 const addCover = ref(false);
 const showAddCover = ref(false);
-const mm_profile = ref();
-
-watch(
-  [me, userId],
-  () => {
-    if (me && me.value && userId) {
-      mm_profile.value = me.value.mm_profile;
-      avatar.value = me.value?.profile?.avatar?.data?.attributes.url || "";
-      title.value = me.value?.profile?.title || "";
-      description.value = me.value?.profile?.description || "";
-      bio.value = me.value?.profile?.bio || "";
-      self_tags.value = me.value?.self_tags || [];
-      theme.value = tehmeItems.value[0];
-      brand.value = me.value?.profile?.brand.data || [];
-      cover.value = me.value?.profile?.cover?.data?.attributes.url || null;
-
-      updateUsersBasicinfoParams.value.updateUsersPermissionsUserId = userId;
-      updateUsersBasicinfoParams.value.data.profile.avatar =
-        me.value?.profile?.avatar?.data.id || null;
-      updateUsersBasicinfoParams.value.data.profile.brand =
-        me.value?.profile?.brand?.data.map((i) => i.id) || [];
-      updateUsersBasicinfoParams.value.data.profile.cover =
-        me.value?.profile?.cover?.data?.id || null;
-    }
-  },
-  { immediate: true, deep: true }
-);
-
-watchEffect(() => {
-  updateUsersBasicinfoParams.value.data.profile.title = title.value;
-  updateUsersBasicinfoParams.value.data.profile.description = description.value;
-  updateUsersBasicinfoParams.value.data.profile.bio = bio.value;
-  updateUsersBasicinfoParams.value.data.config.theme =
-    theme.value?.val || tehmeItems.value[0].val;
-  updateUsersBasicinfoParams.value.data.self_tags = self_tags.value;
-});
-
-watch(
-  updateUsersBasicinfoParams,
-  () => {
-    submitDisable.value = false;
-  },
-  { immediate: false, deep: true }
-);
-
-watch(
-  userStore,
-  () => {
-    if (userStore.avatar) {
-      avatar.value = userStore.avatar;
-    }
-  },
-  { immediate: false, deep: true }
-);
 
 const changeAvatar = ref(false);
 
 const brandUploaded = (id, obj) => {
   let img = {
-    __typename: "UploadFileEntity",
     id: obj.id,
-    attributes: {
-      __typename: "UploadFile",
-      url: obj.attributes.url,
-      ext: obj.attributes.ext,
-    },
+    url: obj.attributes.url,
+    ext: obj.attributes.ext,
   };
-  brand.value = [...brand.value, img];
-  updateUsersBasicinfoParams.value.data.profile.brand.push(id);
+  brand = [...brand, img];
+  update_params.value.data.profile.brand.push(id);
 };
 const coverUploaded = (id, obj) => {
-  cover.value = obj.attributes.url;
-  updateUsersBasicinfoParams.value.data.profile.cover = id;
+  cover = obj.attributes.url;
+  update_params.value.data.profile.cover = id;
   addCover.value = false;
 };
 
-const updateBasicinfo = async () => {
-  submitDisable.value = true;
-  const {
-    mutate: updateUsersBasicinfoMutate,
-    onDone,
-    onError,
-  } = updateUsersBasicinfo(updateUsersBasicinfoParams);
-
-  const { data } = await updateUsersBasicinfoMutate();
-  if (data) {
-    console.log("用户资料已更新", data);
-    // userStore.needRefetch = true;
-    setTimeout(() => {
-      submitDisable.value = false;
-    }, 600);
-    $q.notify("用户资料已更新");
+const updateUserFn = async () => {
+  const res = await updateUser(userStore.userId,update_params.value);
+  if (res?.data) {
+    // $q.notify("用户资料已更新");
+    submitDisable.value = true;
+    userStore.$process(res.data);
   }
-};
+}
+
 </script>
 
 <style lang="scss" scoped></style>

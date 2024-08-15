@@ -96,7 +96,7 @@ import { useRoute, useRouter } from "vue-router";
 import AccountMenu from "../pages/team/components/AccountMenu.vue";
 import AppList from "components/VIewComponents/AppList.vue";
 import shortcut from "src/pages/team/hooks/useShortcut.js";
-import { fetch_MmMe } from "src/hooks/global/useFetchme";
+import { fetch_MmMe, fetch_StrapiMe } from "src/hooks/global/useFetchme";
 import localforage from "localforage";
 import { init_user } from "src/api/strapi/project";
 import { useQuasar } from "quasar";
@@ -128,40 +128,36 @@ const Initialized = (val) => {
   isInititalized.value = val;
 }
 
-const init = async () => {
-  const process = (res, _from) => {
-    // console.log(_from, res);
-    isInititalized.value = res.initialization;
-    if(res.config?.theme === 'lighter'){
-      $q.dark.set(false);
-    } else if(res.config?.theme === 'dark'){
-      $q.dark.set(true);
-    } else {
-      $q.dark.set($q.dark.isActive);
-    }
-    teamStore.init = res;
-    if(res.default_team){
-      teamStore.team = res.default_team;
-      teamStore.mm_team = res.default_team?.mm_team;
-    }
-    userStore.todogroups = res.todogroups;
-    teamStore.need_refecth_projects = false;
-  };
-  const cache = await localforage.getItem("init");
-  if (cache) {
-    // console.log('cache', cache);
-    process(cache, 'cache');
+const process = (res) => {
+  isInititalized.value = res.initialization;
+  if(res.config?.theme === 'lighter'){
+    $q.dark.set(false);
+  } else if(res.config?.theme === 'dark'){
+    $q.dark.set(true);
+  } else {
+    $q.dark.set($q.dark.isActive);
   }
-  const _res = await init_user();
-  if (_res?.data) {
-    process(_res.data, 'fetch');
-    await localforage.setItem("init", JSON.parse(JSON.stringify(_res?.data)));
+  teamStore.init = res;
+  if(res.default_team){
+    teamStore.team = res.default_team;
+    teamStore.mm_team = res.default_team?.mm_team;
   }
+  userStore.todogroups = res.todogroups;
+  teamStore.need_refecth_projects = false;
 };
 const loginAndInit = async () => {
   const _mm_me = await fetch_MmMe();
-  if(_mm_me) {
-    init();
+  const _strapi_me = await fetch_StrapiMe();
+  const init = (_me) => {
+    userStore.$process(_me);
+    process(_me);
+  }
+  if (_mm_me && _strapi_me) {
+    init(_strapi_me)
+  }
+  const _fetch = await fetch_StrapiMe('unCache');
+  if(_fetch){
+    init(_fetch)
   }
 }
 onMounted(async() => {

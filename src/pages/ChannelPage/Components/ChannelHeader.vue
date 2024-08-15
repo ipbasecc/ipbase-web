@@ -6,7 +6,7 @@
                 <q-route-tab
                     v-for="(i, index) in navigation"
                     :key="index"
-                    :to="`/${channelId}/${i.val}`"
+                    :to="`/brand/${channelId}/${i.val}`"
                     :label=i.name
                     :name="i.val"
                     @click="actived = i.val"
@@ -24,7 +24,7 @@
                             <q-item-section side><q-icon name="mdi-cards-playing-outline" /></q-item-section>
                             <q-item-section class="q-pr-md">管理微名片</q-item-section>
                         </q-item>
-                        <q-item clickable v-close-popup @click="$router.push(`/${channelIdRef}/favorite`)">
+                        <q-item clickable v-close-popup @click="$router.push(`/brand/${channelIdRef}/favorite`)">
                             <q-item-section side><q-icon name="mdi-star" /></q-item-section>
                             <q-item-section class="q-pr-md">管理收藏夹</q-item-section>
                         </q-item>
@@ -116,7 +116,7 @@
             if(route.name == 'channel_homepage') {
                 // 未知bug 延时后跳转
                 setTimeout(() => {
-                    router.push(`/${channelIdRef.value}/${navigation.value[0].val}`);
+                    router.push(`/brand/${channelIdRef.value}/${navigation.value[0].val}`);
                 }, 0);
             }
         },
