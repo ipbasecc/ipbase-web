@@ -18,6 +18,7 @@ export async function init_user() {
       return res;
     }
   } catch (error) {
+    console.log(error);
     if(error?.response?.data?.error?.status === 401) {
       await clearLocalDB('Strapi init_user');
       await router.push('/login');

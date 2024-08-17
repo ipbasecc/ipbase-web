@@ -41,7 +41,7 @@ const props = defineProps({
 const mmUserStore = useMmuser();
 
 const mm_user_id = localStorage.getItem('mmUserId');
-console.log(mm_user_id);
+// console.log(mm_user_id);
 const avatar = computed(() => mmUserStore.current_user_avatar || props.oldAvatar);
 const uploaded = async () => {
   mmUserStore.current_user_avatar = mm_user_id && await useFetchAvatar(mm_user_id,'force');

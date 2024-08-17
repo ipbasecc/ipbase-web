@@ -55,6 +55,7 @@
                             <MessageRoot
                                 :msgId="i.id"
                                 :reply="newReply"
+                                @replyUpdate="replyUpdate"
                             />
                         </div>
                         <q-card-actions class="row no-wrap justify-around border-top">
@@ -65,14 +66,14 @@
                                 @click="addReplayTo(i.id)"
                             >
                                 <q-icon name="mdi-message-text-outline" size="sm" style="transform: translateY(3px);" />
-                                <span class="q-pl-sm">{{ i.attributes.replies.data.length }}</span>
+                                <span class="q-pl-sm">{{ i.attributes.replies?.data?.length }}</span>
                             </q-btn>
                             <div class="row no-wrap">
                                 <SetLike :msgId="i.id" :item="i"/>
                             </div>
                         </q-card-actions>
                     </q-card>
-                    <div v-else class="column no-wrap q-ml-lg" :class="isDiscoverRef ? 'q-pl-md' : 'q-py-sm'">
+                    <div v-else class="column no-wrap q-ml-lg q-py-sm">
                         <MessageItem
                             :message="i"
                             :messageId="i.id"
@@ -96,7 +97,7 @@
                         </div>
                         <div v-if="userStore.replyTo != i.id">
                             <q-btn
-                                v-if="i.attributes && i.attributes.replies && i.attributes.replies.data.length > 0"
+                                v-if="i.attributes?.replies?.data?.length > 0"
                                 unelevated
                                 rounded
                                 dense
@@ -116,6 +117,7 @@
                             <MessageRoot
                                 :msgId="i.id"
                                 :reply="newReply"
+                                @replyUpdate="replyUpdate"
                             />
                         </template>
                     </div>
@@ -126,7 +128,7 @@
 </template>
 
 <script setup>
-import { ref, toRef, watch } from 'vue'
+import { ref, toRef, toRefs, watch } from 'vue'
 import MessageRoot  from "src/pages/ChannelPage/Components/Message/MessageRoot.vue";
 import MessageItem  from "src/pages/ChannelPage/Components/Message/MessageItem.vue";
 import CreateMessage from "src/pages/ChannelPage/Components/Message/CreateMessage.vue";
@@ -162,7 +164,8 @@ const props = defineProps({
         default: false
     }
 });
-const emit = defineEmits(['messageCreated']);
+const emit = defineEmits(['messageCreated', 'replyUpdate']);
+const {msgId} = toRefs(props);
 
 const isDiscoverRef = toRef(props,'isDiscover');
 const messagesItemsRef = toRef(props, 'messagesItems');
@@ -174,12 +177,16 @@ const userStore = useUserStore();
 const Mesgs = ref();
 watch(messagesItemsRef, () => {
     Mesgs.value = messagesItemsRef.value
+    
 },{immediate:true,deep:true});
 
 const newReply = ref();
 const messageCreated = (val) => {
     emit('messageCreated', val);
     newReply.value = val.item;
+    // console.log('messageCreated',val);
+}
+const cannelReply = () => {
     userStore.replyTo = null;
 };
 const addReplayTo = (val) => {
@@ -189,6 +196,9 @@ const addReplayTo = (val) => {
 const hasReply = ref();
 const showReplay = (val) => {
     hasReply.value = hasReply.value == val ? null : val;
+}
+const replyUpdate = (val) => {
+    emit('replyUpdate', val);
 }
 const deleteMsgIds = ref([]);
 const MsgDeleted = (val) => {

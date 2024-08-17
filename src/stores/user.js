@@ -124,6 +124,8 @@ export default defineStore("user", {
       this.config = _init.config;
       this.self_tags = _init.self_tags;
       this.mm_profile = _init.mm_profile;
+      this.channelId = _init.user_channel?.id || void 0;
+      this.userChannelPostId = _init.user_channel?.post?.id || void 0;
     }
   },
 });

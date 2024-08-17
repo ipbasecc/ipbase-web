@@ -188,15 +188,19 @@
             }
 
             const { data } = await createMessageMutate();
-
-            newMsg.value = data.createMessage.data;
-            let obj = { isreplay: postIdRef.value ? true : false, item: newMsg.value}
-            emit('messageCreated', obj);
-            messageContent.value = '';
-            showCreateForm.value = false;
-            attach.value = false;
-            wattingState.value = null;
-            fileUploaded.value = false;
+            if(data){
+                newMsg.value = data.createMessage.data;
+                // console.log('reply_target', newMsg.value?.attributes?.reply_target);
+                let obj = { isreplay: newMsg.value?.attributes?.reply_target?.data.id ? true : false, item: newMsg.value}
+                // console.log('messageCreated', obj);
+                
+                emit('messageCreated', obj);
+                messageContent.value = '';
+                showCreateForm.value = false;
+                attach.value = false;
+                wattingState.value = null;
+                fileUploaded.value = false;
+            }
         }
     }
 

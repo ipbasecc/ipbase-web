@@ -24,8 +24,9 @@
                     :msgId="msgIdRef"
                     :replyTo="replyTo"
                     :userId="store.userId"
-                    @messageCreated="messageCreated()"
+                    @messageCreated="messageCreated"
                     @addReplayTo="addReplayTo"
+                    @replyUpdate="replyUpdate"
                 />
                 <div v-if="hasMoreMsgs" class="">
                     <q-btn
@@ -63,7 +64,7 @@
 </template>
 <script setup>
     import { findMessages } from "src/apollo/api/api.js";
-    import { ref, toRef, watch } from "vue";
+    import { ref, toRef, watch, nextTick } from "vue";
     import MessageBody from "src/pages/ChannelPage/Components/Message/MessageBody.vue"
     import CreateMessage from "src/pages/ChannelPage/Components/Message/CreateMessage.vue"
     import useUserStore from 'src/stores/user.js';
@@ -83,15 +84,15 @@
         },
         reply: {
             type: Object,
-            default() {
-                return {};
-            }
+            default: void 0
         },
         isDiscover: {
             type: Boolean,
             default: false
         },
     });
+    const emit = defineEmits(['messageCreated', 'replyUpdate']);
+
     const isDiscoverRef = toRef(props,'isDiscover');
     const postIdRef = toRef(props,'postId');
     const msgIdRef = toRef(props,'msgId');
@@ -149,10 +150,7 @@
     const queryOptions = ref({
         fetchPolicy: `${postIdRef.value ? 'cache-and-network' : 'network-only'}`,
     })
-        let count = 0;
     const queryPosts = async () => {
-        count++
-        // console.log('get messages',count);
         if(!queryMessagesId.value) {
             return
         }
@@ -165,7 +163,7 @@
                 messages_total.value = result.value?.messages.meta.pagination.total;
                 messages.value = [...messages.value, ...result.value.messages.data];
 
-                // 内容详情页跳转列表再跳转相同内容项请
+                // 内容详情页跳转列表再跳转相同内容详情
                 // 未知原因引发用户元数据与频道元数据再次请求，导致findMessagesParams改变
                 // 会在此时两次触发findMessages，导致数据重复
                 // todo 这里简单去重，需要找到引发再次请求的原因来从根本上解决问题
@@ -179,12 +177,6 @@
         },{immediate: true, deep: true});
     };
 
-    const replyRef = toRef(props, 'reply');
-    watch(replyRef, () => {
-        if(replyRef.value && replyRef.value != {}) {
-            messages.value = [replyRef.value, ...messages.value];
-        }
-    },{immediate:false,deep:true});
 
     function refresh (done) {
         setTimeout(() => {
@@ -221,12 +213,62 @@
 
         findMessagesParams.value.pagination.page++;
     };
+    watch(messages, () => {
+        if(messages.value){
+            const emitData = {
+                reply_target: msgIdRef.value,
+                data: messages.value
+            }
+            // console.log('replyUpdate', emitData);
+            emit('replyUpdate', emitData);
+        }
+    },{immediate:false,deep:false});
 
-    const tmp = ref();
-
+    const replyRef = toRef(props, 'reply');
+    watch(replyRef, () => {
+        if(replyRef.value && Object.keys(replyRef.value).length > 0) {
+            messages.value = [replyRef.value, ...messages.value];
+            emit('messageCreated',{
+                isreplay: true,
+                item: replyRef.value
+            })
+        }
+    },{immediate:false,deep:true});
     const messageCreated = (val) => {
-        tmp.value = val;
-        console.log(val);
+        // console.log('回复消息',val);
+        if(val && !val.isreplay){
+            messages.value = [val.item, ...messages.value ];
+        } else if(val && val.isreplay) {
+            const reply_target = val.item.attributes.reply_target.data
+            messages.value = messages.value.map((msg) => ({
+                ...msg,
+                attributes: {
+                    ...msg.attributes,
+                    replies: {
+                        ...msg.attributes.replies,
+                        data: msg.id == reply_target.id
+                            ? msg.attributes.replies.data?.length > 0 ? [ val.item, ...msg.attributes.replies.data] : [val.item]
+                            : msg.attributes.replies.data
+                    }
+                }
+            }))
+            console.log('messages',messages.value);
+        }
+    }
+
+    const replyUpdate = (val) => {
+        messages.value = messages.value.map((msg) => ({
+            ...msg,
+            attributes: {
+                ...msg.attributes,
+                replies: {
+                    ...msg.attributes.replies,
+                    data: msg.id == val.reply_target
+                        ? val.data
+                        : msg.attributes.replies.data
+                }
+            }
+        }))
     }
 
     const replyTo = ref(null)

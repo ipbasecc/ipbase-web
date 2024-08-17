@@ -71,7 +71,7 @@
     <q-item-section top avatar>
         <AutoAvatar :attributes="userDataRef"/>
     </q-item-section>
-    <q-item-section @click="channelId && $router.push(`/${channelId}`)">
+    <q-item-section @click="channelId && $router.push(`/brand/${channelId}`)">
         {{ userDataRef.username }}
     </q-item-section>
     <q-item-section v-if="isLogged" side>

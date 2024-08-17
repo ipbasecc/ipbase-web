@@ -1,6 +1,6 @@
 <template>
   <template v-if="teamStore.init">
-    <div v-if="!isInititalized && hasToken" class="absolute-full radius-xs overflow-hidden"
+    <div v-if="!teamStore.init.initialization && hasToken" class="absolute-full radius-xs overflow-hidden"
     :style="$q.screen.gt.md ? 'padding: 10vh 10vw' : 'padding: 0'">
         <InitializationUser class="fit" @Initialized="Initialized" />
     </div>
@@ -91,14 +91,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watchEffect, onUnmounted } from "vue";
+import { ref, onMounted, computed, watchEffect, onUnmounted, onBeforeMount } from "vue";
+import { loginAndInit } from 'src/hooks/init.js'
 import { useRoute, useRouter } from "vue-router";
 import AccountMenu from "../pages/team/components/AccountMenu.vue";
 import AppList from "components/VIewComponents/AppList.vue";
 import shortcut from "src/pages/team/hooks/useShortcut.js";
-import { fetch_MmMe, fetch_StrapiMe } from "src/hooks/global/useFetchme";
-import localforage from "localforage";
-import { init_user } from "src/api/strapi/project";
 import { useQuasar } from "quasar";
 import useWatcher from "src/pages/team/wsWatcher.js";
 import { _ws, closeWs } from "src/pages/team/ws.js";
@@ -116,8 +114,12 @@ watchEffect(() => {
     uiStore.appDrawer = false;
   }
 });
+onBeforeMount(async() => {
+  if(!teamStore.init){
+    await loginAndInit();
+  }
+})
 
-const isInititalized = ref(true);
 // 必须有token时才判断要不要显示初始化用户组件
 const hasToken = computed(() => {
   let _strapi_jwt = localStorage.getItem('jwt');
@@ -125,49 +127,8 @@ const hasToken = computed(() => {
   return _strapi_jwt && _mm_token
 })
 const Initialized = (val) => {
-  isInititalized.value = val;
+  teamStore.init.initialization = val;
 }
-
-const process = (res) => {
-  isInititalized.value = res.initialization;
-  if(res.config?.theme === 'lighter'){
-    $q.dark.set(false);
-  } else if(res.config?.theme === 'dark'){
-    $q.dark.set(true);
-  } else {
-    $q.dark.set($q.dark.isActive);
-  }
-  teamStore.init = res;
-  if(res.default_team){
-    teamStore.team = res.default_team;
-    teamStore.mm_team = res.default_team?.mm_team;
-  }
-  userStore.todogroups = res.todogroups;
-  teamStore.need_refecth_projects = false;
-};
-const loginAndInit = async () => {
-  const _mm_me = await fetch_MmMe();
-  const _strapi_me = await fetch_StrapiMe();
-  const init = (_me) => {
-    userStore.$process(_me);
-    process(_me);
-  }
-  if (_mm_me && _strapi_me) {
-    init(_strapi_me)
-  }
-  const _fetch = await fetch_StrapiMe('unCache');
-  if(_fetch){
-    init(_fetch)
-  }
-}
-onMounted(async() => {
-  await loginAndInit();
-  setTimeout(async() => {
-    if(!hasToken.value || !teamStore.init){
-      await loginAndInit();
-    }
-  }, 1000);
-});
 const needLogin = computed(() => 
   uiStore.axiosError?.response?.data?.id === 'api.context.session_expired.app_error'
   || uiStore.axiosError?.response?.data?.error?.name === 'UnauthorizedError'

@@ -64,7 +64,7 @@
             dense
             :flat="uploadState === ''"
           >
-            <q-tooltip>{{ $('upload_file') }}</q-tooltip>
+            <q-tooltip>{{ $t('upload_file') }}</q-tooltip>
           </q-btn>
         </div>
       </div>

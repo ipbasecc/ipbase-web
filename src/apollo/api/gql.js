@@ -1987,6 +1987,11 @@ const gqlAggregate = {
                 id
               }
             }
+            reply_target {
+              data {
+                id
+              }
+            }
             liked_by {
               data {
                 id
