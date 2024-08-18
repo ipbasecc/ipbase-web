@@ -1,6 +1,7 @@
 import localforage from "localforage";
 import { findMe, FindUserMatedate } from "src/apollo/api/api.js";
 import { getUser } from "src/api/mattermost.js";
+import { watch } from "vue";
 
 import { userStore } from "src/hooks/global/useStore.js";
 
@@ -9,9 +10,11 @@ export async function init_stratpi() {
   if (strapi_token) {
     const fetch_strapi_me = () => {
       const { loading, error, result: getMe } = findMe();
-      if (getMe) {
-        return getMe.value;
-      }
+      watch(() => getMe.value, async (newVal) => {
+        if (newVal){
+          fetch_strapi_userMatedate()
+        }
+      })
     };
     const fetch_strapi_userMatedate = () => {
       const parmas = {
@@ -24,19 +27,13 @@ export async function init_stratpi() {
         result: getUserMatedate,
         refetch,
       } = FindUserMatedate(parmas);
-      if (getUserMatedate) {
-        return getUserMatedate.value;
-      }
-    };
-
-    let strapi_me = fetch_strapi_me();
-
-    if (strapi_me) {
-        let strapi_userMatedate = fetch_strapi_userMatedate();
-        if (strapi_userMatedate) {
-            await localforage.setItem("__strapi_me", strapi_userMatedate);
+      
+      watch(() => getUserMatedate.value, async (newVal) => {
+        if (newVal){
+          fetch_strapi_userMatedate()
         }
-    }
+      })
+    };
   }
 }
 

@@ -72,9 +72,9 @@ export default defineStore("user", {
     brand: "",
     cover: "",
     config: null,
-    self_tags: null,
+    self_tags: [],
     mm_profile: null,
-    favorites: null, //登陆者的收藏夹，可以有多个收藏夹，收藏夹下关联收藏的内容
+    favorites: [], //登陆者的收藏夹，可以有多个收藏夹，收藏夹下关联收藏的内容
     viewed: null, // 查看过的内容，读取用户的内容来判断是否读过，用户内容数据量小，效率更好
     liked: null, // 点赞的内容，读取用户的内容来判断是否点赞过，用户内容数据量小，效率更好
     unliked: null, // 点踩的内容，读取用户的内容来判断是否点踩过，用户内容数据量小，效率更好

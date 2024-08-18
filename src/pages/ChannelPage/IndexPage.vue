@@ -45,7 +45,7 @@
       }
   });
   const idRef = toRef(props,'id');
-  channelStore.channelId = idRef.value;
+  channelStore.channel_id = idRef.value;
   provide('channelId',idRef);
 
   const channelMatedata = ref();
@@ -55,7 +55,7 @@
   const channel_cover = ref({});
   const channelPostId = ref({});
   const workingday = ref({});
-  const navigation = ref(channelStore && channelStore.navigation || null);
+  const navigation = ref();
 
   let refetchChannelMatedata;
   const getChannelMatedata = () => {
@@ -77,6 +77,7 @@
 
       if(!navigation.value) {
         navigation.value = channelMatedata.value?.navigation || [];
+        channelStore.navigation = navigation.value;
       }
     };
 

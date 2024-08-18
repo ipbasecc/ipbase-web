@@ -42,15 +42,10 @@
                 </q-tooltip>
             </q-btn>
         </q-toolbar>
-        <div
-          class="absolute-full z-unfab"
-          :class="$q.dark.mode ? 'bg-black' : 'bg-white'"
-          :style="`opacity: ${opacity};`"
-        ></div>
     </div>
 </template>
 <script setup>
-    import { inject, onMounted, ref, toRef, watch } from 'vue';
+    import { inject, ref, toRef, watch } from 'vue';
     import bizCard from "src/pages/BizCard/components/BizCard.vue";
     import useUserStore from "src/stores/user.js";
     import { useRouter,useRoute } from 'vue-router';

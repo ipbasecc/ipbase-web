@@ -77,6 +77,14 @@ const props = defineProps({
 const openBrand = ref(false);
 const apps = [
   {
+    val: "brand",
+    label: 'brand',
+    icon: "mdi-cards",
+    description: 'app_brand_purpose',
+    to: "brand",
+    enable: true,
+  },
+  {
     val: "teams",
     label: 'team',
     icon: "mark_chat_read",

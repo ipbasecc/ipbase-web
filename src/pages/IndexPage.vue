@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute-full column items-center" :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-2'" style="padding-top: 68px">
+  <div class="absolute-full column items-center" :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-2'">
     <div
       class="container limit full-width q-space row no-wrap gap-md q-pa-md overflow-hidden"
     >

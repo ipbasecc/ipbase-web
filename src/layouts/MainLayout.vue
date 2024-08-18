@@ -31,14 +31,8 @@
     <q-toolbar
       class="fixed-top z-fab row flex-center q-pt-md q-pb-sm q-px-md"
       v-bind="$attrs"
-      :class="navigatorClass"
-      :style="
-        !noShadowPages.includes($route.name)
-          ? `backdrop-filter: blur(${blur}px);`
-          : ''
-      "
     >
-      <q-btn flat icon-right="expand_more" class="q-mx-xs">
+      <q-btn flat icon-right="expand_more" no-caps class="q-mx-xs">
         <q-img
           src="public/logo.png"
           :ratio="1"
@@ -48,7 +42,7 @@
           spinner-color="primary"
           spinner-size="22px"
         />
-        <span class="q-mx-md q-pr-xl">{{ store.brand_title }}</span>
+        <span class="q-mx-md q-pr-xl">{{ $t('ipbase_brand') }}</span>
         <BrandMenu :offset="[0, -44]" />
       </q-btn>
       <q-space />
@@ -83,10 +77,10 @@ import AccountMenu from "src/components/VIewComponents/AccountMenu.vue";
 
 import { useQuasar } from "quasar";
 import router from "src/router";
-
-import { init_stratpi, init_mattermost } from "src/common/init.js";
 import { userStore, teamStore } from "src/hooks/global/useStore.js";
 import { clearLocalDB } from "pages/team/hooks/useUser";
+
+import { init_stratpi, init_mattermost } from "src/common/init.js";
 
 init_stratpi();
 init_mattermost();
@@ -147,35 +141,6 @@ const handleScroll = () => {
 
 onMounted(async () => {
   window.addEventListener("scroll", handleScroll);
-});
-const noShadowPages = [
-  "register",
-  "login",
-  "channel_homepage",
-  "posts",
-  "article",
-  "video",
-  "audio",
-  "element",
-  "sales",
-  "bizcard",
-  "chat",
-  "favorite",
-];
-const transparentPages = ["posts", "register", "login"];
-const navigatorClass = ref();
-watchEffect(() => {
-  if (!noShadowPages.includes(route.name)) {
-    navigatorClass.value = "nvaigation";
-  }
-  if (transparentPages.includes(route.name)) {
-    navigatorClass.value = "transparent shadow-0";
-  }
-  if ($q.dark.mode) {
-    navigatorClass.value = `${navigatorClass.value} bg-grey-10`;
-  } else {
-    navigatorClass.value = `${navigatorClass.value} bg-grey-1`;
-  }
 });
 </script>
 <style scoped lang="scss">

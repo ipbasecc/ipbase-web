@@ -46,7 +46,6 @@
     },{immediate:true,deep:true});
     const channelIdRef = toRef(props,'channelId');
     const updateWorkingdayParams = ref({
-        id: id,
         data: {
             workingday: ''
         }

@@ -56,7 +56,7 @@ const props = defineProps({
 const i = toRef(props,'element');
 
 const authorChannelId = ref(i.value.attributes?.author?.data?.attributes?.user_channel?.data?.id || null);
-const routeTarget = ref(`/${authorChannelId.value}/element/${i.value.id}`)
+const routeTarget = ref(`/brand/${authorChannelId.value}/element/${i.value.id}`)
 </script>
 
 <style lang="scss" scoped></style>

@@ -215,18 +215,6 @@ const routes = [
           title: "用户中心——易乎APP",
         },
       },
-    ],
-  },
-
-  {
-    path: "/",
-    component: () => import("layouts/MainLayout.vue"),
-    name: "brandpage",
-    meta: {
-      requireAuth: true,
-      title: "易乎APP",
-    },
-    children: [
       {
         path: "/brand",
         component: () => import("pages/IndexPage.vue"),

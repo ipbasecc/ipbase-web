@@ -190,7 +190,6 @@ const motifyAvatar = ref(false);
 const tilteOfChangingProvidor = ref();
 const createBizcardParams = ref({
   data: {
-    user: userId.value,
     avatar: null,
     name: null,
     title: null,

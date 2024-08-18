@@ -2,39 +2,33 @@
   <div class="full-width q-space column no-wrap gap-md q-pa-xl">
     <template v-if="querycompleted">
       <span>频道栏目与导航：</span>
-      <q-toolbar class="transparent">
-        <draggable
-          v-model="navigation"
-          group="people"
-          @start="drag = true"
-          @end="motifyChannelNavigation"
-          item-key="id"
-          :force-fallback="true"
-          :animation="300"
-          ghost-class="ghostClass"
-          chosen-class="chosenClass"
-          class="row gap-sm"
+      <q-toolbar v-if="navigation" class="transparent">
+        <VueDraggable v-model="navigation"
+          :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+          chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
+          class="row no-wrap gap-sm forbid"
+          @update="motifyChannelNavigation()"
         >
-          <template #item="{ element }">
-            <div
-              class="row items-center no-wrap gap-lg q-py-sm q-px-md radius-sm border cursor-move"
-              :class="
-                element.enable
-                  ? 'bg-primary-gdt text-white'
-                  : 'bg-grey-3 text-grey-7'
-              "
-            >
-              <div class="fit">{{ element.name }}</div>
-              <q-toggle
-                v-model="element.enable"
-                dense
-                size="xs"
-                color="green"
-                @click="motifyChannelNavigation"
-              />
-            </div>
-          </template>
-        </draggable>
+          <div
+            v-for="element in navigation" :key="element.val"
+            class="row items-center no-wrap gap-lg q-py-sm q-px-md radius-sm border cursor-move"
+            :class="
+              element.enable
+                ? 'bg-primary-gdt text-white'
+                : 'bg-grey-3 text-grey-7'
+            "
+            @click="motifyChannelNavigation()"
+          >
+            <div class="fit">{{ element.name }}</div>
+            <q-toggle
+              v-model="element.enable"
+              dense
+              size="xs"
+              color="green"
+              @click="motifyChannelNavigation()"
+            />
+          </div>
+        </VueDraggable>
         <q-space />
         <q-btn
           v-if="!submitDisable"
@@ -232,7 +226,7 @@
 
 <script setup>
 import { ref, inject, watch } from "vue";
-import draggable from "vuedraggable";
+import { VueDraggable } from 'vue-draggable-plus'
 import { findChannelMatedataByID, UpdateChannel } from "src/apollo/api/api.js";
 import useUserStore from "src/stores/user.js";
 import useChannelStore from "src/stores/channel.js";
@@ -251,7 +245,6 @@ const navigation = ref();
 
 const submitDisable = ref(true);
 const UpdateChannelParams = ref({
-  updateChannelId: userStore.channelId,
   data: {
     title: "",
     slogan: "",
@@ -334,14 +327,12 @@ const queryChannelMatedata = async () => {
     UpdateChannelParams.value.data.brand = obj.brand?.data?.id || null;
     brand.value = obj.brand?.data?.attributes.url || null;
 
-    UpdateChannelParams.value.data.navigation =
-      obj.navigation || navigation.value;
-    if (!channelStore.navigation) {
-      navigation.value =
-        UpdateChannelParams.value.data.navigation || navigationBase;
-    } else {
-      navigation.value = channelStore.navigation;
-    }
+    navigation.value = obj.navigation.map(item => ({
+        ...item,
+        enable: !!item.enable, // 确保 enable 是响应式的
+      }));
+    UpdateChannelParams.value.data.navigation = navigation.value;
+    channelStore.navigation = navigation.value;
 
     querycompleted.value = true;
   };
@@ -360,7 +351,6 @@ watch(
   userStore,
   () => {
     if (userStore.channelId) {
-      UpdateChannelParams.value.updateChannelId = userStore.channelId;
       queryChannelMatedata();
     }
   },
@@ -387,7 +377,7 @@ const motifyChannel = async () => {
   if (data) {
     channelStore.navigation = navigation.value;
     channelStore.needRefetch = true;
-    console.log("用户资料已更新");
+    // console.log("用户资料已更新");
     setTimeout(() => {
       submitDisable.value = false;
     }, 600);

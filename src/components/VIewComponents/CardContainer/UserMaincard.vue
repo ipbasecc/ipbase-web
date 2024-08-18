@@ -182,7 +182,6 @@ watch(userStore, () => {
 
 
 const updateFollowsParams = ref({
-    updateUsersPermissionsUserId: userStore.userId,
     data: {
         follows: []
     }
@@ -194,7 +193,6 @@ const updateFollowsFn = async () => {
         followsIds.value = [...followsIds.value, userIdRef.value]
     }
     updateFollowsParams.value.data.follows = followsIds.value;
-    updateFollowsParams.value.updateUsersPermissionsUserId = userStore.userId;
     const {
         mutate: updateFollowsMutate,
         onDone,

@@ -176,14 +176,11 @@
         } else {
             createParams.value = {
                 content: messageContent.value,
-                publishedAt: new Date().toISOString(),
                 sender: store.userId,
                 attachments: attachments.value,
                 attached_elements: newElementToParams.value,
             };
-            if(postIdRef.value) {
-                createParams.value.post = postIdRef.value;
-            } else {
+            if(!postIdRef.value) {
                 createParams.value.reply_target = msgIdRef.value;
             }
 
@@ -191,7 +188,7 @@
             if(data){
                 newMsg.value = data.createMessage.data;
                 // console.log('reply_target', newMsg.value?.attributes?.reply_target);
-                let obj = { isreplay: newMsg.value?.attributes?.reply_target?.data.id ? true : false, item: newMsg.value}
+                let obj = { isreplay: newMsg.value?.attributes?.reply_target?.data?.id ? true : false, item: newMsg.value}
                 // console.log('messageCreated', obj);
                 
                 emit('messageCreated', obj);

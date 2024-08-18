@@ -105,6 +105,10 @@ import {clearLocalDB} from "pages/team/hooks/useUser";
 import InitializationUser from 'src/pages/team/settings/initialization/InitializationUser.vue'
 import { teamStore, uiStore, userStore } from "src/hooks/global/useStore";
 
+import { getUserData } from "src/hooks/global/useGetMyMatedata.js";
+
+getUserData();
+
 const $q = useQuasar();
 
 const appListWidth = ref(64);

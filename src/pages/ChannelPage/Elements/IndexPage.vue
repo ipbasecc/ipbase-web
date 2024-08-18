@@ -86,7 +86,7 @@ const page = ref(1);
 const pageSize = ref(12);
 const filterText = ref();
 const filterType = ref();
-const filterAuthor = ref({ author: { id: { eq: channel_ownerId.value }}});
+const filterAuthor = ref({ channel: { id: { eq: channelStore.channel_id }}});
 watchEffect(() => {
     filterType.value = ref(whereRef.value == 'userCenter' ? route.meta && route.meta.type : route.name);
 })
@@ -183,8 +183,11 @@ watch(filterText,() => {
     }
 })
 
-const closeCreate = () => {
-    refetchElements();
+const closeCreate = (val) => {
+    // refetchElements();
+    console.log('closeCreate',val);
+    
+    elements.value = [val, ...elements.value]
     doing.value = 'reading';
 }
 

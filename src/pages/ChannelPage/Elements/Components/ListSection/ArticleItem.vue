@@ -62,7 +62,7 @@ const isUnliked = ref(i.value.attributes.unliked_by.data.length > 0);
 const isFaved = ref(i.value.attributes.favorite_by.data.length > 0);
 
 const authorChannelId = ref(i.value.attributes.author?.data?.attributes?.user_channel?.data?.id || null);
-const routeTarget = ref(authorChannelId.value ? `/${authorChannelId.value}/element/${i.value.id}` : null)
+const routeTarget = ref(authorChannelId.value ? `/brand/${authorChannelId.value}/element/${i.value.id}` : null)
 </script>
 
 <style lang="scss" scoped>

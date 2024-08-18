@@ -7,11 +7,11 @@
         <q-icon :name="isfaved ? 'mdi-star' : 'mdi-star-outline'" />
         {{ favorite_count }}
         <q-menu class="shadow-24">
-            <q-card style="min-width: 210px">
+            <q-card style="min-width: 14rem; max-width: 26rem;">
                 <q-card-section class="q-pa-sm row border-bottom">
                     请选择一个收藏夹
                     <q-space />
-                    <q-btn flat dense size="sm" round color="primary" icon="settings" @click="$router.push(`/${userStore.channelId}/favorite`)" />
+                    <q-btn flat dense size="sm" round color="primary" icon="settings" @click="$router.push(`/brand/${userStore.channelId}/favorite`)" />
                 </q-card-section>
                 <q-card-section class="q-pa-sm">
                     <q-list>
@@ -52,6 +52,7 @@ import { ref, toRef, watch } from "vue";
 import { findFavorites, CreateFavorite } from "src/apollo/api/api.js";
 import useUserStore from "src/stores/user.js";
 import { api } from 'boot/axios'
+import { getUserData } from "src/hooks/global/useGetMyMatedata.js";
 
 const props = defineProps({
     element: {
@@ -83,12 +84,7 @@ const queryFavorite_OwnerIsMe_IncludesThisElememt = () => {
         "filters": {
             "elements": {
                 "id": {
-                    "contains": elementId.value
-                }
-            },
-            "owner": {
-                "id": {
-                    "eq": userStore.userId
+                    "eq": elementId.value
                 }
             }
         }
@@ -111,7 +107,6 @@ const createFavoriteCollection = async () => {
     const CreateFavoriteParmas = ref({
         data: {
             name: newFavName.value,
-            owner: userStore && userStore.userId,
         }
     })
     const {
@@ -125,7 +120,8 @@ const createFavoriteCollection = async () => {
         console.log('新建成功');
         createFavCol.value = false;
         newFavName.value = '';
-        userStore.favorites = [...userStore.favorites, data.createFavorite.data]
+        // userStore.needRefetch = true; // 触发重新获取用户元数据
+        getUserData('force')
     }
 }
 

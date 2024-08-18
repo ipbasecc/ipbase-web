@@ -78,20 +78,18 @@
                   <q-item-section>{{ $t(i.name) }}</q-item-section>
                 </q-item>
               </template>
-              <template v-if="is_development">
-                <q-separator spaced class="op-3" />
-                <q-item
-                  clickable
-                  v-close-popup
-                  class="radius-xs"
-                  @click="$router.push(ipbase_uri)"
-                >
-                  <q-item-section side>
-                    <q-icon name="contacts" />
-                  </q-item-section>
-                  <q-item-section>{{ $t('my_channel')}}</q-item-section>
-                </q-item>
-              </template>
+              <q-separator spaced class="op-3" />
+              <q-item
+                clickable
+                v-close-popup
+                class="radius-xs"
+                @click="$router.push(ipbase_uri)"
+              >
+                <q-item-section side>
+                  <q-icon name="contacts" />
+                </q-item-section>
+                <q-item-section>{{ $t('my_channel')}}</q-item-section>
+              </q-item>
               <q-separator spaced class="op-3" />
               <q-item
                 clickable
@@ -291,7 +289,7 @@ const userChannelId = computed(() => teamStore.init?.user_channel?.id);
 const router = useRouter();
 
 const ipbase_uri = computed(() => {
-  return `/${userChannelId.value}/posts` || "/";
+  return `/brand/${userChannelId.value}/posts` || "/";
 });
 
 const getUserStatusFn = async () => {

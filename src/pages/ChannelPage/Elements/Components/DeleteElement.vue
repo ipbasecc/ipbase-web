@@ -36,7 +36,7 @@ const deletElement = async () => {
   } = DeleteElementByID(DeleteElementByIDParmas);
   const { data } = await DeleteElementByIDMutate();
   if (data) {
-    router.push(`/${channelId.value}/elements`);
+    router.push(`/brand/${channelId.value}/elements`);
   }
 };
 </script>

@@ -79,16 +79,12 @@ const gqlAggregate = {
   createPost: gql`
     mutation createPost(
       $title: String
-      $channel: ID
       $element: ID
-      $publishedAt: DateTime
     ) {
       createPost(
         data: {
           title: $title
-          channel: $channel
           element: $element
-          publishedAt: $publishedAt
         }
       ) {
         data {
@@ -157,8 +153,8 @@ const gqlAggregate = {
     }
   `,
   updateUsersPermissionsUser: gql`
-    mutation updateUsersPermissionsUser($id: ID!, $role: ID) {
-      updateUsersPermissionsUser(id: $id, data: { role: $role }) {
+    mutation updateUsersPermissionsUser($role: ID) {
+      updateUsersPermissionsUser(data: { role: $role }) {
         data {
           id
           attributes {
@@ -174,11 +170,9 @@ const gqlAggregate = {
   `,
   updateUsersDefaultBizcard: gql`
     mutation updateUsersDefaultBizcard(
-      $updateUsersPermissionsUserId: ID!
       $data: UsersPermissionsUserInput!
     ) {
       updateUsersPermissionsUser(
-        id: $updateUsersPermissionsUserId
         data: $data
       ) {
         data {
@@ -241,11 +235,9 @@ const gqlAggregate = {
 
   updateUsersBasicinfo: gql`
     mutation updateUsersBasicinfo(
-      $updateUsersPermissionsUserId: ID!
       $data: UsersPermissionsUserInput!
     ) {
       updateUsersPermissionsUser(
-        id: $updateUsersPermissionsUserId
         data: $data
       ) {
         data {
@@ -302,8 +294,8 @@ const gqlAggregate = {
   `,
 
   UpdateChannel: gql`
-    mutation UpdateChannel($updateChannelId: ID!, $data: ChannelInput!) {
-      updateChannel(id: $updateChannelId, data: $data) {
+    mutation UpdateChannel($data: ChannelInput!) {
+      updateChannel(data: $data) {
         data {
           id
         }
@@ -1955,21 +1947,16 @@ const gqlAggregate = {
   `,
   createMessage: gql`
     mutation createMessage(
-      $post: ID
       $reply_target: ID
       $content: String!
-      $publishedAt: DateTime
       $sender: ID!
       $attachments: [ID]
       $attached_elements: [ID]
     ) {
       createMessage(
         data: {
-          post: $post
-          # 设置回复对象，如果当前创建的是个回复，要设置是回复哪条内容的
           reply_target: $reply_target
           content: $content
-          publishedAt: $publishedAt
           sender: $sender
           attachments: $attachments
           attached_elements: $attached_elements
@@ -2394,8 +2381,8 @@ const gqlAggregate = {
     }
   `,
   updateWorkingday: gql`
-    mutation updateWorkingday($id: ID!, $data: ChannelInput!) {
-      updateChannel(id: $id, data: $data) {
+    mutation updateWorkingday($data: ChannelInput!) {
+      updateChannel(data: $data) {
         data {
           attributes {
             workingday {
@@ -2709,6 +2696,15 @@ const gqlAggregate = {
               }
             }
           }
+        }
+      }
+    }
+  `,
+  deleteBizcard: gql`
+    mutation deleteBizcard($deleteBizcardId: ID!) {
+      deleteBizcard(id: $deleteBizcardId) {
+        data {
+          id
         }
       }
     }
@@ -3761,11 +3757,9 @@ const gqlAggregate = {
   `,
   updateFollows: gql`
     mutation updateFollows(
-      $updateUsersPermissionsUserId: ID!
       $data: UsersPermissionsUserInput!
     ) {
       updateUsersPermissionsUser(
-        id: $updateUsersPermissionsUserId
         data: $data
       ) {
         data {
@@ -3804,38 +3798,6 @@ const gqlAggregate = {
             type
             position
             uri
-          }
-        }
-      }
-    }
-  `,
-
-  findAllProjects: gql`
-    query UsersPermissionsUser($user_id: ID) {
-      usersPermissionsUser(id: $user_id) {
-        data {
-          id
-          attributes {
-            projects {
-              data {
-                id
-                attributes {
-                  name
-                  type
-                  description
-                  cover {
-                    data {
-                      id
-                      attributes {
-                        ext
-                        url
-                      }
-                    }
-                  }
-                  createdAt
-                }
-              }
-            }
           }
         }
       }

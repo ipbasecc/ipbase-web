@@ -112,6 +112,14 @@ const apps = [
     to: "teams/threads",
     enable: !$q.screen.gt.xs,
   },
+  {
+    val: "brand",
+    label: 'brand',
+    icon: "mdi-cards",
+    description: 'app_brand_purpose',
+    to: "brand",
+    enable: true,
+  },
 ];
 const enabledApps = computed(() => apps.filter((i) => i.enable));
 const active = ref();

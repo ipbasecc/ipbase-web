@@ -259,11 +259,8 @@ const CreateElementParmas = ref({
     tags: [],
     cover: null,
     content: "",
-    author: userStore.userId,
-    publishedAt: new Date().toISOString(),
     media: null,
     attachments: [],
-    uid: uid(),
     makers: []
   },
 });
@@ -290,7 +287,6 @@ const removeTag = (id) => {
   }
 }
 
-const tmpresps = ref();
 const CreateElementFn = async () => {
   disable.value = true;
   if (
@@ -300,8 +296,9 @@ const CreateElementFn = async () => {
     $q.notify("标题与正文不能为空");
     return;
   }
-
-  CreateElementParmas.value.data.type = CreateElementParmas.value.data.type ? CreateElementParmas.value.data.type : 'article';
+  if(!CreateElementParmas.value.data?.type){
+    CreateElementParmas.value.data.type = 'article';
+  }
 
   const {
     mutate: CreateElementMutate,
@@ -314,7 +311,7 @@ const CreateElementFn = async () => {
       CreateElementParmas.value &&
       (!CreateElementParmas.value.data.title ||
         !CreateElementParmas.value.data.content);
-    emit("closeCreate",data);
+    emit("closeCreate",data.createElement.data);
   }
 };
 

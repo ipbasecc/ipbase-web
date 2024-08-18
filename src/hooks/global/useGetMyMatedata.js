@@ -60,14 +60,14 @@ const getMeData = async () => {
 };
 const matedata = ref();
 // 获取用户资料，strapi中通过me获取到基础数据后，用户的详细数据需要使用usersPermissionsUser的query来获取
-let refetchMe = getMeData; // 如果调用 refetchMe 时，还有没 getUserData ，那么直接执行 getMeData;
-const getUserData = async () => {
+let refetchMe; // 如果调用 refetchMe 时，还有没 getUserData ，那么直接执行 getMeData;
+export const getUserData = async (prop) => {
   const _cache = await localforage
     .getItem("__strapi_userMatedate")
     .catch((e) => {
       console.error(e);
     });
-  if (_cache) {
+  if (_cache && !prop) {
     me.value = _cache;
     matedata.value = _cache;
   } else {
@@ -186,7 +186,11 @@ watch(
   userStore,
   async () => {
     if (userStore.needRefetch) {
-      await refetchMe();
+      if(!refetchMe){
+        await getUserData('force');
+      } else {
+        await refetchMe()
+      }
       userStore.needRefetch = false; // 及时取消激活，否则会循环refetch
     }
   },
@@ -197,7 +201,11 @@ watch(
 watch(
   userStore.queryParmars,
   async () => {
-    await refetchMe();
+    if(!refetchMe){
+      await getUserData('force');
+    } else {
+      await refetchMe()
+    }
     userStore.needRefetch = false; // 防止意外、取消激活重获取
   },
   { immediate: false, deep: true }
@@ -217,5 +225,5 @@ export default {
   unliked,
   follows,
   followed,
-  mm_profile,
+  mm_profile
 };

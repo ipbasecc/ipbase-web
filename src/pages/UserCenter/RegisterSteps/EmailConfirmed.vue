@@ -100,14 +100,8 @@ const initMm = async () => {
     let res = await mmLogin(params);
     if (res?.data) {
       await useFetchAvatar(res.data.id, "force");
-      let mm_profile = me.value?.mm_profile;
-
-      let init_mm_res = await init_mm(me.value.id, mm_profile);
-      console.log("init_mm_res", init_mm_res);
-      if (init_mm_res) {
-        logged.value = true;
-        startCountdown();
-      }
+      logged.value = true;
+      startCountdown();
     }
   } catch (error) {
     console.log(error);

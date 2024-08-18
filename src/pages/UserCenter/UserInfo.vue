@@ -1,5 +1,5 @@
 <template>
-    <div class="absolute-full overflow-hidden row justify-center" style="padding-top: 68px;">
+    <div class="absolute-full overflow-hidden row justify-center">
         <div class="fit row no-wrap gap-sm q-py-md">
             <q-list v-if="route" class="usercenter_navlist full-height q-pa-md border-right">
                 <template

@@ -38,7 +38,6 @@ const defatltBizcardIdForSet = ref();
 const SetDefaultBizcard = async () => {
   disable.value = true;
   const updateUsersDefaultBizcardParams = ref({
-    updateUsersPermissionsUserId: userIdRef.value,
     data: {
       config: {
         default_bizcard: defatltBizcardIdForSet.value

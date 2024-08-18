@@ -127,6 +127,11 @@ export function updateBizcard(params) {
         { variables: params.value }
     ))
 }
+export function deleteBizcard(params) {
+    return useMutation(gqlAggregate.deleteBizcard,()=> (
+        { variables: params.value }
+    ))
+}
 export function updateUsersDefaultBizcard(params) {
     return useMutation(gqlAggregate.updateUsersDefaultBizcard,()=> (
         { variables: params.value }
@@ -216,11 +221,4 @@ export function updateFollows(params) {
 }
 export function findPopularizes(variables){
     return useQuery(gqlAggregate.findPopularizes,variables)
-}
-
-
-// 项目管理部分
-
-export function findAllProjects(variables){
-    return useQuery(gqlAggregate.findAllProjects,variables)
 }
