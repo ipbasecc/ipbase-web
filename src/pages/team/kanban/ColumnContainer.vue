@@ -7,7 +7,7 @@
   >
     <template v-if="columnRef && view_modelRef === 'kanban'">
       <div
-        class="row no-wrap items-center q-px-xs q-pt-xs gap-xs radius-xs transparent font-medium"
+        class="row no-wrap items-center q-px-xs q-pt-xs gap-xs radius-xs transparent font-medium columnDragBar"
         :style="$q.screen.gt.xs ? 'width: 322px' : 'width: 100%'"
       >
         <StatusMenu

@@ -226,7 +226,7 @@ const _kanbanSource = ref();
 
 const setDragHandle = (view_model) => {
   if(view_model === 'kanban'){
-    return '.dragBar'
+    return '.columnDragBar'
   } else if(view_model === 'segment'){
     return '.reel_dragBar'
   }
