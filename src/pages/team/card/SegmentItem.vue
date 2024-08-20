@@ -1,9 +1,6 @@
 <template>
   <!-- 此处qCard组件不能添加class名：card，会导致其内部的input组件无法框选、或点击修改光标位置 -->
-    <q-card
-      v-if="cardRef"
-      bordered
-      flat
+    <q-card v-if="cardRef" bordered flat
       class="column no-wrap cardBody overflow-hidden relative-position radius-sm hovered-item"
       :class="teamStore.card?.id === cardRef.id ? 'openedCard shadow-focus' : ''"
       @mouseenter="AUTH = useAuths('read', ['card'])"
@@ -11,16 +8,12 @@
     >
       <!-- 卡片顶部 -->
       <q-card-section
-        class="row no-wrap q-pa-xs q-pr-sm items-center hovered-item absolute-top z-fab"
-        :class="`
-            ${
-              useAuths('order', ['card']) &&
-              !name_changing &&
-              !isExternal
-                ? 'dragBar'
-                : ''
-            }
-          `"
+        class="dragItem row no-wrap q-pa-xs q-pr-sm items-center hovered-item absolute-top z-fab"
+        :class="`${
+          useAuths('order', ['card']) && !name_changing && !isExternal
+          ? 'dragBar' : ''
+        }`"
+        @mouseenter="uiStore.dragReelscrollEnable = false"
       >
         <q-circular-progress
           show-value
@@ -74,6 +67,56 @@
             </q-card>
           </q-popup-proxy>
         </q-chip>
+        <q-space />
+        <CardExecutor
+          v-if="show_byPreference?.executor?.value && !isExternal"
+          :card="cardRef"
+          :executor="executor"
+          :isCreator="isCreator"
+          @attachExecutor="attachExecutorFn"
+        />
+      </q-card-section>
+      <!-- 封面 -->
+      <q-card-section
+        v-if="default_version?.media?.url"
+        class="relative-position no-padding full-height"
+        @mouseenter="uiStore.dragReelscrollEnable = true"
+      >
+        <FileViewer
+          v-if="default_version?.media"
+          :file="default_version?.media"
+          :videoOption="videoOption"
+          :height="uiStore.reelHeight"
+          :clean="true"
+          mainStyle="no-padding"
+        />
+        <div
+          class="absolute-full bg-gradient-bottom-black hover-show transition"
+          @dblclick.stop="
+            _enterSegment(useAuths('read', ['card']))
+          "
+        ></div>
+      </q-card-section>
+      <!-- 卡片底部 -->
+      <q-card-section
+        class="dragItem row no-wrap gap-sm items-center q-px-sm q-py-xs hovered-item absolute-bottom z-fab q-mb-sm"
+        :class="isExternal ? '' : 'dragBar'"
+        @dblclick="_enterSegment(useAuths('read', ['card']))"
+        @mouseenter="uiStore.dragReelscrollEnable = false"
+      >
+        <StatusMenu
+          v-if="show_byPreference?.status?.value"
+          :modify="useAuths('status', ['card'])"
+          :status="cardRef.status"
+          @statusChange="_card_statusChange"
+          class="undrag"
+        />
+        <ThreadBtn
+          v-if="cardRef.mm_thread && !teamStore.card && !isExternal"
+          :thread="cardRef.mm_thread"
+          :show="true"
+          @enterThread="enterThread"
+        />
         <div
           v-if="name_changing && useAuths('name', ['card'])"
           class="undrag text-medium q-space cursor-text q-px-sm z-fab"
@@ -102,53 +145,6 @@
             cardRef.name
           }}</span>
         </div>
-        <CardExecutor
-          v-if="show_byPreference?.executor?.value && !isExternal"
-          :card="cardRef"
-          :executor="executor"
-          :isCreator="isCreator"
-          @attachExecutor="attachExecutorFn"
-        />
-      </q-card-section>
-      <!-- 封面 -->
-      <q-card-section
-        v-if="default_version?.media?.url"
-        class="relative-position no-padding full-height"
-      >
-        <FileViewer
-          v-if="default_version?.media"
-          :file="default_version?.media"
-          :videoOption="videoOption"
-          :height="uiStore.reelHeight"
-          :clean="true"
-          mainStyle="no-padding"
-        />
-        <div
-          class="absolute-full bg-gradient-bottom-black hover-show transition"
-          @dblclick.stop="
-            _enterSegment(useAuths('read', ['card']))
-          "
-        ></div>
-      </q-card-section>
-      <!-- 卡片底部 -->
-      <q-card-section
-        class="row no-wrap gap-sm items-center q-px-sm q-py-xs hovered-item absolute-bottom z-fab q-mb-sm"
-        :class="isExternal ? '' : 'dragBar'"
-        @dblclick="_enterSegment(useAuths('read', ['card']))"
-      >
-        <StatusMenu
-          v-if="show_byPreference?.status?.value"
-          :modify="useAuths('status', ['card'])"
-          :status="cardRef.status"
-          @statusChange="_card_statusChange"
-          class="undrag"
-        />
-        <ThreadBtn
-          v-if="cardRef.mm_thread && !teamStore.card && !isExternal"
-          :thread="cardRef.mm_thread"
-          :show="true"
-          @enterThread="enterThread"
-        />
         <template v-if="show_byPreference?.follow?.value && !isExternal">
           <overlappingAvatar
             v-if="cardRef.followed_bies?.length > 0"
@@ -624,7 +620,7 @@ watch(cardRef, () => {
     media.value =
       cardRef.value.overviews.find(
         (i) => i.version === cardRef.value.default_version
-      ).media.url || cardRef.value.overviews[0].media.url;
+      )?.media?.url || cardRef.value.overviews[0]?.media?.url;
   }
   belong_card.value = teamStore.card || null;
 });
@@ -708,8 +704,8 @@ const _enterSegment = async (auth) => {
   if (!auth) {
     return;
   }
-  await enterSegment(cardRef.value);
   uiStore.activeReel = column.value?.id;
+  await enterSegment(cardRef.value);
 };
 
 const colorMarks = [

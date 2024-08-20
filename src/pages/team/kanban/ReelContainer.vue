@@ -32,14 +32,13 @@
         class="row no-wrap gap-sm relative-position unselected"
         :class="uiStore.activeReel ? 'items-center' : 'flex-center'"
       >
-        <q-resize-observer @resize="onResize" />
         <div
           v-if="filteredCards?.length > 0 && !uiStore.activeReel"
           style="height: 100%; width: 40vw; max-width: 39%"
         ></div>
         <VueDraggable v-model="filteredCards"
           :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
-          handle=".dragItem" filter=".undrag" group="reel"
+          handle=".dragItem" filter=".undrag" group="reelItem"
           chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
           class="row no-wrap gap-sm forbid"
           :class="isMounted ? uiStore.activeReel ? 'items-center' : 'flex-center' : 'op-0'"
@@ -48,12 +47,13 @@
         >
           <SegmentItem
             v-for="element in filteredCards" :key="element.id"
-            class="dragItem" :card="element" :isCreator_column="isCreator" :column="columnRef"
+            :card="element" :isCreator_column="isCreator" :column="columnRef"
             @cardChange="cardChange" @cardDelete="cardDelete"
             @mouseenter="disableUpload = true" @mouseleave="disableUpload = false"
           ></SegmentItem>
-          <template v-if="uiStore.createCard_in === columnRef.id && useAuths('create', ['card'])">
+          <template v-if="useAuths('create', ['card'])">
             <CreateSegment
+              v-show="uiStore.createCard_in === columnRef.id"
               :column_id="columnRef.id"
               @createCannel="createCannel"
               @closeCreate="closeCreate"
@@ -67,7 +67,7 @@
         ></div>
       </div>
     </q-scroll-area>
-    <q-bar v-if="!uiStore.activeReel" class="full-width transparent q-my-xs">
+    <q-bar v-show="!uiStore.activeReel" class="full-width transparent q-my-xs">
       <q-space />
       <div
         class="row no-wrap items-center q-py-xs q-pl-sm q-pr-xs gap-xs transparent font-medium border bg-dark"
@@ -155,7 +155,7 @@
           flat
           size="sm"
           icon="mdi-drag"
-          class="dragBar"
+          class="reel_dragBar"
         />
       </div>
       <q-space />
@@ -228,10 +228,6 @@ const props = defineProps({
   },
 });
 const columnRef = toRef(props, "column");
-const reelSize = ref();
-function onResize(size) {
-  reelSize.value = size;
-}
 
 const scrollAreaRef = ref(null);
 const isCreator = computed(
@@ -411,9 +407,9 @@ const CreateCardFn = (column_id) => {
   uiStore.createCard_in =
     uiStore.createCard_in === column_id ? null : column_id;
   if (uiStore.createCard_in) {
-    scrollAreaRef.value?.setScrollPosition(
+    scrollAreaRef.value?.setScrollPercentage(
       "horizontal",
-      reelSize.value?.width,
+      1,
       300
     );
   }

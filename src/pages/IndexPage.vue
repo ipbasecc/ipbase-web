@@ -1,254 +1,256 @@
 <template>
-  <div class="absolute-full column items-center" :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-2'">
-    <div
-      class="container limit full-width q-space row no-wrap gap-md q-pa-md overflow-hidden"
-    >
-      <div class="column no-wrap gap-sm" style="flex: 0 0 12rem;">
-        <q-list bordered class="q-pa-sm radius-sm" :class="$q.dark.mode ? 'bg-grey-9' : 'bg-white'">
-          <q-item clickable v-ripple
-            class="radius-sm"
-            :class="findElementsParams.filters == null || !activeId ? 'active-listitem text-white' : ''"
-            @click="getAll()"
-          >
-            <q-item-section side>
-              <q-icon :color="findElementsParams.filters == null || !activeId ? 'white' : 'primary'" name="explore" />
-            </q-item-section>
-            <q-item-section>综合</q-item-section>
-          </q-item>
-          <Gategory
-            :filterIds="filterIds"
-            :activedId="activeId"
-            :belongedId="belongedId"
-            :belongedName="belongedName"
-            @setGetagory="setGetagory"
-          />
-        </q-list>
-        <q-list v-if="follows && follows.length > 0" bordered class="q-pa-sm radius-sm" :class="$q.dark.mode ? 'bg-grey-9' : 'bg-white'">
-          <template v-for="(i,index) in follows" :key="index">
-            <q-item
-              v-if="i.attributes"
+  <NavigatorContainer>
+    <div class="absolute-full column items-center" :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-2'">
+      <div
+        class="container limit full-width q-space row no-wrap gap-md q-pa-md overflow-hidden"
+      >
+        <div class="column no-wrap gap-sm" style="flex: 0 0 12rem;">
+          <q-list bordered class="q-pa-sm radius-sm" :class="$q.dark.mode ? 'bg-grey-9' : 'bg-white'">
+            <q-item clickable v-ripple
               class="radius-sm"
-              :clickable="i.attributes?.user_channel?.data?.id && true || false"
-              @click="i.attributes.user_channel?.data?.id && $router.push(`/${i.attributes.user_channel.data.id}`)"
+              :class="findElementsParams.filters == null || !activeId ? 'active-listitem text-white' : ''"
+              @click="getAll()"
             >
               <q-item-section side>
-                <AutoAvatar
-                  :size="32"
-                  :attributes="i.attributes"
-                />
+                <q-icon :color="findElementsParams.filters == null || !activeId ? 'white' : 'primary'" name="explore" />
               </q-item-section>
-              <q-item-section>
-                {{ i.attributes?.username || i.attributes?.email }}
-              </q-item-section>
-              <q-tooltip v-if="!i.attributes?.user_channel?.data?.id">
-                该用户没有创建自己的频道
-              </q-tooltip>
+              <q-item-section>综合</q-item-section>
             </q-item>
-          </template>
-        </q-list>
-      </div>
-      <div class="q-space column no-wrap gap-sm radius-sm q-pl-sm q-pr-xs q-py-xs" :class="$q.dark.mode ? 'bg-grey-9' : 'bg-white'">
-        <q-toolbar class="transparent border-bottom">
-          <q-tabs v-model="filterTab">
-            <q-tab v-for="(i,index) in filterOptions" :key="index" inline-label
-            :name="i.name" :label="i.label"
-            @click="changeList()"
-          />
-          </q-tabs>
-        </q-toolbar>
-        <div :key="filterTab" class="q-space q-pr-sm scroll-y">
-          <ListPage :elements="elements" />
-          <q-btn
-            v-if="meta?.pagination?.total > findElementsParams.pagination.page * pageSize"
-            flat dense class="full-width q-my-sm" color="primary"
-            icon="mdi-chevron-double-down" label="更多"
-            @click="showMoreElements()"
-          />
-          <div v-else class="full-width q-my-sm flex flex-center op-5">没有更多内容了</div>
-        </div>
-      </div>
-      <div class="column no-wrap gap-sm" style="flex: 0 0 16rem">
-        <div v-if="popularizes.filter(item => item.attributes.position === 'homepage_right_top').length > 0" class="column no-wrap gap-sm">
-          <template v-for="i in popularizes.filter(item => item.attributes.position === 'homepage_right_bottom')" :key="i.id">
-            <a v-if="i.attributes" :href="i.attributes.uri" target="_blank" rel="noopener noreferrer">
-              <q-card bordered flat>
-                <template v-if="i.attributes.medias.data.length > 0">
-                    <q-img
-                      v-if="i.attributes.medias.data.length === 1"
-                      :src="i.attributes.medias.data[0].attributes.url"
-                      spinner-color="primary"
-                      spinner-size="82px"
-                    >
-                      <section class="absolute-full column flex-center">
-                        <span v-if="i.attributes.title" class="text-black font-bold-600 font-x-large">{{ i.attributes.title }}</span>
-                        <span v-if="i.attributes.description" class="text-black font-bold-400 font-medium">{{ i.attributes.description }}</span>
-                      </section>
-                    </q-img>
-                  <q-carousel
-                    v-else
-                    transition-prev="jump-right"
-                    transition-next="jump-left"
-                    swipeable
-                    animated
-                    control-color="white"
-                    prev-icon="arrow_left"
-                    next-icon="arrow_right"
-                    navigation-icon="radio_button_unchecked"
-                    navigation
-                    padding
-                    arrows
-                    height="300px"
-                    class="bg-purple text-white shadow-1 rounded-borders"
-                  >
-                    <q-carousel-slide v-for="img in i.attributes.medias.data" :key="img.id" name="style" class="column no-wrap flex-center">
-                        <q-img
-                          :src="img.attributes.url"
-                          spinner-color="primary"
-                          spinner-size="82px"
-                        >
-                        <section class="absolute-full column flex-center">
-                          <span v-if="i.attributes.title" class="text-black font-bold-600 font-x-large">{{ i.attributes.title }}</span>
-                          <span v-if="i.attributes.description" class="text-black font-bold-400 font-medium">{{ i.attributes.description }}</span>
-                        </section>
-                      </q-img>
-                    </q-carousel-slide>
-                  </q-carousel>
-                </template>
-              </q-card>
-            </a>
-          </template>
-        </div>
-        <q-card bordered flat>
-          <q-card-section class="q-py-sm border-bottom">
-            话题
-          </q-card-section>
-          <q-card-section class="row q-pa-xs">
-            <Tags
-              :readonly="true"
-              :dense="true"
-              :square="true"
-              :inline="false"
-              :selected="selectedTags || []"
-              @putTag="putTag"
-              :itemClass="`radius-sm`"
+            <Gategory
+              :filterIds="filterIds"
+              :activedId="activeId"
+              :belongedId="belongedId"
+              :belongedName="belongedName"
+              @setGetagory="setGetagory"
             />
-          </q-card-section>
-        </q-card>
-        <div v-if="popularizes.filter(item => item.attributes.position === 'homepage_right_center').length > 0" class="column no-wrap gap-sm">
-          <template v-for="i in popularizes.filter(item => item.attributes.position === 'homepage_right_bottom')" :key="i.id">
-            <a v-if="i.attributes" :href="i.attributes.uri" target="_blank" rel="noopener noreferrer">
-              <q-card bordered flat>
-                <template v-if="i.attributes.medias.data.length > 0">
-                    <q-img
-                      v-if="i.attributes.medias.data.length === 1"
-                      :src="i.attributes.medias.data[0].attributes.url"
-                      spinner-color="primary"
-                      spinner-size="82px"
-                    >
-                      <section class="absolute-full column flex-center">
-                        <span v-if="i.attributes.title" class="text-black font-bold-600 font-x-large">{{ i.attributes.title }}</span>
-                        <span v-if="i.attributes.description" class="text-black font-bold-400 font-medium">{{ i.attributes.description }}</span>
-                      </section>
-                    </q-img>
-                  <q-carousel
-                    v-else
-                    transition-prev="jump-right"
-                    transition-next="jump-left"
-                    swipeable
-                    animated
-                    control-color="white"
-                    prev-icon="arrow_left"
-                    next-icon="arrow_right"
-                    navigation-icon="radio_button_unchecked"
-                    navigation
-                    padding
-                    arrows
-                    height="300px"
-                    class="bg-purple text-white shadow-1 rounded-borders"
-                  >
-                    <q-carousel-slide v-for="img in i.attributes.medias.data" :key="img.id" name="style" class="column no-wrap flex-center">
-                        <q-img
-                          :src="img.attributes.url"
-                          spinner-color="primary"
-                          spinner-size="82px"
-                        >
+          </q-list>
+          <q-list v-if="follows && follows.length > 0" bordered class="q-pa-sm radius-sm" :class="$q.dark.mode ? 'bg-grey-9' : 'bg-white'">
+            <template v-for="(i,index) in follows" :key="index">
+              <q-item
+                v-if="i.attributes"
+                class="radius-sm"
+                :clickable="i.attributes?.user_channel?.data?.id && true || false"
+                @click="i.attributes.user_channel?.data?.id && $router.push(`/${i.attributes.user_channel.data.id}`)"
+              >
+                <q-item-section side>
+                  <AutoAvatar
+                    :size="32"
+                    :attributes="i.attributes"
+                  />
+                </q-item-section>
+                <q-item-section>
+                  {{ i.attributes?.username || i.attributes?.email }}
+                </q-item-section>
+                <q-tooltip v-if="!i.attributes?.user_channel?.data?.id">
+                  该用户没有创建自己的频道
+                </q-tooltip>
+              </q-item>
+            </template>
+          </q-list>
+        </div>
+        <div class="q-space column no-wrap gap-sm radius-sm q-pl-sm q-pr-xs q-py-xs" :class="$q.dark.mode ? 'bg-grey-9' : 'bg-white'">
+          <q-toolbar class="transparent border-bottom">
+            <q-tabs v-model="filterTab">
+              <q-tab v-for="(i,index) in filterOptions" :key="index" inline-label
+              :name="i.name" :label="i.label"
+              @click="changeList()"
+            />
+            </q-tabs>
+          </q-toolbar>
+          <div :key="filterTab" class="q-space q-pr-sm scroll-y">
+            <ListPage :elements="elements" />
+            <q-btn
+              v-if="meta?.pagination?.total > findElementsParams.pagination.page * pageSize"
+              flat dense class="full-width q-my-sm" color="primary"
+              icon="mdi-chevron-double-down" label="更多"
+              @click="showMoreElements()"
+            />
+            <div v-else class="full-width q-my-sm flex flex-center op-5">没有更多内容了</div>
+          </div>
+        </div>
+        <div class="column no-wrap gap-sm" style="flex: 0 0 16rem">
+          <div v-if="popularizes.filter(item => item.attributes.position === 'homepage_right_top').length > 0" class="column no-wrap gap-sm">
+            <template v-for="i in popularizes.filter(item => item.attributes.position === 'homepage_right_bottom')" :key="i.id">
+              <a v-if="i.attributes" :href="i.attributes.uri" target="_blank" rel="noopener noreferrer">
+                <q-card bordered flat>
+                  <template v-if="i.attributes.medias.data.length > 0">
+                      <q-img
+                        v-if="i.attributes.medias.data.length === 1"
+                        :src="i.attributes.medias.data[0].attributes.url"
+                        spinner-color="primary"
+                        spinner-size="82px"
+                      >
                         <section class="absolute-full column flex-center">
                           <span v-if="i.attributes.title" class="text-black font-bold-600 font-x-large">{{ i.attributes.title }}</span>
                           <span v-if="i.attributes.description" class="text-black font-bold-400 font-medium">{{ i.attributes.description }}</span>
                         </section>
                       </q-img>
-                    </q-carousel-slide>
-                  </q-carousel>
-                </template>
-              </q-card>
-            </a>
-          </template>
-        </div>
-        <q-card bordered flat>
-          <q-card-section class="q-py-sm border-bottom">
-            牛人
-          </q-card-section>
-          <q-card-section class="q-pa-xs">
-            <TopUsers />
-          </q-card-section>
-        </q-card>
-        <div v-if="popularizes.filter(item => item.attributes.position === 'homepage_right_bottom').length > 0" class="column no-wrap gap-sm">
-          <template v-for="i in popularizes.filter(item => item.attributes.position === 'homepage_right_bottom')" :key="i.id">
-            <a v-if="i.attributes" :href="i.attributes.uri" target="_blank" rel="noopener noreferrer">
-              <q-card bordered flat>
-                <template v-if="i.attributes.medias.data.length > 0">
-                    <q-img
-                      v-if="i.attributes.medias.data.length === 1"
-                      :src="i.attributes.medias.data[0].attributes.url"
-                      spinner-color="primary"
-                      spinner-size="82px"
+                    <q-carousel
+                      v-else
+                      transition-prev="jump-right"
+                      transition-next="jump-left"
+                      swipeable
+                      animated
+                      control-color="white"
+                      prev-icon="arrow_left"
+                      next-icon="arrow_right"
+                      navigation-icon="radio_button_unchecked"
+                      navigation
+                      padding
+                      arrows
+                      height="300px"
+                      class="bg-purple text-white shadow-1 rounded-borders"
                     >
-                      <section class="absolute-full column flex-center">
-                        <span v-if="i.attributes.content" v-html="marked(i.attributes.content)" class="text-black" />
-                        <template v-if="!i.attributes.content">
-                          <span v-if="i.attributes.title" class="text-black font-bold-600 font-x-large">{{ i.attributes.title }}</span>
-                          <span v-if="i.attributes.description" class="text-black font-bold-400 font-medium">{{ i.attributes.description }}</span>
-                        </template>
-                      </section>
-                    </q-img>
-                  <q-carousel
-                    v-else
-                    transition-prev="jump-right"
-                    transition-next="jump-left"
-                    swipeable
-                    animated
-                    control-color="white"
-                    prev-icon="arrow_left"
-                    next-icon="arrow_right"
-                    navigation-icon="radio_button_unchecked"
-                    navigation
-                    padding
-                    arrows
-                    height="300px"
-                    class="bg-purple text-white shadow-1 rounded-borders"
-                  >
-                    <q-carousel-slide v-for="img in i.attributes.medias.data" :key="img.id" name="style" class="column no-wrap flex-center">
-                        <q-img
-                          :src="img.attributes.url"
-                          spinner-color="primary"
-                          spinner-size="82px"
-                        >
+                      <q-carousel-slide v-for="img in i.attributes.medias.data" :key="img.id" name="style" class="column no-wrap flex-center">
+                          <q-img
+                            :src="img.attributes.url"
+                            spinner-color="primary"
+                            spinner-size="82px"
+                          >
+                          <section class="absolute-full column flex-center">
+                            <span v-if="i.attributes.title" class="text-black font-bold-600 font-x-large">{{ i.attributes.title }}</span>
+                            <span v-if="i.attributes.description" class="text-black font-bold-400 font-medium">{{ i.attributes.description }}</span>
+                          </section>
+                        </q-img>
+                      </q-carousel-slide>
+                    </q-carousel>
+                  </template>
+                </q-card>
+              </a>
+            </template>
+          </div>
+          <q-card bordered flat>
+            <q-card-section class="q-py-sm border-bottom">
+              话题
+            </q-card-section>
+            <q-card-section class="row q-pa-xs">
+              <Tags
+                :readonly="true"
+                :dense="true"
+                :square="true"
+                :inline="false"
+                :selected="selectedTags || []"
+                @putTag="putTag"
+                :itemClass="`radius-sm`"
+              />
+            </q-card-section>
+          </q-card>
+          <div v-if="popularizes.filter(item => item.attributes.position === 'homepage_right_center').length > 0" class="column no-wrap gap-sm">
+            <template v-for="i in popularizes.filter(item => item.attributes.position === 'homepage_right_bottom')" :key="i.id">
+              <a v-if="i.attributes" :href="i.attributes.uri" target="_blank" rel="noopener noreferrer">
+                <q-card bordered flat>
+                  <template v-if="i.attributes.medias.data.length > 0">
+                      <q-img
+                        v-if="i.attributes.medias.data.length === 1"
+                        :src="i.attributes.medias.data[0].attributes.url"
+                        spinner-color="primary"
+                        spinner-size="82px"
+                      >
                         <section class="absolute-full column flex-center">
                           <span v-if="i.attributes.title" class="text-black font-bold-600 font-x-large">{{ i.attributes.title }}</span>
                           <span v-if="i.attributes.description" class="text-black font-bold-400 font-medium">{{ i.attributes.description }}</span>
                         </section>
                       </q-img>
-                    </q-carousel-slide>
-                  </q-carousel>
-                </template>
-              </q-card>
-            </a>
-          </template>
+                    <q-carousel
+                      v-else
+                      transition-prev="jump-right"
+                      transition-next="jump-left"
+                      swipeable
+                      animated
+                      control-color="white"
+                      prev-icon="arrow_left"
+                      next-icon="arrow_right"
+                      navigation-icon="radio_button_unchecked"
+                      navigation
+                      padding
+                      arrows
+                      height="300px"
+                      class="bg-purple text-white shadow-1 rounded-borders"
+                    >
+                      <q-carousel-slide v-for="img in i.attributes.medias.data" :key="img.id" name="style" class="column no-wrap flex-center">
+                          <q-img
+                            :src="img.attributes.url"
+                            spinner-color="primary"
+                            spinner-size="82px"
+                          >
+                          <section class="absolute-full column flex-center">
+                            <span v-if="i.attributes.title" class="text-black font-bold-600 font-x-large">{{ i.attributes.title }}</span>
+                            <span v-if="i.attributes.description" class="text-black font-bold-400 font-medium">{{ i.attributes.description }}</span>
+                          </section>
+                        </q-img>
+                      </q-carousel-slide>
+                    </q-carousel>
+                  </template>
+                </q-card>
+              </a>
+            </template>
+          </div>
+          <q-card bordered flat>
+            <q-card-section class="q-py-sm border-bottom">
+              牛人
+            </q-card-section>
+            <q-card-section class="q-pa-xs">
+              <TopUsers />
+            </q-card-section>
+          </q-card>
+          <div v-if="popularizes.filter(item => item.attributes.position === 'homepage_right_bottom').length > 0" class="column no-wrap gap-sm">
+            <template v-for="i in popularizes.filter(item => item.attributes.position === 'homepage_right_bottom')" :key="i.id">
+              <a v-if="i.attributes" :href="i.attributes.uri" target="_blank" rel="noopener noreferrer">
+                <q-card bordered flat>
+                  <template v-if="i.attributes.medias.data.length > 0">
+                      <q-img
+                        v-if="i.attributes.medias.data.length === 1"
+                        :src="i.attributes.medias.data[0].attributes.url"
+                        spinner-color="primary"
+                        spinner-size="82px"
+                      >
+                        <section class="absolute-full column flex-center">
+                          <span v-if="i.attributes.content" v-html="marked(i.attributes.content)" class="text-black" />
+                          <template v-if="!i.attributes.content">
+                            <span v-if="i.attributes.title" class="text-black font-bold-600 font-x-large">{{ i.attributes.title }}</span>
+                            <span v-if="i.attributes.description" class="text-black font-bold-400 font-medium">{{ i.attributes.description }}</span>
+                          </template>
+                        </section>
+                      </q-img>
+                    <q-carousel
+                      v-else
+                      transition-prev="jump-right"
+                      transition-next="jump-left"
+                      swipeable
+                      animated
+                      control-color="white"
+                      prev-icon="arrow_left"
+                      next-icon="arrow_right"
+                      navigation-icon="radio_button_unchecked"
+                      navigation
+                      padding
+                      arrows
+                      height="300px"
+                      class="bg-purple text-white shadow-1 rounded-borders"
+                    >
+                      <q-carousel-slide v-for="img in i.attributes.medias.data" :key="img.id" name="style" class="column no-wrap flex-center">
+                          <q-img
+                            :src="img.attributes.url"
+                            spinner-color="primary"
+                            spinner-size="82px"
+                          >
+                          <section class="absolute-full column flex-center">
+                            <span v-if="i.attributes.title" class="text-black font-bold-600 font-x-large">{{ i.attributes.title }}</span>
+                            <span v-if="i.attributes.description" class="text-black font-bold-400 font-medium">{{ i.attributes.description }}</span>
+                          </section>
+                        </q-img>
+                      </q-carousel-slide>
+                    </q-carousel>
+                  </template>
+                </q-card>
+              </a>
+            </template>
+          </div>
+          <!-- {{ popularizes.filter(i => i.attributes.position == 'homepage_right_bottom') }} -->
         </div>
-        <!-- {{ popularizes.filter(i => i.attributes.position == 'homepage_right_bottom') }} -->
       </div>
     </div>
-  </div>
+  </NavigatorContainer>
 </template>
 <script setup>
 import { findElements, findPopularizes } from "src/apollo/api/api.js";
@@ -260,6 +262,7 @@ import TopUsers from "src/components/VIewComponents/TopUsers.vue";
 import AutoAvatar from 'src/components/VIewComponents/AutoAvatar.vue';
 import useUserStore from 'src/stores/user.js';
 import {marked} from 'marked'
+import NavigatorContainer from './team/NavigatorContainer.vue'
 
 const userStore = useUserStore();
 const follows = ref();

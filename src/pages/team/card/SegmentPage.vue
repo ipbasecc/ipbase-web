@@ -1,136 +1,137 @@
 <template>
   <q-layout
-    v-if="teamStore?.card"
     view="hHh lpR fFf"
     container
     class="q-space inner-scroll-hidden"
     @mousemove="handleMouseMove" @mouseup="handleMouseUp"
   >
-    <q-drawer
-      v-model="uiStore.segmentDrawer"
-      side="right"
-      :width="rightDrawerWidth"
-      class="border-left q-pa-xs column no-wrap"
-      :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-1'"
-    >
-      <q-toolbar class="transparent border-bottom">
-        <q-tabs
-          v-model="current_classExtend"
-          inline-label
-          dense
-          no-caps
-          shrink
-          stretch
-        >
-          <template v-for="i in classExtends" :key="i.id">
-            <q-tab :name="i.name" :icon="i.icon" :label="$t(i.label)" />
-          </template>
-        </q-tabs>
-      </q-toolbar>
-      <div class="q-space relative-position">
-        <OverView
-          v-if="teamStore.card.mm_thread && current_classExtend === 'overview'"
-          wasAttached_to="card"
-          :hideMedia="true"
-        />
-        <template
-          v-if="
-            teamStore.card.mm_thread && current_classExtend === 'card_forum'
-          "
-        >
-          <KeepAlive>
-            <ThreadContainer
-              :showToolbar="false"
-              :chatInfo
-              :showRootpost="false"
-            />
-          </KeepAlive>
-        </template>
-        <TodoPage
-          v-if="current_classExtend === 'card_note'"
-          :kanban_id="teamStore.card?.card_kanban?.id"
-          :hideToolbar="true"
-          _for="segment"
-          class="fit"
-        />
-        <template v-if="current_classExtend === 'card_documents'">
-          <q-splitter
-            v-if="
-              !teamStore.card.private ||
-              useAuths('read', ['card_document'])
-            "
-            v-model="splitterModel"
-            :limits
-            unit="px"
-            class="absolute-full"
-          >
-            <template v-slot:before>
-              <DocumentList
-                :documents="teamStore.card.card_documents"
-                :by_info="byInfo"
-                @enterDocument="enterDocument"
-              />
-            </template>
-
-            <template v-slot:after>
-              <q-scroll-area class="fit">
-                <DocumentBody
-                  v-if="document_id"
-                  :document_id="document_id.toString()"
-                  :by_info="byInfo"
-                />
-              </q-scroll-area>
-            </template>
-          </q-splitter>
-          <div v-else class="absolute-full flex flex-center op-3">
-            {{ $t('no_premission_to_view') }}
-          </div>
-        </template>
-        <template
-          v-if="
-            current_classExtend === 'card_storage' &&
-            teamStore.card?.storage?.id
-          "
-        >
-          <StoragePage :storage_id="teamStore.card.storage.id" by="card" />
-        </template>
-      </div>
-      <div v-if="dragRightDrawerWidth" class="absolute-full"></div>
-      <div
-        class="absolute-left full-height hover-col-resize flex flex-center toggle-container z-max"
-        :class="dragRightDrawerWidth ? 'bg-primary ' : ''"
-        :style="dragRightDrawerWidth ? 'width: 3px' : 'width: 10px'"
-        @mousedown="handleMouseDown"
+    <template v-if="teamStore?.card">
+      <q-drawer
+        v-model="uiStore.segmentDrawer"
+        side="right"
+        :width="rightDrawerWidth"
+        class="border-left q-pa-xs column no-wrap"
+        :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-1'"
       >
-      </div>
-    </q-drawer>
-
-    <q-page-container>
-      <q-page :key="teamStore.card?.id" class="flex flex-center bg-black">
-        <div class="absolute-top-right items-center no-wrap q-pa-md row z-max">
-          <q-btn
-            flat
+        <q-toolbar class="transparent border-bottom">
+          <q-tabs
+            v-model="current_classExtend"
+            inline-label
             dense
-            size="sm"
-            round
-            :icon="classExtendIcon()"
-            :class="rightDrawerOpen ? '' : 'op-5'"
-            :color="rightDrawerOpen ? 'positive' : ''"
-            @click="toggleRightDrawer()"
+            no-caps
+            shrink
+            stretch
+          >
+            <template v-for="i in classExtends" :key="i.id">
+              <q-tab :name="i.name" :icon="i.icon" :label="$t(i.label)" />
+            </template>
+          </q-tabs>
+        </q-toolbar>
+        <div class="q-space relative-position">
+          <OverView
+            v-if="teamStore.card.mm_thread && current_classExtend === 'overview'"
+            wasAttached_to="card"
+            :hideMedia="true"
           />
-          <q-separator spaced inset vertical />
-          <q-btn dense round flat icon="close" size="sm" @click="close()" />
+          <template
+            v-if="
+              teamStore.card.mm_thread && current_classExtend === 'card_forum'
+            "
+          >
+            <KeepAlive>
+              <ThreadContainer
+                :showToolbar="false"
+                :chatInfo
+                :showRootpost="false"
+              />
+            </KeepAlive>
+          </template>
+          <TodoPage
+            v-if="current_classExtend === 'card_note'"
+            :kanban_id="teamStore.card?.card_kanban?.id"
+            :hideToolbar="true"
+            _for="segment"
+            class="fit"
+          />
+          <template v-if="current_classExtend === 'card_documents'">
+            <q-splitter
+              v-if="
+                !teamStore.card.private ||
+                useAuths('read', ['card_document'])
+              "
+              v-model="splitterModel"
+              :limits
+              unit="px"
+              class="absolute-full"
+            >
+              <template v-slot:before>
+                <DocumentList
+                  :documents="teamStore.card.card_documents"
+                  :by_info="byInfo"
+                  @enterDocument="enterDocument"
+                />
+              </template>
+
+              <template v-slot:after>
+                <q-scroll-area class="fit">
+                  <DocumentBody
+                    v-if="document_id"
+                    :document_id="document_id.toString()"
+                    :by_info="byInfo"
+                  />
+                </q-scroll-area>
+              </template>
+            </q-splitter>
+            <div v-else class="absolute-full flex flex-center op-3">
+              {{ $t('no_premission_to_view') }}
+            </div>
+          </template>
+          <template
+            v-if="
+              current_classExtend === 'card_storage' &&
+              teamStore.card?.storage?.id
+            "
+          >
+            <StoragePage :storage_id="teamStore.card.storage.id" by="card" />
+          </template>
         </div>
-        <KeepAlive>
-          <OverView wasAttached_to="card" :onlyMedia="true" />
-        </KeepAlive>
-      </q-page>
-    </q-page-container>
+        <div v-if="dragRightDrawerWidth" class="absolute-full"></div>
+        <div
+          class="absolute-left full-height hover-col-resize flex flex-center toggle-container z-max"
+          :class="dragRightDrawerWidth ? 'bg-primary ' : ''"
+          :style="dragRightDrawerWidth ? 'width: 3px' : 'width: 10px'"
+          @mousedown="handleMouseDown"
+        >
+        </div>
+      </q-drawer>
+
+      <q-page-container>
+        <q-page :key="teamStore.card?.id" class="flex flex-center bg-black">
+          <div class="absolute-top-right items-center no-wrap q-pa-md row z-max">
+            <q-btn
+              flat
+              dense
+              size="sm"
+              round
+              :icon="classExtendIcon()"
+              :class="rightDrawerOpen ? '' : 'op-5'"
+              :color="rightDrawerOpen ? 'positive' : ''"
+              @click="toggleRightDrawer()"
+            />
+            <q-separator spaced inset vertical />
+            <q-btn dense round flat icon="close" size="sm" @click="close()" />
+          </div>
+          <KeepAlive>
+            <OverView wasAttached_to="card" :onlyMedia="true" />
+          </KeepAlive>
+        </q-page>
+      </q-page-container>
+    </template>
   </q-layout>
 </template>
 
 <script setup>
-import {ref, computed, watch, onBeforeUnmount, watchEffect, reactive} from "vue";
+import {ref, computed, watch, onMounted, onBeforeUnmount, watchEffect, reactive} from "vue";
 import { useRoute } from "vue-router";
 import { findCard, getOneProject } from "src/api/strapi/project.js";
 import {onKeyStroke, useMouse} from '@vueuse/core';
@@ -143,7 +144,6 @@ import StoragePage from "src/pages/team/storage/StoragePage.vue";
 
 import ThreadContainer from "../chat/ThreadContainer.vue";
 import { teamStore, mm_wsStore, uiStore } from "src/hooks/global/useStore.js";
-import { uniqueById } from "src/hooks/utilits.js";
 
 const emit = defineEmits(["closeCardList"]);
 const route = useRoute();
@@ -278,10 +278,22 @@ onBeforeUnmount(() => {
   }
 });
 
+const tmpUIState = ref({})
 const close = () => {
   uiStore.activeReel = NaN;
+  teamStore.card = null;
   uiStore.reelHeight = uiStore.reelHeight_SC;
+  uiStore.projectLeftDrawer = tmpUIState.value?.projectLeftDrawer || true;
+  uiStore.navigatorDrawer = tmpUIState.value?.navigatorDrawer || true;
 };
+onMounted(() => {
+  tmpUIState.value = {
+    projectLeftDrawer: uiStore.projectLeftDrawer,
+    navigatorDrawer: uiStore.navigatorDrawer
+  }
+  uiStore.projectLeftDrawer = false;
+  uiStore.navigatorDrawer = false;
+})
 onKeyStroke(['Escape'], (e) => {
   e.preventDefault();
   close()

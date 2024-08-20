@@ -232,7 +232,7 @@
           <TodoPage
             v-if="
               uiStore.projectRightDrawerContent === 'person_todos' &&
-              uiStore.app === 'teams'
+              uiStore.app !== 'affairs'
             "
             _for="user_todos"
             class="absolute-full"

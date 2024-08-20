@@ -29,35 +29,20 @@
           :kanban_data="kanban"
           :isCreator_kanban="isCreator"
         />
-        <draggable
-          v-else
-          :key="kanban.id"
-          :list="columns"
-          :disabled="isShared"
-          :fallback-class="true"
-          :item-key="(key) => key"
-          :fallbackTolerance="2"
-          :force-fallback="true"
-          :fallbackOnBody="true"
-          :scroll="true"
-          :touchStartThreshold="2"
-          :delay="100"
-          animation="200"
-          chosen-class="chosenGroupClass"
-          filter=".card"
-          ghost-class="ghostColumn"
-          group="columns"
-          handle=".dragBar"
+        <VueDraggable v-else v-model="kanban.columns"
+          :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+          filter=".undrag" group="column"
+          chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
+          :handle="setDragHandle(view_model)"
           class="no-wrap border-placeholder"
           :class="`${view_model === 'kanban' && $q.screen.gt.xs ? 'row gap-sm' : 'column'} ${
             uiStore.activeReel ? 'border-top q-py-sm' : 'fit'
           }`"
           @change="dragColumn_done(kanban_id)"
         >
-          <template #item="{ element }">
-            <div>
+            <div v-for="element in kanban.columns" :key="element.id" v-show="!uiStore.activeReel || element.id === uiStore.activeReel">
               <ColumnContainer
-                v-if="view_model !== 'segment'"
+                v-if="view_model === 'kanban'"
                 :isCreator_kanban="isCreator"
                 :view_model="view_model"
                 :column="element"
@@ -67,7 +52,7 @@
                 @cardDelete="cardDelete"
               />
               <ReelContainer
-                v-else
+                v-if="view_model === 'segment'"
                 :isCreator_kanban="isCreator"
                 :view_model="view_model"
                 :column="element"
@@ -78,15 +63,7 @@
                 @cardDelete="cardDelete"
               />
             </div>
-          </template>
-          <template
-            v-if="
-              useAuths('create', [authBase.collection]) &&
-              !uiStore.activeReel && !isShared
-            "
-            #footer
-          >
-            <q-space v-if="view_model === 'segment'" />
+          <template v-if=" useAuths('create', [authBase.collection]) && !uiStore.activeReel && !isShared">
             <div
               :class="`${view_model !== 'kanban' ? 'row' : ''} ${
                 view_model === 'segment' ? 'flex-center' : ''
@@ -149,7 +126,7 @@
               </div>
             </div>
           </template>
-        </draggable>
+        </VueDraggable>
       </div>
     </q-scroll-area>
   </template>
@@ -160,8 +137,9 @@
 </template>
 
 <script setup>
-import {ref, toRefs, watch, watchEffect, computed, provide, nextTick} from "vue";
+import {ref, toRefs, watch, watchEffect, computed, provide} from "vue";
 import draggable from "vuedraggable";
+import { VueDraggable } from 'vue-draggable-plus'
 import { kanbanUpdate, createColumn } from "src/api/strapi/project.js";
 import ColumnContainer from "./ColumnContainer.vue";
 import QuadrantModebl from "./QuadrantModebl.vue";
@@ -246,6 +224,14 @@ const isCreator = computed(() => kanban.value.creator?.id === userStore.userId);
 // Segment模式时会筛选columns，这里在初始化时先保存一个原始数据，以便用来还原
 const _kanbanSource = ref();
 
+const setDragHandle = (view_model) => {
+  if(view_model === 'kanban'){
+    return '.dragBar'
+  } else if(view_model === 'segment'){
+    return '.reel_dragBar'
+  }
+}
+
 const initKanban = async (kid) => {
   if (loading.value) return;
   loading.value = true;
@@ -325,7 +311,7 @@ watch(reelHeight, () => {
 });
 const scrollAreaRef = ref(null);
 const handleScroll = (event) => {
-  if (!uiStore.scrollX_byWheel || uiStore.draging || $q.screen.lt.sm) return;
+  // if (!uiStore.scrollX_byWheel || uiStore.draging || $q.screen.lt.sm) return;
   uiStore.draging = true;
   event.preventDefault();
   const scroolPosition = scrollAreaRef.value?.getScrollPosition();

@@ -1,24 +1,26 @@
 <template>
-  <div :key="channel_ownerId" class="absolute-full column no-wrap items-center q-px-md" :class="$q.dark.mode ? 'bg-black' : 'bg-grey-2'" style="padding-top: 68px;">
-    <div class="fixed-top">
-      <CarouselContainer v-if="channel_cover" :CarouselItems="channel_cover" @setCarouselH="setCarouselH"/>
-    </div>
-    <div v-if="channelMatedata"
-      class="fit overflow-hidden justify-center q-space row gap-xs container limit z-fab"
-      :class="!$q.screen.lt.md ? 'no-wrap' : ''">
-      <div class="q-space column no-wrap gap-xs">
-        <ChannelHeader :key="channel_ownerId" :channelId="idRef" :navigationData="navigation" :bizCardData="channel_owner_bizCard" :channelPostId="channelPostId" />
-        <q-card :key="channel_ownerId" bordered flat class="q-space row full-width scroll">
-          <router-view />
-        </q-card>
+  <NavigatorContainer>
+    <div :key="channel_ownerId" class="absolute-full column no-wrap items-center q-px-md" :class="$q.dark.mode ? 'bg-black' : 'bg-grey-2'" style="padding-top: 68px;">
+      <div class="fixed-top">
+        <CarouselContainer v-if="channel_cover" :CarouselItems="channel_cover" @setCarouselH="setCarouselH"/>
       </div>
-      <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 column no-wrap gap-md">
-        <UserMaincard :key="channel_ownerId" :userData="channel_owner" :userId="channel_ownerId" />
-        <ChannelWorkingDay :key="channel_ownerId" :workingdayItems="workingday" :channelId="idRef" :readonly="channel_ownerId != userStore.userId" />
-        <CreatorCard v-if="workStore.creator" />
+      <div v-if="channelMatedata"
+        class="fit overflow-hidden justify-center q-space row gap-xs container limit z-fab"
+        :class="!$q.screen.lt.md ? 'no-wrap' : ''">
+        <div class="q-space column no-wrap gap-xs">
+          <ChannelHeader :key="channel_ownerId" :channelId="idRef" :navigationData="navigation" :bizCardData="channel_owner_bizCard" :channelPostId="channelPostId" />
+          <q-card :key="channel_ownerId" bordered flat class="q-space row full-width scroll">
+            <router-view />
+          </q-card>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 column no-wrap gap-md">
+          <UserMaincard :key="channel_ownerId" :userData="channel_owner" :userId="channel_ownerId" />
+          <ChannelWorkingDay :key="channel_ownerId" :workingdayItems="workingday" :channelId="idRef" :readonly="channel_ownerId != userStore.userId" />
+          <CreatorCard v-if="workStore.creator" />
+        </div>
       </div>
     </div>
-  </div>
+  </NavigatorContainer>
 </template>
 
 <script setup>
@@ -32,6 +34,7 @@
   import useWorkStore from 'src/stores/work.js';
   import useChannelStore from 'src/stores/channel.js';
   import useStore from 'src/stores/user.js';
+import NavigatorContainer from '../team/NavigatorContainer.vue'
 
   const workStore = useWorkStore();
   const channelStore = useChannelStore();
