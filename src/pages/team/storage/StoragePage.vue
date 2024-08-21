@@ -8,6 +8,33 @@
       :readOnly
       belonged="storage"
     />
+    <q-dialog v-model="uiStore.showUnsupportFiles" persistent>
+      <q-card bordered style="min-width: 24rem;">
+        <q-toolbar class="transparent border-bottom">
+          <q-toolbar-title>
+            {{$t('tips_unsupport_title')}}
+          </q-toolbar-title>
+        </q-toolbar>
+        <q-card-section>
+          <q-list dense>
+            <q-item v-for="i in uiStore.unsupportFiles" :key="i.name">
+              <q-item-section>{{i.name}}</q-item-section>
+            </q-item>
+            <q-item class="q-mt-md op-6">
+              <q-item-section side>
+                <q-icon name="mdi-tooltip-text" color="orange" />
+              </q-item-section>
+              <q-item-section>
+                {{$t('tips')}}: {{$t('tips_unsupport')}}
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-card-section>
+        <q-card-actions align="right" class="border-top">
+          <q-btn flat no-caps padding="xs md" :label="$t('known_it')" v-close-popup @click="uiStore.unsupportFiles = []" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </template>
   <div v-if="!storage" class="absolute-full flex flex-center">
     <BgBrand />

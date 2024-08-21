@@ -208,7 +208,8 @@
         v-if="$q.screen.gt.xs"
         class="full-width q-space scroll-container flex-content"
         :id="columnRef.id"
-        @scroll="scrollInfo"
+        ref="columnScrollRef"
+        @mouseenter="setMouseWheelScroll"
       >
         <draggable
           :list="filteredCards"
@@ -254,6 +255,7 @@
           class="q-space"
           style="order: 9999; opacity: 0"
           :class="setDragscroll && 'cursor-grab'"
+          @mouseenter="uiStore.dragKanbanScrollEnable = true"
           @mousedown="setDragscroll = true"
           @mouseup="setDragscroll = false"
           @dblclick.stop="CreateCardFn(columnRef.id)"
@@ -559,6 +561,7 @@ import {
   watchEffect,
   computed,
   onBeforeMount,
+  onMounted
 } from "vue";
 import draggable from "vuedraggable";
 import CardItem from "src/pages/team/card/CardItem.vue";
@@ -894,16 +897,19 @@ watch(
 
 // 有竖向滚动条，当鼠标进入分栏后，禁用滚轮横向滚动
 const hasScrollBar = ref();
-const scrollInfo = ({ verticalSize, verticalContainerSize }) => {
+const columnScrollRef = ref(null);
+onMounted(() => {
+  // console.log("columnScrollRef", columnScrollRef.value.getScroll());
+  const {verticalSize, verticalContainerSize} = columnScrollRef.value.getScroll();
   hasScrollBar.value = verticalSize > verticalContainerSize;
-};
+})
+const setMouseWheelScroll = () => {
+  uiStore.scrollX_byWheel = !hasScrollBar.value;
+  
+}
 const dragHandler = (val) => {
   if (uiStore.draging || $q.screen.lt.sm) return;
-  if (hasScrollBar.value) {
-    uiStore.scrollX_byWheel = val;
-  } else {
-    uiStore.scrollX_byWheel = true;
-  }
+  uiStore.scrollX_byWheel = hasScrollBar.value ? val : true;
 
   // 鼠标进入卡片范围后，禁用拖拽横向滚动
   uiStore.dragKanbanScrollEnable = val;

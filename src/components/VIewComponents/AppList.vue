@@ -44,7 +44,7 @@
           </div>
           <q-tooltip class="transparent">
             <q-card bordered>
-              <q-card-section>
+              <q-card-section :class="$q.dark.mode ? 'text-grey-1' : 'text-grey-10'">
                 <div class="font-x-large font-bold-600">{{ $t(i.label) }}</div>
                 <q-separator spaced />
                 <div class="font-medium text-no-wrap">

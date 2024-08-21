@@ -224,7 +224,7 @@ import { downloadFile } from "src/hooks/utilits.js";
 import { useQuasar } from "quasar";
 
 import { onClickOutside } from "@vueuse/core";
-import { userStore, mm_wsStore, teamStore } from "src/hooks/global/useStore.js";
+import { userStore, mm_wsStore, teamStore, uiStore } from "src/hooks/global/useStore.js";
 
 const emit = defineEmits([
   "enterFolder",
@@ -360,14 +360,27 @@ const updateStorage_params = ref({
   data: {},
 });
 
+const checkSupport = (file) => {
+  // 根据 file 的名称提取出文件扩展
+  const extension = file.name.split(".").pop().toLowerCase();
+  // 检查文件扩展是否在支持的扩展列表中
+  return uiStore.suportExts.includes(extension);
+};
+
 // 定义响应式数据
 const files = ref([]);
 // 定义上传文件的方法
 const onDrop = async (e, storage_id) => {
+  console.log('onDrop',e);
   if(teamStore.shareInfo) return
+  uiStore.unsupportFiles = e.filter(i => !checkSupport(i));
+  if(uiStore.unsupportFiles?.length > 0){
+    uiStore.showUnsupportFiles = true
+  }
   //storage_id: 如果上传的是文件夹，那么首先创建文件夹，再将文件上传至文件夹内，新建的文件夹即这里的storage_id
 
-  files.value = e;
+  files.value = e.filter(i => checkSupport(i));
+  if(files.value?.length === 0 || !files.value) return
   // console.log('files.value onDrop',files.value);
 
   try {
@@ -686,13 +699,12 @@ const dropZone = ref(null);
 
 // 定义一个响应式的标志，表示是否显示拖拽区域
 const showUpdateArea = ref(false);
-
 // 拖拽进入事件
 const handleDragEnter = (e) => {
-  if(teamStore.shareInfo) return
   // 阻止默认行为和冒泡
   e.preventDefault();
   e.stopPropagation();
+  if(teamStore.shareInfo) return
   // 设置标志为true
   showUpdateArea.value = true;
   teamStore.active_folder = storage_idRef.value;
@@ -703,10 +715,10 @@ const handleDragEnter = (e) => {
 
 // 拖拽移动事件
 const handleDragOver = (e) => {
-  if(teamStore.shareInfo) return
   // 阻止默认行为和冒泡
   e.preventDefault();
   e.stopPropagation();
+  if(teamStore.shareInfo) return
   // 设置标志为true
   showUpdateArea.value = true;
   teamStore.active_folder = storage_idRef.value;
@@ -716,10 +728,10 @@ const handleDragOver = (e) => {
 
 // 拖拽离开事件
 const handleDragLeave = (e) => {
-  if(teamStore.shareInfo) return
   // 阻止默认行为和冒泡
   e.preventDefault();
   e.stopPropagation();
+  if(teamStore.shareInfo) return
   // 判断事件目标是否是div元素本身
   if (e.target === dropZone.value) {
     // 设置标志为false
@@ -732,11 +744,11 @@ const handleDragLeave = (e) => {
 // 拖拽释放事件
 const droped = ref(false);
 const handleDrop = async (e) => {
+  e.preventDefault();
+  e.stopPropagation();
   if(teamStore.shareInfo) return
   if (droped.value) return;
   droped.value = true;
-  e.preventDefault();
-  e.stopPropagation();
   if (showUpdateArea.value) {
     droped.value = false;
     let items_asfile = e.dataTransfer?.files;

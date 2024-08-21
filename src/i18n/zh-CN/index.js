@@ -646,4 +646,9 @@ export default {
 
   team_deleted_tip_title: '团队已被删除',
   team_deleted_tip_caption: '请通过左上或左下角按钮切换或创建团队',
+
+  memo: '备忘',
+  tips: '提示',
+  tips_unsupport_title: '以下文件的格式暂不支持：',
+  tips_unsupport: '您可以将文件打包为压缩包后上传',
 };

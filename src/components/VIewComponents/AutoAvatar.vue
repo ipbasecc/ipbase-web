@@ -4,7 +4,7 @@
             v-if="avatar"
             :size="`${sizeRef}px`"
             :class="user_channel ? 'cursor-pointer' : ''"
-            @click="user_channel && imgRouterRef && $router.push(`/${user_channel}/posts`)"
+            @click="user_channel && imgRouterRef && $router.push(`/brand/${user_channel}/posts`)"
         >
             <q-img
             :src="`${avatar}?x-oss-process=image/resize,h_${sizeRef * 2},m_lfit`"
@@ -20,14 +20,14 @@
             class="border text-white"
             :style="`background-color: ${genColor(username)};`"
             :class="user_channel ? 'cursor-pointer' : ''"
-            @click="user_channel && imgRouterRef && $router.push(`/${user_channel}/posts`)"
+            @click="user_channel && imgRouterRef && $router.push(`/brand/${user_channel}/posts`)"
         >
             {{ username.charAt(0).toUpperCase() }}
         </q-avatar>
         <span
             v-if="withName"
             :class="user_channel ? 'cursor-pointer' : ''"
-            @click="user_channel && $router.push(`/${user_channel}/posts`)"
+            @click="user_channel && $router.push(`/brand/${user_channel}/posts`)"
         >
             {{ attributesRef.username }}
         </span>

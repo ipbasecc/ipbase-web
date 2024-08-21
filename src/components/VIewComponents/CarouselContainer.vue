@@ -8,9 +8,11 @@
       swipeable
       animated
       infinite
-      autoplay
+      :autoplay="30000"
       padding
-      arrows
+      :arrows="CarouselItemsRef?.length > 1"
+      keep-alive
+      :transition-duration="1000"
       height=300px
       class="bg-black text-white carousel channel"
     >

@@ -32,7 +32,7 @@
           @click="backHome()"
         />
         <q-toolbar-title>
-          {{ kanban_id ? $t('todo_attach_txt_private_kanban') + asTitle : $t('todo_attach_txt_person') + asTitle }}
+          {{ kanban_id ? $t('todo_attach_txt_private_kanban') + ' ' + $t(asTitle) : $t('todo_attach_txt_person') + ' ' + $t(asTitle) }}
         </q-toolbar-title>
         <q-space />
         <PersonTip :kanban_id :card />
@@ -524,7 +524,7 @@
               <q-btn
                 flat
                 icon="add"
-                :label="`${$t('create')}${asTitle}${$t('group')}`"
+                :label="`${$t('create')}${$t(asTitle)}${$t('group')}`"
                 class="border q-mt-md"
                 @click="createGroupHandler"
               />
@@ -1010,7 +1010,7 @@ const props = defineProps({
   },
   asTitle: {
     type: String,
-    default: "备忘",
+    default: "memo",
   },
   layout: {
     type: String,
@@ -1426,18 +1426,17 @@ const createTodoFn = async (i) => {
     create_params.data.fingerprint = window.fingerprint;
   }
 
-  todo_creating.value = true;
   let res = await createTodo(create_params);
   todo_params.value.data.content = "";
   if (res?.data) {
+    todo_add_ing.value = void 0;
     console.log('createTodo',res?.data);
     
     // backend send ws data but
     // always create at here, when get ws create event, check exits item, current user no need create
     i.todos = [...i.todos, res.data];
+    todo_creating.value = false;
   }
-  todo_add_ing.value = void 0;
-  todo_creating.value = false;
   return res?.data;
 };
 

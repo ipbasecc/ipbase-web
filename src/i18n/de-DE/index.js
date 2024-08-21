@@ -645,5 +645,10 @@ export default {
   onboarding_completed_btn_label: 'Starte jetzt deine Team-Reise',
 
   team_deleted_tip_title: 'Team wurde gelöscht',
-  team_deleted_tip_caption: 'Bitte wechseln oder erstellen Sie ein Team über die Schaltfläche in der oberen linken oder unteren linken Ecke'
+  team_deleted_tip_caption: 'Bitte wechseln oder erstellen Sie ein Team über die Schaltfläche in der oberen linken oder unteren linken Ecke',
+
+  memo: 'memo',
+  tips: 'Tipp',
+  tips_unsupport_title: 'Derzeit wird das Format der folgenden Dateien nicht unterstützt:',
+  tips_unsupport: 'Sie können die Dateien zu einem komprimierten Archiv packen und hochladen.',
 };

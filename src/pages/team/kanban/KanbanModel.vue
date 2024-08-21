@@ -311,7 +311,7 @@ watch(reelHeight, () => {
 });
 const scrollAreaRef = ref(null);
 const handleScroll = (event) => {
-  // if (!uiStore.scrollX_byWheel || uiStore.draging || $q.screen.lt.sm) return;
+  if (!uiStore.scrollX_byWheel || uiStore.draging || $q.screen.lt.sm) return;
   uiStore.draging = true;
   event.preventDefault();
   const scroolPosition = scrollAreaRef.value?.getScrollPosition();

@@ -55,6 +55,15 @@ export default defineStore("ui", {
       channels: []
     },
     disableBgEffects: false,
+    suportExts: [
+      "jpg", "png", "jpeg", "gif", "bmp", "svg", "webp",
+      "mp3", "wav", "flac", "aac", "ogg",
+      "fbx", "obj", "abc", "gltf", "glb", "stl", "ply",
+      "zip", "rar", "7z", "tar", "gz", "lz4",
+      "doc", "docx", "ppt", "pptx", "xls", "xlsx", "csv", "txt", "pdf", "md", "mdx"
+    ],
+    unsupportFiles: [],
+    showUnsupportFiles: false,
   }),
   actions: {
     $reset() {

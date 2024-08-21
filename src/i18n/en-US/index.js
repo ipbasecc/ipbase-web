@@ -645,5 +645,10 @@ export default {
   onboarding_completed_btn_label: 'Start your team journey now',
 
   team_deleted_tip_title: 'Team has been deleted',
-  team_deleted_tip_caption: 'Please switch or create a team through the button in the upper left or lower left corner'
+  team_deleted_tip_caption: 'Please switch or create a team through the button in the upper left or lower left corner',
+
+  memo: 'memo',
+  tips: 'tip',
+  tips_unsupport_title: 'The format of the following files is currently not supported:',
+  tips_unsupport: 'You can pack the files into a compressed archive and upload it.',
 }
