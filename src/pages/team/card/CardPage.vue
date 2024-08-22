@@ -560,6 +560,7 @@ const resetHeight = (offset, height) => {
 
 const route = useRoute();
 const loading = ref(false);
+const document_id = ref();
 
 const card_setting = ref(false);
 const splitterModel = ref(260);
@@ -632,7 +633,6 @@ const closeCard = (id, index) => {
   teamStore.cards = teamStore.cards.filter((i) => i.id !== id);
 };
 
-const document_id = ref();
 const enterDocument = (_document_id) => {
   document_id.value = _document_id;
 };

@@ -13,6 +13,11 @@ const _roles = computed(() => [...teamMemberRoles.value, ...projectMemberRoles.v
 
 // 缓存Map
 const authsCache = new Map();
+export const cleanCache = () => {
+  console.log('cleanCache');
+  
+  authsCache.clear(); 
+}
 
 // 辅助函数，用于生成唯一的缓存键
 function getCacheKey(field, collections, members, roles) {

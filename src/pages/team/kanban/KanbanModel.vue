@@ -20,7 +20,7 @@
         :class="`${view_model !== 'list' ? '' : ''} ${
           uiStore.activeReel ? 'column no-wrap' : 'q-pa-sm '
         }`"
-        :style="`height: ${uiStore.mainWindowSize?.height}px;`"
+        :style="`height: ${kanbanHeight}px;`"
       >
         <SegmentPage v-if="uiStore.activeReel" />
         <!-- {{ view_model }} -->
@@ -137,8 +137,7 @@
 </template>
 
 <script setup>
-import {ref, toRefs, watch, watchEffect, computed, provide} from "vue";
-import draggable from "vuedraggable";
+import {ref, toRefs, watch, watchEffect, onMounted, computed, provide, nextTick} from "vue";
 import { VueDraggable } from 'vue-draggable-plus'
 import { kanbanUpdate, createColumn } from "src/api/strapi/project.js";
 import ColumnContainer from "./ColumnContainer.vue";
@@ -179,6 +178,7 @@ const props = defineProps({
     default: "kanban",
   },
 });
+const kanbanHeight = ref()
 const { project_id, kanban_id, view_model } = toRefs(props);
 const isShared = computed(() => uiStore.isShared)
 const columnLabel = computed(() => {
@@ -307,6 +307,12 @@ watch(reelHeight, () => {
   uiStore.reelHeight_SC = reelHeight.value;
 });
 const scrollAreaRef = ref(null);
+watchEffect(async() => {
+  await nextTick();
+  if(!scrollAreaRef.value) return
+  const { verticalSize }  = scrollAreaRef.value?.getScroll();
+  kanbanHeight.value = verticalSize
+})
 const handleScroll = (event) => {
   if (!uiStore.scrollX_byWheel || uiStore.draging || $q.screen.lt.sm) return;
   uiStore.draging = true;

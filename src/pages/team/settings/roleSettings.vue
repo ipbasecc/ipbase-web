@@ -175,6 +175,7 @@ import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import { useQuasar } from "quasar";
 import { userStore, teamStore } from "src/hooks/global/useStore.js";
 import { i18n } from 'src/boot/i18n.js';
+import { cleanCache } from 'src/pages/team/hooks/useAuths.js'
 
 const props = defineProps({
   isCard: {
@@ -291,6 +292,7 @@ const update = async () => {
   const res = await updateMemberRole(role_id, params);
   if (res) {
     isChanged.value = true;
+    cleanCache()
   }
 };
 
