@@ -1,4 +1,4 @@
-import {onUnmounted, ref} from "vue";
+import {ref} from "vue";
 import {
   getUser,
   getUserPreferences,
@@ -172,8 +172,4 @@ export async function __viewChannel(channel_id) {
   );
   // 当浏览器标签页面由非活跃状态切换为活跃状态时，执行 view
   document.addEventListener("visibilitychange", view);
-  onUnmounted(() => {
-    window.removeEventListener('click', view)
-    window.removeEventListener('visibilitychange', view)
-  })
 }

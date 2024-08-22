@@ -5,9 +5,6 @@
     :channel_id
     :key="channel_id"
   />
-  <div v-if="!channel_id && $q.screen.gt.xs" class="absolute-full flex flex-center">
-    <BgBrand />
-  </div>
 </template>
 
 <script setup>
