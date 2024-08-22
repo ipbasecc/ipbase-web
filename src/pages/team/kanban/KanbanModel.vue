@@ -178,7 +178,6 @@ const props = defineProps({
     default: "kanban",
   },
 });
-const kanbanHeight = ref()
 const { project_id, kanban_id, view_model } = toRefs(props);
 const isShared = computed(() => uiStore.isShared)
 const columnLabel = computed(() => {
@@ -307,12 +306,14 @@ watch(reelHeight, () => {
   uiStore.reelHeight_SC = reelHeight.value;
 });
 const scrollAreaRef = ref(null);
-watchEffect(async() => {
-  await nextTick();
-  if(!scrollAreaRef.value) return
-  const { verticalSize }  = scrollAreaRef.value?.getScroll();
-  kanbanHeight.value = verticalSize
-})
+const kanbanHeight = ref(null);
+watch(scrollAreaRef, () => {
+  if(scrollAreaRef.value) {
+    const { verticalSize }  = scrollAreaRef.value?.getScroll();
+    kanbanHeight.value = verticalSize - 37
+  }
+},{immediate:false,deep:false});
+
 const handleScroll = (event) => {
   if (!uiStore.scrollX_byWheel || uiStore.draging || $q.screen.lt.sm) return;
   uiStore.draging = true;
