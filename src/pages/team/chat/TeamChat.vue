@@ -1,6 +1,6 @@
 <template>
   <ChatContainter
-    v-if="channel_id"
+    v-if="channel_id && teamStore.channel"
     v-bind="$attrs"
     :channel_id
     :key="channel_id"
@@ -12,7 +12,7 @@
 
 <script setup>
 import { toRefs, watch, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 
 import ChatContainter from "./ChatContainter.vue";
 import BgBrand from "src/components/VIewComponents/BgBrand.vue";
@@ -32,10 +32,9 @@ const props = defineProps({
     default: null,
   },
 });
-const { project_id, channel_id } = toRefs(props);
+const { channel_id } = toRefs(props);
 
 const route = useRoute();
-const router = useRouter();
 
 onMounted(async () => {
   const chatRouteNames = [
@@ -51,21 +50,6 @@ onMounted(async () => {
     );
   }
 });
-// watch(
-//   [project_id, channel_id],
-//   async () => {
-//     if (!channel_id.value && project_id.value && $q.screen.gt.xs) {
-//       const lastChannel = await getLastChannel(project_id.value);
-//       if (lastChannel) {
-//         teamStore.mm_channel = lastChannel;
-//         router.push(
-//           `/teams/projects/${project_id.value}/chat/${lastChannel.id}`
-//         );
-//       }
-//     }
-//   },
-//   { immediate: true, deep: false }
-// );
 
 watch(
   mm_wsStore,

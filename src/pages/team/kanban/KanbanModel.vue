@@ -309,8 +309,9 @@ const scrollAreaRef = ref(null);
 const kanbanHeight = ref(null);
 watch(scrollAreaRef, () => {
   if(scrollAreaRef.value) {
+    const toolbarHeight = teamStore.card ? 40 : 37;
     const { verticalSize }  = scrollAreaRef.value?.getScroll();
-    kanbanHeight.value = verticalSize - 37
+    kanbanHeight.value = verticalSize - toolbarHeight
   }
 },{immediate:false,deep:false});
 

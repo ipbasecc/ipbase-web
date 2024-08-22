@@ -213,7 +213,7 @@ import {
   onMounted,
   onUnmounted,
   watchEffect,
-  nextTick,
+  nextTick
 } from "vue";
 import { useRouter } from "vue-router";
 import { useQuasar } from "quasar";

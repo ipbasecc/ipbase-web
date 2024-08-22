@@ -537,19 +537,6 @@ const editChannel = (channel) => {
   openEditChannel.value = true;
 };
 
-const projcetCover = (project) => {
-  let url;
-  if (project.overviews?.length > 0) {
-    if (project.default_version) {
-      url = project.overviews?.find((i) => i.id === project.default_version)
-        .media?.url;
-    } else {
-      url = project.overviews[0].media?.url;
-    }
-  }
-  return url;
-};
-
 const loading = ref(false);
 const openCreateChannel = ref(false);
 const createChannelparams = ref({
