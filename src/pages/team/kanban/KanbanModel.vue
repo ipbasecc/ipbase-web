@@ -40,29 +40,29 @@
           }`"
           @change="dragColumn_done(kanban_id)"
         >
-            <div v-for="element in kanban.columns" :key="element.id" v-show="!uiStore.activeReel || element.id === uiStore.activeReel">
-              <ColumnContainer
-                v-if="view_model === 'kanban'"
-                :isCreator_kanban="isCreator"
-                :view_model="view_model"
-                :column="element"
-                :kanban_id="kanban.id"
-                :__dragging_column="__dragging_column"
-                @cardChange="cardChange"
-                @cardDelete="cardDelete"
-              />
-              <ReelContainer
-                v-if="view_model === 'segment'"
-                :isCreator_kanban="isCreator"
-                :view_model="view_model"
-                :column="element"
-                :kanban_id="kanban.id"
-                :__dragging_column="__dragging_column"
-                :reelHeight
-                @cardChange="cardChange"
-                @cardDelete="cardDelete"
-              />
-            </div>
+          <div v-for="element in kanban.columns" :key="element.id" v-show="!uiStore.activeReel || element.id === uiStore.activeReel">
+            <ColumnContainer
+              v-if="view_model === 'kanban' || view_model === 'list'"
+              :isCreator_kanban="isCreator"
+              :view_model="view_model"
+              :column="element"
+              :kanban_id="kanban.id"
+              :__dragging_column="__dragging_column"
+              @cardChange="cardChange"
+              @cardDelete="cardDelete"
+            />
+            <ReelContainer
+              v-if="view_model === 'segment'"
+              :isCreator_kanban="isCreator"
+              :view_model="view_model"
+              :column="element"
+              :kanban_id="kanban.id"
+              :__dragging_column="__dragging_column"
+              :reelHeight
+              @cardChange="cardChange"
+              @cardDelete="cardDelete"
+            />
+          </div>
           <template v-if=" useAuths('create', [authBase.collection]) && !uiStore.activeReel && !isShared">
             <div
               :class="`${view_model !== 'kanban' ? 'row' : ''} ${
@@ -153,12 +153,7 @@ import {
   putKanbanCache,
 } from "src/hooks/project/useProcess.js";
 import LoadingBlock from "../../../components/VIewComponents/LoadingBlock.vue";
-import {
-  userStore,
-  teamStore,
-  mm_wsStore,
-  uiStore,
-} from "src/hooks/global/useStore.js";
+import { userStore,  teamStore,  mm_wsStore,  uiStore } from "src/hooks/global/useStore.js";
 import { genCardName } from "src/hooks/utilits.js";
 import localforage from "localforage";
 import ReelContainer from "./ReelContainer.vue";
@@ -227,6 +222,8 @@ const _kanbanSource = ref();
 const setDragHandle = (view_model) => {
   if(view_model === 'kanban'){
     return '.columnDragBar'
+  } else if(view_model === 'list'){
+    return '.listDragBar'
   } else if(view_model === 'segment'){
     return '.reel_dragBar'
   }

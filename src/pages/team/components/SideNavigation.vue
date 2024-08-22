@@ -50,7 +50,7 @@
         </q-item>
       </template>
       <template v-if="enalbe_channel">
-        <q-item-label header class="q-pa-sm" :class="$q.screen.gt.xs ? 'text-grey-1' : `text-grey-1${$q.dark.mode ? '' : '0'}`">
+        <q-item-label header class="q-pa-sm non-selectable" :class="$q.screen.gt.xs ? 'text-grey-1' : `text-grey-1${$q.dark.mode ? '' : '0'}`">
           {{ $t('channel') }}
         </q-item-label>
         <template v-if="team.team_channels?.length > 0">
@@ -239,7 +239,7 @@
       </template>
 
       <template v-if="enalbe_project">
-        <q-item-label header class="q-pa-sm"
+        <q-item-label header class="q-pa-sm non-selectable"
           :class="$q.screen.gt.xs ? 'text-grey-1' : `text-grey-1${$q.dark.mode ? '' : '0'}`"
         >{{ $t('project') }}</q-item-label>
         <template v-if="team.projects?.length > 0">

@@ -707,9 +707,9 @@ const belong_card = ref();
 watch(cardRef, () => {
   if (cardRef.value && cardRef.value.overviews?.length > 0) {
     media.value =
-      cardRef.value.overviews.find(
+      cardRef.value.overviews?.find(
         (i) => i.version === cardRef.value.default_version
-      ).media.url || cardRef.value.overviews[0].media.url;
+      )?.media?.url || cardRef.value.overviews[0]?.media?.url;
   }
   belong_card.value = teamStore.card || null;
 });

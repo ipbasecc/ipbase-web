@@ -1,6 +1,5 @@
-import { userStore, uiStore, teamStore } from "src/hooks/global/useStore.js";
-import { uniqueById } from "src/hooks/utilits.js";
-import { computed, watch } from "vue";
+import { userStore, teamStore } from "src/hooks/global/useStore.js";
+import { computed } from "vue";
 
 const teamMembers = computed(() => teamStore.team?.members || []);
 const projectMembers = computed(() => teamStore.project?.project_members || []);
@@ -32,9 +31,9 @@ export function useAuths(field, collections, from) {
   const cacheKey = getCacheKey(field, collections, _members.value, _roles.value);
 
   // 检查缓存中是否有结果
-  // if (authsCache.has(cacheKey)) {
-  //   return authsCache.get(cacheKey);
-  // }
+  if (authsCache.has(cacheKey)) {
+    return authsCache.get(cacheKey);
+  }
 
   if (!_roles.value?.length === 0 || !_roles.value?.length === 0) return false;
   // 优化：将成员角色的筛选提前到只有当用户ID匹配时才进行

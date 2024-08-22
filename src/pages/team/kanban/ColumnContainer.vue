@@ -6,8 +6,7 @@
         ${columnRef && view_modelRef === 'kanban' ? 'gap-xs ' : 'gap-md '}`"
   >
     <template v-if="columnRef && view_modelRef === 'kanban'">
-      <div
-        class="row no-wrap items-center q-px-xs q-pt-xs gap-xs radius-xs transparent font-medium columnDragBar"
+      <div class="row no-wrap items-center q-px-xs q-pt-xs gap-xs radius-xs transparent font-medium columnDragBar"
         :style="$q.screen.gt.xs ? 'width: 322px' : 'width: 100%'"
       >
         <StatusMenu
@@ -211,24 +210,10 @@
         ref="columnScrollRef"
         @mouseenter="setMouseWheelScroll"
       >
-        <draggable
-          :list="filteredCards"
-          animation="300"
-          :disable="teamStore.shareInfo"
-          :delay="30"
-          :fallbackTolerance="2"
-          :force-fallback="true"
-          :fallbackOnBody="true"
-          :item-key="(key) => key"
-          :sort="true"
-          :touchStartThreshold="2"
-          :scroll="true"
-          ghost-class="ghostColumn"
-          chosen-class="chosenGroupClass"
-          drag-class="dragClass"
-          group="tasks"
-          handle=".dragBar"
-          filter=".undrag"
+        <VueDraggable v-model="filteredCards"
+          :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+          handle=".dragBar" filter=".undrag" group="tasks"
+          chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
           class="q-py-xs radius-sm column gap-sm no-wrap forbid"
           :class="teamStore.cardDragging ? 'q-space' : ''"
           @change="dragCard_sort()"
@@ -236,7 +221,7 @@
           @end="dragEnd()"
           ref="draggableRef"
         >
-          <template #item="{ element }">
+          <template v-for="element in filteredCards" :key="element.id">
             <CardItem
               :card="element"
               :isCreator_column="isCreator"
@@ -248,7 +233,7 @@
               @mouseleave="dragHandler(true)"
             />
           </template>
-        </draggable>
+        </VueDraggable>
         <div
           v-if="!teamStore.cardDragging"
           data-dragscroll
@@ -324,25 +309,10 @@
           <!-- 此div充满分栏剩余空间，作为拖拽横向滚动的抓手使用 -->
         </div>
       </q-scroll-area>
-      <draggable
-        v-else
-        :list="filteredCards"
-        animation="300"
-        :disable="teamStore.shareInfo"
-        :delay="30"
-        :fallbackTolerance="2"
-        :force-fallback="true"
-        :fallbackOnBody="true"
-        :item-key="(key) => key"
-        :sort="true"
-        :touchStartThreshold="2"
-        :scroll="true"
-        ghost-class="ghostColumn"
-        chosen-class="chosenGroupClass"
-        drag-class="dragClass"
-        group="tasks"
-        handle=".dragBar"
-        filter=".undrag"
+      <VueDraggable v-else v-model="filteredCards"
+        :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+        handle=".dragBar" filter=".undrag" group="tasks"
+        chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
         class="q-py-xs radius-sm column gap-sm no-wrap forbid"
         :class="`${teamStore.cardDragging ? 'q-space' : ''} ${$q.screen.gt.xs ? '' : 'full-width'}`"
         @change="dragCard_sort()"
@@ -350,7 +320,7 @@
         @end="dragEnd()"
         ref="draggableRef"
       >
-        <template #item="{ element }">
+        <template v-for="element in filteredCards" :key="element.id">
           <CardItem
             :card="element"
             :isCreator_column="isCreator"
@@ -362,29 +332,25 @@
             @mouseleave="dragHandler(true)"
           />
         </template>
-      </draggable>
+      </VueDraggable>
     </template>
     <template v-if="columnRef && view_modelRef === 'list'">
-      <div
-        class="full-width row no-wrap items-center q-px-xs q-pt-xs gap-xs radius-xs transparent font-medium hovered-item"
-      >
+      <div class="full-width row no-wrap items-center q-px-xs q-pt-xs gap-xs radius-xs transparent font-medium hovered-item">
         <StatusMenu
           :status="columnRef.status"
           :modify="useAuths('status', ['column'])"
           :dense="true"
           @statusChange="statusChange"
         />
-        <span
-          class="q-space"
+        <span class="q-space"
           :class=" useAuths('order', ['column'])
-              ? 'dragBar'
+              ? 'dragBar listDragBar'
               : ''
           "
           >{{ columnRef.name }}</span
         >
         <q-space />
-        <q-btn
-          v-if="useAuths('create', ['card'])"
+        <q-btn v-if="useAuths('create', ['card'])"
           dense
           flat
           round
@@ -415,13 +381,11 @@
             </q-list>
           </q-menu>
         </q-btn>
-        <span
-          v-if="columnRef.unread_count > 0"
+        <span v-if="columnRef.unread_count > 0"
           class="bg-primary radius-full"
           style="width: 5px; height: 5px"
         />
-        <q-btn
-          v-if="
+        <q-btn v-if="
             useAuths('name', ['column']) ||
             useAuths('delete', ['column']) ||
             isCreator
@@ -483,61 +447,40 @@
           </q-menu>
         </q-btn>
       </div>
-      <q-markup-table dense flat bordered class="full-width q-space">
-        <thead class="table-view">
-          <tr>
-            <th v-if="!teamStore.shareInfo" class="text-left dragBar"></th>
-            <th class="text-left status">{{$t('status')}}</th>
-            <th class="text-left thumbnial">{{$t('thumbnial')}}</th>
-            <th class="text-left name">{{$t('title')}}</th>
-            <th class="text-left content">{{$t('content')}}</th>
-            <th class="text-left todos">{{$t('todo')}}</th>
-            <th class="text-left score">{{$t('score')}}</th>
-            <th class="text-left progress">{{$t('progress')}}</th>
-            <th v-if="!teamStore.shareInfo" class="text-left follow">{{$t('follower')}}</th>
-            <th v-if="!teamStore.shareInfo" class="text-left more">{{$t('more_actions')}}</th>
-          </tr>
-        </thead>
-        <draggable
-          :list="filteredCards"
-          tag="tbody"
-          animation="300"
-          :delay="30"
-          :fallbackTolerance="2"
-          :force-fallback="true"
-          :fallbackOnBody="true"
-          :item-key="(key) => key"
-          :sort="true"
-          :touchStartThreshold="2"
-          :scroll="true"
-          ghost-class="ghostColumn"
-          chosen-class="chosenGroupClass"
-          drag-class="dragClass"
-          group="tasks"
-          handle=".dragBar"
-          filter=".undrag"
-          class="full-width forbid"
-          :class="teamStore.cardDragging ? 'q-space' : ''"
-          @change="dragCard_sort()"
-          @start="dragStart()"
-          @end="dragEnd()"
-        >
-          <template #header>
-            <div
-              v-if="
-                createCard_in === columnRef.id && useAuths('create', ['card'])
-              "
-              class="q-pa-sm"
-            >
-              <CreateCard
-                :column_id="columnRef.id"
-                :DefaultCreateCardType="DefaultCreateCardType"
-                @createCannel="createCannel"
-              />
-            </div>
-          </template>
-          <template #item="{ element, index }">
-            <RowCardItem
+      <VueDraggable v-model="filteredCards" target=".taskItems"
+        :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+        handle=".dragBar" filter=".undrag" group="tasks"
+        chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
+        class="full-width forbid"
+        :class="teamStore.cardDragging ? 'q-space' : ''"
+        @change="dragCard_sort()"
+        @start="dragStart()"
+        @end="dragEnd()"
+      >
+        <q-markup-table dense flat bordered class="full-width q-space table-view">
+          <thead>
+            <tr>
+              <th v-if="!teamStore.shareInfo" class="text-left"></th>
+              <th class="text-left status">{{$t('status')}}</th>
+              <th class="text-left thumbnial">{{$t('thumbnial')}}</th>
+              <th class="text-left name">{{$t('title')}}</th>
+              <th class="text-left content">{{$t('content')}}</th>
+              <th class="text-left todos">{{$t('todo')}}</th>
+              <th class="text-left score">{{$t('score')}}</th>
+              <th class="text-left progress">{{$t('progress')}}</th>
+              <th v-if="!teamStore.shareInfo" class="text-left follow">{{$t('follower')}}</th>
+              <th v-if="!teamStore.shareInfo" class="text-left more">{{$t('more_actions')}}</th>
+            </tr>
+          </thead>
+          <div v-if=" createCard_in === columnRef.id && useAuths('create', ['card'])" class="q-pa-sm">
+            <CreateCard
+              :column_id="columnRef.id"
+              :DefaultCreateCardType="DefaultCreateCardType"
+              @createCannel="createCannel"
+            />
+          </div>
+          <tbody class="taskItems">
+            <RowCardItem v-for="(element, index) in filteredCards" :key="element.id"
               :card="element"
               :index="index"
               :isCreator_column="isCreator"
@@ -546,9 +489,9 @@
               @cardChange="cardChange"
               @cardDelete="cardDelete"
             />
-          </template>
-        </draggable>
-      </q-markup-table>
+          </tbody>
+        </q-markup-table>
+      </VueDraggable>
     </template>
   </div>
 </template>
@@ -561,9 +504,10 @@ import {
   watchEffect,
   computed,
   onBeforeMount,
-  onMounted
+  onMounted,
+  nextTick
 } from "vue";
-import draggable from "vuedraggable";
+import { VueDraggable } from 'vue-draggable-plus'
 import CardItem from "src/pages/team/card/CardItem.vue";
 import RowCardItem from "src/pages/team/card/RowCardItem.vue";
 import CreateCard from "src/pages/team/card/components/CreateCard.vue";
@@ -589,7 +533,6 @@ import {
 } from "src/hooks/global/useStore.js";
 import { useMagicKeys } from "@vueuse/core";
 import { i18n } from 'src/boot/i18n.js';
-
 const $t = i18n.global.t;
 
 const $q = useQuasar();
@@ -899,6 +842,7 @@ watch(
 const hasScrollBar = ref();
 const columnScrollRef = ref(null);
 onMounted(() => {
+  if(!columnScrollRef.value) return
   // console.log("columnScrollRef", columnScrollRef.value.getScroll());
   const {verticalSize, verticalContainerSize} = columnScrollRef.value.getScroll();
   hasScrollBar.value = verticalSize > verticalContainerSize;
@@ -996,6 +940,7 @@ watch(
           strapi.data.column_id === columnRef.value?.id &&
           strapi.data.action === "orderCard"
         ) {
+          await nextTick();
           const order = strapi.data.order;
           let _all_cards = teamStore.kanban.columns?.map(column => column.cards).flat();
 
@@ -1081,13 +1026,13 @@ const sync_uiOptions = async () => {
   width: 1px;
 }
 .table-view .dragBar {
-  width: 48px;
+  width: 4rem;
 }
 .table-view .status {
-  width: 104px;
+  width: 8rem;
 }
 .table-view .thumbnial {
-  width: 200px;
+  width: 14rem;
 }
 .table-view .name {
   width: 16rem;
@@ -1095,20 +1040,21 @@ const sync_uiOptions = async () => {
 .table-view .content {
   width: auto;
   min-width: 18rem;
+  text-wrap: wrap;
 }
 .table-view .todos {
-  width: 74px;
+  width: 8rem;
 }
 .table-view .score {
-  width: 74px;
+  width: 8rem;
 }
 .table-view .progress {
-  width: 48px;
+  width: 6rem;
 }
 .table-view .follow {
-  width: 120px;
+  width: 12rem;
 }
 .table-view .more {
-  width: 48px;
+  width: 4rem;
 }
 </style>

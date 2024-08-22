@@ -248,7 +248,7 @@
       <q-page-container>
         <q-page>
           <div
-            v-if="$q.screen.gt.xs"
+            v-if="haveSubNav"
             class="absolute-left full-height hover-col-resize flex flex-center toggle-container z-max"
             :class="dragWidth ? 'bg-primary ' : ''"
             :style="dragWidth ? 'width: 3px' : 'width: 10px'"
@@ -344,6 +344,10 @@ watch(
   },
   { immediate: true, deep: false }
 );
+const haveSubNav = computed(() => {
+  const enabelSubNavApps = ["teams"];
+  return enabelSubNavApps.includes(uiStore.app) && $q.screen.gt.xs;
+});
 
 const createing = ref(false);
 

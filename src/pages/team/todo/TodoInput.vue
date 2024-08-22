@@ -74,19 +74,6 @@ onMounted(() => {
     classlessInput.value.focus();
   }
 });
-const isChanged = ref(false)
-// watch(inputValue, () => {
-//   if(inputValue.value){
-//     inputValue.value = removeHtmlTags(inputValue.value || '');
-//   }
-// })
-
-const getNewContent = () => {
-  return removeHtmlTags(classlessInput.value?.innerText || '');
-}
-watchEffect(() => {
-  isChanged.value = getNewContent() !== source_txt.value
-});
 // 按下win键时会触发blur，因此这里不使用默认方法触发blur
 // 改用 onClickOutside
 // onClickOutside(classlessInput, () => blur())

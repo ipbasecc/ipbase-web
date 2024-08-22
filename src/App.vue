@@ -4,7 +4,7 @@
       ${uiStore?.draging ? 'unselected' : ''}
     `"
   />
-  <div v-if="!$q.platform.is.mac && !isWin11" class="absolute-full z-max border app_edge pointer-cross" />
+  <div v-if="!$q.platform.is.mac && !isWin11 && $q.platform.is.electron" class="absolute-full z-max border app_edge pointer-cross" />
   <transition>
     <div
       v-if="!uiStore.pageLoaded"

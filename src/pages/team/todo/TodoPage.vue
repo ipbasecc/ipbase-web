@@ -49,6 +49,7 @@
         v-on:dragscrollmove="draging"
         v-on:dragscrollend="dragscrollend"
         class="q-space column no-wrap gap-sm q-px-sm q-pb-lg"
+        :class="uiStore.draging ? 'cursor-grab' : ''"
         ref="scrollAreaRef"
         @wheel="handleScroll"
         @scroll="getScollInfo"

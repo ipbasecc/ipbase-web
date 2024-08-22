@@ -1,7 +1,7 @@
 <template>
-  <tr class="hovered-item relative-position table-view">
-    <td v-if="!teamStore.shareInfo" class="dragBar">
-      <div class="fit flex flex-center hover-show">
+  <tr class="hovered-item relative-position">
+    <td v-if="!teamStore.shareInfo">
+      <div class="fit flex flex-center hover-show dragBar">
         <q-icon name="drag_indicator" />
       </div>
     </td>
@@ -73,7 +73,6 @@
         :toolbarHeight="34"
         styleClass="q-py-sm q-px-md"
         class="undrag"
-        contentStyle="max-height: 8rem"
         @tiptapBlur="tiptapBlur"
         @click.stop="content_channging = true"
         @keydown.esc="content_channging = false"
@@ -533,8 +532,7 @@
       </q-list>
     </q-popup-proxy>
     <!-- 重要度、紧急度 左边框颜色标记 -->
-    <div
-      class="absolute-left full-height z-fab"
+    <div class="absolute-left full-height z-fab"
       :class="`${highlight ? 'highlight transition' : ''}`"
       :style="`${style}`"
     ></div>
@@ -583,7 +581,6 @@ import {
   leaveCard,
   setStatus,
 } from "src/hooks/team/useCard.js";
-import { uniqueById } from "src/hooks/utilits.js";
 import { isEqual } from "lodash-es";
 import { useProjectCardPreference } from "src/pages/team/hooks/useSettingTemplate.js";
 import { userStore, teamStore, mm_wsStore } from "src/hooks/global/useStore.js";
@@ -667,9 +664,9 @@ const belong_card = ref();
 watch(cardRef, () => {
   if (cardRef.value && cardRef.value.overviews?.length > 0) {
     media.value =
-      cardRef.value.overviews.find(
+      cardRef.value.overviews?.find(
         (i) => i.version === cardRef.value.default_version
-      ).media.url || cardRef.value.overviews[0].media.url;
+      )?.media?.url || cardRef.value.overviews[0]?.media?.url;
   }
   belong_card.value = teamStore.card || null;
 });
