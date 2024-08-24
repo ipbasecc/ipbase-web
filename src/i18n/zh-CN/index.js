@@ -651,4 +651,5 @@ export default {
   tips: '提示',
   tips_unsupport_title: '以下文件的格式暂不支持：',
   tips_unsupport: '您可以将文件打包为压缩包后上传',
+  affairs_filter: '事务筛选',
 };

@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { ref, toRef, computed, inject } from "vue";
+import { ref, toRef, computed } from "vue";
 import { updateProject, updateCard } from "src/api/strapi/project.js";
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import {
@@ -59,8 +59,6 @@ const props = defineProps({
     default: false,
   },
 });
-
-const authBase = inject("authBase");
 
 const wasAttached_toRef = toRef(props, "wasAttached_to");
 // const belonged = ref();

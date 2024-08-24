@@ -651,4 +651,5 @@ export default {
   tips: 'tip',
   tips_unsupport_title: 'The format of the following files is currently not supported:',
   tips_unsupport: 'You can pack the files into a compressed archive and upload it.',
+  affairs_filter: 'Affairs Filter',
 }

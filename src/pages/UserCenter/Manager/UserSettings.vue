@@ -240,7 +240,6 @@ const userStore = useUserStore();
 const channelStore = useChannelStore();
 
 const imageType = inject("imageType");
-const navigationBase = inject("navigationBase");
 const navigation = ref();
 
 const submitDisable = ref(true);

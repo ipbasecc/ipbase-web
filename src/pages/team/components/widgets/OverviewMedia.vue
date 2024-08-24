@@ -124,7 +124,7 @@
 </template>
 
 <script setup>
-import { ref, toRef, toRefs, inject, computed } from "vue";
+import { ref, toRef, toRefs, computed } from "vue";
 import StrapiUpload from "src/components/Utilits/StrapiUpload.vue";
 import Artplayer from "src/components/VIewComponents/ArtPlayer.vue";
 import filetype from "src/hooks/global/filetype.js";
@@ -160,7 +160,6 @@ const props = defineProps({
 const { mediaWidth } = toRefs(props);
 const current_versionRef = toRef(props, "current_version");
 const isShared = computed(() => uiStore.isShared)
-const authBase = inject("authBase");
 const upload_label = computed(() =>
   teamStore.card?.type === "classroom" ? $t('classroom_file') : $t('preview_file')
 );

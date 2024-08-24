@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { ref, toRef, watchEffect, inject } from "vue";
+import { ref, toRef, watchEffect } from "vue";
 
 import { date } from "quasar";
 
@@ -37,8 +37,6 @@ const props = defineProps({
   },
 });
 const current_versionRef = toRef(props, "current_version");
-const wasAttached_toRef = toRef(props, "wasAttached_to");
-const authBase = inject("authBase");
 
 const end = ref(current_versionRef.value?.end);
 watchEffect(() => {

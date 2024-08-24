@@ -37,7 +37,7 @@
           />
         </div>
         <div v-if="uiStore.app === 'affairs'" class="">
-          <!-- <AffairsFilter /> -->
+          <AffairsFilter />
         </div>
         <q-btn v-if="uiStore.app === 'brand'" flat dense icon="mdi-cards-outline" @click="$router.push('/brand')" />
         <q-space />

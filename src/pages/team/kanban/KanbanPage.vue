@@ -223,6 +223,8 @@ const set_view_model = async (val) => {
 };
 
 const onResize = (size) => {
+  console.log('onResize', size);
+  
   uiStore.mainWindowSize = size;
 };
 

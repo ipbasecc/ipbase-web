@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import { ref, toRef, watchEffect, inject } from "vue";
+import { ref, toRef, watchEffect } from "vue";
 
 const props = defineProps({
   current_version: {
@@ -35,7 +35,6 @@ const props = defineProps({
 });
 const current_versionRef = toRef(props, "current_version");
 const start = ref(current_versionRef.value?.start);
-const authBase = inject("authBase");
 
 watchEffect(() => {
   start.value = current_versionRef.value?.start;

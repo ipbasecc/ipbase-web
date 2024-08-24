@@ -20,7 +20,7 @@
 </template>
 
 <script setup>
-import { inject, ref, toRef, watchEffect } from "vue";
+import { ref, toRef, watchEffect } from "vue";
 
 import { date } from "quasar";
 
@@ -44,9 +44,7 @@ const props = defineProps({
     default: false,
   },
 });
-const authBase = inject("authBase");
 const current_versionRef = toRef(props, "current_version");
-const wasAttached_toRef = toRef(props, "wasAttached_to");
 const deadline = ref(current_versionRef.value?.deadline);
 watchEffect(() => {
   deadline.value = current_versionRef.value?.deadline;

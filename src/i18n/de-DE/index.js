@@ -651,4 +651,5 @@ export default {
   tips: 'Tipp',
   tips_unsupport_title: 'Derzeit wird das Format der folgenden Dateien nicht unterstützt:',
   tips_unsupport: 'Sie können die Dateien zu einem komprimierten Archiv packen und hochladen.',
+  affairs_filter: 'Transaktionsfilterung',
 };

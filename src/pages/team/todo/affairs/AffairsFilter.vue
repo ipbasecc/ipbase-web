@@ -9,7 +9,6 @@
             :options="options"
             :options-selected-class="$q.dark.mode ? 'bg-primary text-white border' : 'bg-blue-2 text-black border'"
             popup-content-class="radius-sm q-px-xs q-pt-xs border-white-op-3 shadow-focus"
-            :behavior="!$q.screen.gt.xs ? 'dialog' : ''"
             transition-show="slide-down"
             transition-hide="slide-up"
             :transition-duration="100"

@@ -40,7 +40,9 @@
           }`"
           @change="dragColumn_done(kanban_id)"
         >
-          <div v-for="element in kanban.columns" :key="element.id" v-show="!uiStore.activeReel || element.id === uiStore.activeReel">
+          <div v-for="element in kanban.columns" :key="element.id"
+            v-show="!uiStore.activeReel || element.id === uiStore.activeReel"
+          >
             <ColumnContainer
               v-if="view_model === 'kanban' || view_model === 'list'"
               :isCreator_kanban="isCreator"
@@ -298,6 +300,7 @@ watch(kanban_id, async () => {
   }
 },{immediate: true,deep:false})
 
+const kanbanHeight = computed(() => uiStore.mainWindowSize.height);
 const reelHeight = computed( () =>
   (uiStore.mainWindowSize?.height - 48) / _kanbanSource.value?.columns?.length - 64 || 240
 );
@@ -305,16 +308,8 @@ watch(reelHeight, () => {
   uiStore.reelHeight = !uiStore.activeReel ? reelHeight.value : 160;
   uiStore.reelHeight_SC = reelHeight.value;
 });
-const scrollAreaRef = ref(null);
-const kanbanHeight = ref(null);
-watch(scrollAreaRef, () => {
-  if(scrollAreaRef.value) {
-    const toolbarHeight = teamStore.card ? 40 : 37;
-    const { verticalSize }  = scrollAreaRef.value?.getScroll();
-    kanbanHeight.value = verticalSize - toolbarHeight
-  }
-},{immediate:false,deep:false});
 
+const scrollAreaRef = ref(null);
 const handleScroll = (event) => {
   if (!uiStore.scrollX_byWheel || uiStore.draging || $q.screen.lt.sm) return;
   uiStore.draging = true;
