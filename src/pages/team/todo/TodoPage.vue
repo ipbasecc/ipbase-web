@@ -48,359 +48,323 @@
         v-on:dragscrollstart="dragscrollstart"
         v-on:dragscrollmove="draging"
         v-on:dragscrollend="dragscrollend"
-        class="q-space column no-wrap gap-sm q-px-sm q-pb-lg"
         :class="uiStore.draging ? 'cursor-grab' : ''"
+        class="q-space column no-wrap gap-sm q-px-sm q-pb-lg"
         ref="scrollAreaRef"
         @wheel="handleScroll"
         @scroll="getScollInfo"
       >
         <q-resize-observer @resize="onResize" />
-        <draggable
-          :list="todogroups"
-          :disabled="isFeedback"
-          animation="300"
-          :delay="30"
-          :fallbackTolerance="2"
-          :force-fallback="true"
-          :fallbackOnBody="true"
-          :item-key="(key) => key"
-          :sort="true"
-          :touchStartThreshold="2"
-          :scroll="true"
-          ghost-class="ghostColumn"
-          chosen-class="chosenGroupClass"
-          drag-class="dragClass"
-          :group="kanban_id ? 'kanban_todogroup' : 'todogroup'"
-          handle=".dragBar"
-          filter=".undrag"
+        <VueDraggable v-if="todogroups" v-model="todogroups" :disabled="isFeedback"
+          :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+          handle=".dragBar" filter=".undrag" :group="kanban_id ? 'kanban_todogroup' : 'todogroup'"
+          chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
           class="gap-xs relative-position"
           :class="`
             ${teamStore.cardDragging ? 'q-space' : ''}
             ${layout === 'row' ? 'row no-wrap' : 'column no-wrap'}
           `"
-          @change="dragTodogroup_sort()"
-          @start="dragStart"
-          @end="dragEnd"
           :style="layout === 'column' ? '' : `height: ${mainAreaHeight}px;`"
+          @start="dragStart" @sort="dragTodogroup_sort" @end="dragEnd"
         >
-          <template #item="{ element: i }">
-            <div
-              class="column no-wrap gap-xs q-pa-sm"
-              :class="layout === 'row' ? '' : ''"
-              :style="`${layout === 'row' ? 'width: 320px' : ''}`"
-            >
-              <div
-                v-if="updateTodogroup_target !== i.id"
-                data-no-dragscroll
-                class="row no-wrap items-center q-py-sm border-bottom q-mb-sm hovered-item"
-                @mouseenter="outsideScroll(i, true)"
-                @mouseleave="outsideScroll(i, false)"
-              >
-                <div
-                  v-if="
-                    moveTarget === `group_${i.id}` &&
-                    !uiStore.isShared &&
-                    !isFeedback
-                  "
-                  class="q-pr-sm"
-                >
-                  <q-icon name="drag_indicator" class="dragBar" />
-                </div>
-                <span @dblclick="toggle_updateTodogroup(i)" class="q-space">
-                  {{ i.name }}
-                  <slot name="header"></slot>
-                  <q-tooltip v-if="!uiStore.isShared && !isFeedback">
-                    <span>{{ $t('double_click_change_name') }}</span>
-                  </q-tooltip>
-                </span>
-                <div class="row no-wrap gap-xs hover-show transition">
-                  <q-btn
-                    v-if="false"
-                    flat
-                    dense
-                    size="sm"
-                    round
-                    icon="add"
-                    @click="fetchFeedback()"
-                  >
-                    <q-tooltip
-                      class="border"
-                      :class="
-                        $q.dark.mode
-                          ? 'bg-grey-10 text-grey-1'
-                          : 'bg-grey-1 text-grey-10'
-                      "
-                    >
-                    {{ $t('refresh') }}
-                    </q-tooltip>
-                  </q-btn>
-                  <q-btn
-                    v-if="
-                      layout === 'column' && !uiStore.isShared && !isFeedback
-                    "
-                    flat
-                    dense
-                    size="sm"
-                    round
-                    icon="add"
-                    @click="createGroupHandler()"
-                  >
-                    <q-tooltip
-                      class="border"
-                      :class="
-                        $q.dark.mode
-                          ? 'bg-grey-10 text-grey-1'
-                          : 'bg-grey-1 text-grey-10'
-                      "
-                    >
-                      {{$t('add_todogroup')}}
-                    </q-tooltip>
-                  </q-btn>
-                  <q-btn flat dense size="sm" round icon="more_vert">
-                    <q-menu
-                      class="radius-sm shadow-12"
-                      ref="todogroupMenuRef"
-                      @hide="rf_deleteTodogroup = false"
-                    >
-                      <q-list
-                        dense
-                        bordered
-                        class="radius-sm q-pa-xs text-no-wrap column no-wrap gap-xs"
-                      >
-                        <q-item
-                          v-if="!uiStore.isShared && !isFeedback"
-                          class="radius-xs no-padding overflow-hidden"
-                        >
-                          <q-input
-                            v-model="params.data.name"
-                            dense
-                            filled
-                            type="text"
-                            :placeholder="$t('group_name')"
-                            class="col"
-                            @keyup.esc="cannelUpdateGroupHandler()"
-                            @keyup.ctrl.enter="updateTodogroupFn(i)"
-                            @keyup.enter="updateTodogroupFn(i)"
-                          >
-                            <template v-slot:append>
-                              <q-btn
-                                flat
-                                round
-                                dense
-                                size="sm"
-                                icon="check"
-                                :class="
-                                  params.data.name ? '' : 'op-0 transition'
-                                "
-                                v-close-popup
-                                @click="updateTodogroupFn(i)"
-                              />
-                            </template>
-                          </q-input>
-                        </q-item>
-                        <q-separator
-                          v-if="!uiStore.isShared && !isFeedback"
-                          spaced
-                          class="op-5"
-                        />
-                        <q-item
-                          clickable
-                          v-close-popup
-                          class="radius-xs"
-                          @click="toggleHideCompleted(i)"
-                        >
-                          <q-item-section side>
-                            <q-icon
-                              name="mdi-checkbox-marked-circle"
-                              :color="i.hideCompleted ? 'green' : ''"
-                              size="xs"
-                            />
-                          </q-item-section>
-                          <q-item-section class="q-pr-md"
-                            >隐藏已完成</q-item-section
-                          >
-                        </q-item>
-                        <q-separator
-                          v-if="!uiStore.isShared && !isFeedback"
-                          spaced
-                          class="op-5"
-                        />
-                        <q-item
-                          v-if="!uiStore.isShared && !isFeedback"
-                          clickable
-                          :v-close-popup="rf_deleteTodogroup"
-                          class="radius-xs"
-                          :class="rf_deleteTodogroup ? 'bg-negative' : ''"
-                          @click="rf_deleteTodogroupFn(i)"
-                        >
-                          <q-item-section side
-                            ><q-icon name="close" size="xs"
-                          /></q-item-section>
-                          <q-item-section class="q-pr-md">
-                            {{
-                              i.todos?.length > 0 && rf_deleteTodogroup
-                                ? $t('rf_delete_todogroup')
-                                : $t('delete_todogroup')
-                            }}
-                          </q-item-section>
-                        </q-item>
-                      </q-list>
-                    </q-menu>
-                  </q-btn>
-                </div>
-              </div>
-              <div
-                v-if="updateTodogroup_target === i.id && !isFeedback"
-                @mouseenter="setScroll(false)"
-                @mouseleave="setScroll(true)"
-                class="q-pa-xs undrag"
-              >
-                <q-input
-                  v-model="params.data.name"
-                  dense
-                  square
-                  autofocus
-                  type="text"
-                  :placeholder="$t('todogroup_name')"
-                  @keyup.esc="updateTodogroup_target = null"
-                  @keyup.enter="updateTodogroupFn(i)"
-                >
-                  <template v-slot:append>
-                    <q-btn
-                      flat
-                      round
-                      dense
-                      size="sm"
-                      icon="check"
-                      @click="updateTodogroupFn(i)"
-                    />
-                  </template>
-                </q-input>
-              </div>
-              <div class="q-space column no-wrap gap-xs scroll-y">
-                <q-resize-observer @resize="onColumnResize" />
-                <draggable
-                  :list="i.todos"
-                  animation="300"
-                  :delay="30"
-                  :fallbackTolerance="2"
-                  :force-fallback="true"
-                  :fallbackOnBody="true"
-                  :item-key="(key) => key"
-                  :sort="true"
-                  :touchStartThreshold="2"
-                  :scroll="true"
-                  :disabled="isFeedback"
-                  ghost-class="ghostColumn"
-                  chosen-class="chosenGroupClass"
-                  drag-class="dragClass"
-                  group="todo"
-                  filter="textarea"
-                  handle=".dragItem"
-                  class="column gap-xs"
-                  :class="`${teamStore.cardDragging ? 'q-space' : ''}`"
-                  :style="todoDragging ? 'min-height: 50px;' : ''"
-                  @change="dragTodo_sort(i)"
-                  @start="
-                    todoDragging = true;
-                    uiStore.dragging = true;
-                  "
-                  @end="
-                    todoDragging = false;
-                    uiStore.dragging = false;
-                  "
-                  @mouseenter="setScroll(false)"
-                  @mouseleave="setScroll(true)"
-                >
-                  <template #item="{ element }">
-                    <TodoItem
-                      v-if="
-                        (i.hideCompleted && !element.status) || !i.hideCompleted
-                      "
-                      :todogroup="i"
-                      :uiOptions
-                      :element="element"
-                      :authBase
-                      :inCard="false"
-                      :isFeedback
-                      :byInfo
-                      @todoDeleted="todoDeleted"
-                      @editing="editting_todosGroup = i.id"
-                      @unediting="uneditting()"
-                    />
-                  </template>
-                </draggable>
-                <template
-                  v-if="(isFeedback && uiStore.isShared) || !isFeedback"
-                >
-                  <div
-                    v-if="todo_add_ing === i.id"
-                    class="column no-wrap q-pa-xs radius-xs border"
-                  >
-                    <q-input
-                      v-model="todo_params.data.content"
-                      dense
-                      square
-                      filled
-                      autofocus
-                      autogrow
-                      type="text"
-                      :placeholder="$t('todo_content')"
-                      @keydown.esc="cannelCreateTodo()"
-                      @keyup.ctrl.enter="keepCreate(i)"
-                    >
-                      <template v-slot:append>
-                        <q-btn
-                          flat
-                          round
-                          dense
-                          size="sm"
-                          icon="add"
-                          @click="createTodoFn(i, '')"
-                        />
-                      </template>
-                    </q-input>
-                    <div class="row no-wrap items-center q-pt-xs">
-                      <q-btn
-                        flat
-                        dense
-                        :label="$t('cancel')"
-                        padding="xs sm"
-                        @click="cannelCreateTodo"
-                      />
-                      <q-space />
-                      <q-btn
-                        :disable="!todo_params.data.content"
-                        dense
-                        color="primary"
-                        :label="$t('confirm')"
-                        padding="xs sm"
-                        @click="createTodoFn(i, '')"
-                      />
-                    </div>
-                  </div>
-                  <div v-else class="row no-wrap items-center q-py-xs">
-                    <q-btn
-                      dense
-                      size="sm"
-                      flat
-                      class="border full-width"
-                      :disable="editting_todosGroup === i.id"
-                      @click.stop="todo_add_ing = i.id"
-                    >
-                      <q-icon name="add" size="xs" class="op-5" />
-                    </q-btn>
-                  </div>
-                </template>
-              </div>
-            </div>
-          </template>
-          <template
-            v-if="layout === 'row' && !uiStore.isShared && !isFeedback"
-            #footer
+          <q-scroll-area v-for="i in todogroups" :key="i.id" class="column no-wrap gap-xs q-pa-sm"
+            :style="`${layout === 'row' ? 'max-height: ${mainAreaHeight}px;width: 320px' : ''}`"
           >
             <div
-              class="column no-wrap gap-xs q-pa-sm"
+              v-if="updateTodogroup_target !== i.id"
+              data-no-dragscroll
+              class="row no-wrap items-center q-py-sm border-bottom q-mb-sm hovered-item"
+              @mouseenter="outsideScroll(i, true)"
+              @mouseleave="outsideScroll(i, false)"
+            >
+              <div
+                v-if="
+                  moveTarget === `group_${i.id}` &&
+                  !uiStore.isShared &&
+                  !isFeedback
+                "
+                class="q-pr-sm"
+              >
+                <q-icon name="drag_indicator" class="dragBar" />
+              </div>
+              <span @dblclick="toggle_updateTodogroup(i)" class="q-space">
+                {{ i.name }}
+                <slot name="header"></slot>
+                <q-tooltip v-if="!uiStore.isShared && !isFeedback">
+                  <span>{{ $t('double_click_change_name') }}</span>
+                </q-tooltip>
+              </span>
+              <div class="row no-wrap gap-xs hover-show transition">
+                <q-btn
+                  v-if="false"
+                  flat
+                  dense
+                  size="sm"
+                  round
+                  icon="add"
+                  @click="fetchFeedback()"
+                >
+                  <q-tooltip
+                    class="border"
+                    :class="
+                      $q.dark.mode
+                        ? 'bg-grey-10 text-grey-1'
+                        : 'bg-grey-1 text-grey-10'
+                    "
+                  >
+                  {{ $t('refresh') }}
+                  </q-tooltip>
+                </q-btn>
+                <q-btn
+                  v-if="
+                    layout === 'column' && !uiStore.isShared && !isFeedback
+                  "
+                  flat
+                  dense
+                  size="sm"
+                  round
+                  icon="add"
+                  @click="createGroupHandler()"
+                >
+                  <q-tooltip
+                    class="border"
+                    :class="
+                      $q.dark.mode
+                        ? 'bg-grey-10 text-grey-1'
+                        : 'bg-grey-1 text-grey-10'
+                    "
+                  >
+                    {{$t('add_todogroup')}}
+                  </q-tooltip>
+                </q-btn>
+                <q-btn flat dense size="sm" round icon="more_vert">
+                  <q-menu
+                    class="radius-sm shadow-12"
+                    ref="todogroupMenuRef"
+                    @hide="rf_deleteTodogroup = false"
+                  >
+                    <q-list
+                      dense
+                      bordered
+                      class="radius-sm q-pa-xs text-no-wrap column no-wrap gap-xs"
+                    >
+                      <q-item
+                        v-if="!uiStore.isShared && !isFeedback"
+                        class="radius-xs no-padding overflow-hidden"
+                      >
+                        <q-input
+                          v-model="params.data.name"
+                          dense
+                          filled
+                          type="text"
+                          :placeholder="$t('group_name')"
+                          class="col"
+                          @keyup.esc="cannelUpdateGroupHandler()"
+                          @keyup.ctrl.enter="updateTodogroupFn(i)"
+                          @keyup.enter="updateTodogroupFn(i)"
+                        >
+                          <template v-slot:append>
+                            <q-btn
+                              flat
+                              round
+                              dense
+                              size="sm"
+                              icon="check"
+                              :class="
+                                params.data.name ? '' : 'op-0 transition'
+                              "
+                              v-close-popup
+                              @click="updateTodogroupFn(i)"
+                            />
+                          </template>
+                        </q-input>
+                      </q-item>
+                      <q-separator
+                        v-if="!uiStore.isShared && !isFeedback"
+                        spaced
+                        class="op-5"
+                      />
+                      <q-item
+                        clickable
+                        v-close-popup
+                        class="radius-xs"
+                        @click="toggleHideCompleted(i)"
+                      >
+                        <q-item-section side>
+                          <q-icon
+                            name="mdi-checkbox-marked-circle"
+                            :color="i.hideCompleted ? 'green' : ''"
+                            size="xs"
+                          />
+                        </q-item-section>
+                        <q-item-section class="q-pr-md"
+                          >隐藏已完成</q-item-section
+                        >
+                      </q-item>
+                      <q-separator
+                        v-if="!uiStore.isShared && !isFeedback"
+                        spaced
+                        class="op-5"
+                      />
+                      <q-item
+                        v-if="!uiStore.isShared && !isFeedback"
+                        clickable
+                        :v-close-popup="rf_deleteTodogroup"
+                        class="radius-xs"
+                        :class="rf_deleteTodogroup ? 'bg-negative' : ''"
+                        @click="rf_deleteTodogroupFn(i)"
+                      >
+                        <q-item-section side
+                          ><q-icon name="close" size="xs"
+                        /></q-item-section>
+                        <q-item-section class="q-pr-md">
+                          {{
+                            i.todos?.length > 0 && rf_deleteTodogroup
+                              ? $t('rf_delete_todogroup')
+                              : $t('delete_todogroup')
+                          }}
+                        </q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-menu>
+                </q-btn>
+              </div>
+            </div>
+            <div
+              v-if="updateTodogroup_target === i.id && !isFeedback"
+              @mouseenter="setScroll(false)"
+              @mouseleave="setScroll(true)"
+              class="q-pa-xs undrag"
+            >
+              <q-input
+                v-model="params.data.name"
+                dense
+                square
+                autofocus
+                type="text"
+                :placeholder="$t('todogroup_name')"
+                @keyup.esc="updateTodogroup_target = null"
+                @keyup.enter="updateTodogroupFn(i)"
+              >
+                <template v-slot:append>
+                  <q-btn
+                    flat
+                    round
+                    dense
+                    size="sm"
+                    icon="check"
+                    @click="updateTodogroupFn(i)"
+                  />
+                </template>
+              </q-input>
+            </div>
+            <div class="q-space column no-wrap gap-xs scroll-y undrag">
+              <q-resize-observer @resize="onColumnResize" />
+              <VueDraggable v-model="i.todos"
+                :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+                :disabled="isFeedback" handle=".dragItem" filter="textarea" group="todo"
+                chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
+                class="column gap-xs"
+                :class="`${teamStore.cardDragging ? 'q-space' : ''}`"
+                :style="todoDragging ? 'min-height: 50px;' : ''"
+                @sort="dragTodo_sort(i)"
+                @start="
+                  todoDragging = true;
+                  uiStore.dragging = true;
+                "
+                @end="
+                  todoDragging = false;
+                  uiStore.dragging = false;
+                "
+                @mouseenter="setScroll(false)"
+                @mouseleave="setScroll(true)"
+              >
+                <template v-for="element in i.todos" :key="element.id">
+                  <TodoItem
+                    v-if="
+                      (i.hideCompleted && !element.status) || !i.hideCompleted
+                    "
+                    :todogroup="i"
+                    :uiOptions
+                    :element="element"
+                    :authBase
+                    :inCard="false"
+                    :isFeedback
+                    :byInfo
+                    @todoDeleted="todoDeleted"
+                    @editing="editting_todosGroup = i.id"
+                    @unediting="uneditting()"
+                  />
+                </template>
+              </VueDraggable>
+              <template
+                v-if="(isFeedback && uiStore.isShared) || !isFeedback"
+              >
+                <div v-if="todo_add_ing === i.id"
+                  class="column no-wrap q-pa-xs radius-xs border"
+                >
+                  <q-input
+                    v-model="todo_params.data.content"
+                    dense
+                    square
+                    filled
+                    autofocus
+                    autogrow
+                    type="text"
+                    :placeholder="$t('todo_content')"
+                    @keydown.esc="cannelCreateTodo()"
+                    @keyup.ctrl.enter="keepCreate(i)"
+                  >
+                    <template v-slot:append>
+                      <q-btn
+                        flat
+                        round
+                        dense
+                        size="sm"
+                        icon="add"
+                        @click="createTodoFn(i, '')"
+                      />
+                    </template>
+                  </q-input>
+                  <div class="row no-wrap items-center q-pt-xs">
+                    <q-btn
+                      flat
+                      dense
+                      :label="$t('cancel')"
+                      padding="xs sm"
+                      @click="cannelCreateTodo"
+                    />
+                    <q-space />
+                    <q-btn
+                      :disable="!todo_params.data.content"
+                      dense
+                      color="primary"
+                      :label="$t('confirm')"
+                      padding="xs sm"
+                      @click="createTodoFn(i, '')"
+                    />
+                  </div>
+                </div>
+                <div v-else class="row no-wrap items-center q-py-xs">
+                  <q-btn
+                    dense
+                    size="sm"
+                    flat
+                    class="border full-width"
+                    :disable="editting_todosGroup === i.id"
+                    @click.stop="todo_add_ing = i.id"
+                  >
+                    <q-icon name="add" size="xs" class="op-5" />
+                  </q-btn>
+                </div>
+              </template>
+            </div>
+          </q-scroll-area>
+          <template
+            v-if="layout === 'row' && !uiStore.isShared && !isFeedback"
+          >
+            <div
+              class="column no-wrap gap-xs q-pa-sm undrag"
               :style="layout === 'row' ? 'width: 320px' : ''"
             >
               <q-btn
@@ -476,7 +440,7 @@
               <div class="q-space" @mouseenter="setScroll(true)"></div>
             </div>
           </template>
-        </draggable>
+        </VueDraggable>
         <div
           v-if="
             createTodogroup_ing &&
@@ -510,9 +474,7 @@
             </q-input>
           </div>
         </div>
-        <div
-          v-if="
-            todogroups?.length === 0 &&
+        <div v-if="todogroups?.length === 0 &&
             !createTodogroup_ing &&
             !uiStore.isShared &&
             !isFeedback
@@ -543,33 +505,18 @@
           isPrivate)
       "
     >
-      <draggable
-        :list="todogroups"
+      <VueDraggable v-model="todogroups"
         :disabled="
           !useAuths('order', ['card_todogroups', 'todogroups'])
         "
-        animation="300"
-        :delay="30"
-        :fallbackTolerance="2"
-        :force-fallback="true"
-        :fallbackOnBody="true"
-        :item-key="(key) => key"
-        :sort="true"
-        :touchStartThreshold="2"
-        :scroll="true"
-        ghost-class="ghostColumn"
-        chosen-class="chosenGroupClass"
-        drag-class="dragClass"
-        group="todogroup"
-        handle=".dragBar"
-        filter=".undrag"
+        :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+        handle=".dragBar" filter=".undrag" group="todogroup"
+        chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
         class="column no-wrap"
-        @start="dragStart"
-        @end="dragEnd"
-        @change="dragTodogroup_sort()"
         :style="uiStore.dragging ? 'min-height: 6rem;' : ''"
+        @start="dragStart" @sort="dragTodogroup_sort" @end="dragEnd"
       >
-        <template #item="{ element: i }">
+        <template v-for="i in todogroups" :key="i.id">
           <div
             class="column no-wrap gap-xs q-py-xs radius-xs"
             @mouseenter="show_addTodo_ofGroup = i.id"
@@ -705,34 +652,15 @@
               </div>
             </div>
             <div class="column no-wrap gap-xs">
-              <draggable
-                :list="i.todos"
-                :disabled="
-                  !useAuths('order', ['card_todo', 'todo']) &&
-                  !isCreator
-                "
-                animation="300"
-                :delay="30"
-                :fallbackTolerance="2"
-                :force-fallback="true"
-                :fallbackOnBody="true"
-                :item-key="(key) => key"
-                :sort="true"
-                :touchStartThreshold="2"
-                :scroll="true"
-                ghost-class="ghostColumn"
-                chosen-class="chosenGroupClass"
-                drag-class="dragClass"
-                group="todo"
-                handle=".dragBar"
-                filter=".undrag"
+              <VueDraggable v-model="i.todos"
+                :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+                handle=".dragItem" filter=".undrag" group="todo"
+                chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
                 class="column gap-xs"
-                @start="tododragStart()"
-                @end="tododragEnd"
-                @change="dragTodo_sort(i)"
                 :style="`${todoDragging ? 'min-height: 62px;' : ''}`"
+                @start="tododragStart" @sort="dragTodo_sort(i)" @end="tododragEnd"
               >
-                <template #item="{ element }">
+                <template v-for="element in i.todos" :key="element.id">
                   <TodoItem
                     v-show="!hidecompletedTodo(element)"
                     :card="card"
@@ -745,9 +673,9 @@
                     @unediting="uneditting()"
                   />
                 </template>
+              </VueDraggable>
                 <template
                   v-if="useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])"
-                  #footer
                 >
                   <div
                     class="row no-wrap gap-xs items-start q-pl-xs q-pr-sm todo_in_card relative-position hovered-item"
@@ -839,11 +767,10 @@
                     </div>
                   </div>
                 </template>
-              </draggable>
             </div>
           </div>
         </template>
-      </draggable>
+      </VueDraggable>
       <template
         v-if="useAuths('create', [authBase.collection])"
       >
@@ -962,6 +889,7 @@ import {
 } from "src/api/strapi/project.js";
 import { updateUserTodogroups } from "src/api/strapi.js";
 import draggable from "vuedraggable";
+import { VueDraggable } from 'vue-draggable-plus'
 import ClasslessInput from "src/components/Utilits/ClasslessInput.vue";
 import StrapiUpload from "src/components/Utilits/StrapiUpload.vue";
 
