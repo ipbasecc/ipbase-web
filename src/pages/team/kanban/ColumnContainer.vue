@@ -216,9 +216,9 @@
           chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
           class="q-py-xs radius-sm column gap-sm no-wrap forbid"
           :class="teamStore.cardDragging ? 'q-space' : ''"
-          @change="dragCard_sort()"
-          @start="dragStart()"
-          @end="dragEnd()"
+          @start="dragStart"
+          @end="dragEnd"
+          @sort="onSort"
           ref="draggableRef"
         >
           <template v-for="element in filteredCards" :key="element.id">
@@ -315,9 +315,9 @@
         chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
         class="q-py-xs radius-sm column gap-sm no-wrap forbid"
         :class="`${teamStore.cardDragging ? 'q-space' : ''} ${$q.screen.gt.xs ? '' : 'full-width'}`"
-        @change="dragCard_sort()"
-        @start="dragStart()"
-        @end="dragEnd()"
+        @sort="onSort"
+        @start="dragStart"
+        @end="dragEnd"
         ref="draggableRef"
       >
         <template v-for="element in filteredCards" :key="element.id">
@@ -453,9 +453,9 @@
         chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
         class="full-width forbid"
         :class="teamStore.cardDragging ? 'q-space' : ''"
-        @change="dragCard_sort()"
-        @start="dragStart()"
-        @end="dragEnd()"
+        @sort="onSort"
+        @start="dragStart"
+        @end="dragEnd"
       >
         <q-markup-table dense flat bordered class="full-width q-space table-view">
           <thead>
@@ -704,7 +704,7 @@ const dragCard_sort = async () => {
     project_id: teamStore.project.id,
     kanban_id: kanban_idRef.value,
     data: {
-      cards: columnRef.value.cards.map((i) => i.id),
+      cards: filteredCards.value.map((i) => i.id),
     },
   };
 
@@ -727,6 +727,9 @@ const dragCard_sort = async () => {
     await send_chat_Msg(chat_Msg);
   }
 };
+const onSort = async () => {
+  await dragCard_sort()
+}
 
 const send_chat_Msg = async (MsgContent) => {
   await send_MattersMsg(MsgContent);
@@ -764,11 +767,14 @@ const cardChange = (val) => {
 const cardDelete = (card_id) => {
   emit("cardDelete", card_id);
 };
-const dragStart = () => {
+const dragStart = (event) => {
+  // console.log('dragStart', event);
+  
   teamStore.cardDragging = true;
   uiStore.draging = true;
 };
 const dragEnd = () => {
+  // console.log('dragEnd');
   setTimeout(() => {
     teamStore.cardDragging = false;
     uiStore.draging = false;
@@ -961,7 +967,7 @@ watch(
             // 根据目标顺序，重新构建卡片数组
             columnRef.value.cards = targetIds.map(id => {
               const card = _all_cards.find(i => i.id === id);
-              console.log('ws card', card);
+              // console.log('ws card', card);
               if (!card) {
                 const res = findCard(id);
                 if (res?.data) {

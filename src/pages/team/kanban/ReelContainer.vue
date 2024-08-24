@@ -43,7 +43,7 @@
           class="row no-wrap gap-sm forbid"
           :class="isMounted ? uiStore.activeReel ? 'items-center' : 'flex-center' : 'op-0'"
           :style="`height: ${uiStore.reelHeight + 8}px; min-width: 100%`"
-          @start="dragStart()" @update="dragCard_sort()" @end="dragEnd()"
+          @start="dragStart" @sort="onSort" @end="dragEnd"
         >
           <SegmentItem
             v-for="element in filteredCards" :key="element.id"
@@ -369,7 +369,7 @@ const dragCard_sort = async () => {
     project_id: teamStore.project.id,
     kanban_id: kanban_idRef.value,
     data: {
-      cards: columnRef.value.cards.map((i) => i.id),
+      cards: filteredCards.value.map((i) => i.id),
     },
   };
   // console.log('column changed',params);
@@ -394,6 +394,10 @@ const dragCard_sort = async () => {
     await send_chat_Msg(chat_Msg);
   }
 };
+
+const onSort = async () => {
+  await dragCard_sort()
+}
 
 const send_chat_Msg = async (MsgContent) => {
   await send_MattersMsg(MsgContent);
