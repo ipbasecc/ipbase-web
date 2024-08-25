@@ -57,7 +57,6 @@ export default configure((ctx) => {
       "dexie",
       "ej2",
       "oss",
-      "syncedStore",
       // 'localforage'
       // { path: 'websocket', server: false }
     ],
