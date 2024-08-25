@@ -32,9 +32,6 @@ importers:
       '@quasar/extras':
         specifier: ^1.16.12
         version: 1.16.12
-      '@syncedstore/core':
-        specifier: ^0.6.0
-        version: 0.6.0(yjs@13.6.18)
       '@syncfusion/ej2-base':
         specifier: ^26.1.42
         version: 26.1.42
@@ -1800,9 +1797,6 @@ packages:
       vite: ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0
       vue: ^3.0.0
 
-  '@reactivedata/reactive@0.2.2':
-    resolution: {integrity: sha512-KnINM/Sng25QAv6sHkJO9q/XyslLegCF5jTsTSVu+AouY3uZDVf4Am99xNCqsfqFZFvnTBBDvCsHNdvTVGvPEA==}
-
   '@remirror/core-constants@2.0.2':
     resolution: {integrity: sha512-dyHY+sMF0ihPus3O27ODd4+agdHMEmuRdyiZJ2CCWjPV5UFmn17ZbElvk6WOGVE4rdCJKZQCrPV2BcikOMLUGQ==}
 
@@ -1960,16 +1954,6 @@ packages:
 
   '@surma/rollup-plugin-off-main-thread@2.2.3':
     resolution: {integrity: sha512-lR8q/9W7hZpMWweNiAKU7NQerBnzQQLvi8qnTDU/fxItPhtZVMbPV3lbCwjhIlNBe9Bbr5V+KHshvWmVSG9cxQ==}
-
-  '@syncedstore/core@0.6.0':
-    resolution: {integrity: sha512-6TtjEoYJsceYi8u1oRecXwbbLmjHaU0S7HvVfOaEdDfphZLGm/faVuA2fpazqc28F0yIFGvYzvPEBUJn9vqRNw==}
-    peerDependencies:
-      yjs: ^13.5.13
-
-  '@syncedstore/yjs-reactive-bindings@0.6.0':
-    resolution: {integrity: sha512-VF78h0J4iOt79YU9d6j5E6bFKu7WXYuiI2ue9ZnA+T4SNVn8viRvg0AHm3NqHzudZZUgYT3dpnbv1/ZmU7yPZQ==}
-    peerDependencies:
-      yjs: ^13.5.13
 
   '@syncfusion/ej2-base@26.1.42':
     resolution: {integrity: sha512-20tz5+XwzMP4pbQkE/WWwWOl2sHh/OZP0SVNy316P/CuU9fdMVHvQSy6ch9JftC/VKfOYpXPHuQvd2D1cxrDeA==}
@@ -8352,8 +8336,6 @@ snapshots:
       vite: 5.3.4(@types/node@20.14.11)(sass@1.77.8)(terser@5.31.3)
       vue: 3.4.33(typescript@5.5.3)
 
-  '@reactivedata/reactive@0.2.2': {}
-
   '@remirror/core-constants@2.0.2': {}
 
   '@rgba-image/common@0.1.13': {}
@@ -8481,16 +8463,6 @@ snapshots:
       json5: 2.2.3
       magic-string: 0.25.9
       string.prototype.matchall: 4.0.11
-
-  '@syncedstore/core@0.6.0(yjs@13.6.18)':
-    dependencies:
-      '@reactivedata/reactive': 0.2.2
-      '@syncedstore/yjs-reactive-bindings': 0.6.0(yjs@13.6.18)
-      yjs: 13.6.18
-
-  '@syncedstore/yjs-reactive-bindings@0.6.0(yjs@13.6.18)':
-    dependencies:
-      yjs: 13.6.18
 
   '@syncfusion/ej2-base@26.1.42':
     dependencies:

@@ -1,6 +1,6 @@
 {
   "name": "ipbase",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "ipbase project",
   "productName": "ipbase",
   "author": "auxcc <jerr@foxmail.com>",
@@ -23,7 +23,6 @@
     "@electron/remote": "^2.1.2",
     "@quasar/app-vite": "^2.0.0-beta.15",
     "@quasar/extras": "^1.16.12",
-    "@syncedstore/core": "^0.6.0",
     "@syncfusion/ej2-base": "^26.1.42",
     "@syncfusion/ej2-icons": "^26.1.35",
     "@syncfusion/ej2-schedule": "^26.1.41",
