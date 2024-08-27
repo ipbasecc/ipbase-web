@@ -662,5 +662,6 @@ export default {
   class_storage: 'Speicher',
   class_note: 'Notizen',
 
-  mehrere_versionen: 'Mehrere Versionen'
+  mehrere_versionen: 'Mehrere Versionen',
+  only_electron: 'Nur desktop',
 };

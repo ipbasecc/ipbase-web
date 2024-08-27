@@ -18,6 +18,9 @@ import { useRouter, useRoute } from "vue-router";
 import { setProjectNav } from "src/pages/team/components/SideNavigation.js";
 import { watchEffect } from "vue";
 import {teamStore, uiStore} from 'src/hooks/global/useStore.js';
+import { useQuasar } from "quasar";
+
+const $q = useQuasar();
 
 const project = computed(() => teamStore?.project);
 const teamMode = computed(() => teamStore.team?.config?.mode || 'toMany')

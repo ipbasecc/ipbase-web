@@ -64,6 +64,7 @@ export default defineStore("ui", {
     ],
     unsupportFiles: [],
     showUnsupportFiles: false,
+    only_electron: ['classroom']
   }),
   actions: {
     $reset() {

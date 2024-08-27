@@ -144,17 +144,23 @@
       </div>
       <!-- 封面 -->
       <q-card-section
-        v-if="media?.url && cardRef.expand !== 'collapse'"
+        v-if="cardRef.expand !== 'collapse'"
         class="q-pa-xs scroll-y"
         style="max-height: 61vh"
       >
+      <template v-if="!uiStore.only_electron.includes(teamStore.navigation) && !$q.platform.is.electron">
         <FileViewer
+          v-if="media?.url"
           :key="media.url"
           :file="media"
           :videoOption="videoOption"
           :by_width="true"
           mainStyle="no-padding"
         />
+      </template>
+        <div v-else class="column flex-center q-py-xl">
+          {{ $t('only_electron') }}
+        </div>
       </q-card-section>
       <!-- 任务、备忘 -->
       <q-card-section
@@ -532,7 +538,19 @@
       @hide="_leaveCard()"
       class="blur-sm transition"
     >
-      <ClassPage v-if="cardRef.type === 'classroom'" :syncedVersion @syncedVersion="toggleVersion" />
+    <template v-if="cardRef.type === 'classroom'">
+      <q-card v-if="uiStore.only_electron.includes('classroom') && !$q.platform.is.electron" bordered class="column">
+        <q-bar class="transparent">
+          <div class="text-h6">{{ $t('only_electron') }}</div>
+          <q-space />
+          <q-btn dense flat round icon="close" v-close-popup />
+        </q-bar>
+        <q-card-section class="q-space column flex-center">
+          <DownloadApp flat :nobar="true" />
+        </q-card-section>
+      </q-card>
+      <ClassPage v-else :syncedVersion @syncedVersion="toggleVersion" />
+    </template>
       <CardPage
         v-else
         @todogroupSort="_todogroupSort"
@@ -562,8 +580,7 @@ import {
   toRefs,
   watch,
   watchEffect,
-  computed,
-  onMounted
+  computed
 } from "vue";
 import { useMagicKeys } from "@vueuse/core";
 import StatusMenu from "src/pages/team/components/user/StatusMenu.vue";
@@ -612,6 +629,7 @@ import {
 import ClassPage from "./ClassPage.vue";
 import FileViewer from "src/components/VIewComponents/FileViewer.vue";
 import CreateShare from "pages/team/components/CreateShare.vue";
+import DownloadApp from 'src/components/VIewComponents/DownloadApp.vue'
 
 const $q = useQuasar();
 const route = useRoute();

@@ -663,4 +663,5 @@ export default {
   class_note: '笔记',
 
   multiple_versions: '多版本',
+  only_electron: '仅限桌面端',
 };

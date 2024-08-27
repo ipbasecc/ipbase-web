@@ -1,6 +1,6 @@
 <template>
-    <q-card bordered style="min-width: 60vw">
-        <q-toolbar class="transparent">
+    <q-card :bordered="!flat" :flat="flat" style="min-width: 60vw">
+        <q-toolbar v-if="!nobar" class="transparent">
             <q-space />
             <q-btn flat round dense icon="close" v-close-popup/>
         </q-toolbar>
@@ -41,6 +41,17 @@
 import { ref } from 'vue';
 import { $server } from 'src/boot/server.js'
 import FileSaver from "file-saver";
+
+const props = defineProps({
+    flat: {
+        type: Boolean,
+        default: false
+    },
+    nobar: {
+        type: Boolean,
+        default: false
+    },
+})
 
 const packages = ref()
 $server().then((res) => {

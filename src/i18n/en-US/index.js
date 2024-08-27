@@ -662,5 +662,6 @@ export default {
   class_storage: 'Storage',
   class_note: 'Notes',
 
-  multiple_versions: 'Multiple Versions'
+  multiple_versions: 'Multiple Versions',
+  only_electron: 'only desktop',
 }
