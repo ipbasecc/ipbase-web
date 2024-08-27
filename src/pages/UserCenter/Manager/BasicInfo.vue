@@ -275,7 +275,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, inject } from "vue";
+import { ref, computed, watch, inject, onBeforeMount } from "vue";
 import { updateUser } from "src/api/strapi.js";
 import UploadFile from "src/components/Utilits/UploadFile.vue";
 // import UpdateAvatar from "src/pages/Chat/components/user/Settings/UpdateAvatar.vue";
@@ -298,20 +298,29 @@ const $q = useQuasar();
 const imageType = inject("imageType");
 
 const submitDisable = ref(true);
-const { profile, avatar, cover, brand, config, self_tags, mm_profile } = userStore;
-const { title, description, bio } = profile;
+
+const avatar = ref();
+const cover = ref();
+const brand = ref();
+const self_tags = ref();
+onBeforeMount(() => {
+  avatar.value = userStore.avatar;
+  cover.value = userStore.cover;
+  brand.value = userStore.brand;
+  self_tags.value = userStore.self_tags;
+})
 const update_params = ref({
   data: {
     profile: {
-      title: title,
-      description: description,
-      bio: bio,
-      avatar: avatar?.id,
-      cover: cover?.id,
-      brand: brand?.length > 0 ? brand.map(i => i.id) : [],
+      title: userStore.profile?.title,
+      description: userStore.profile?.description,
+      bio: userStore.profile?.bio,
+      avatar: userStore.avatar?.id,
+      cover: userStore.cover?.id,
+      brand: userStore.brand?.length > 0 ? userStore.brand.map(i => i.id) : [],
     },
-    self_tags: self_tags,
-    config: config,
+    self_tags: userStore.self_tags,
+    config: userStore.config,
   }
 });
 watch(update_params, () => {

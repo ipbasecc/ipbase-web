@@ -158,7 +158,7 @@
           mainStyle="no-padding"
         />
       </template>
-        <div v-else class="column flex-center q-py-xl">
+        <div v-else class="column flex-center q-py-md">
           {{ $t('only_electron') }}
         </div>
       </q-card-section>
