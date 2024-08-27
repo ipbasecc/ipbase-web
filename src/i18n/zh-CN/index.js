@@ -399,6 +399,8 @@ export default {
   workspace_segment: '桌面',
 
   column: '分栏',
+  Reel: 'Reel',
+  Chapter: '章节',
   column_name: '分栏名称',
   default_create: '默认创建',
   display_settings: '显示设置',

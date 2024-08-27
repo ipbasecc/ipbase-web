@@ -10,10 +10,11 @@
         :style="$q.screen.gt.xs ? 'width: 322px' : 'width: 100%'"
       >
         <StatusMenu
+          v-if="isKanban"
           :status="column_status"
           :modify="useAuths('status', ['column'])"
           :dense="true"
-          class="flex"
+          class="flex undrag"
           @statusChange="statusChange"
         />
         <span
@@ -34,6 +35,7 @@
           flat
           round
           icon="more_vert"
+          class="undrag"
         >
           <q-menu class="border shadow-24" ref="column_menu">
             <q-list dense class="q-pa-xs radius-sm" style="min-width: 100px">
@@ -68,65 +70,67 @@
                     </q-input>
                   </q-item-section>
                 </q-item>
-                <q-separator spaced />
               </template>
-              <q-item class="radius-xs" clickable>
-                <q-item-section>{{ $t('default_create') }}：</q-item-section>
-                <q-item-section side>
-                  <q-icon name="keyboard_arrow_right" />
-                </q-item-section>
-                <q-menu auto-close anchor="top end" self="top start">
-                  <q-list dense bordered class="radius-sm q-pa-xs text-no-wrap">
-                    <q-item
-                      v-for="i in cardTypes"
-                      :key="i.val"
-                      dense
-                      clickable
-                      class="radius-xs"
-                      :class="
-                        i.val === DefaultCreateCardType ? 'bg-primary' : ''
-                      "
-                      @click="setDefaultCreateCardType(i.val)"
-                    >
-                      <q-item-section side
-                        ><q-icon :name="i.icon" size="xs"
-                      /></q-item-section>
-                      <q-item-section
-                        ><span class="q-pr-md">{{
-                          $t(i.label)
-                        }}</span></q-item-section
+              <template v-if="isKanban">
+                <q-separator spaced />
+                <q-item class="radius-xs" clickable>
+                  <q-item-section>{{ $t('default_create') }}：</q-item-section>
+                  <q-item-section side>
+                    <q-icon name="keyboard_arrow_right" />
+                  </q-item-section>
+                  <q-menu auto-close anchor="top end" self="top start">
+                    <q-list dense bordered class="radius-sm q-pa-xs text-no-wrap">
+                      <q-item
+                        v-for="i in cardTypes"
+                        :key="i.val"
+                        dense
+                        clickable
+                        class="radius-xs"
+                        :class="
+                          i.val === DefaultCreateCardType ? 'bg-primary' : ''
+                        "
+                        @click="setDefaultCreateCardType(i.val)"
                       >
-                    </q-item>
-                  </q-list>
-                </q-menu>
-              </q-item>
-              <q-item class="radius-xs" clickable>
-                <q-item-section>{{$t('display_settings')}}：</q-item-section>
-                <q-item-section side>
-                  <q-icon name="keyboard_arrow_right" />
-                </q-item-section>
-                <q-menu auto-close anchor="top end" self="top start">
-                  <q-list dense bordered class="radius-sm q-pa-xs text-no-wrap">
-                    <q-item
-                      v-for="i in uiOptions"
-                      :key="i.val"
-                      dense
-                      clickable
-                      class="radius-xs"
-                      @click="update_uiOptions(i)"
-                    >
-                      <q-item-section v-if="i.enable" side
-                        ><q-icon :name="i.icon" color="green" size="xs"
-                      /></q-item-section>
-                      <q-item-section
-                        ><span class="q-pr-md">{{
-                          i.label
-                        }}</span></q-item-section
+                        <q-item-section side
+                          ><q-icon :name="i.icon" size="xs"
+                        /></q-item-section>
+                        <q-item-section
+                          ><span class="q-pr-md">{{
+                            $t(i.label)
+                          }}</span></q-item-section
+                        >
+                      </q-item>
+                    </q-list>
+                  </q-menu>
+                </q-item>
+                <q-item class="radius-xs" clickable>
+                  <q-item-section>{{$t('display_settings')}}：</q-item-section>
+                  <q-item-section side>
+                    <q-icon name="keyboard_arrow_right" />
+                  </q-item-section>
+                  <q-menu auto-close anchor="top end" self="top start">
+                    <q-list dense bordered class="radius-sm q-pa-xs text-no-wrap">
+                      <q-item
+                        v-for="i in uiOptions"
+                        :key="i.val"
+                        dense
+                        clickable
+                        class="radius-xs"
+                        @click="update_uiOptions(i)"
                       >
-                    </q-item>
-                  </q-list>
-                </q-menu>
-              </q-item>
+                        <q-item-section v-if="i.enable" side
+                          ><q-icon :name="i.icon" color="green" size="xs"
+                        /></q-item-section>
+                        <q-item-section
+                          ><span class="q-pr-md">{{
+                            i.label
+                          }}</span></q-item-section
+                        >
+                      </q-item>
+                    </q-list>
+                  </q-menu>
+                </q-item>
+              </template>
               <template
                 v-if="useAuths('delete', ['column'])"
               >

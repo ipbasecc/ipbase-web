@@ -398,7 +398,9 @@ export default {
   workspace_classroom: 'course',
   workspace_segment: 'desktop',
 
-  column: 'column',
+  column: 'Column',
+  Reel: 'Reel',
+  Chapter: 'Chapter',
   column_name: 'column name',
   default_create: 'default create',
   display_settings: 'display settings',

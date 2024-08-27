@@ -399,6 +399,8 @@ export default {
   workspace_segment: 'Desktop',
 
   column: 'Spalte',
+  Reel: 'Spule',
+  Chapter: 'Kapitel',
   column_name: 'Spaltenname',
   default_create: 'Standardmäßig erstellen',
   display_settings: 'Anzeige-Einstellungen',

@@ -1,5 +1,6 @@
 <template>
-  <template v-if="useAuths('read', ['kanban']) || isShared">
+  <LoadingBlock v-if="loading" />
+  <template v-else-if="useAuths('read', ['kanban']) || isShared">
     <q-scroll-area
       v-bind="$attrs"
       v-dragscroll="{
@@ -124,7 +125,7 @@
                 class="q-px-xs q-pt-xs q-pb-xl cursor-pointer transition font-medium hover-highlight-lg"
                 @click="new_column_ing = true"
               >
-                {{ $t('create') }} {{ columnLabel }}
+                {{ $t('create') }}{{ columnLabel }}
               </div>
             </div>
           </template>
@@ -135,7 +136,6 @@
   <div v-else class="fit flex flex-center">
     <span class="op-5">{{ $t('no_premission_to_view') }}</span>
   </div>
-  <LoadingBlock v-if="loading" />
 </template>
 
 <script setup>
@@ -187,7 +187,9 @@ const columnLabel = computed(() => {
   if (kanban.value?.type === "kanban") {
     _label = $t('column');
   } else if (kanban.value?.type === "segment") {
-    _label = "Reel";
+    _label = $t('Reel');
+  } else if (teamStore.navigation === "classroom") {
+    _label = $t('Chapter');
   }
   return _label;
 });
@@ -259,7 +261,6 @@ const initKanban = async (kid) => {
     return kanban;
   }
   const init = async (res) => {
-    loading.value = false;
     // 附加卡片的折叠状态数据
     // console.log('res', res)
     const _attachExpand = await attachExpand(res);
@@ -288,6 +289,7 @@ const initKanban = async (kid) => {
     if (fetch) {
       await init(fetch);
     }
+    loading.value = false;
   }
 };
 defineExpose({
