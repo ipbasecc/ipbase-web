@@ -96,6 +96,20 @@
                             </template>
                           </q-input>
                         </q-item>
+                        <template v-if="useAuths('create', ['kanban'])">
+                          <q-separator spaced />
+                          <q-item
+                            clickable
+                            v-close-popup
+                            class="radius-xs"
+                            @click="addKanban_targetId = element.id"
+                          >
+                            <q-item-section side
+                              ><q-icon name="mdi-plus"
+                            /></q-item-section>
+                            <q-item-section>{{ $t('new_kanban')}}</q-item-section>
+                          </q-item>
+                        </template>
                         <template v-if="useAuths('delete', ['group'])">
                           <q-separator spaced />
                           <q-item
@@ -139,27 +153,10 @@
                 @end="kanbanDraging = false"
               >
                 <template #item="{ element: kanban }">
-                  <KanbanListitem :kanban="kanban" @enterKanban="enterKanban" />
+                  <KanbanListitem :kanban="kanban" @enterKanban="enterKanban" @removeKanban="removeKanban" />
                 </template>
-                <template #footer v-if="useAuths('create', ['kanban'])">
-                  <div
-                    v-if="!addKanban_targetId"
-                    class="hovered-item radius-xs q-pa-xs border-placeholder"
-                  >
-                    <div
-                      class="row no-wrap gap-sm items-center q-px-xs indicator transition"
-                      @click="addKanban_targetId = element.id"
-                    >
-                      <q-icon name="add" size="xs" class="undrag cursor-pointer" />
-                      <span class="hover-show transition cursor-pointer">
-                        {{ $t('new_kanban')}}
-                      </span>
-                    </div>
-                  </div>
-                  <div
-                    v-if="addKanban_targetId === element.id"
-                    class="row no-wrap items-center border radius-xs q-pa-xs"
-                  >
+                <template #footer v-if="useAuths('create', ['kanban']) && addKanban_targetId === element.id">
+                  <div class="row no-wrap items-center border radius-xs q-pa-xs">
                     <q-input
                       v-model="createKanba_title"
                       square
@@ -460,6 +457,16 @@ const enterKanban = async (kanban) => {
   uiStore.showMainContentList = false;
   await router.push(
     `/teams/projects/${teamStore.project?.id}/${board_type.value}/${kanban?.id}`
+  );
+};
+const removeKanban = async (kanban_id) => {
+  if(kanban_id !== teamStore.kanban_id) return
+  await removeLastKanban(teamStore.project?.id, board_type.value);
+  teamStore.kanban_id = void 0;
+  teamStore.kanban_type = void 0;
+  uiStore.showMainContentList = true;
+  await router.push(
+    `/teams/projects/${teamStore.project?.id}/${board_type.value}`
   );
 };
 

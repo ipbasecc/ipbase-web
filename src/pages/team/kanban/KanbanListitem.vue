@@ -121,7 +121,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["enterKanban"]);
+const emit = defineEmits(["enterKanban", "removeKanban"]);
 const kanbanRef = toRef(props, "kanban");
 const isActived = computed(
   () =>
@@ -206,6 +206,7 @@ const deleteKanbanFn = async (kanban_id) => {
         },
       },
     };
+    emit('removeKanban', kanban_id)
     await send_chat_Msg(chat_Msg);
   }
 };
