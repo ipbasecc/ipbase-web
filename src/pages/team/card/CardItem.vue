@@ -111,7 +111,7 @@
           </q-tooltip>
         </q-btn>
         <q-chip v-if="multiple_versions" dense outline color="green" :label="$t('multiple_versions')" class="undrag cursor-pointer">
-          <q-menu v-if="!uiStore.only_electron.includes('classroom')">
+          <q-menu v-if="!uiStore.only_electron.includes(teamStore.navigation) || $q.platform.is.electron">
             <q-list bordered dense class="radius-sm q-pa-xs">
               <q-item
                 v-for="(i,index) in cardRef.overviews"
