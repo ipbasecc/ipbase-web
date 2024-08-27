@@ -652,4 +652,13 @@ export default {
   tips_unsupport_title: '以下文件的格式暂不支持：',
   tips_unsupport: '您可以将文件打包为压缩包后上传',
   affairs_filter: '事务筛选',
+
+  class_overview: '介绍',
+  class_forum: '讨论',
+  class_kanban: '延伸课',
+  class_documents: '文档',
+  class_storage: '文件',
+  class_note: '笔记',
+
+  multiple_versions: '多版本',
 };

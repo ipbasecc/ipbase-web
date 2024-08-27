@@ -1,7 +1,9 @@
 <template>
   <div
     class="relative-position hovered-item"
-    :class="isClassroom ? 'bg-black column flex-center q-space' : ''"
+    :class="`
+      ${isClassroom ? 'bg-black column flex-center q-space' : ''}
+    `"
   >
     <q-responsive
       v-if="isShared && !current_versionRef?.media"
@@ -16,7 +18,7 @@
       <q-responsive
         :ratio="16 / 9"
         :style="mediaWidth ? `width: ${mediaWidth}px` : ''"
-        class="q-mx-auto"
+        class="q-mx-auto fit"
       >
         <template
           v-if="
@@ -97,7 +99,6 @@
     >
       <div
         class="absolute-full flex flex-center q-pa-xl"
-        :class="isClassroom ? '' : 'border-bottom'"
       >
         <q-card bordered flat style="min-width: 22rem">
           <StrapiUpload

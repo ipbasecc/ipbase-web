@@ -68,6 +68,7 @@
       </q-input>
     </q-bar>
     <div class="q-space relative-position">
+      <q-resize-observer @resize="onResize" />
       <KanbanModel
         :project_id="project_id"
         :kanban_id="kanban_id"
@@ -78,10 +79,10 @@
 </template>
 
 <script setup>
-import { ref, toRefs } from "vue";
+import { ref, toRefs, onBeforeUnmount } from "vue";
 
 import KanbanModel from "src/pages/team/kanban/KanbanModel.vue";
-import { teamStore } from "src/hooks/global/useStore.js";
+import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 
 const props = defineProps({
   project_id: {
@@ -99,4 +100,12 @@ const props = defineProps({
 });
 const view_modelRef = ref("kanban");
 const { project_id, kanban_id, hiddenToolbar } = toRefs(props);
+const onResize = (size) => {  
+  console.log('onResize card', size);
+  uiStore.mainWindowSize = size;
+};
+const project_mainWindowSize = uiStore.mainWindowSize;
+onBeforeUnmount(() => {
+  uiStore.mainWindowSize = project_mainWindowSize
+});
 </script>

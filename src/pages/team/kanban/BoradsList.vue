@@ -1,5 +1,6 @@
 <template>
   <q-list v-if="teamStore.project && boards" class="fit column no-wrap q-pa-xs">
+    {{teamStore.navigation}}
     <template v-if="useAuths('read', ['board'], 'boardList')">
       <div
         v-if="

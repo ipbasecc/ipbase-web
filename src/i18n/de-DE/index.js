@@ -652,4 +652,13 @@ export default {
   tips_unsupport_title: 'Derzeit wird das Format der folgenden Dateien nicht unterstützt:',
   tips_unsupport: 'Sie können die Dateien zu einem komprimierten Archiv packen und hochladen.',
   affairs_filter: 'Transaktionsfilterung',
+  
+  class_overview: 'Einführung',
+  class_forum: 'Diskussion',
+  class_kanban: 'Verwandte Kurse',
+  class_documents: 'Dokumente',
+  class_storage: 'Speicher',
+  class_note: 'Notizen',
+
+  mehrere_versionen: 'Mehrere Versionen'
 };

@@ -100,7 +100,7 @@ p {
 }
 
 video {
-  object-fit: cover;
+  object-fit: contain;
 }
 input:-internal-autofill-selected {
   appearance: menulist-button;

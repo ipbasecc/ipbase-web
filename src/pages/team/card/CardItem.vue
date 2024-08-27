@@ -4,7 +4,7 @@
     :key="`card-${cardRef.id}`"
     class="flex flex-center"
     :class="`
-        ${cardRef.status === 'completed' ? 'op-3' : ''}
+        ${cardRef.status === 'completed' && teamStore.navigation === 'kanban' ? 'op-3' : ''}
         ${
           $q.dark.mode && !actived
             ? 'text-grey-1'
@@ -50,13 +50,16 @@
             : 'transparent'}
         `"
       >
+      <div class="">
         <StatusMenu
           v-if="show_byPreference?.status?.value"
+          dense
           :modify="useAuths('status', ['card'])"
           :status="cardRef.status"
           @statusChange="_card_statusChange"
           class="undrag"
         />
+      </div>
         <div
           v-if="
             name_changing &&
@@ -89,7 +92,7 @@
           <q-space />
         </template>
         <q-btn
-          v-if="!content_channging"
+          v-if="!content_channging && cardRef.type !== 'classroom'"
           dense
           size="sm"
           unelevated
@@ -107,6 +110,18 @@
             {{ cardRef.expand === "collapse" ? $t('expand') : $t('collapse') }} {{ $t('card') }}
           </q-tooltip>
         </q-btn>
+        <q-chip v-if="multiple_versions" dense outline color="green" :label="$t('multiple_versions')">
+          <q-menu>
+            <q-list bordered dense class="radius-sm q-pa-xs">
+              <q-item v-for="(i,index) in cardRef.overviews" :key="i.id" class="radius-xs" :class="media?.id === i.media?.id ? 'bg-primary' : ''" clickable v-close-popup @click="toggleVersion(i)">
+                <q-item-section side>
+                  <q-avatar size="sm">{{ index }}</q-avatar>
+                </q-item-section>
+                <q-item-section>{{ i.name }}</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-chip>
         <CardExecutor
           v-if="
             show_byPreference?.executor?.value &&
@@ -123,13 +138,13 @@
       </div>
       <!-- 封面 -->
       <q-card-section
-        v-if="default_version?.media?.url && cardRef.expand !== 'collapse'"
+        v-if="media?.url && cardRef.expand !== 'collapse'"
         class="q-pa-xs scroll-y"
         style="max-height: 61vh"
       >
         <FileViewer
-          v-if="default_version?.media"
-          :file="default_version?.media"
+          :key="media.url"
+          :file="media"
           :videoOption="videoOption"
           :by_width="true"
           mainStyle="no-padding"
@@ -702,6 +717,7 @@ const default_version = computed(
       )) ||
     null
 );
+const multiple_versions = computed(() => cardRef.value?.overviews?.length > 1);
 const media = ref();
 const belong_card = ref();
 watch(cardRef, () => {
@@ -709,10 +725,13 @@ watch(cardRef, () => {
     media.value =
       cardRef.value.overviews?.find(
         (i) => i.version === cardRef.value.default_version
-      )?.media?.url || cardRef.value.overviews[0]?.media?.url;
+      )?.media || cardRef.value.overviews[0]?.media;
   }
   belong_card.value = teamStore.card || null;
 });
+const toggleVersion = (version) => {  
+  media.value = version.media || void 0
+}
 
 const executor = ref();
 const { style, highlight } = clac_cardEdgeStyle(cardRef.value);

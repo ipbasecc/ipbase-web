@@ -1,6 +1,7 @@
 <template>
   <OverviewMedia
     v-if="onlyMedia"
+    :key="current_version.id"
     :current_version="current_version"
     :mediaWidth="mediaWidth"
     :auth="useAuths('media', ['overview'])"
@@ -15,6 +16,7 @@
   >
     <OverviewMedia
       v-if="!hideMedia"
+      :key="current_version.id"
       :current_version="current_version"
       :isClassroom
       :auth="useAuths('media', ['overview'])"
@@ -257,9 +259,13 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  syncedVersion: {
+    type: Object,
+    default: null,
+  },
 });
-const { current_versionRef } = toRefs(props)
-const emit = defineEmits(['current_version'])
+const { current_versionRef, syncedVersion, onlyMedia } = toRefs(props)
+const emit = defineEmits(['current_version','sync_version'])
 const wasAttached_toRef = toRef(props, "wasAttached_to");
 const isShared = computed(() => uiStore.isShared)
 const name = computed(() =>
@@ -319,15 +325,23 @@ const getCurrentVersion = () => {
     overView_attachedTo.value?.overviews[overView_attachedTo.value?.overviews?.length - 1] ||
     void 0;
 };
+watch(syncedVersion, () => {
+  if(syncedVersion.value){
+    current_version.value = syncedVersion.value
+  }
+},{immediate:false,deep:false})
 onBeforeMount(() => {
   getCurrentVersion();
 })
 
 const set_current_version = (id) => {
-  current_version.value = overView_attachedTo.value.overviews.find(
-    (i) => i.id === id
-  );
+  if(id !== current_version.value?.id){
+    current_version.value = overView_attachedTo.value.overviews.find(
+      (i) => i.id === id
+    );
+  }
   emit("current_version", current_version.value);
+  emit("sync_version", current_version.value);
 };
 
 const removeVersion = async (id) => {
@@ -338,6 +352,7 @@ const removeVersion = async (id) => {
   let res = await deleteVersion(attach_to_id, id, wasAttached_toRef.value);
   if (res?.data) {
     getCurrentVersion();
+    set_current_version(current_version.value?.id)
     versionListMenuRef.value?.hide();
     let chat_Msg = {
       body: `${userStore.me.username}删除了'${
@@ -612,7 +627,7 @@ watchEffect(() => {
 watch(
   mm_wsStore,
   async () => {
-    if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
+    if (mm_wsStore.event && mm_wsStore.event.event === "posted" && !onlyMedia.value) {
       let post =
         mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
       if (!post) return;
@@ -726,13 +741,13 @@ watch(
           strapi.data.action === "newVersion"
         ) {
           if (wasAttached_toRef.value === "project") {
-            if (teamStore.project?.overviews?.length > 0) {
+            if (teamStore.project?.overviews?.length > 0 && !teamStore.project?.overviews.map(i => i.id).includes(strapi.data?.body?.id)) {
               teamStore.project.overviews.push(strapi.data?.body);
             } else {
               teamStore.project.overviews = [strapi.data?.body];
             }
           } else {
-            if (teamStore.card?.overviews?.length > 0) {
+            if (teamStore.card?.overviews?.length > 0 && !teamStore.card?.overviews.map(i => i.id).includes(strapi.data?.body?.id)) {
               teamStore.card.overviews.push(strapi.data?.body);
             } else {
               teamStore.card.overviews = [strapi.data?.body];

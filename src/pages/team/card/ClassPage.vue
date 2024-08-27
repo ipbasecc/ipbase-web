@@ -1,10 +1,10 @@
 <template>
-  <q-card bordered class="fit q-space no-wrap row radius-sm shadow-focus">
+  <q-card bordered class="fit q-space no-wrap row radius-sm shadow-focus relative-position">
     <q-layout
       v-if="teamStore?.card"
       view="lHh LpR lFf"
       container
-      class="q-space inner-scroll-hidden"
+      class="q-space"
     >
       <q-header class="transparent">
         <q-bar
@@ -75,6 +75,7 @@
         </q-bar>
       </q-header>
       <q-drawer
+        v-show="rightDrawerOpen"
         v-model="rightDrawerOpen"
         side="right"
         :overlay="drawerOverlay"
@@ -92,14 +93,26 @@
             stretch
           >
             <template v-for="i in classExtends" :key="i.id">
-              <q-tab :name="i.name" :icon="i.icon" :label="i.label" />
+              <q-tab :name="i.name" :icon="i.icon" :label="$t(i.label)" />
             </template>
           </q-tabs>
         </q-toolbar>
         <div class="q-space relative-position">
           <template
             v-if="
-              teamStore.card.mm_thread && current_classExtend === 'card_forum'
+              teamStore.card.mm_thread && current_classExtend === 'class_overview'
+            "
+          >
+            <KeepAlive>
+              <OverView wasAttached_to="card" class="absolute-full"
+                :hideMedia="true" :syncedVersion="syncedVersion"
+                @sync_version="syncVersion"
+              />
+            </KeepAlive>
+          </template>
+          <template
+            v-if="
+              teamStore.card.mm_thread && current_classExtend === 'class_forum'
             "
           >
             <KeepAlive>
@@ -111,11 +124,11 @@
             </KeepAlive>
           </template>
           <TodoPage
-            v-if="current_classExtend === 'card_note'"
+            v-if="current_classExtend === 'class_note'"
             :kanban_id="teamStore.card?.card_kanban?.id"
             :isClassroom="true"
           />
-          <template v-if="current_classExtend === 'card_kanban'">
+          <template v-if="current_classExtend === 'class_kanban'">
             <KanbanContainer
               v-if="
                 !teamStore.card?.private || useAuths('read', ['column'])
@@ -128,7 +141,7 @@
               {{ $t(no_premission_to_view) }}
             </div>
           </template>
-          <template v-if="current_classExtend === 'card_documents'">
+          <template v-if="current_classExtend === 'class_documents'">
             <q-splitter
               v-if="
                 !teamStore.card.private ||
@@ -163,7 +176,7 @@
           </template>
           <template
             v-if="
-              current_classExtend === 'card_storage' &&
+              current_classExtend === 'class_storage' &&
               teamStore.card?.storage?.id
             "
           >
@@ -173,9 +186,12 @@
       </q-drawer>
 
       <q-page-container>
-        <q-page :key="teamStore.card?.id">
+        <q-page :key="teamStore.card?.id" class="column flex-center">
           <KeepAlive>
-            <OverView wasAttached_to="card" />
+            <OverView wasAttached_to="card"
+              :onlyMedia="true" :syncedVersion="syncedVersion"
+              @sync_version="syncVersion"
+            />
           </KeepAlive>
         </q-page>
       </q-page-container>
@@ -202,28 +218,27 @@ import DocumentList from "src/pages/team/document/DocumentList.vue";
 import DocumentBody from "src/pages/team/document/DocumentBody.vue";
 import StoragePage from "src/pages/team/storage/StoragePage.vue";
 
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import ThreadContainer from "../chat/ThreadContainer.vue";
 import {
   teamStore,
   mm_wsStore,
   uiStore,
 } from "src/hooks/global/useStore.js";
-import { uniqueById } from "src/hooks/utilits.js";
 
 const emit = defineEmits(["closeCardList"]);
 const route = useRoute();
 
-const current_classExtend = ref("card_forum");
+const current_classExtend = ref("class_overview");
 const classExtends = ref([
-  { id: 0, label: "讨论", name: "card_forum", icon: "forum" },
-  { id: 1, label: "延伸课", name: "card_kanban", icon: "view_kanban" },
-  { id: 2, label: "文档", name: "card_documents", icon: "article" },
-  { id: 3, label: "文件", name: "card_storage", icon: "storage" },
+  { id: 0, label: "class_overview", name: "class_overview", icon: "mdi-developer-board" },
+  { id: 1, label: "class_forum", name: "class_forum", icon: "forum" },
+  { id: 2, label: "class_kanban", name: "class_kanban", icon: "view_kanban" },
+  { id: 3, label: "class_documents", name: "class_documents", icon: "article" },
+  { id: 4, label: "class_storage", name: "class_storage", icon: "storage" },
   {
-    id: 6,
-    label: "笔记",
-    name: "card_note",
+    id: 5,
+    label: "class_note",
+    name: "class_note",
     icon: "mdi-checkbox-marked-outline",
   },
 ]);
@@ -243,6 +258,29 @@ const chatInfo = computed(() => ({
 
 const card_members = ref();
 
+
+const getCard = async (card_id) => {
+  let res = await findCard(card_id);
+
+  if (res?.data) {
+    card_members.value = res.data.card_members;
+    teamStore.card = res.data;
+    teamStore.cards = [res.data];
+  }
+};
+const isIntro = ref(false);
+
+const closeCard = (id, index) => {
+  teamStore.card = teamStore.cards[index - 1];
+  current_card_id.value = teamStore.cards[index - 1].id;
+  teamStore.cards = teamStore.cards.filter((i) => i.id !== id);
+};
+
+const document_id = ref();
+const enterDocument = (_document_id) => {
+  document_id.value = _document_id;
+};
+
 watchEffect(async () => {
   if (route.name === "teams") {
     isIntro.value = true;
@@ -258,44 +296,7 @@ watchEffect(async () => {
   if(uiStore.showMainContentList){
     document_id.value = void 0
   }
-
 });
-
-
-const getCard = async (card_id) => {
-  let res = await findCard(card_id);
-
-  if (res?.data) {
-    card_members.value = res.data.card_members;
-    teamStore.card = res.data;
-    teamStore.cards = [res.data];
-  }
-};
-const isIntro = ref(false);
-watchEffect(async () => {
-  if (route.name === "teams") {
-    isIntro.value = true;
-  }
-  if (teamStore.card?.belongedInfo?.belonged_project && !teamStore.project) {
-    const _project_id = teamStore.card.belongedInfo.belonged_project.id;
-    const res = await getOneProject(_project_id);
-    if (res?.data) {
-      teamStore.project = res.data;
-      teamStore.project_id = res.data.id;
-    }
-  }
-});
-
-const closeCard = (id, index) => {
-  teamStore.card = teamStore.cards[index - 1];
-  current_card_id.value = teamStore.cards[index - 1].id;
-  teamStore.cards = teamStore.cards.filter((i) => i.id !== id);
-};
-
-const document_id = ref();
-const enterDocument = (_document_id) => {
-  document_id.value = _document_id;
-};
 
 const rightDrawerOpen = ref(false);
 const classExtendIcon = () => {
@@ -336,15 +337,11 @@ onBeforeUnmount(() => {
   }
 });
 
-const leftDrawerOpen = ref(true);
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value;
+const syncedVersion = ref();
+const syncVersion = (version) => {
+  syncedVersion.value = version;
 }
-const side_pannel = ref(teamStore.card?.mm_thread ? "chat" : "overview");
 
-const toggleCardList = () => {
-  uiStore.externalCardsDrawer = !uiStore.externalCardsDrawer;
-};
 
 watch(
   mm_wsStore,

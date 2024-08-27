@@ -15,45 +15,21 @@
       </q-item>
     </q-list>
     <template v-else>
-      <q-icon
-        v-if="dense"
-        :name="_status(statusRef)?.icon"
-        :color="_status(statusRef)?.color"
-        :class="modify ? 'cursor-pointer' : ''"
-      >
-        <q-menu
-          v-if="modifyRef"
-          class="redius-sm border q-pa-xs text-no-wrap shadow-24"
-        >
-          <q-list dense style="min-width: 140px">
-            <q-item
-              v-for="i in teamStore.process_status"
-              :key="i.val"
-              clickable
-              v-close-popup
-              @click="statusChange(i.val)"
-              class="radius-xs"
-            >
-              <q-item-section side><q-icon :name="i.icon" /></q-item-section>
-              <q-item-section>{{ i.name }}</q-item-section>
-            </q-item>
-          </q-list>
-        </q-menu>
-      </q-icon>
       <q-btn
-        v-else
         flat
         dense
         size="sm"
-        class="q-pa-xs"
-        padding="xs sm"
+        padding="xs"
         :color="_status(statusRef)?.color"
       >
         <div class="row no-wrap items-center">
           <q-icon :name="_status(statusRef)?.icon" size="xs" />
-          <span class="q-ml-xs text-no-wrap q-pr-xs">{{
+          <span v-if="!dense" class="q-ml-xs text-no-wrap q-pr-xs">{{
             _status(statusRef)?.name
           }}</span>
+          <q-tooltip class="bg-black font-medium border">
+            {{ _status(statusRef)?.name }}
+          </q-tooltip>
         </div>
         <q-menu
           v-if="modifyRef"

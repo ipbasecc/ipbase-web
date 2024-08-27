@@ -15,7 +15,7 @@
         square
         filled
         autofocus
-        :placeholder="teamStore.project?.name"
+        :placeholder="belonged?.name"
         type="text"
         @keyup.esc="change_ing = false"
         @blur="updateNameFn"
@@ -29,7 +29,7 @@
     <template v-else>
       <span class="row no-wrap items-center gap-md">
         <span
-          >{{ teamStore.project?.name }}
+          >{{ belonged?.name }}
           <q-tooltip
             class="bg-black text-white"
             anchor="top middle"
