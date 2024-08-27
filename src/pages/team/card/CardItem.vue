@@ -540,7 +540,7 @@
     >
     <template v-if="cardRef.type === 'classroom'">
       <q-card v-if="uiStore.only_electron.includes('classroom') && !$q.platform.is.electron" bordered class="column">
-        <q-bar class="transparent">
+        <q-bar class="bg-deep-orange text-white">
           <div class="text-h6">{{ $t('only_electron') }}</div>
           <q-space />
           <q-btn dense flat round icon="close" v-close-popup />
