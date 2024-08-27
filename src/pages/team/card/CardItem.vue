@@ -148,7 +148,7 @@
         class="q-pa-xs scroll-y"
         style="max-height: 61vh"
       >
-      <template v-if="!uiStore.only_electron.includes(teamStore.navigation) && !$q.platform.is.electron">
+      <template v-if="!uiStore.only_electron.includes(teamStore.navigation) || $q.platform.is.electron">
         <FileViewer
           v-if="media?.url"
           :key="media.url"
@@ -539,7 +539,10 @@
       class="blur-sm transition"
     >
     <template v-if="cardRef.type === 'classroom'">
-      <q-card v-if="uiStore.only_electron.includes('classroom') && !$q.platform.is.electron" bordered class="column">
+      <ClassPage v-if="!uiStore.only_electron.includes(teamStore.navigation) || $q.platform.is.electron"
+        :syncedVersion @syncedVersion="toggleVersion"
+      />
+      <q-card v-else bordered class="column">
         <q-bar class="bg-deep-orange text-white">
           <div class="text-h6">{{ $t('only_electron') }}</div>
           <q-space />
@@ -549,7 +552,6 @@
           <DownloadApp flat :nobar="true" />
         </q-card-section>
       </q-card>
-      <ClassPage v-else :syncedVersion @syncedVersion="toggleVersion" />
     </template>
       <CardPage
         v-else
