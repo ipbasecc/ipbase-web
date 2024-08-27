@@ -744,7 +744,7 @@ watch(cardRef, () => {
       )?.media || cardRef.value.overviews[0]?.media;
   }
   belong_card.value = teamStore.card || null;
-});
+},{immediate:true,deep:true});
 const syncedVersion = ref()
 const toggleVersion = (version) => {  
   media.value = version.media || void 0
