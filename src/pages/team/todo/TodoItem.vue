@@ -8,13 +8,15 @@
     `"
   >
     <div
-      class="column no-wrap hovered-item radius-xs q-px-xs relative-position"
+      class="column no-wrap hovered-item radius-xs relative-position"
       :class="
         inCard
           ? 'hover-border'
-          : `${$q.dark.mode ? 'bg-darker' : 'bg-grey-3'} ${
-              element.status ? 'op-5' : ''
-            } border`
+          : `
+            ${displayType === 'todo' ? $q.dark.mode ? 'bg-darker' : 'bg-grey-3' : ''}
+            ${ element.status ? 'op-5' : '' }
+            ${displayType === 'note' ? 'q-pa-sm' : 'q-px-xs'}
+          border`
       "
     >
       <div
@@ -22,7 +24,7 @@
         @mouseenter="hoverOn = `todo_${element.id}`"
         @mouseleave="hoverOn = null"
       >
-        <span style="height: 30px" class="flex flex-center">
+        <span v-if="displayType === 'todo'" style="height: 30px" class="flex flex-center">
           <q-checkbox
             v-model="element.status"
             size="30px"
@@ -43,7 +45,7 @@
             :class="`
                 ${element.status ? 'op-3 line-through' : ''}
                 ${
-                  element?.color_marker !== 'clear'
+                  element?.color_marker !== 'clear' && displayType === 'todo'
                     ? `text-${element.color_marker}`
                     : ''
                 }
@@ -179,6 +181,11 @@
           @click="updateContent"
         />
       </div>
+      <div v-if="displayType === 'note'"
+        :class="displayType === 'note' ? `bg-${element.color_marker}` : ''"
+        class="absolute-full z-unfab op-1"
+      >
+      </div>
       <q-dialog v-model="add_attachment_dialog" persistent>
         <q-card bordered style="min-width: 360px">
           <q-card-section class="q-pa-xs">
@@ -277,6 +284,10 @@ const props = defineProps({
   isFeedback: {
     type: Boolean,
     default: true,
+  },
+  displayType: {
+    type: String,
+    default: 'todo',
   },
 });
 const emit = defineEmits([

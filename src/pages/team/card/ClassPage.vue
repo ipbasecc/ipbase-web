@@ -12,6 +12,7 @@
           :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-1'"
           style="height: 2.3rem"
         >
+          <q-btn dense icon="menu" @click="toggleLeftDrawer" />
           <q-tabs
             v-if="teamStore?.card && teamStore?.cards"
             v-model="current_card_id"
@@ -75,28 +76,36 @@
         </q-bar>
       </q-header>
       <q-drawer
+        v-model="leftDrawerOpen"
+        side="left"
+        :width="200"
+        :breakpoint="500"
+        class="bg-dark border-right"
+      >
+        <CoursesList :courses />
+      </q-drawer>
+      <q-drawer
         v-if="rightDrawerOpen"
         v-model="rightDrawerOpen"
         side="right"
         :overlay="drawerOverlay"
-        :width="760"
-        class="border-left q-pa-xs column no-wrap"
+        :width="640"
+        class="border-left q-px-xs column no-wrap"
         :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-1'"
       >
-        <q-toolbar class="transparent border-bottom">
+        <q-bar class="transparent border-bottom" style="height: 36px;">
           <q-tabs
             v-model="current_classExtend"
             inline-label
             dense
             no-caps
-            shrink
             stretch
           >
             <template v-for="i in classExtends" :key="i.id">
-              <q-tab :name="i.name" :icon="i.icon" :label="$t(i.label)" />
+              <q-tab :name="i.name" :label="$t(i.label)" />
             </template>
           </q-tabs>
-        </q-toolbar>
+        </q-bar>
         <div class="q-space relative-position">
           <template
             v-if="
@@ -127,6 +136,9 @@
             v-if="current_classExtend === 'class_note'"
             :kanban_id="teamStore.card?.card_kanban?.id"
             :isClassroom="true"
+            _for="user_todos"
+            displayType="note"
+            class="fit"
           />
           <template v-if="current_classExtend === 'class_kanban'">
             <KanbanContainer
@@ -186,7 +198,7 @@
       </q-drawer>
 
       <q-page-container>
-        <q-page :key="teamStore.card?.id" class="column flex-center">
+        <q-page :key="teamStore.card?.id" class="column flex-center bg-black">
           <KeepAlive>
             <OverView wasAttached_to="card"
               :onlyMedia="true" :syncedVersion="syncedVersion"
@@ -225,6 +237,7 @@ import {
   mm_wsStore,
   uiStore,
 } from "src/hooks/global/useStore.js";
+import CoursesList from './components/CoursesList.vue'
 
 const props = defineProps({
   syncedVersion: {
@@ -241,7 +254,7 @@ const current_classExtend = ref("class_overview");
 const classExtends = ref([
   { id: 0, label: "class_overview", name: "class_overview", icon: "mdi-developer-board" },
   { id: 1, label: "class_forum", name: "class_forum", icon: "forum" },
-  { id: 2, label: "class_kanban", name: "class_kanban", icon: "view_kanban" },
+  // { id: 2, label: "class_kanban", name: "class_kanban", icon: "view_kanban" },
   { id: 3, label: "class_documents", name: "class_documents", icon: "article" },
   { id: 4, label: "class_storage", name: "class_storage", icon: "storage" },
   {
@@ -264,6 +277,7 @@ const chatInfo = computed(() => ({
   mm_channel_id: teamStore.project?.mm_channel?.id,
   post_id: teamStore.card?.mm_thread?.id,
 }));
+const courses = computed(() => teamStore.kanban?.columns);
 
 const card_members = ref();
 
@@ -307,15 +321,19 @@ watchEffect(async () => {
   }
 });
 
-const rightDrawerOpen = ref(false);
 const classExtendIcon = () => {
   const _cur_extend = classExtends.value.find(
     (i) => i.name === current_classExtend.value
   );
   return _cur_extend.icon;
 };
-const toggleRightDrawer = (val) => {
+const rightDrawerOpen = ref(false);
+const toggleRightDrawer = () => {
   rightDrawerOpen.value = !rightDrawerOpen.value;
+};
+const leftDrawerOpen = ref(true);
+const toggleLeftDrawer = () => {
+  leftDrawerOpen.value = !leftDrawerOpen.value;
 };
 
 const activedCard_id = computed(() => Number(teamStore.activedCard_id));
