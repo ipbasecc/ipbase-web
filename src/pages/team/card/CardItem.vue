@@ -110,8 +110,8 @@
             {{ cardRef.expand === "collapse" ? $t('expand') : $t('collapse') }} {{ $t('card') }}
           </q-tooltip>
         </q-btn>
-        <q-chip v-if="multiple_versions" dense outline color="green" :label="$t('multiple_versions')">
-          <q-menu>
+        <q-chip v-if="multiple_versions" dense outline color="green" :label="$t('multiple_versions')" class="undrag cursor-pointer">
+          <q-menu v-if="!uiStore.only_electron.includes('classroom')">
             <q-list bordered dense class="radius-sm q-pa-xs">
               <q-item
                 v-for="(i,index) in cardRef.overviews"
