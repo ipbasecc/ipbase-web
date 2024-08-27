@@ -122,6 +122,9 @@ onBeforeMount(async() => {
   if(!teamStore.init){
     await loginAndInit();
   }
+  if(process.env.NODE_ENV === 'development'){
+    uiStore.only_electron = []
+  }
 })
 
 // 必须有token时才判断要不要显示初始化用户组件
