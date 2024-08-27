@@ -113,11 +113,17 @@
         <q-chip v-if="multiple_versions" dense outline color="green" :label="$t('multiple_versions')">
           <q-menu>
             <q-list bordered dense class="radius-sm q-pa-xs">
-              <q-item v-for="(i,index) in cardRef.overviews" :key="i.id" class="radius-xs" :class="media?.id === i.media?.id ? 'bg-primary' : ''" clickable v-close-popup @click="toggleVersion(i)">
+              <q-item
+                v-for="(i,index) in cardRef.overviews"
+                :key="i.id" class="radius-xs"
+                :class="media?.id === i.media?.id ? 'bg-primary' : ''"
+                clickable v-close-popup
+                @click="toggleVersion(i)"
+              >
                 <q-item-section side>
                   <q-avatar size="sm">{{ index }}</q-avatar>
                 </q-item-section>
-                <q-item-section>{{ i.name }}</q-item-section>
+                <q-item-section>{{ i.name === 'Initial_Version' ? $t(i.name) : i.name }}</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
@@ -526,7 +532,7 @@
       @hide="_leaveCard()"
       class="blur-sm transition"
     >
-      <ClassPage v-if="cardRef.type === 'classroom'" />
+      <ClassPage v-if="cardRef.type === 'classroom'" :syncedVersion @syncedVersion="toggleVersion" />
       <CardPage
         v-else
         @todogroupSort="_todogroupSort"
@@ -707,16 +713,6 @@ const isCreator = computed(() => {
   return _isCreator;
 });
 const isInCard = ref(false);
-const default_version = computed(
-  () =>
-    (cardRef.value?.overviews?.length > 0 &&
-      cardRef.value?.overviews?.find(
-        (i) =>
-          i.version === cardRef.value.default_version ||
-          cardRef.value?.overviews[0]
-      )) ||
-    null
-);
 const multiple_versions = computed(() => cardRef.value?.overviews?.length > 1);
 const media = ref();
 const belong_card = ref();
@@ -729,8 +725,10 @@ watch(cardRef, () => {
   }
   belong_card.value = teamStore.card || null;
 });
+const syncedVersion = ref()
 const toggleVersion = (version) => {  
   media.value = version.media || void 0
+  syncedVersion.value = version
 }
 
 const executor = ref();
@@ -1230,6 +1228,36 @@ watch(
               i.id === cardRef.value.default_version ||
               cardRef.value.overviews[0].id
           ).media = strapi.data.media;
+        }
+        if (
+          strapi.data?.is === "overview" &&
+          strapi.data?.attachedTo_id === cardRef.value.id &&
+          strapi.data.action === "removeVersion"
+        ) {
+          function isSameId(element) {
+            return element.id === strapi.data.removed_id;
+          }
+          const index = cardRef.value.overviews.findIndex(isSameId);
+          if (index !== -1) {
+            cardRef.value.overviews.splice(index, 1);
+          }
+        }
+        if (
+          strapi.data?.is === "overview" &&
+          strapi.data?.attachedTo_id === cardRef.value.id &&
+          strapi.data.action === "newVersion"
+        ) {
+          function isSameId(element) {
+            return element.id === strapi.data?.body?.id;
+          }
+          const index = cardRef.value.overviews.findIndex(isSameId);
+          if (index === -1) {
+            if (cardRef.value?.overviews?.length > 0 && !cardRef.value?.overviews.map(i => i.id).includes(strapi.data?.body?.id)) {
+              cardRef.value.overviews.push(strapi.data?.body);
+            } else {
+              cardRef.value.overviews = [strapi.data?.body];
+            }
+          }
         }
       }
     }

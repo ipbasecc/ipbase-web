@@ -75,7 +75,7 @@
         </q-bar>
       </q-header>
       <q-drawer
-        v-show="rightDrawerOpen"
+        v-if="rightDrawerOpen"
         v-model="rightDrawerOpen"
         side="right"
         :overlay="drawerOverlay"
@@ -202,6 +202,7 @@
 <script setup>
 import {
   ref,
+  toRefs,
   computed,
   watch,
   onBeforeUnmount,
@@ -225,7 +226,15 @@ import {
   uiStore,
 } from "src/hooks/global/useStore.js";
 
-const emit = defineEmits(["closeCardList"]);
+const props = defineProps({
+  syncedVersion: {
+    type: Object,
+    default: void 0,
+  },
+});
+const { syncedVersion } = toRefs(props);
+
+const emit = defineEmits(["closeCardList", "syncedVersion"]);
 const route = useRoute();
 
 const current_classExtend = ref("class_overview");
@@ -337,9 +346,8 @@ onBeforeUnmount(() => {
   }
 });
 
-const syncedVersion = ref();
 const syncVersion = (version) => {
-  syncedVersion.value = version;
+  emit('syncedVersion', version)
 }
 
 

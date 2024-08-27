@@ -1,6 +1,6 @@
 <template>
   <OverviewMedia
-    v-if="onlyMedia"
+    v-if="onlyMedia && current_version"
     :key="current_version.id"
     :current_version="current_version"
     :mediaWidth="mediaWidth"
@@ -9,7 +9,7 @@
     @mediaChanged="mediaChanged"
   />
   <div
-    v-else
+    v-if="!onlyMedia && current_version"
     v-bind="$attrs"
     class="fit column no-wrap gap-sm relative-position q-pb-sm"
     :class="isClassroom ? 'absolute-full' : ''"
@@ -64,7 +64,7 @@
           class="q-space q-ml-sm"
           @dblclick="version_update_ing = current_version?.id"
         >
-          {{ $t(current_version?.name) }}
+          {{ current_version.name === 'Initial_Version' ? $t(current_version.name) : current_version.name }}
           <q-tooltip
             class="bg-black text-white"
             anchor="top left"
@@ -135,13 +135,11 @@
                 <q-item-section side>
                   <q-avatar size="sm">{{ index }}</q-avatar>
                 </q-item-section>
-                <q-item-section>{{ i.name }}</q-item-section>
-                <q-item-section side v-if="useAuths('default_version', [authBase.collection])">
-                  <q-btn dense size="sm" flat round icon="star" :color="overView_attachedTo.default_version === i.id
-                        ? 'yellow'
-                        : ''"
-                    :disable="!useAuths('default_version', [authBase.collection])"
-                    @click.stop="set_defaultVersion(i.id)"
+                <q-item-section>{{ i.name === 'Initial_Version' ? $t(i.name) : i.name }}</q-item-section>
+                <q-item-section side>
+                  <q-btn dense size="sm" flat round icon="star"
+                    :color="overView_attachedTo.default_version === i.id ? 'yellow' : ''"
+                    @click.stop="useAuths('default_version', [authBase.collection]) && set_defaultVersion(i.id)"
                   />
                 </q-item-section>
               </q-item>
@@ -313,9 +311,6 @@ const overView_attachedTo = computed(() =>
 
 const versionListMenuRef = ref();
 const current_version = ref();
-watchEffect(() => {
-  current_version.value = current_versionRef.value
-})
 const getCurrentVersion = () => {
   // console.log("getCurrentVersion");
   current_version.value =
@@ -325,13 +320,14 @@ const getCurrentVersion = () => {
     overView_attachedTo.value?.overviews[overView_attachedTo.value?.overviews?.length - 1] ||
     void 0;
 };
-watch(syncedVersion, () => {
+onBeforeMount(() => {
   if(syncedVersion.value){
     current_version.value = syncedVersion.value
+  } else if(current_versionRef.value) {
+    current_version.value = current_versionRef.value
+  } else {
+    getCurrentVersion();
   }
-},{immediate:false,deep:false})
-onBeforeMount(() => {
-  getCurrentVersion();
 })
 
 const set_current_version = (id) => {
@@ -343,6 +339,14 @@ const set_current_version = (id) => {
   emit("current_version", current_version.value);
   emit("sync_version", current_version.value);
 };
+watch(syncedVersion, () => {
+  if(syncedVersion.value){
+    current_version.value = syncedVersion.value
+    console.log('set_current_version');
+    
+    set_current_version(syncedVersion.value.id)
+  }
+},{immediate:false,deep:false})
 
 const removeVersion = async (id) => {
   let attach_to_id =
