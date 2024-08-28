@@ -55,7 +55,7 @@
         @scroll="getScollInfo"
       >
         <q-resize-observer @resize="onResize" />
-        <VueDraggable v-if="todogroups" v-model="todogroups" :disabled="isFeedback"
+        <VueDraggable v-if="todogroups && !loading" v-model="todogroups" :disabled="isFeedback"
           :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
           handle=".dragBar" filter=".undrag" :group="kanban_id ? 'kanban_todogroup' : 'todogroup'"
           chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
@@ -1405,7 +1405,9 @@ const todogroups = ref([]);
 // 个人规划：
 //         从用户初始化数据中提取
 const user_todogroups = computed(() => userStore.todogroups);
+const loading = ref(false);
 const getTodogroups = async () => {
+  loading.value = true;
   let res;
   if(card.value) {
     // 看板上卡片的todo
@@ -1423,8 +1425,10 @@ const getTodogroups = async () => {
     // card todogroup no need attachHiddenStatus
     res = await attachHiddenStatus(res);
   }
-  console.log('res', res)
+  
   todogroups.value = res;
+  loading.value = false;
+  console.log('todogroups', todogroups.value);
 };
 const filterUserTodo = (_todogroups) => {
   if(userStore.affairsFilterIDs?.length > 0){
@@ -1463,7 +1467,6 @@ const updateCache = async (_todogroups) => {
     await localforage.setItem("init", _cache);
   }
 };
-const loading = ref(false);
 const createGroupPopupRef = ref(null);
 const createGroupHandler = () => {
   params.value.data.name = "";
@@ -1555,7 +1558,12 @@ const dragTodo_sort = async (i) => {
       card_id: byInfo.value?.card_id,
     };
   }
-  await updateTodogroup(i.id, params);
+  let res = await updateTodogroup(i.id, params);
+  if (res?.data) {    
+    userStore.todogroups = userStore.todogroups.map((i) => i.id === res.data.id ? res.data : i);
+    teamStore.init.todogroups = userStore.todogroups;
+    await getTodogroups();
+  }
 };
 const dragTodogroup_sort = async () => {
   dragging.value = false;
