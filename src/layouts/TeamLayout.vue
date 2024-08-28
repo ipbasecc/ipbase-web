@@ -122,6 +122,7 @@ onBeforeMount(async() => {
   if(!teamStore.init){
     await loginAndInit();
   }
+  
   if(process.env.NODE_ENV === 'development'){
     uiStore.only_electron = []
   }

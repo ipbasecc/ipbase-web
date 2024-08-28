@@ -48,7 +48,6 @@ export default configure((ctx) => {
       "mmapi",
       "apollo.js",
       "service",
-      "route_guard.js",
       "i18n",
       "hevueImgPreview",
       "dragscroll",
@@ -321,7 +320,8 @@ export default configure((ctx) => {
         },
         linux: {
           icon: "build/icons",
-          target: ["rpm", "deb", "appImage", "snap"],
+          // target: ["rpm", "deb", "appImage", "snap"],
+          target: ["rpm"],
           category: "Network",
         },
       },

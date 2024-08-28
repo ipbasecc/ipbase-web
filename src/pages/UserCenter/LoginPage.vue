@@ -208,7 +208,7 @@ import { login as strapi_login } from 'src/api/strapi.js'
 import { login as mmLogin } from "src/api/mattermost.js";
 import useUserStore from "src/stores/user.js";
 import { useFetchAvatar } from "src/pages/Chat/hooks/useFetchAvatar.js";
-import { uiStore } from "src/hooks/global/useStore.js";
+import { uiStore, userStore } from "src/hooks/global/useStore.js";
 import ServerList from "pages/team/settings/ServerList.vue";
 import ExtendInfo from './ExtendInfo.vue'
 import { clearLocalDB } from "src/pages/team/hooks/useUser.js";
@@ -229,6 +229,7 @@ onMounted(async() => {
     router.push("/teams");
   } else {
     localStorage.clear();
+    userStore.$reset();
   }
 });
 
