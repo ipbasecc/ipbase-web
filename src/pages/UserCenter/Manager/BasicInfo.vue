@@ -392,11 +392,11 @@ const brandUploaded = (id, obj) => {
     url: obj.attributes.url,
     ext: obj.attributes.ext,
   };
-  brand = [...brand, img];
+  brand.value = [...brand, img];
   update_params.value.data.profile.brand.push(id);
 };
 const coverUploaded = (id, obj) => {
-  cover = obj.attributes.url;
+  cover.value = obj.attributes.url;
   update_params.value.data.profile.cover = id;
   addCover.value = false;
 };
