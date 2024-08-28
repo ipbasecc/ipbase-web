@@ -10,15 +10,10 @@
 <script setup>
 import { toRefs, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
-
-import ChatContainter from "./ChatContainter.vue";
-import BgBrand from "src/components/VIewComponents/BgBrand.vue";
-
 import { getChannelByID } from "src/api/strapi/team.js";
 import { teamStore, mm_wsStore } from "src/hooks/global/useStore.js";
+import ChatContainter from "./ChatContainter.vue";
 
-import { useQuasar } from 'quasar';
-const $q = useQuasar()
 const props = defineProps({
   project_id: {
     type: String,

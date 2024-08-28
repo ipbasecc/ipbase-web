@@ -61,6 +61,7 @@ const getProject = async (_id) => {
     projectRemovedFn();
   }
   loading.value = false;
+  teamStore.channel = computed(() => teamStore.project?.mm_channel);
 };
 onBeforeMount(async () => {
   if (project_id.value) {
