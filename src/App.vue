@@ -1,13 +1,8 @@
 <template>
-  <router-view
-    :class="`
-      ${uiStore?.draging ? 'unselected' : ''}
-    `"
-  />
+  <router-view :class="`${uiStore?.draging ? 'unselected' : ''}`" />
   <div v-if="!$q.platform.is.mac && !isWin11 && $q.platform.is.electron" class="absolute-full z-max border app_edge pointer-cross" />
   <transition>
-    <div
-      v-if="!uiStore.pageLoaded"
+    <div v-if="!uiStore.pageLoaded"
       class="absolute-full column flex-center z-unfab q-electron-drag"
     >
       <div class="absolute-full bg-black op-5" style="z-index: -2"></div>

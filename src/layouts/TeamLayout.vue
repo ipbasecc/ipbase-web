@@ -170,6 +170,7 @@ onMounted(() => {
   shortcut();
   _ws();
   useWatcher();
+  uiStore.$pageloaded();
 });
 onUnmounted(() => {
   closeWs();
