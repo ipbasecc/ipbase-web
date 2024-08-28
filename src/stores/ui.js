@@ -57,6 +57,7 @@ export default defineStore("ui", {
     disableBgEffects: false,
     suportExts: [
       "jpg", "png", "jpeg", "gif", "bmp", "svg", "webp",
+      "mp4", "mov", "avi", "mkv", "flv", "wmv", "webm", "m4v", "mxf", "quicktime", "3gp", "3g2",
       "mp3", "wav", "flac", "aac", "ogg",
       "fbx", "obj", "abc", "gltf", "glb", "stl", "ply",
       "zip", "rar", "7z", "tar", "gz", "lz4",
