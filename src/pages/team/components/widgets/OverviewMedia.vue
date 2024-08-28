@@ -6,7 +6,7 @@
     `"
   >
     <q-responsive
-      v-if="isShared && !current_versionRef?.media"
+      v-if="isShared && !activeVersion?.media"
       :ratio="16 / 9"
       class="q-mx-auto"
     >
@@ -14,31 +14,31 @@
         No Media
       </div>
     </q-responsive>
-    <template v-if="current_versionRef?.media">
+    <template v-if="activeVersion?.media">
       <template
         v-if="
-          current_versionRef.media.url &&
-          filetype(current_versionRef?.media.url) === 'image'
+          activeVersion.media.url &&
+          filetype(activeVersion?.media.url) === 'image'
         "
       >
         <q-img
-          :src="current_versionRef.media.url"
+          :src="activeVersion.media.url"
           :ratio="16 / 9"
           spinner-color="primary"
           spinner-size="82px"
           class="cursor-pointer"
-          @click="$hevueImgPreview(current_versionRef?.media?.url)"
+          @click="$hevueImgPreview(activeVersion?.media?.url)"
         />
       </template>
       <template
         v-if="
-          current_versionRef.media.url &&
-          filetype(current_versionRef?.media.url) === 'video'
+          activeVersion.media.url &&
+          filetype(activeVersion?.media.url) === 'video'
         "
       >
         <Artplayer
           :option="{
-            url: current_versionRef.media.url,
+            url: activeVersion.media.url,
             muted: false,
             autoplay: false,
             loop: false,
@@ -82,7 +82,7 @@
       </q-toolbar>
     </template>
     <q-responsive
-      v-if="(!current_versionRef?.media || media_change_ing) && !isShared"
+      v-if="(!activeVersion?.media || media_change_ing) && !isShared"
       :ratio="16 / 9"
       class="transition"
       :class="
@@ -129,15 +129,13 @@ import { i18n } from 'src/boot/i18n.js';
 const $t = i18n.global.t;
 
 const props = defineProps({
-  current_version: {
-    type: Object,
-    default() {
-      return {};
-    },
-  },
   wasAttached_to: {
     type: String,
     default: "project",
+  },
+  activeVersion: {
+    type: Object,
+    default: void 0,
   },
   isClassroom: {
     type: Boolean,
@@ -156,8 +154,7 @@ const props = defineProps({
     default: false,
   },
 });
-const { mediaWidth } = toRefs(props);
-const current_versionRef = toRef(props, "current_version");
+const { activeVersion } = toRefs(props);
 const isShared = computed(() => uiStore.isShared)
 const upload_label = computed(() =>
   teamStore.card?.type === "classroom" ? $t('classroom_file') : $t('preview_file')

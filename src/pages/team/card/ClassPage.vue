@@ -14,6 +14,24 @@
         >
           <q-btn dense flat icon="menu" @click="toggleLeftDrawer" />
           <q-space />
+          <q-chip v-if="activeVersion && teamStore.card?.overviews.filter(o => o.media)?.length > 1"
+            outline dense flat color="primary" clickable class="q-px-sm no-shadow"
+            :label="activeVersion.name === 'Initial_Version' ? $t(activeVersion.name) : activeVersion.name"
+          >
+            <q-menu 
+            transition-show="jump-down"
+            transition-hide="jump-up"
+            :transition-duration="200">
+              <VersionTogger
+                :overviews="teamStore.card?.overviews"
+                :authBase
+                :overView_attachedTo="teamStore.card"
+                @set_current_version="set_current_version"
+                @set_defaultVersion="set_defaultVersion"
+              />
+            </q-menu>
+          </q-chip>
+          <q-space />
           <q-btn
             flat
             dense
@@ -23,16 +41,6 @@
             :class="rightDrawerOpen ? '' : 'op-5'"
             :color="rightDrawerOpen ? 'positive' : ''"
             @click="toggleRightDrawer()"
-          />
-          <q-btn
-            dense
-            round
-            flat
-            icon="push_pin"
-            :color="drawerOverlay ? '' : 'positive'"
-            :class="drawerOverlay ? 'op-5' : ''"
-            size="sm"
-            @click="drawerOverlay = !drawerOverlay"
           />
           <q-separator spaced inset vertical />
           <q-btn dense round flat icon="close" size="sm" v-close-popup />
@@ -49,6 +57,7 @@
       </q-drawer>
       <q-drawer
         v-if="rightDrawerOpen"
+        :key="teamStore.card?.id"
         v-model="rightDrawerOpen"
         side="right"
         :overlay="drawerOverlay"
@@ -68,17 +77,24 @@
               <q-tab :name="i.name" :label="$t(i.label)" />
             </template>
           </q-tabs>
+          <q-space />
+
+          <q-btn
+            dense
+            round
+            flat
+            icon="push_pin"
+            :color="drawerOverlay ? '' : 'positive'"
+            :class="drawerOverlay ? 'op-5' : ''"
+            size="sm"
+            @click="drawerOverlay = !drawerOverlay"
+          />
         </q-bar>
         <div class="q-space relative-position">
-          <template
-            v-if="
-              teamStore.card.mm_thread && current_classExtend === 'class_overview'
-            "
-          >
+          <template v-if="current_classExtend === 'class_overview'">
             <KeepAlive>
               <OverView wasAttached_to="card" class="absolute-full"
-                :hideMedia="true" :syncedVersion="syncedVersion"
-                @sync_version="syncVersion"
+                :hideMedia="true"
               />
             </KeepAlive>
           </template>
@@ -164,9 +180,8 @@
         <q-page :key="teamStore.card?.id" class="column flex-center"
         :class="$q.dark.mode ? 'bg-dark text-grey-1' : 'bg-grey-1 text-grey-10'">
           <KeepAlive>
-            <OverView wasAttached_to="card"
-              :onlyMedia="true" :syncedVersion="syncedVersion"
-              @sync_version="syncVersion"
+            <OverView wasAttached_to="card" ref="overviewRef"
+              :onlyMedia="true"
             />
           </KeepAlive>
         </q-page>
@@ -185,22 +200,49 @@ import DocumentList from "src/pages/team/document/DocumentList.vue";
 import DocumentBody from "src/pages/team/document/DocumentBody.vue";
 import StoragePage from "src/pages/team/storage/StoragePage.vue";
 import ThreadContainer from "../chat/ThreadContainer.vue";
-import { teamStore, mm_wsStore } from "src/hooks/global/useStore.js";
+import { teamStore, mm_wsStore, uiStore } from "src/hooks/global/useStore.js";
 import CoursesList from './components/CoursesList.vue'
+import VersionTogger from './components/VersionTogger.vue'
 
 const props = defineProps({
-  syncedVersion: {
-    type: Object,
-    default: void 0,
-  },
   card: {
     type: Object,
     default: void 0,
   },
 });
-const { syncedVersion, card } = toRefs(props);
+const { card } = toRefs(props);
 
-const emit = defineEmits(["closeCardList", "syncedVersion"]);
+const emit = defineEmits(["closeCardList"]);
+const overviewRef = ref();
+const set_current_version = (id) => {
+  overviewRef.value?.set_current_version(id);
+}
+const set_defaultVersion = (id) => {
+  overviewRef.value?.set_defaultVersion(id)
+}
+const isShared = computed(() => uiStore.isShared)
+const userId = computed(() => teamStore.init?.id);
+const authBase = computed(() => {
+  let res;
+  let isInCard;
+  if (teamStore.card && !isShared.value) {
+    const members = teamStore.card?.card_members?.map((i) => i.by_user.id);
+    isInCard = members?.includes(userId.value);
+  }
+  if (isInCard) {
+    res = {
+      collection: "card",
+      of: "card",
+    };
+  } else {
+    res = {
+      collection: "card",
+      of: "project",
+    };
+  }
+  return res;
+});
+const activeVersion = computed(() => teamStore.card?.activeVersion);
 
 const current_classExtend = ref("class_overview");
 const classExtends = ref([
@@ -234,6 +276,9 @@ const getCard = async (card_id) => {
   if (res?.data) {
     card_members.value = res.data.card_members;
     teamStore.card = res.data;
+    if(card.value?.activeVersion){
+      teamStore.card.activeVersion = teamStore.card.overviews.find(i => i.id === card.value.activeVersion.id)
+    }
     teamStore.cards = [res.data];
   }
 };
@@ -264,10 +309,6 @@ const toggleLeftDrawer = () => {
 };
 
 const current_document = ref();
-
-const syncVersion = (version) => {
-  emit('syncedVersion', version)
-}
 
 
 watch(

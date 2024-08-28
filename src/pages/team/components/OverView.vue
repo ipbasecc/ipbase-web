@@ -1,9 +1,9 @@
 <template>
   <OverviewMedia
-    v-if="onlyMedia && current_version"
-    :key="current_version.id"
-    :current_version="current_version"
+    v-if="onlyMedia && activeVersion"
+    :key="activeVersion.id"
     :mediaWidth="mediaWidth"
+    :activeVersion
     :auth="useAuths('media', ['overview'])"
     :fitContainer="true"
     class="absolute-full flex flex-center"
@@ -207,7 +207,7 @@ import {
   toRef,
   computed,
   watchEffect,
-  provide, toRefs, onBeforeMount,
+  provide, toRefs, onMounted,
 } from 'vue';
 import {
   updateProject,
@@ -254,16 +254,8 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  current_versionRef: {
-    type: Object,
-    default: null,
-  },
-  syncedVersion: {
-    type: Object,
-    default: null,
-  },
 });
-const { current_versionRef, syncedVersion, onlyMedia } = toRefs(props)
+const { onlyMedia } = toRefs(props)
 const emit = defineEmits(['current_version','sync_version'])
 const wasAttached_toRef = toRef(props, "wasAttached_to");
 const isShared = computed(() => uiStore.isShared)
@@ -321,31 +313,36 @@ const getCurrentVersion = () => {
     overView_attachedTo.value?.overviews[overView_attachedTo.value?.overviews?.length - 1] ||
     void 0;
 };
-onBeforeMount(() => {
-  if(syncedVersion.value){
-    current_version.value = syncedVersion.value
-  } else if(current_versionRef.value) {
-    current_version.value = current_versionRef.value
-  } else {
-    getCurrentVersion();
-  }
-})
 
+const activeVersion = computed(() => wasAttached_toRef.value === "project" ? teamStore.project?.activeVersion
+  : teamStore.card?.activeVersion
+);
+const setActive = () => {
+  if(wasAttached_toRef.value === "project"){
+    teamStore.project.activeVersion = current_version.value
+  }else{
+    teamStore.card.activeVersion = current_version.value
+  }
+}
 const set_current_version = (id) => {
   if(id !== current_version.value?.id){
     current_version.value = overView_attachedTo.value.overviews.find(
       (i) => i.id === id
     );
   }
-  emit("current_version", current_version.value);
-  emit("sync_version", current_version.value);
+  setActive()
 };
-watch(syncedVersion, () => {
-  if(syncedVersion.value){
-    current_version.value = syncedVersion.value
-    console.log('set_current_version');
-    
-    set_current_version(syncedVersion.value.id)
+
+onMounted(() => {
+  getCurrentVersion();
+  if(!activeVersion.value){
+    setActive()
+  }
+})
+watch([overView_attachedTo, activeVersion], () => {
+  if(overView_attachedTo.value && !activeVersion.value){    
+    getCurrentVersion();
+    setActive()
   }
 },{immediate:false,deep:false})
 
@@ -510,6 +507,11 @@ const set_defaultVersion = async (overview_id) => {
     await send_chat_Msg(chat_Msg);
   }
 };
+
+defineExpose({
+  set_defaultVersion,
+  set_current_version
+})
 
 const startChanged = async (val) => {
   // console.log("change start");

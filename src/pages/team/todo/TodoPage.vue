@@ -1423,7 +1423,7 @@ const getTodogroups = async () => {
     // card todogroup no need attachHiddenStatus
     res = await attachHiddenStatus(res);
   }
-  // console.log('res', res)
+  console.log('res', res)
   todogroups.value = res;
 };
 const filterUserTodo = (_todogroups) => {
@@ -1570,7 +1570,7 @@ const dragTodogroup_sort = async () => {
     },
   };
   if ((teamStore.card && !isClassroom.value) || card.value) {
-    console.log('card', todogroups.value)
+    // console.log('card', todogroups.value)
     params.project_id = teamStore.project?.id;
 
     let card_id;
@@ -1582,7 +1582,12 @@ const dragTodogroup_sort = async () => {
     await updateCard(card_id, params);
   } else if (_for.value === "user_todos" || kanban_id.value) {
     console.log('user_todos', todogroups.value)
-    await updateUserTodogroups(params);
+    const _update = await updateUserTodogroups(params);
+    if(_update?.data){
+      teamStore.init.todogroups = _update.data
+      userStore.todogroups = _update.data
+      await getTodogroups();
+    }
   }
 };
 const rf_deleteTodogroup = ref(false);

@@ -112,9 +112,9 @@
         </q-btn>
         <q-chip v-if="multiple_versions" dense outline color="green" :label="$t('multiple_versions')" class="undrag cursor-pointer">
           <q-menu v-if="!uiStore.only_electron.includes(teamStore.navigation) || $q.platform.is.electron">
-            <q-list bordered dense class="radius-sm q-pa-xs">
+            <q-list bordered dense class="radius-sm q-pa-xs column gap-xs">
               <q-item
-                v-for="(i,index) in cardRef.overviews"
+                v-for="(i,index) in cardRef.overviews.filter(ov => ov.media)"
                 :key="i.id" class="radius-xs"
                 :class="media?.id === i.media?.id ? 'bg-primary' : ''"
                 clickable v-close-popup
@@ -540,7 +540,7 @@
     >
     <template v-if="cardRef.type === 'classroom'">
       <ClassPage v-if="!uiStore.only_electron.includes(teamStore.navigation) || $q.platform.is.electron"
-        :card="cardRef" :syncedVersion @syncedVersion="toggleVersion"
+        :card="cardRef"
       />
       <q-card v-else bordered class="column">
         <q-bar class="bg-deep-orange text-white">
@@ -735,6 +735,8 @@ const isCreator = computed(() => {
 const isInCard = ref(false);
 const multiple_versions = computed(() => cardRef.value?.overviews?.length > 1);
 const media = ref();
+const storeCard = computed(() => teamStore.card);
+const storeCardMedia = computed(() => teamStore.card?.activeVersion?.media);
 const belong_card = ref();
 watch(cardRef, () => {
   if (cardRef.value && cardRef.value.overviews?.length > 0) {
@@ -745,11 +747,12 @@ watch(cardRef, () => {
   }
   belong_card.value = teamStore.card || null;
 },{immediate:true,deep:true});
-const syncedVersion = ref()
-const toggleVersion = (version) => {  
-  media.value = version.media || void 0
-  syncedVersion.value = version
-}
+
+watch([storeCard, storeCardMedia], () => {
+  if (storeCard.value?.id === cardRef.value.id && storeCardMedia.value) {    
+    media.value = storeCardMedia.value
+  }
+},{immediate:false,deep:false})
 
 const executor = ref();
 const { style, highlight } = clac_cardEdgeStyle(cardRef.value);
@@ -963,6 +966,12 @@ const _leaveCard = () => {
   leaveCard();
   syncDeletedByWS();
 };
+
+const toggleVersion = (i) => {
+  console.log('toggleVersion', i);  
+  media.value = i.media;
+  cardRef.value.activeVersion = i
+}
 
 // ws data line -------------------------
 let strapi;
