@@ -13,14 +13,14 @@
       >
         <q-list dense>
             <q-item v-for="i in course.cards" :key="i.id"
-                clickable v-ripple
-                :class="i.id === teamStore.card?.id ? 'bg-primary text-white' : ''"
-                @click="toggleCousrse(i)"
+              clickable v-ripple
+              @click="toggleCousrse(i)"
             >
-                <q-item-section side>
-                    <q-icon name="mdi-play-circle" class="transition" :class="i.id === teamStore.card?.id ? '' : 'op-0'" />
-                </q-item-section>
-                <q-item-section>{{ i.name }}</q-item-section>
+              <q-item-section side>
+                  <q-icon name="mdi-play-circle" class="transition" color="red"
+                  :class="i.id === teamStore.card?.id ? '' : 'op-0'" />
+              </q-item-section>
+              <q-item-section>{{ i.name }}</q-item-section>
             </q-item>
         </q-list>
       </q-expansion-item>

@@ -2,7 +2,7 @@
   <div
     class="relative-position hovered-item"
     :class="`
-      ${isClassroom ? 'bg-black column flex-center q-space' : ''}
+      ${isClassroom ? 'column flex-center q-space' : ''}
     `"
   >
     <q-responsive
@@ -15,46 +15,40 @@
       </div>
     </q-responsive>
     <template v-if="current_versionRef?.media">
-      <q-responsive
-        :ratio="16 / 9"
-        :style="mediaWidth ? `width: ${mediaWidth}px` : ''"
-        class="q-mx-auto fit"
+      <template
+        v-if="
+          current_versionRef.media.url &&
+          filetype(current_versionRef?.media.url) === 'image'
+        "
       >
-        <template
-          v-if="
-            current_versionRef.media.url &&
-            filetype(current_versionRef?.media.url) === 'image'
-          "
-        >
-          <q-img
-            :src="current_versionRef.media.url"
-            :ratio="16 / 9"
-            spinner-color="primary"
-            spinner-size="82px"
-            class="cursor-pointer"
-            @click="$hevueImgPreview(current_versionRef?.media?.url)"
-          />
-        </template>
-        <template
-          v-if="
-            current_versionRef.media.url &&
-            filetype(current_versionRef?.media.url) === 'video'
-          "
-        >
-          <Artplayer
-            :option="{
-              url: current_versionRef.media.url,
-              muted: false,
-              autoplay: false,
-              loop: false,
-              mutex: true,
-              fullscreen: true,
-              fullscreenWeb: !uiStore.activeReel,
-            }"
-            class="fit"
-          />
-        </template>
-      </q-responsive>
+        <q-img
+          :src="current_versionRef.media.url"
+          :ratio="16 / 9"
+          spinner-color="primary"
+          spinner-size="82px"
+          class="cursor-pointer"
+          @click="$hevueImgPreview(current_versionRef?.media?.url)"
+        />
+      </template>
+      <template
+        v-if="
+          current_versionRef.media.url &&
+          filetype(current_versionRef?.media.url) === 'video'
+        "
+      >
+        <Artplayer
+          :option="{
+            url: current_versionRef.media.url,
+            muted: false,
+            autoplay: false,
+            loop: false,
+            mutex: true,
+            fullscreen: true,
+            fullscreenWeb: !uiStore.activeReel,
+          }"
+          class="fit"
+        />
+      </template>
       <q-toolbar
         v-if="auth"
         class="absolute-top transparent z-fab"
@@ -154,6 +148,10 @@ const props = defineProps({
     default: NaN,
   },
   auth: {
+    type: Boolean,
+    default: false,
+  },
+  fitContainer: {
     type: Boolean,
     default: false,
   },

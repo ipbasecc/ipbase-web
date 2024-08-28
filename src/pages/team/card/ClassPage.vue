@@ -9,47 +9,10 @@
       <q-header class="transparent">
         <q-bar
           class="border-bottom"
-          :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-1'"
+          :class="$q.dark.mode ? 'bg-dark text-grey-1' : 'bg-grey-1 text-grey-10'"
           style="height: 2.3rem"
         >
-          <q-btn dense icon="menu" @click="toggleLeftDrawer" />
-          <q-tabs
-            v-if="teamStore?.card && teamStore?.cards"
-            v-model="current_card_id"
-            no-caps
-            dense
-            class="q-ml-sm"
-          >
-            <template v-for="(i, index) in teamStore.cards" :key="i.id">
-              <q-tab
-                :name="i.id"
-                :label="useCardname(i, 12)"
-                @click="teamStore.card = i"
-                @dblclick="closeCard(i.id, index)"
-              >
-                <template v-if="teamStore?.cards?.length > 1">
-                  <q-tooltip class="no-padding">
-                    <q-card bordered class="q-pa-sm"> 双击关闭 </q-card>
-                  </q-tooltip>
-                  <q-popup-proxy context-menu class="radius-sm">
-                    <q-list bordered dense class="q-pa-xs radius-sm">
-                      <q-item
-                        clickable
-                        v-close-popup
-                        class="radius-xs"
-                        @click="closeCard(i.id, index)"
-                      >
-                        <q-item-section side
-                          ><q-icon name="close" size="sm"
-                        /></q-item-section>
-                        <q-item-section>关闭</q-item-section>
-                      </q-item>
-                    </q-list>
-                  </q-popup-proxy>
-                </template>
-              </q-tab>
-            </template>
-          </q-tabs>
+          <q-btn dense flat icon="menu" @click="toggleLeftDrawer" />
           <q-space />
           <q-btn
             flat
@@ -80,7 +43,7 @@
         side="left"
         :width="200"
         :breakpoint="500"
-        class="bg-dark border-right"
+        :class="$q.dark.mode ? 'bg-dark border-right' : 'bg-grey-1 text-grey-10 border-right'"
       >
         <CoursesList :courses />
       </q-drawer>
@@ -198,7 +161,8 @@
       </q-drawer>
 
       <q-page-container>
-        <q-page :key="teamStore.card?.id" class="column flex-center bg-black">
+        <q-page :key="teamStore.card?.id" class="column flex-center"
+        :class="$q.dark.mode ? 'bg-dark text-grey-1' : 'bg-grey-1 text-grey-10'">
           <KeepAlive>
             <OverView wasAttached_to="card"
               :onlyMedia="true" :syncedVersion="syncedVersion"
@@ -212,31 +176,16 @@
 </template>
 
 <script setup>
-import {
-  ref,
-  toRefs,
-  computed,
-  watch,
-  onBeforeUnmount,
-  watchEffect,
-} from "vue";
-import { useRoute } from "vue-router";
-import { findCard, getOneProject } from "src/api/strapi/project.js";
-import { useCardname } from "src/hooks/project/useCardname.js";
-
+import { ref, toRefs, computed, watch, onMounted } from "vue";
+import { findCard } from "src/api/strapi/project.js";
 import OverView from "src/pages/team/components/OverView.vue";
 import TodoPage from "src/pages/team/todo/TodoPage.vue";
 import KanbanContainer from "./KanbanContainer.vue";
 import DocumentList from "src/pages/team/document/DocumentList.vue";
 import DocumentBody from "src/pages/team/document/DocumentBody.vue";
 import StoragePage from "src/pages/team/storage/StoragePage.vue";
-
 import ThreadContainer from "../chat/ThreadContainer.vue";
-import {
-  teamStore,
-  mm_wsStore,
-  uiStore,
-} from "src/hooks/global/useStore.js";
+import { teamStore, mm_wsStore } from "src/hooks/global/useStore.js";
 import CoursesList from './components/CoursesList.vue'
 
 const props = defineProps({
@@ -244,11 +193,14 @@ const props = defineProps({
     type: Object,
     default: void 0,
   },
+  card: {
+    type: Object,
+    default: void 0,
+  },
 });
-const { syncedVersion } = toRefs(props);
+const { syncedVersion, card } = toRefs(props);
 
 const emit = defineEmits(["closeCardList", "syncedVersion"]);
-const route = useRoute();
 
 const current_classExtend = ref("class_overview");
 const classExtends = ref([
@@ -257,12 +209,7 @@ const classExtends = ref([
   // { id: 2, label: "class_kanban", name: "class_kanban", icon: "view_kanban" },
   { id: 3, label: "class_documents", name: "class_documents", icon: "article" },
   { id: 4, label: "class_storage", name: "class_storage", icon: "storage" },
-  {
-    id: 5,
-    label: "class_note",
-    name: "class_note",
-    icon: "mdi-checkbox-marked-outline",
-  },
+  { id: 5, label: "class_note", name: "class_note", icon: "mdi-checkbox-marked-outline" }
 ]);
 const splitterModel = ref(260);
 const limits = ref([160, 480]);
@@ -281,7 +228,6 @@ const courses = computed(() => teamStore.kanban?.columns);
 
 const card_members = ref();
 
-
 const getCard = async (card_id) => {
   let res = await findCard(card_id);
 
@@ -291,35 +237,16 @@ const getCard = async (card_id) => {
     teamStore.cards = [res.data];
   }
 };
-const isIntro = ref(false);
-
-const closeCard = (id, index) => {
-  teamStore.card = teamStore.cards[index - 1];
-  current_card_id.value = teamStore.cards[index - 1].id;
-  teamStore.cards = teamStore.cards.filter((i) => i.id !== id);
-};
+onMounted(() => {
+  if (card.value) {
+    getCard(card.value.id);
+  }
+})
 
 const document_id = ref();
 const enterDocument = (_document_id) => {
   document_id.value = _document_id;
 };
-
-watchEffect(async () => {
-  if (route.name === "teams") {
-    isIntro.value = true;
-  }
-  if (teamStore.card?.belongedInfo?.belonged_project && !teamStore.project) {
-    const _project_id = teamStore.card.belongedInfo.belonged_project.id;
-    const res = await getOneProject(_project_id);
-    if (res?.data) {
-      teamStore.project = res.data;
-      teamStore.project_id = res.data.id;
-    }
-  }
-  if(uiStore.showMainContentList){
-    document_id.value = void 0
-  }
-});
 
 const classExtendIcon = () => {
   const _cur_extend = classExtends.value.find(
@@ -336,33 +263,7 @@ const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 };
 
-const activedCard_id = computed(() => Number(teamStore.activedCard_id));
-watch(
-  activedCard_id,
-  () => {
-    if (activedCard_id.value) {
-      if (teamStore.cards?.map((i) => i.id).includes(activedCard_id.value)) {
-        teamStore.card = teamStore.cards.find(
-          (i) => i.id === activedCard_id.value
-        );
-        card_members.value = teamStore.card.card_members;
-      } else {
-        getCard(activedCard_id.value);
-      }
-    }
-  },
-  { immediate: true, deep: false }
-);
-
 const current_document = ref();
-
-onBeforeUnmount(() => {
-  current_document.value = null;
-  if (isIntro.value) {
-    teamStore.project = null;
-    teamStore.project_id = NaN;
-  }
-});
 
 const syncVersion = (version) => {
   emit('syncedVersion', version)

@@ -5,7 +5,8 @@
     :current_version="current_version"
     :mediaWidth="mediaWidth"
     :auth="useAuths('media', ['overview'])"
-    class="fit"
+    :fitContainer="true"
+    class="absolute-full flex flex-center"
     @mediaChanged="mediaChanged"
   />
   <div

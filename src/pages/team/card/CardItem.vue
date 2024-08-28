@@ -540,7 +540,7 @@
     >
     <template v-if="cardRef.type === 'classroom'">
       <ClassPage v-if="!uiStore.only_electron.includes(teamStore.navigation) || $q.platform.is.electron"
-        :syncedVersion @syncedVersion="toggleVersion"
+        :card="cardRef" :syncedVersion @syncedVersion="toggleVersion"
       />
       <q-card v-else bordered class="column">
         <q-bar class="bg-deep-orange text-white">
