@@ -8,6 +8,8 @@ export default function useProject(_Object) {
         } else {
             thumbnail = _Object.overviews[0].media?.url
         }
+    } else if(!_Object.default_version && _Object.overviews?.length > 0){
+        thumbnail = _Object.overviews[0].media?.url
     }
 
     return {

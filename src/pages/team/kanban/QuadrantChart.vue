@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import { ref, shallowRef, onMounted, toRef, watch, onBeforeUnmount } from "vue";
+import { ref, toRefs, shallowRef, onMounted, toRef, watch, onBeforeUnmount } from "vue";
 import CardPage from "src/pages/team/card/CardPage.vue";
 
 import * as echarts from "echarts";
@@ -43,7 +43,15 @@ const props = defineProps({
     type: Number,
     default: -1,
   },
+  auth: {
+    type: Object,
+    default() {
+      return {};
+    },
+  },
 });
+const { auth } = toRefs(props)
+
 const idRef = toRef(props, "id");
 const axisDataRef = toRef(props, "axisData");
 const taskContainerSIzeRef = toRef(props, "taskContainerSIze");
@@ -171,7 +179,9 @@ const initECharts = () => {
     );
   };
   const setDrag = () => {
-    if(teamStore.shareInfo) return
+    console.log('auth.value?.modifty', auth.value?.modify);
+    
+    if(teamStore.shareInfo || !auth.value?.modify) return
     chart.setOption({
       // 声明一个 graphic component，里面有若干个 type 为 'circle' 的 graphic elements。
       // 这里使用了 echarts.util.map 这个帮助方法，其行为和 Array.prototype.map 一样，但是兼容 es5 以下的环境。

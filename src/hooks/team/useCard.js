@@ -596,6 +596,12 @@ export async function enterSegment(card) {
     teamStore.cards = [res.data];
   }
 }
+export async function findThread(card) {
+  let res = await findCard(card.id);
+  if (res?.data) {    
+    return res.data.mm_thread;
+  }
+}
 
 export async function leaveCard() {
   teamStore.showCards = false;

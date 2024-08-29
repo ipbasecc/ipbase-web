@@ -61,13 +61,13 @@
 
 <script setup>
 import { toRefs, watch, ref, onMounted, computed } from "vue";
-import SendmsgBox from "src/pages/Chat/components/wigets/SendmsgBox.vue";
 import MessageItem from "./MessageItem.vue";
 import ThreadRoot from "./ThreadRoot.vue";
 
 import { mergePosts } from "src/hooks/mattermost/useMattermost.js";
 import { getThread } from "src/api/mattermost.js";
 import { mmstore, mm_wsStore } from "src/hooks/global/useStore.js";
+import SendmsgBox from './SendmsgBox.vue'
 
 const props = defineProps({
   chatInfo: {

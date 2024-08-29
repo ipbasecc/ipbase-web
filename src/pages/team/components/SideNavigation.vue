@@ -270,7 +270,7 @@
                   <div class="row no-wrap gap-xs">
                     <span>{{ project.name }}</span>
                     <q-space />
-                    <UnreadBlock :mm_channel_id="project.mm_channel?.id" />
+                    <UnreadBlock v-if="project.auth?.read" :mm_channel_id="project.mm_channel?.id" />
                   </div>
                 </q-item-label>
                 <q-item-label
@@ -352,6 +352,7 @@ import {
   enalbe_dashboard,
   enalbe_project,
   enalbe_channel,
+  teamMode
 } from "src/pages/team/hooks/useConfig.js";
 import useProject from 'src/hooks/project/useProject.js';
 
@@ -416,7 +417,7 @@ watch(
 
 const team = computed(() => teamStore.team);
 const getThumbnail = (project) => {
-  const { thumbnail } = useProject(project)
+  const { thumbnail } = useProject(project)  
   return thumbnail
 }
 
@@ -437,12 +438,14 @@ watch(
       await getTeamMembers(mm_team.value?.id, page.value, per_page.value);
       let mm_channels = []
       const mm_uid = localStorage.getItem("mmUserId")
-      if(team.value?.team_channels?.length > 0){
+      if(team.value?.team_channels?.length > 0 && enalbe_channel.value){
         const filterMMChannel = team.value?.team_channels.filter(i => i.mm_channel)
         mm_channels.push(...filterMMChannel.map(i => i.mm_channel?.id));
       }
-      if(team.value.projects?.length > 0){
-        const filterHaveMM = team.value.projects.filter(i => i.mm_channel);
+      if(team.value.projects?.length > 0 && enalbe_project.value && teamMode.value === 'toMany'){
+        // can read
+        const filterHaveMM = team.value.projects.filter(i => i.mm_channel && i.auth?.read);
+        
         if(filterHaveMM?.length > 0){
           mm_channels.push(...filterHaveMM.map(i => i.mm_channel.id));
         }

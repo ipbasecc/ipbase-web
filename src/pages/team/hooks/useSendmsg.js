@@ -42,7 +42,7 @@ export async function send_MattersMsg(MsgContent, channel_id) {
     // 在发送ws消息前，为消息props赋值客户端ID，这样，直接赋值ws数据的当前用户是没有客户端ID的
     // 在用户访问页面时，路由守卫生成唯一客户端ID并存入ws store，在页面watch时检查客户端ID，
     // 如果相同，则说明是当前用户的操作，不在执行ws事件操作
-    MsgContent.props.clientId = mm_wsStore.clientId;
+    MsgContent.props.clientId = mm_wsStore?.clientId;
     const MattersMsg = await sendPost({
       channel_id: mmChannelId,
       message: MsgContent.body,

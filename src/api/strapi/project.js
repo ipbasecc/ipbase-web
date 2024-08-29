@@ -687,6 +687,8 @@ export async function createTodo(params) {
 }
 //修改待办
 export async function updateTodo(todo_id, params) {
+  console.log(todo_id, params);
+  
   try {
     const res = await api.put(`/todos/${todo_id}`, params);
     if (res) {

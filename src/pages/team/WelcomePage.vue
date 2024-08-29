@@ -55,6 +55,11 @@
     <QuadrantChart
       v-if="taskContainerSIze"
       :axisData="axisData"
+      :auth="{
+        read: true,
+        modify: false,
+        delete: false,
+      }"
       :taskContainerSIze="taskContainerSIze"
       @QuadrantChange="QuadrantChange"
     />

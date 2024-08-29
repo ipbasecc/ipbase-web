@@ -616,6 +616,7 @@ import {
   setStatus,
   cacheExpand,
   setCardSharecode,
+  findThread
 } from "src/hooks/team/useCard.js";
 import { findCard } from "src/api/strapi/project.js";
 import { isEqual } from "lodash-es";
@@ -989,14 +990,23 @@ const syncDeletedByWS = () => {
   }
 };
 const deletedCards = ref([]);
+const threads_needUpdate = ref([]);
+const threads_needUpdate_date = ref([]);
 watch(
   mm_wsStore,
   async () => {
     if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
-      let post =
-        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
-      if (!post) return;
+      let post = mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
+      // console.log('post', post);
       const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
+      if (!post) return;
+      if(post.root_id === cardRef.value?.mm_thread?.id){
+        if (isCurClint) {
+          threads_needUpdate.value.push(post.root_id);
+        } else {
+          cardRef.value.mm_thread.reply_count++
+        }
+      }
       if (isCurClint) return;
       strapi = post?.props?.strapi;
       let project_users = teamStore.project?.project_members?.map(
@@ -1294,12 +1304,21 @@ watch(
       const _thread = JSON.parse(mm_wsStore.event.data.thread);
       if (_thread.id === cardRef.value?.mm_thread?.id) {
         cardRef.value.mm_thread = _thread;
-        await updateCardThread(cardRef.value, _thread);
+        threads_needUpdate_date.value.push(_thread);
       }
     }
   },
   { immediate: false, deep: true }
 );
+watchEffect(() => {
+  if (threads_needUpdate.value.length > 0 && threads_needUpdate.value.length === threads_needUpdate_date.value.length) {
+    threads_needUpdate_date.value.map(async (thread) => { 
+      await updateCardThread(cardRef.value, thread);
+    });
+    threads_needUpdate.value = [];
+    threads_needUpdate_date.value = [];
+  }
+})
 </script>
 
 <style lang="scss" scoped>

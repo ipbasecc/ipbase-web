@@ -358,14 +358,8 @@ const updateContent = (content) => {
   set_edittingTodo(void 0);
 };
 
-const statusChange = async (todo) => {
-  console.log('statusChange', todo);
-  
-  todo_params.value.data = todo;
-  todo_params.value = {
-    data: { status: todo.status },
-  };
-  await updateTodoFn(todo);
+const statusChange = async (todo) => {  
+  await updateTodoFn({ id: todo.id, status: todo.status });
 };
 const updating = ref(false);
 const updateTodoFn = async (todo) => {

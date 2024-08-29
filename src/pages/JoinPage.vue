@@ -109,10 +109,10 @@ const get_inviteInfoFn = async () => {
   if (!jwt.value) {
     return;
   }
-  let { errorMsg, inviteInfo } = await get_inviteInfo(team_id, channel_id, project_id, invite_code, target.value);
-  if(res){
-    errorMsg.value = errorMsg;
-    inviteInfo.value = inviteInfo;
+  let { errMsg, info } = await get_inviteInfo(team_id, channel_id, project_id, invite_code, target.value);
+  if(info){
+    errorMsg.value = errMsg;
+    inviteInfo.value = info;
   }
 };
 watch(

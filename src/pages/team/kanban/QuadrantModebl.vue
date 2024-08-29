@@ -7,6 +7,11 @@
       :id="kanban.id"
       :axisData="axisData"
       :taskContainerSIze="taskContainerSIze"
+      :auth="{
+        read: useAuths('read', ['card']),
+        modify: (useAuths('importance', ['card']) && useAuths('urgency', ['card'])),
+        delete: useAuths('delete', ['card']),
+      }"
       @QuadrantChange="QuadrantChange"
     />
   </div>

@@ -1428,7 +1428,6 @@ const getTodogroups = async () => {
   
   todogroups.value = res;
   loading.value = false;
-  console.log('todogroups', todogroups.value);
 };
 const filterUserTodo = (_todogroups) => {
   if(userStore.affairsFilterIDs?.length > 0){
