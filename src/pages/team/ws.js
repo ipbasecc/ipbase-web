@@ -1,6 +1,8 @@
 import { Notify } from "quasar";
 import { mm_wsStore } from "src/hooks/global/useStore.js";
 import { $server } from 'src/boot/server.js'
+import { i18n } from 'src/boot/i18n.js';
+const $t = i18n.global.t;
 
 const TYPE = process.env.DEV ? 'ws' : 'wss'
 let token = localStorage.getItem("mmtoken");
@@ -34,11 +36,11 @@ export async function _ws() {
       }
     } else {
       Notify.create({
-        message: t('ws_error_need_refresh_tip'),
+        message: $t('ws_error_need_refresh_tip'),
         position: "top",
         color: "negative",
         actions: [
-          { label: t('refresh'), color: 'positive', handler: () => { window.location.reload() } },
+          { label: $t('refresh'), color: 'positive', handler: () => { window.location.reload() } },
         ]
       });
     }
