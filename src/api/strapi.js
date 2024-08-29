@@ -168,3 +168,15 @@ export async function updateUser(user_id,params) {
     return error;
   }
 }
+
+// 获取转码媒体
+export async function queryMedias(params) {
+  try {
+    const res = await api.post(`/queryMedias`, params);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}

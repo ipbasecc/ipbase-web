@@ -30,14 +30,8 @@
           @click="$hevueImgPreview(activeVersion?.media?.url)"
         />
       </template>
-      <template
-        v-if="
-          activeVersion.media.url &&
-          filetype(activeVersion?.media.url) === 'video'
-        "
-      >
-        <Artplayer
-          :option="{
+      <template v-if="activeVersion.media.url && filetype(activeVersion?.media.url) === 'video'">
+        <Artplayer :option="{
             url: activeVersion.media.url,
             muted: false,
             autoplay: false,

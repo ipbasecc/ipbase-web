@@ -1,5 +1,5 @@
 import { api } from "boot/axios";
-import { Notify, debounce } from "quasar";
+import { Notify } from "quasar";
 import { db } from "src/boot/dexie.js";
 import { uiStore } from "src/hooks/global/useStore.js";
 import { i18n } from 'src/boot/i18n.js';
