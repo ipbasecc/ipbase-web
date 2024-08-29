@@ -1,5 +1,5 @@
 import { api } from "boot/axios";
-import { Notify } from "quasar";
+import { Notify, debounce } from "quasar";
 import { db } from "src/boot/dexie.js";
 import { uiStore } from "src/hooks/global/useStore.js";
 import { i18n } from 'src/boot/i18n.js';
@@ -9,21 +9,30 @@ import {clearLocalDB} from "pages/team/hooks/useUser";
 const $t = i18n.global.t;
 const router = useRouter();
 
+let initCache; //缓存用户初始化数据
 // 获取用户初始化数据
 export async function init_user() {
-  // let options = `?page=1&per_page=10`
-  try {
-    const res = await api.get(`users-permissions/user/me/init`);
-    if (res?.data) {
-      return res;
-    }
-  } catch (error) {
-    console.log(error);
-    if(error?.response?.data?.error?.status === 401) {
-      await clearLocalDB('Strapi init_user');
-      await router.push('/login');
-    } else {
-      console.log(error?.response?.data?.error?.message);
+  if (initCache) {
+    return initCache;
+  } else {
+    // let options = `?page=1&per_page=10`
+    try {
+      const res = await api.get(`users-permissions/user/me/init`);
+      if (res?.data) {
+        initCache = res.data;
+        setTimeout(() => {
+          initCache = void 0;
+        }, 1000); // 缓存1秒
+        return res;
+      }
+    } catch (error) {
+      console.log(error);
+      if(error?.response?.data?.error?.status === 401) {
+        await clearLocalDB('Strapi init_user');
+        await router.push('/login');
+      } else {
+        console.log(error?.response?.data?.error?.message);
+      }
     }
   }
 }

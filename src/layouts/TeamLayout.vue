@@ -137,15 +137,6 @@ onMounted(async () => {
   if (process.env.NODE_ENV === 'development') {
     uiStore.only_electron = [];
   }
-  if (teamStore.init) {
-    if (teamStore.init.default_team) {
-      await teamStore.getTeamInfo(teamStore.init.default_team);
-    }
-  }
-  
-  if(process.env.NODE_ENV === 'development'){
-    uiStore.only_electron = []
-  }
 })
 
 // 必须有token时才判断要不要显示初始化用户组件
