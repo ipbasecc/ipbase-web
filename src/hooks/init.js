@@ -21,9 +21,7 @@ const process = (res) => {
 export async function loginAndInit () {
     const _mm_me = await fetch_MmMe();
     const _strapi_me = await fetch_StrapiMe();
-    const init = (_me) => {
-        console.log('init', _me);
-        
+    const init = (_me) => {        
       userStore.$process(_me);
       process(_me);
     }

@@ -88,6 +88,7 @@ import {teamStore, uiStore} from "src/hooks/global/useStore.js";
 import { colorByAt } from "src/hooks/utilits.js";
 import ServerList from 'src/pages/team/settings/ServerList.vue'
 import { i18n } from 'src/boot/i18n.js';
+import localforage from "localforage";
 
 const $t = i18n.global.t;
 
@@ -141,6 +142,7 @@ const toggleTeamFn = async (team) => {
       teamStore.$reset_team;
       teamStore.init.default_team = res.data;
       teamStore.team = res.data;
+      await localforage.setItem('default_team', res.data)
       await router.push("/teams");
     }
   }

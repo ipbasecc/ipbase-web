@@ -106,6 +106,8 @@ import InitializationUser from 'src/pages/team/settings/initialization/Initializ
 import { teamStore, uiStore, userStore } from "src/hooks/global/useStore";
 
 import { getUserData } from "src/hooks/global/useGetMyMatedata.js";
+import localforage from "localforage";
+import { toggleTeam } from "src/pages/team/hooks/useTeam.js";
 
 getUserData();
 
@@ -121,6 +123,24 @@ watchEffect(() => {
 onBeforeMount(async() => {
   if(!teamStore.init){
     await loginAndInit();
+    if(teamStore.init && !teamStore.init.default_team){
+      const cache = await localforage.getItem('default_team');
+      if(cache){
+        // 不要直接赋值，方法内部有更多事件处理
+        await toggleTeam(cache)
+      }
+    }
+  }
+})
+
+onMounted(async () => {
+  if (process.env.NODE_ENV === 'development') {
+    uiStore.only_electron = [];
+  }
+  if (teamStore.init) {
+    if (teamStore.init.default_team) {
+      await teamStore.getTeamInfo(teamStore.init.default_team);
+    }
   }
   
   if(process.env.NODE_ENV === 'development'){
