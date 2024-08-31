@@ -14,10 +14,11 @@
         <q-list dense>
             <q-item v-for="i in course.cards" :key="i.id"
               clickable v-ripple
+              :class="i.id === teamStore.card?.id ? $q.dark.mode ? 'bg-grey-9' : 'bg-grey-4' : ''"
               @click="toggleCousrse(i)"
             >
               <q-item-section side>
-                  <q-icon name="mdi-play-circle" class="transition" color="red"
+                  <q-icon name="mdi-play-circle" class="transition"
                   :class="i.id === teamStore.card?.id ? '' : 'op-0'" />
               </q-item-section>
               <q-item-section>{{ i.name }}</q-item-section>

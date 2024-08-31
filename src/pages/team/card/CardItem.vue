@@ -145,8 +145,8 @@
       <!-- 封面 -->
       <q-card-section
         v-if="cardRef.expand !== 'collapse'"
-        class="q-pa-xs scroll-y mini-ui"
-        style="max-height: 61vh"
+        class="q-pa-none scroll-y mini-ui"
+        style="max-height: 61vh;padding: 0 1px"
       >
       <template v-if="!uiStore.only_electron.includes(teamStore.navigation) || $q.platform.is.electron">
         <FileViewer
