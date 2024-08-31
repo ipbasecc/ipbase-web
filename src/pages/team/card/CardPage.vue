@@ -305,10 +305,8 @@
       <q-page-container>
         <q-page :style-fn="resetHeight">
           <template v-if="current_model === 'card_kanban'">
-            <KanbanContainer
-              v-if="
-                !teamStore.card?.private || useAuths('read', ['column'])
-              "
+            <!-- 权限判断：每个card只有一个看板，因此这里后端判断权限采用的判断目标是看板的分栏 -->
+            <KanbanContainer v-if="!teamStore.card?.private || useAuths('read', ['column'])"
               :project_id="teamStore.project?.id"
               :kanban_id="teamStore.card?.card_kanban?.id"
             />
@@ -316,8 +314,7 @@
               {{ $t('no_premission_to_view') }}
             </div>
           </template>
-          <TodoPage
-            v-if="current_model === 'card_todo'"
+          <TodoPage v-if="current_model === 'card_todo'"
             :assignData="teamStore.card?.todogroups"
             _for="card_todo"
             layout="row"
@@ -361,18 +358,10 @@
               {{ $t('no_premission_to_view') }}
             </div>
           </template>
-          <template
-            v-if="
-              current_model === 'card_schedule' && teamStore.card?.schedule?.id
-            "
-          >
+          <template v-if="current_model === 'card_schedule' && teamStore.card?.schedule?.id">
             <SchedulePage by="card" :schedule_id="teamStore.card.schedule.id" />
           </template>
-          <template
-            v-if="
-              current_model === 'card_storage' && teamStore.card?.storage?.id
-            "
-          >
+          <template v-if="current_model === 'card_storage' && teamStore.card?.storage?.id">
             <StoragePage :storage_id="teamStore.card.storage.id" by="card" />
           </template>
         </q-page>

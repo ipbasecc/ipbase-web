@@ -178,7 +178,8 @@
 
       <q-page-container>
         <q-page :key="teamStore.card?.id" class="column flex-center"
-        :class="$q.dark.mode ? 'bg-dark text-grey-1' : 'bg-grey-1 text-grey-10'">
+        :class="$q.dark.mode ? 'bg-dark text-grey-1' : 'bg-grey-1 text-grey-10'"
+        :style-fn="resetHeight">
           <KeepAlive>
             <OverView wasAttached_to="card" ref="overviewRef"
               :onlyMedia="true"
@@ -309,6 +310,9 @@ const toggleLeftDrawer = () => {
 };
 
 const current_document = ref();
+const resetHeight = (offset, height) => {
+  return { minHeight: `calc(${height - offset - 2}px)` }
+}
 
 
 watch(

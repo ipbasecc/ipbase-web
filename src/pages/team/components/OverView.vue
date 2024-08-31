@@ -10,15 +10,15 @@
     @mediaChanged="mediaChanged"
   />
   <div
-    v-if="!onlyMedia && current_version"
+    v-if="!onlyMedia && activeVersion"
     v-bind="$attrs"
     class="fit column no-wrap gap-sm relative-position q-pb-sm"
     :class="isClassroom ? 'absolute-full' : ''"
   >
     <OverviewMedia
       v-if="!hideMedia"
-      :key="current_version.id"
-      :current_version="current_version"
+      :key="activeVersion.id"
+      :activeVersion="activeVersion"
       :isClassroom
       :auth="useAuths('media', ['overview'])"
       @mediaChanged="mediaChanged"
@@ -39,19 +39,19 @@
     >
       <OverviewStart
         :wasAttached_to="wasAttached_toRef"
-        :current_version="current_version"
+        :activeVersion="activeVersion"
         :auth="useAuths('start', ['overview'])"
         @startChanged="startChanged"
       />
       <OverviewEnd
         :wasAttached_to="wasAttached_toRef"
-        :current_version="current_version"
+        :activeVersion="activeVersion"
         :auth="useAuths('end', ['overview'])"
         @endChanged="endChanged"
       />
       <OverviewDeadline
         :wasAttached_to="wasAttached_toRef"
-        :current_version="current_version"
+        :activeVersion="activeVersion"
         :auth="useAuths('deadline', ['overview'])"
         @deadlineChanged="deadlineChanged"
       />
@@ -63,9 +63,9 @@
         <span
           v-if="!version_update_ing"
           class="q-space q-ml-sm"
-          @dblclick="version_update_ing = current_version?.id"
+          @dblclick="version_update_ing = activeVersion?.id"
         >
-          {{ current_version.name === 'Initial_Version' ? $t(current_version.name) : current_version.name }}
+          {{ activeVersion.name === 'Initial_Version' ? $t(activeVersion.name) : activeVersion.name }}
           <q-tooltip
             class="bg-black text-white"
             anchor="top left"
@@ -76,19 +76,19 @@
         </span>
       </template>
       <span v-else class="q-space q-ml-sm">
-        {{ $t(current_version?.name) }}
+        {{ $t(activeVersion?.name) }}
       </span>
-      <q-input v-if="version_update_ing === current_version?.id"
+      <q-input v-if="version_update_ing === activeVersion?.id"
         v-model="_input_text"
         dense
         square
-        :placeholder="current_version?.name"
+        :placeholder="activeVersion?.name"
         type="text"
         class="q-space"
         @keyup.esc="version_update_ing = false"
-        @blur="updateVersionBlur(_input_text, current_version?.name)"
-        @keyup.enter="updateVersionFn(current_version?.id)"
-        @keyup.ctrl.enter="updateVersionFn(current_version?.id)"
+        @blur="updateVersionBlur(_input_text, activeVersion?.name)"
+        @keyup.enter="updateVersionFn(activeVersion?.id)"
+        @keyup.ctrl.enter="updateVersionFn(activeVersion?.id)"
       >
         <template v-slot:append>
           <q-btn
@@ -97,7 +97,7 @@
             round
             size="sm"
             icon="check"
-            @click="updateVersionFn(current_version?.id)"
+            @click="updateVersionFn(activeVersion?.id)"
           />
         </template>
       </q-input>
@@ -111,7 +111,7 @@
             style="min-width: 9rem"
           >
             <template v-if="useAuths('modify', [authBase.collection])">
-              <q-item class="radius-xs" clickable v-close-popup @click="version_update_ing = current_version?.id">
+              <q-item class="radius-xs" clickable v-close-popup @click="version_update_ing = activeVersion?.id">
                 <q-item-section side>
                   <ReName />
                 </q-item-section>
@@ -130,7 +130,7 @@
                 class="radius-xs"
                 clickable
                 @click="set_current_version(i.id)"
-                :class="current_version.id === i.id ? 'bg-primary' : ''"
+                :class="activeVersion.id === i.id ? 'bg-primary' : ''"
                 v-close-popup
               >
                 <q-item-section side>
@@ -175,7 +175,7 @@
               <q-item
                 class="radius-xs text-red"
                 clickable
-                @click="removeVersion(current_version.id)"
+                @click="removeVersion(activeVersion.id)"
                 v-close-popup
               >
                 <q-item-section side
@@ -394,6 +394,7 @@ const newVersion = async () => {
   let res = await addVersion(params);
   if (res?.data) {
     current_version.value = res.data;
+    setActive();
     let chat_Msg = {
       body: `${userStore.me.username}在'${
         wasAttached_toRef.value === "project" ? "项目" : "卡片"
@@ -427,7 +428,7 @@ let updateVersionParams = ref({
 });
 const __updateVersion = async () => {
   let res = await updateVersion(
-    current_version.value.id,
+    activeVersion.value.id,
     updateVersionParams.value
   );
   if (res) {
@@ -463,7 +464,7 @@ const updateVersionFn = async () => {
 };
 const updateVersionBlur = (newVal, oldVal) => {
   if (newVal && newVal !== oldVal) {
-    updateVersionFn(current_version.value.id);
+    updateVersionFn(activeVersion.value.id);
   }
 };
 
@@ -522,7 +523,7 @@ const startChanged = async (val) => {
   let chat_Msg = {
     body: `${userStore.me.username}将'${
       wasAttached_toRef.value === "project" ? "项目" : "卡片"
-    }'的版本:'${current_version.value.name}'的开始时间修改为：${val}`,
+    }'的版本:'${activeVersion.value.name}'的开始时间修改为：${val}`,
     props: {
       strapi: {
         data: {
@@ -545,7 +546,7 @@ const endChanged = async (val) => {
   let chat_Msg = {
     body: `${userStore.me.username}将'${
       wasAttached_toRef.value === "project" ? "项目" : "卡片"
-    }'的版本:'${current_version.value.name}'的结束时间修改为：${val}`,
+    }'的版本:'${activeVersion.value.name}'的结束时间修改为：${val}`,
     props: {
       strapi: {
         data: {
@@ -568,7 +569,7 @@ const deadlineChanged = async (val) => {
   let chat_Msg = {
     body: `${userStore.me.username}将'${
       wasAttached_toRef.value === "project" ? "项目" : "卡片"
-    }'的版本:'${current_version.value.name}'的审核时间修改为：${val}`,
+    }'的版本:'${activeVersion.value.name}'的审核时间修改为：${val}`,
     props: {
       strapi: {
         data: {
@@ -583,19 +584,19 @@ const deadlineChanged = async (val) => {
   };
   await send_chat_Msg(chat_Msg);
 };
-const mediaChanged = async (id, media) => {
+const mediaChanged = async (version, id, media) => {
   updateVersionParams.value.data = {
     media: id,
   };
   try {
-    let res = await __updateVersion();
+    let res = await __updateVersion(version);
     if (res) {
       // console.log("mediaChanged", res);
       let action = id === null ? "删除了" : "修改了";
       let chat_Msg = {
         body: `${userStore.me.username} ${action} '${
           wasAttached_toRef.value === "project" ? "项目" : "卡片"
-        }' 版本:'${current_version.value.name}'的预览媒体`,
+        }' 版本:'${activeVersion.value.name}'的预览媒体`,
         props: {
           strapi: {
             data: {
@@ -603,7 +604,7 @@ const mediaChanged = async (id, media) => {
               by_user: userStore.userId,
               attachedTo_id: overView_attachedTo.value.id,
               action: "overview_mediaChanged",
-              version: current_version.value?.id,
+              version: activeVersion.value?.id,
               project_id: teamStore.project?.id,
               media: id === null ? null : media.attributes,
             },
@@ -644,7 +645,7 @@ watch(
       if (strapi) {
         if (
           strapi.data?.is === "overview" &&
-          strapi.data?.overview_id === current_version.value.id &&
+          strapi.data?.overview_id === activeVersion.value.id &&
           strapi.data.action === "updateVersion_name"
         ) {
           if (wasAttached_toRef.value === "project") {
@@ -652,7 +653,7 @@ watch(
               (i) => ({
                 ...i,
                 name:
-                  (i.id === current_version.value.id &&
+                  (i.id === activeVersion.value.id &&
                     strapi.data.body.name) ||
                   i.name,
               })
@@ -661,11 +662,11 @@ watch(
             teamStore.card.overviews = teamStore.card.overviews.map((i) => ({
               ...i,
               name:
-                (i.id === current_version.value.id && strapi.data.body.name) ||
+                (i.id === activeVersion.value.id && strapi.data.body.name) ||
                 i.name,
             }));
           }
-          current_version.value.name = strapi.data.body.name;
+          activeVersion.value.name = strapi.data.body.name;
         }
         if (
           strapi.data?.is === "overview" &&
@@ -676,13 +677,13 @@ watch(
             strapi.data?.attachedTo_id === overView_attachedTo.value.id
           ) {
             teamStore.project.name = strapi.data.body.name;
-            current_version.value.name = strapi.data.body.name;
+            activeVersion.value.name = strapi.data.body.name;
           } else if (
             wasAttached_toRef.value === "card" &&
             strapi.data?.attachedTo_id === overView_attachedTo.value.id
           ) {
             teamStore.card.name = strapi.data.body.name;
-            current_version.value.name = strapi.data.body.name;
+            activeVersion.value.name = strapi.data.body.name;
           }
         }
         if (
@@ -780,7 +781,7 @@ watch(
               teamStore.card.overviews.splice(index, 1);
             }
           }
-          if (current_version.value.id === strapi.data.removed_id) {
+          if (activeVersion.value.id === strapi.data.removed_id) {
             getCurrentVersion();
           }
         }
@@ -791,13 +792,13 @@ watch(
         ) {
           if (wasAttached_toRef.value === "project") {
             teamStore.project.overviews.find(
-              (i) => i.id === current_version.value.id
+              (i) => i.id === activeVersion.value.id
             ).start = strapi.data.start;
           }
           if (wasAttached_toRef.value === "card") {
             // console.log("overview_startChanged");
             teamStore.card.overviews.find(
-              (i) => i.id === current_version.value.id
+              (i) => i.id === activeVersion.value.id
             ).start = strapi.data.start;
           }
           getCurrentVersion();
@@ -809,12 +810,12 @@ watch(
         ) {
           if (wasAttached_toRef.value === "project") {
             teamStore.project.overviews.find(
-              (i) => i.id === current_version.value.id
+              (i) => i.id === activeVersion.value.id
             ).end = strapi.data.end;
           }
           if (wasAttached_toRef.value === "card") {
             teamStore.card.overviews.find(
-              (i) => i.id === current_version.value.id
+              (i) => i.id === activeVersion.value.id
             ).end = strapi.data.end;
           }
           getCurrentVersion();
@@ -826,12 +827,12 @@ watch(
         ) {
           if (wasAttached_toRef.value === "project") {
             teamStore.project.overviews.find(
-              (i) => i.id === current_version.value.id
+              (i) => i.id === activeVersion.value.id
             ).deadline = strapi.data.deadline;
           }
           if (wasAttached_toRef.value === "card") {
             teamStore.card.overviews.find(
-              (i) => i.id === current_version.value.id
+              (i) => i.id === activeVersion.value.id
             ).deadline = strapi.data.deadline;
           }
           getCurrentVersion();
@@ -843,7 +844,7 @@ watch(
         ) {
           if (wasAttached_toRef.value === "project") {
             teamStore.project.overviews.find(
-              (i) => i.id === current_version.value.id
+              (i) => i.id === activeVersion.value.id
             ).media = strapi.data.media;
             const _index = teamStore.team.projects.findIndex((i) => i.id === teamStore.project.id);
             if(_index !== -1){
@@ -852,11 +853,11 @@ watch(
           }
           if (wasAttached_toRef.value === "card") {
             teamStore.card.overviews.find(
-              (i) => i.id === current_version.value.id
+              (i) => i.id === activeVersion.value.id
             ).media = strapi.data.media;
           }
           // getCurrentVersion();
-          current_version.value.media = strapi.data.media;
+          activeVersion.value.media = strapi.data.media;
         }
       }
     }

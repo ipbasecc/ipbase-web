@@ -2,6 +2,7 @@
 <template>
   <!-- 父页面可能有点击事件，必须保留div根节点 -->
   <div :class="fileType !== 'pdf' ? mainStyle : 'fit'" class="column flex flex-center">
+    
     <template v-if="!noPreviewRef">
       <img
         v-if="fileType === 'image'"
@@ -25,13 +26,15 @@
       >
         <template v-if="fileRef">
           <Artplayer
+            :key="quality?.length"
             :option="{
               ...videoOption,
               url: fileRef.url,
+              fullscreen: false,
+              fullscreenWeb: false,
             }"
             class="fit"
             :class="clean ? 'hideControls' : ''"
-            @fullscreenWeb="fullscreenWeb"
           />
         </template>
         <div v-else class="fit flex flex-center">
@@ -118,6 +121,12 @@ const props = defineProps({
       return {};
     },
   },
+  quality: {
+    type: Array,
+    default() {
+      return [];
+    },
+  },
   cover: {
     type: String,
     default: "",
@@ -170,7 +179,7 @@ const props = defineProps({
     default: "",
   },
 });
-const { height, by_width, by } = toRefs(props);
+const { height, by_width, by, quality } = toRefs(props);
 
 const width = computed(() => (height.value / 9) * 16);
 const emit = defineEmits(["motify", "fullscreenWeb"]);
@@ -234,9 +243,6 @@ const showImage = (url) => {
     url: url,
     clickMaskCLose: true,
   };
-};
-const fullscreenWeb = (state) => {
-  emit("fullscreenWeb", state);
 };
 watch(
   [fileRef, itemRef],

@@ -30,6 +30,10 @@ onMounted(() => {
   instance.value.on('fullscreenWeb', (state) => {
       emit('fullscreenWeb', state);
   });
+
+  instance.value.on('fullscreen', (state) => {
+    emit('fullscreen', state);
+  });
 });
 
 onBeforeUnmount(() => {

@@ -664,4 +664,14 @@ export default {
 
   multiple_versions: 'Multiple Versions',
   only_electron: 'only desktop',
+  quality_source: 'Original',
+  quality_3840: '4K',
+  quality_1920: 'Full HD',
+  quality_1280: 'Helf HD',
+  quality_960: '960P',
+  quality_640: '640P',
+  quality_480: '480P',
+  quality_320: '320P',
+  quality_240: '240P',
+  quality_848: '848P',
 }

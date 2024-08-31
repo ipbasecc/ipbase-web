@@ -1431,3 +1431,21 @@ body.body--dark .cdx-marker {
 .toggle-active {
   box-shadow: 3px 3px 10px 0 rgb(1 14 208);
 }
+
+.mini-ui .art-video-player {
+  --art-control-height: 26px;
+  --art-control-icon-size: 22px;
+  --art-padding: 0;
+  --art-control-opacity: 0;
+  --art-bottom-gap: 0
+}
+.mini-ui .art-controls {
+  display: none;
+}
+.mini-ui .art-state {
+  transform: scale(0.6) !important;
+  -webkit-transform: scale(0.6) !important;
+  -moz-transform: scale(0.6) !important;
+  -ms-transform: scale(0.6) !important;
+  -o-transform: scale(0.6) !important;
+}

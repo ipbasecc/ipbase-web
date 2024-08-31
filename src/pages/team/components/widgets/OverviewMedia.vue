@@ -30,9 +30,10 @@
           @click="$hevueImgPreview(activeVersion?.media?.url)"
         />
       </template>
-      <template v-if="activeVersion.media.url && filetype(activeVersion?.media.url) === 'video'">
+      <template v-if="quality?.length > 0 && filetype(activeVersion?.media.url) === 'video'">
         <Artplayer :option="{
-            url: activeVersion.media.url,
+            url: quality[0].url,
+            quality: quality,
             muted: false,
             autoplay: false,
             loop: false,
@@ -113,12 +114,13 @@
 </template>
 
 <script setup>
-import { ref, toRef, toRefs, computed } from "vue";
+import { ref, toRefs, computed } from "vue";
 import StrapiUpload from "src/components/Utilits/StrapiUpload.vue";
 import Artplayer from "src/components/VIewComponents/ArtPlayer.vue";
 import filetype from "src/hooks/global/filetype.js";
 import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 import { i18n } from 'src/boot/i18n.js';
+import useOverview from 'src/pages/team/hooks/useOverview.js'
 
 const $t = i18n.global.t;
 
@@ -149,6 +151,7 @@ const props = defineProps({
   },
 });
 const { activeVersion } = toRefs(props);
+const { quality } = useOverview(activeVersion.value);
 const isShared = computed(() => uiStore.isShared)
 const upload_label = computed(() =>
   teamStore.card?.type === "classroom" ? $t('classroom_file') : $t('preview_file')
@@ -164,6 +167,6 @@ const fileUploaded = (files) => {
 
 const emit = defineEmits(["mediaChanged"]);
 const updateVersionFn = async (media_id, media) => {
-  emit("mediaChanged", media_id, media);
+  emit("mediaChanged", activeVersion.value, media_id, media);
 };
 </script>

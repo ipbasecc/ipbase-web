@@ -310,3 +310,36 @@ export function manualDecimal(num, decimalPlaces) {
   const factor = Math.pow(10, decimalPlaces);
   return Math.floor(num * factor) / factor;
 }
+
+export function sortByField(arr, field, order = 'desc') {
+  return arr.sort((a, b) => {
+    console.log(a[field]);
+    
+    if(typeof a[field] !== 'number'){
+      a[field] = Number(a[field])
+    }
+    if(typeof b[field] !== 'number'){
+      b[field] = Number(b[field])
+    }
+    // 如果指定的字段在两个条目中都不存在，则保持原顺序
+    if (!a[field] && !b[field]) {
+      return 0;
+    }
+    // 如果a条目中不存在指定字段，则a排在前面
+    if (!a[field]) {
+      return -1;
+    }
+    // 如果b条目中不存在指定字段，则b排在前面
+    if (!b[field]) {
+      return 1;
+    }
+    // 根据指定的排序方法进行排序
+    if (order === 'desc') {
+      return b[field] - a[field];
+    } else if (order === 'asc') {
+      return a[field] - b[field];
+    }
+    // 默认为降序
+    return b[field] - a[field];
+  });
+}

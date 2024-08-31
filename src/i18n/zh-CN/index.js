@@ -664,4 +664,14 @@ export default {
 
   multiple_versions: '多版本',
   only_electron: '仅限桌面端',
+  quality_source: '原画',
+  quality_3840: '4K',
+  quality_1920: '全高清',
+  quality_1280: '半高清',
+  quality_960: '960P',
+  quality_640: '640P',
+  quality_480: '480P',
+  quality_320: '320P',
+  quality_240: '240P',
+  quality_848: '848P',
 };

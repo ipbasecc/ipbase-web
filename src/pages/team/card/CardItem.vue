@@ -145,18 +145,23 @@
       <!-- 封面 -->
       <q-card-section
         v-if="cardRef.expand !== 'collapse'"
-        class="q-pa-xs scroll-y"
+        class="q-pa-xs scroll-y mini-ui"
         style="max-height: 61vh"
       >
       <template v-if="!uiStore.only_electron.includes(teamStore.navigation) || $q.platform.is.electron">
         <FileViewer
           v-if="media?.url"
           :key="media.url"
-          :file="media"
+          :file="quality?.length > 0 ? {
+            id: media.id,
+            ext: media.ext,
+            url: quality[quality.length - 1].url,
+          } : media"
           :videoOption="videoOption"
           :by_width="true"
           mainStyle="no-padding"
         />
+
       </template>
         <div v-else class="column flex-center q-py-md">
           {{ $t('only_electron') }}
@@ -633,6 +638,7 @@ import ClassPage from "./ClassPage.vue";
 import FileViewer from "src/components/VIewComponents/FileViewer.vue";
 import CreateShare from "pages/team/components/CreateShare.vue";
 import DownloadApp from 'src/components/VIewComponents/DownloadApp.vue'
+import useOverview from 'src/pages/team/hooks/useOverview.js'
 
 const $q = useQuasar();
 const route = useRoute();
@@ -672,7 +678,7 @@ const shareProps = ref([
   { val: "card_feedback", label: "feedback", enable: false },
 ]);
 const videoOption = {
-  muted: false,
+  muted: true,
   autoplay: false,
   loop: false,
   mutex: true,
@@ -736,22 +742,39 @@ const isCreator = computed(() => {
 const isInCard = ref(false);
 const multiple_versions = computed(() => cardRef.value?.overviews?.length > 1);
 const media = ref();
+const quality = ref([]);
 const storeCard = computed(() => teamStore.card);
 const storeCardMedia = computed(() => teamStore.card?.activeVersion?.media);
+const storeCardVersion = computed(() => teamStore.card?.activeVersion);
 const belong_card = ref();
+const toggleVersion = (i) => {
+  // console.log('toggleVersion', i);
+  media.value = i.media;
+  cardRef.value.activeVersion = i
+}
 watch(cardRef, () => {
   if (cardRef.value && cardRef.value.overviews?.length > 0) {
-    media.value =
-      cardRef.value.overviews?.find(
-        (i) => i.version === cardRef.value.default_version
-      )?.media || cardRef.value.overviews[0]?.media;
+    let version
+    if (cardRef.value?.activeVersion) {
+      version = cardRef.value?.activeVersion
+    } else {
+      version = cardRef.value.overviews?.find((i) => 
+        i.version === cardRef.value.default_version
+      ) || cardRef.value.overviews[0];
+    }
+    media.value = version.media;
+    const { quality: _quality } = useOverview(version)
+    quality.value = _quality.value;
   }
   belong_card.value = teamStore.card || null;
 },{immediate:true,deep:true});
 
-watch([storeCard, storeCardMedia], () => {
-  if (storeCard.value?.id === cardRef.value.id && storeCardMedia.value) {    
+watch([storeCard, storeCardMedia, storeCardVersion], () => {
+  if (storeCard.value?.id === cardRef.value.id && storeCardVersion.value) {    
     media.value = storeCardMedia.value
+
+    const { quality: _quality } = useOverview(storeCardVersion.value)
+    quality.value = _quality.value;
   }
 },{immediate:false,deep:false})
 
@@ -967,12 +990,6 @@ const _leaveCard = () => {
   leaveCard();
   syncDeletedByWS();
 };
-
-const toggleVersion = (i) => {
-  console.log('toggleVersion', i);  
-  media.value = i.media;
-  cardRef.value.activeVersion = i
-}
 
 // ws data line -------------------------
 let strapi;

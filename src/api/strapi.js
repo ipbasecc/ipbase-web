@@ -180,3 +180,14 @@ export async function queryMedias(params) {
     return error;
   }
 }
+// 添加媒体以供转码
+export async function addMedia(params) {
+  try {
+    const res = await api.post(`/addMedia`, params);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
