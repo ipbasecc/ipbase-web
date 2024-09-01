@@ -674,4 +674,7 @@ export default {
   quality_320: '320P',
   quality_240: '240P',
   quality_848: '848P',
+
+  splite_kanban_tip: 'Split View',
+  splite_kanban_right_view_tip: 'Please select a board from the list on the right side.',
 }

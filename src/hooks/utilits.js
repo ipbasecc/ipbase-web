@@ -312,9 +312,7 @@ export function manualDecimal(num, decimalPlaces) {
 }
 
 export function sortByField(arr, field, order = 'desc') {
-  return arr.sort((a, b) => {
-    console.log(a[field]);
-    
+  return arr.sort((a, b) => {    
     if(typeof a[field] !== 'number'){
       a[field] = Number(a[field])
     }

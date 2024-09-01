@@ -1404,7 +1404,7 @@ const todogroups = ref([]);
 //         用户关联的私有清单：从用户清单中提取
 // 个人规划：
 //         从用户初始化数据中提取
-const user_todogroups = computed(() => userStore.todogroups);
+const user_todogroups = computed(() => teamStore.init?.todogroups);
 const loading = ref(false);
 const getTodogroups = async () => {
   loading.value = true;
@@ -1420,6 +1420,8 @@ const getTodogroups = async () => {
     res = teamStore.card?.todogroups || []; // 共享页面中的待办面板todo
   } else if (assignData.value) {
     res = assignData.value; // 共享页面中的feedback的todo、弹框中待办面板的数据
+  } else {
+    res = user_todogroups.value;
   }
   if (res?.length > 0 && !card.value) {
     // card todogroup no need attachHiddenStatus

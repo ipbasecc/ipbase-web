@@ -1,5 +1,5 @@
 <template>
-  <DocumentTiptap v-if="document" :document :by_info />
+  <DocumentTiptap v-if="document" :document :by_info contentStyle="max-width: 100%;min-width: 64rem;" />
 </template>
 
 <script setup>

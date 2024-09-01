@@ -11,7 +11,8 @@
     :square="true"
     :withSaveBtb="true"
     :withImageBtb="true"
-    contentStyle="max-height: unset"
+    :contentStyle="contentStyle"
+    class="items-center"
     @tiptapUpdate="tiptapUpdate"
     @tiptapBlur="tiptapBlur"
   >
@@ -42,6 +43,10 @@ const props = defineProps({
   by_info: {
     type: Object,
     default: null,
+  },
+  contentStyle: {
+    type: String,
+    default: 'max-height: unset;',
   },
 });
 

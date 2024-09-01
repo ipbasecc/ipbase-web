@@ -65,7 +65,8 @@ export default defineStore("ui", {
     ],
     unsupportFiles: [],
     showUnsupportFiles: false,
-    only_electron: ['classroom']
+    only_electron: ['classroom'],
+    split_kanban_active: void 0
   }),
   actions: {
     $reset() {

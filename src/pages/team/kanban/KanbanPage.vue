@@ -32,6 +32,15 @@
           </q-tooltip>
         </q-btn>
         <q-space />
+        <q-btn
+         :color="$q.dark.mode
+            ? 'white'
+            : 'black'
+          " dense flat icon="flip" @click="toggleRightDrawer('drop_kanban')">
+          <q-tooltip class="border font-medium" :class="$q.dark.mode ? 'bg-dark text-white' : 'bg-white text-black'">
+            {{ $t('splite_kanban_tip') }}
+          </q-tooltip>
+        </q-btn>
         <q-btn-group v-if="show_viewModel_togger && $q.screen.gt.xs" flat class="border">
           <q-btn
             v-for="i in view_models"
@@ -52,6 +61,7 @@
           />
         </q-btn-group>
         <q-btn
+          v-if="teamStore.kanban_rightDrawer !== 'drop_kanban'"
           :flat="teamStore.kanban_rightDrawer !== 'private_todos'"
           dense
           unelevated
@@ -88,9 +98,14 @@
       v-if="teamStore.kanban && $q.screen.gt.xs"
       v-model="rightDrawer"
       side="right"
-      :class="$q.dark.mode ? 'bg-black' : 'bg-white'"
+      :class="`
+        ${uiStore.split_kanban_active === 'right' ? $q.dark.mode ? 'bg-black border-primary border' : 'bg-grey-1 border-primary border' : $q.dark.mode ? 'bg-darker' : 'bg-grey-3'}`
+      "
       :width="rightDrawer_width"
       class="q-pa-xs"
+      @show="onShow"
+      @hide="onHide"
+      @click="activeSplite('right')"
     >
       <TodoPage
         v-if="teamStore.kanban_rightDrawer === 'private_todos'"
@@ -103,11 +118,23 @@
         :chatInfo
         @closeThread="closeThread"
       />
+      <KanbanModel
+        v-if="teamStore.kanban_rightDrawer === 'drop_kanban' && teamStore?.project?.id && teamStore.dropKanbanID"
+        :project_id="teamStore?.project.id"
+        :kanban_id="teamStore.dropKanbanID"
+        view_model="kanban"
+      />
+      <div v-else class="fit flex flex-center font-medium">
+        {{ $t('splite_kanban_right_view_tip') }}
+      </div>
     </q-drawer>
 
-    <q-page-container>
-      <q-page :class="uiStore?.draging ? 'unselected' : ''">
-        <q-resize-observer @resize="onResize" />
+    <q-page-container v-element-size="onResize">
+      <q-page :class="`
+        ${uiStore?.draging ? 'unselected' : ''}
+        ${uiStore.split_kanban_active === 'left' ? $q.dark.mode ? 'bg-black border-primary border' : 'bg-grey-1 border-primary border' : $q.dark.mode ? 'bg-darker' : 'bg-grey-3'}
+      `"
+      @click="activeSplite('left')">
         <KanbanModel
           v-if="kanban_id"
           ref="KanbanModelRef"
@@ -119,23 +146,23 @@
         <div v-if="!kanban_id && $q.screen.gt.xs" class="absolute-full flex flex-center">
           <BgBrand />
         </div>
-        <ThreadContainer
-            v-if="teamStore.kanban_rightDrawer === 'thread' && teamStore.thread && !$q.screen.gt.xs"
-            :showRootpost="false"
-            :chatInfo
+        <template v-if="!$q.screen.gt.xs">
+          <ThreadContainer v-if="teamStore.kanban_rightDrawer === 'thread' && teamStore.thread"
+              :showRootpost="false"
+              :chatInfo
+              class="absolute-full"
+              :class="$q.dark.mode ? 'bg-darker text-grey-1' : 'bg-grey-1 text-grey-10'"
+              @closeThread="closeThread"
+          />
+          <TodoPage v-if="teamStore.kanban_rightDrawer === 'private_todos'"
             class="absolute-full"
-            :class="$q.dark.mode ? 'bg-darker text-grey-1' : 'bg-grey-1 text-grey-10'"
-            @closeThread="closeThread"
-        />
-        <TodoPage
-          v-if="teamStore.kanban_rightDrawer === 'private_todos' && !$q.screen.gt.xs"
-          class="absolute-full"
-          :kanban_id="teamStore.kanban?.id"
-        >
-          <template #bar_left>
-            <q-btn flat dense icon="close" @click="teamStore.kanban_rightDrawer = void 0" />
-          </template>
-        </TodoPage>
+            :kanban_id="teamStore.kanban?.id"
+          >
+            <template #bar_left>
+              <q-btn flat dense icon="close" @click="teamStore.kanban_rightDrawer = void 0" />
+            </template>
+          </TodoPage>
+        </template>
       </q-page>
     </q-page-container>
   </q-layout>
@@ -157,6 +184,7 @@ import {
 } from "./BoradsList.js";
 import { ensureTrailingSlash } from 'src/hooks/utilits.js'
 import { getProjectNav } from "src/pages/team/components/SideNavigation.js";
+import { vElementSize } from '@vueuse/components'
 
 const props = defineProps({
   project_id: {
@@ -222,9 +250,19 @@ const set_view_model = async (val) => {
   await localforage.setItem(`__kanban_${kanban_id.value}_view_model`, val);
 };
 
-const onResize = (size) => {
-  uiStore.mainWindowSize = size;
+const onResize = ({ width, height }) => {
+  // uiStore.mainWindowSize = size;
+  uiStore.mainWindowSize = {
+    width: width,
+    height: height,
+  };
 };
+
+const activeSplite = (val) => {
+  if(teamStore.kanban_rightDrawer === 'drop_kanban'){
+    uiStore.split_kanban_active = val;
+  }
+}
 
 watchEffect(() => {
   if (
@@ -252,13 +290,30 @@ watchEffect(() => {
 });
 
 const rightDrawer = computed(() =>
-  teamStore.kanban_rightDrawer && true || false
+  teamStore.kanban_rightDrawer ? true : false
 );
+const navigatorDrawer = ref();
+const onShow = () => {
+  navigatorDrawer.value = uiStore.navigatorDrawer;
+  uiStore.navigatorDrawer = false;
+  if(teamStore.kanban_rightDrawer === 'drop_kanban'){
+    uiStore.split_kanban_active = 'right';
+  }
+}
+const onHide = () => {
+  teamStore.dropKanbanID = void 0;
+  teamStore.kanban_rightDrawer = void 0;
+  uiStore.navigatorDrawer = navigatorDrawer.value;
+  uiStore.split_kanban_active = void 0;
+}
+
 const toggleRightDrawer = (val) => {
-  teamStore.kanban_rightDrawer = teamStore.kanban_rightDrawer ? null : val;
+  teamStore.kanban_rightDrawer = teamStore.kanban_rightDrawer === val ? null : val;
 };
 const rightDrawer_width = computed(() =>
-  teamStore.kanban_rightDrawer === "thread" ? 460 : 400
+  teamStore.kanban_rightDrawer === "thread" ? 460 
+  : teamStore.kanban_rightDrawer === 'drop_kanban' ? uiStore.mainWindowSize?.width / 2
+  : 400
 );
 const closeThread = () => {
   teamStore.kanban_rightDrawer = null;

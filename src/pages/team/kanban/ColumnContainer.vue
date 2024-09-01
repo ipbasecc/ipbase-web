@@ -771,9 +771,7 @@ const cardChange = (val) => {
 const cardDelete = (card_id) => {
   emit("cardDelete", card_id);
 };
-const dragStart = (event) => {
-  // console.log('dragStart', event);
-  
+const dragStart = (event) => {  
   teamStore.cardDragging = true;
   uiStore.draging = true;
 };
@@ -968,23 +966,30 @@ watch(
           }
           const syncCards = async (_order) => {
             const targetIds = _order;
-            // 根据目标顺序，重新构建卡片数组
-            columnRef.value.cards = targetIds.map(id => {
+            // 创建一个包含所有异步操作的promise数组
+            const cardPromises = targetIds.map(async (id) => {
               const card = _all_cards.find(i => i.id === id);
-              // console.log('ws card', card);
               if (!card) {
-                const res = findCard(id);
+                const res = await findCard(id);
                 if (res?.data) {
-                  return res.data
+                  return res.data;
                 } else {
                   return {
                     id: -1,
                     error: 'card_fetch_error'
-                  }
+                  };
                 }
               }
               return card;
             });
+
+            // 使用Promise.all等待所有异步操作完成
+            const cards = await Promise.allSettled(cardPromises);
+            console.log(cards);
+            
+
+            // 更新卡片数组
+            columnRef.value.cards = cards.map(i => i.status === "fulfilled" && i.value);
           }
           await syncCards(order);
         }

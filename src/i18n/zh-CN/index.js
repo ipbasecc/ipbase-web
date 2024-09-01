@@ -674,4 +674,7 @@ export default {
   quality_320: '320P',
   quality_240: '240P',
   quality_848: '848P',
+
+  splite_kanban_tip: '分割视图',
+  splite_kanban_right_view_tip: '请在右侧看板列表中点选看板',
 };

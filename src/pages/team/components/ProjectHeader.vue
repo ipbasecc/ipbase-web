@@ -49,23 +49,15 @@ import ProjectNavigation from "./ProjectNavigation.vue";
 import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 import { useRouter } from "vue-router";
 
-const props = defineProps({
-  rightDrawer: {
-    type: String,
-    default: null,
-  },
-});
-const rightDrawerRef = toRef(props, "rightDrawer");
-
 const emit = defineEmits(["toggleRightpannel", "toggleleftDrawer"]);
 const toggleleftDrawer = () => {
-  emit("toggleleftDrawer");
+  uiStore.projectLeftDrawer = !uiStore.projectLeftDrawer
 };
 const toggleRightpannel = () => {
-  if (rightDrawerRef.value === "member_manager") {
+  if (teamStore.rightDrawer === "member_manager") {
     teamStore.rightDrawerOpen = !teamStore.rightDrawerOpen;
   } else {
-    emit("toggleRightpannel", "member_manager");
+    teamStore.rightDrawer = "member_manager"
     if (!teamStore.rightDrawerOpen) {
       teamStore.rightDrawerOpen = !teamStore.rightDrawerOpen;
     }

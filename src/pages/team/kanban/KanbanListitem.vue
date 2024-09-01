@@ -4,8 +4,9 @@
         v-if="kanbanRef"
         class="hovered-item radius-xs q-pa-xs"
         :class="`
-        ${isActived ? 'border active-sublistitem' : 'border-placeholder'} ${
-        useAuths('order', ['kanban']) && $q.screen.gt.xs ? ' dragBar' : ''}
+        ${isActived ? 'border active-sublistitem' : !teamStore.dropKanbanID ? 'border-placeholder' : ''}
+        ${useAuths('order', ['kanban']) && $q.screen.gt.xs ? ' dragBar' : ''}
+        ${teamStore.dropKanbanID === kanbanRef.id ? 'border border-dashed' : ''}
       `"
         clickable
         v-ripple
@@ -109,7 +110,7 @@ import { kanbanUpdate, kanbanDelete } from "src/api/strapi/project.js";
 import { useRoute } from "vue-router";
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 
-import { userStore, teamStore } from "src/hooks/global/useStore.js";
+import { userStore, teamStore, uiStore } from "src/hooks/global/useStore.js";
 const route = useRoute();
 
 const props = defineProps({
@@ -125,13 +126,22 @@ const emit = defineEmits(["enterKanban", "removeKanban"]);
 const kanbanRef = toRef(props, "kanban");
 const isActived = computed(
   () =>
-    teamStore.kanban_id === kanbanRef.value?.id ||
-    teamStore.kanban?.id === kanbanRef.value?.id ||
-    route.params?.kanban_id === kanbanRef.value?.id
+    teamStore.kanban?.id === kanbanRef.value?.id
 );
 const enterKanban = (kanban) => {
-  // console.log('enterKanban');
-  emit("enterKanban", kanban);
+  if(uiStore.split_kanban_active === 'right'){
+    teamStore.dropKanbanID = Number(kanban.id);
+  } else {
+    emit("enterKanban", kanban);
+  }
+};
+const openDropKanban = (kanban) => {
+  if(teamStore.cardDragging && teamStore.kanban?.id !== kanban.id){
+    teamStore.rightDrawerOpen = true;
+    teamStore.dropKanbanID = Number(kanban.id);
+    teamStore.rightDrawer = 'drop_kanban';
+    teamStore.rightDrawerWidth = uiStore.mainWindowSize?.width / 2;
+  }
 };
 
 const emojis = [

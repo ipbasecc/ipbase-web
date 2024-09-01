@@ -270,11 +270,11 @@ const initKanban = async (kid) => {
       // 当有 teamStore.card 时，说明card的详情弹框是打开状态
       if (teamStore.card) {
         teamStore.cardKanban = _attachExpand;
-      } else {
+      } else if(!teamStore.dropKanbanID) {
         teamStore.kanban = _attachExpand;
+        teamStore.kanban_type = _attachExpand.type;
+        await putKanbanCache(_attachExpand);
       }
-      teamStore.kanban_type = _attachExpand.type;
-      await putKanbanCache(_attachExpand);
     }
   };
 
@@ -302,7 +302,11 @@ watch(kanban_id, async () => {
   }
 },{immediate: true,deep:false})
 
-const kanbanHeight = computed(() => uiStore.mainWindowSize.height);
+const kanbanHeight = computed(() => 
+  teamStore.kanban_rightDrawer === 'drop_kanban'
+  ? uiStore.mainWindowSize?.height - 2
+  : uiStore.mainWindowSize?.height
+);
 const reelHeight = computed( () =>
   (uiStore.mainWindowSize?.height - 48) / _kanbanSource.value?.columns?.length - 64 || 240
 );

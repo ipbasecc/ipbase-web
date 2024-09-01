@@ -24,12 +24,7 @@
       :class="dragWidth ? 'col-resize' : ''"
       class="absolute-full"
       @mousemove="handleMouseMove" @mouseup="handleMouseUp">
-      <ProjectHeader
-        v-if="teamStore?.project && !uiStore.activeReel && !uiStore.isFocusMode"
-        :rightDrawer="rightDrawer"
-        @toggleRightpannel="toggleRightpannel"
-        @toggleleftDrawer="toggleleftDrawer"
-      />
+      <ProjectHeader v-if="teamStore?.project && !uiStore.activeReel && !uiStore.isFocusMode" />
       <q-drawer
         v-if="$q.screen.gt.xs && uiStore.app === 'teams' && teamStore?.project_id && !uiStore.isFocusMode"
         v-model="uiStore.projectLeftDrawer"
@@ -68,19 +63,19 @@
         v-if="teamStore?.project_id && $q.screen.gt.xs"
         v-model="teamStore.rightDrawerOpen"
         side="right"
-        :width="420"
+        :width="teamStore.rightDrawerWidth"
         class="border-left"
       >
         <MemberManager
-          v-if="rightDrawer === 'member_manager' && teamStore?.project?.id"
+          v-if="teamStore.rightDrawer === 'member_manager' && teamStore?.project?.id"
           :byInfo
         />
         <TodoPage
-          v-else-if="rightDrawer === 'person_todos'"
+          v-else-if="teamStore.rightDrawer === 'person_todos'"
           :kanban_id="teamStore.kanban?.id"
         />
         <FlagsContainder
-          v-else-if="rightDrawer === 'flaggeds'"
+          v-else-if="teamStore.rightDrawer === 'flaggeds'"
           :headerless="false"
         />
       </q-drawer>
@@ -160,10 +155,6 @@ watchEffect(() => {
   isExternal.value = user_roles.value?.includes('external')
 })
 
-const rightDrawer = ref();
-const toggleRightpannel = (val) => {
-  rightDrawer.value = val;
-};
 const toggleleftDrawer = () => {
   uiStore.projectLeftDrawer = !uiStore.projectLeftDrawer;
 };

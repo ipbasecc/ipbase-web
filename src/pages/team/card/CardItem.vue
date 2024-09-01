@@ -163,7 +163,7 @@
         />
 
       </template>
-        <div v-else class="column flex-center q-py-md">
+        <div v-else class="column flex-center q-py-md cursor-pointer" @click="show_cardDetial = true">
           {{ $t('only_electron') }}
         </div>
       </q-card-section>
@@ -548,11 +548,11 @@
         :card="cardRef"
       />
       <q-card v-else bordered class="column">
-        <q-bar class="bg-deep-orange text-white">
+        <q-toolbar class="bg-deep-orange text-white">
           <div class="text-h6">{{ $t('only_electron') }}</div>
           <q-space />
           <q-btn dense flat round icon="close" v-close-popup />
-        </q-bar>
+        </q-toolbar>
         <q-card-section class="q-space column flex-center">
           <DownloadApp flat :nobar="true" />
         </q-card-section>
