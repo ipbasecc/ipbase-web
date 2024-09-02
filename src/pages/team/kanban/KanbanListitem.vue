@@ -12,7 +12,10 @@
         v-ripple
         @click.stop="enterKanban(kanbanRef)">
       <q-item-section>{{ kanbanRef.title === 'Initial_Kanban' ? $t(kanbanRef.title) : kanbanRef.title }}</q-item-section>
-      <q-item-section side class="absolute-right z-fab q-mr-xs">
+      <q-item-section side class="absolute-right z-fab q-mr-xs"
+        @mouseenter="unEnter = true"
+        @mouseleave="unEnter = false"
+      >
         <q-btn
           v-if="
             useAuths('title', ['kanban']) ||
@@ -126,7 +129,9 @@ const isActived = computed(
   () =>
     teamStore.kanban_id === kanbanRef.value?.id
 );
+const unEnter = ref(false)
 const enterKanban = (kanban) => {
+  if(unEnter.value) return
   if(uiStore.split_kanban_active === 'right'){
     teamStore.dropKanbanID = Number(kanban.id);
   } else {
