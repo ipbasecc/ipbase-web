@@ -303,7 +303,7 @@ watch(kanban_id, async () => {
 },{immediate: true,deep:false})
 
 const kanbanHeight = computed(() => 
-  teamStore.kanban_rightDrawer === 'drop_kanban'
+  uiStore.splitterView
   ? uiStore.mainWindowSize?.height - 2
   : uiStore.mainWindowSize?.height
 );

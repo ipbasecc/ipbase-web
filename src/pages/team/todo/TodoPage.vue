@@ -822,12 +822,9 @@
               <div class="row no-wrap q-space font-bold-600">
                 <span class="undrag">{{ i.name }}</span>
                 <div class="q-space dragBar" />
-                <q-popup-proxy
+                <q-popup-proxy v-if=" useAuths('name', [authBase.collection]) &&
+                    !uiStore.edittingTodo"
                   cover
-                  v-if="
-                    useAuths('name', [authBase.collection]) &&
-                    !uiStore.edittingTodo
-                  "
                   @show="toggle_updateTodogroup(i)"
                 >
                   <q-card bordered class="q-pa-xs">
@@ -963,25 +960,22 @@
                     @todoDeleted="todoDeleted"
                     @editing="editting_todosGroup = i.id"
                     @unediting="uneditting()"
+                    @showAddTodo="showAddTodo"
+                    @hideAddTodo="hideAddTodo"
                   />
                 </template>
               </VueDraggable>
-                <template
-                  v-if="useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])"
-                >
-                  <div
-                    class="row no-wrap gap-xs items-start q-pl-xs q-pr-sm todo_in_card relative-position hovered-item"
-                    :class="
-                      todo_add_ing === i.id
+                <template v-if="!uiStore.dragging && useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])">
+                  <div class="row no-wrap gap-xs items-start q-pl-xs q-pr-sm todo_in_card relative-position hovered-item"
+                    :class="todo_add_ing === i.id
                         ? 'border-info radius-xs border-solid border-xs'
                         : 'border-placeholder'
                     "
                     style="order: 99999"
                   >
                     <template v-if="todo_add_ing !== i.id">
-                      <div
-                        :class="
-                          show_addTodo_ofGroup === i.id ? 'op-null' : 'op-0'
+                      <div :class="
+                          show_addTodo_ofGroup === i.id && enableAddTodo ? 'op-null' : 'op-0'
                         "
                         class="column justify-center items-end q-space q-pr-md bg-primary overflow-show transition"
                         style="height: 1px"
@@ -1846,6 +1840,14 @@ const dragEnd = () => {
   uiStore.dragKanbanScrollEnable = true;
   uiStore.dragging = false;
 };
+
+const enableAddTodo = ref(true);
+const showAddTodo = () => {
+  enableAddTodo.value = true
+}
+const hideAddTodo = () => {
+  enableAddTodo.value = false
+}
 
 const route = useRoute();
 const router = useRouter();

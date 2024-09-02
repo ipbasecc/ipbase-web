@@ -6,25 +6,13 @@
         :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-1'"
         style="height: 2.3rem"
       >
-        <q-btn
-          v-if="!$q.screen.gt.xs"
-          flat dense
-          size="sm"
-          icon="mdi-chevron-left"
-         :color="$q.dark.mode
-            ? 'white'
-            : 'black'
-          "
+        <q-btn v-if="!$q.screen.gt.xs"
+          flat dense size="sm" icon="mdi-chevron-left"
+          :color="$q.dark.mode ? 'white' : 'black'"
           @click="backList()"
         />
-        <q-btn
-          flat dense
-          size="sm"
-          icon="mdi-refresh"
-         :color="$q.dark.mode
-            ? 'white'
-            : 'black'
-          "
+        <q-btn flat dense size="sm" icon="mdi-refresh"
+         :color="$q.dark.mode ? 'white' : 'black'"
           @click="refresh()"
         >
           <q-tooltip>
@@ -32,11 +20,9 @@
           </q-tooltip>
         </q-btn>
         <q-space />
-        <q-btn
-         :color="$q.dark.mode
-            ? 'white'
-            : 'black'
-          " dense flat icon="flip" @click="toggleRightDrawer('drop_kanban')">
+        <q-btn v-if="$q.screen.gt.md && view_model === 'kanban'" dense flat icon="flip"
+         :color="$q.dark.mode ? 'white' : 'black'"
+         @click="toggleSplitterView()">
           <q-tooltip class="border font-medium" :class="$q.dark.mode ? 'bg-dark text-white' : 'bg-white text-black'">
             {{ $t('splite_kanban_tip') }}
           </q-tooltip>
@@ -47,6 +33,7 @@
             :key="i.val"
             dense
             padding="4px 10px"
+            :disable="uiStore.splitterView"
             :label="$t(i.label)"
             :icon="i.icon"
             :color="view_model === i.val ? 'primary' : ''"
@@ -63,8 +50,7 @@
         <q-btn
           v-if="teamStore.kanban_rightDrawer !== 'drop_kanban'"
           :flat="teamStore.kanban_rightDrawer !== 'private_todos'"
-          dense
-          unelevated
+          dense unelevated icon="task_alt"
           :color="
             teamStore.kanban_rightDrawer === 'private_todos'
               ? 'positive'
@@ -72,7 +58,6 @@
               ? 'white'
               : 'black'
           "
-          icon="task_alt"
           :class="
             teamStore.kanban_rightDrawer === 'private_todos' ? '' : 'op-7'
           "
@@ -103,9 +88,6 @@
       "
       :width="rightDrawer_width"
       class="q-pa-xs"
-      @show="onShow"
-      @hide="onHide"
-      @click="activeSplite('right')"
     >
       <TodoPage
         v-if="teamStore.kanban_rightDrawer === 'private_todos'"
@@ -118,31 +100,44 @@
         :chatInfo
         @closeThread="closeThread"
       />
-      <KanbanModel
-        v-if="teamStore.kanban_rightDrawer === 'drop_kanban' && teamStore?.project?.id && teamStore.dropKanbanID"
-        :project_id="teamStore?.project.id"
-        :kanban_id="teamStore.dropKanbanID"
-        view_model="kanban"
-      />
-      <div v-else class="fit flex flex-center font-medium">
-        {{ $t('splite_kanban_right_view_tip') }}
-      </div>
     </q-drawer>
 
     <q-page-container v-element-size="onResize">
-      <q-page :class="`
-        ${uiStore?.draging ? 'unselected' : ''}
-        ${uiStore.split_kanban_active === 'left' ? $q.dark.mode ? 'bg-black border-primary border' : 'bg-grey-1 border-primary border' : $q.dark.mode ? 'bg-darker' : 'bg-grey-3'}
-      `"
-      @click="activeSplite('left')">
-        <KanbanModel
-          v-if="kanban_id"
-          ref="KanbanModelRef"
-          :key="`kanban-${kanban_id}`"
-          :project_id="Number(project_id)"
-          :kanban_id="Number(kanban_id)"
-          :view_model="view_model"
-        />
+      <q-page :class="`${uiStore?.draging ? 'unselected' : ''}`">
+        <q-splitter v-model="splitterModel"
+          :limits="[0, Infinity]"
+          class="absolute-full"
+          :separator-style="uiStore.splitterView ? '' : 'display: none'"
+          :beforeClass="splitterModelClass('left')"
+          :afterClass="splitterModelClass('right')"
+        >
+          <template v-slot:before>
+            <div class="absolute-full" @click="activeSplite('left')">
+              <KanbanModel v-if="kanban_id"
+                ref="KanbanModelRef"
+                :key="`kanban-${kanban_id}`"
+                :project_id="Number(project_id)"
+                :kanban_id="Number(kanban_id)"
+                :view_model="view_model"
+              />
+            </div>
+          </template>
+          <template v-if="uiStore.splitterView" v-slot:separator>
+          </template>
+          <template v-if="uiStore.splitterView" v-slot:after>
+            <div class="absolute-full" @click="activeSplite('right')">
+              <KanbanModel v-if="teamStore?.project?.id && teamStore.dropKanbanID"
+                :project_id="teamStore?.project.id"
+                :kanban_id="teamStore.dropKanbanID"
+                view_model="kanban"
+              />
+              <div v-if="!teamStore.dropKanbanID"
+                class="fit flex flex-center font-medium">
+                {{ $t('splite_kanban_right_view_tip') }}
+              </div>
+            </div>
+          </template>
+        </q-splitter>
         <div v-if="!kanban_id && $q.screen.gt.xs" class="absolute-full flex flex-center">
           <BgBrand />
         </div>
@@ -185,7 +180,9 @@ import {
 import { ensureTrailingSlash } from 'src/hooks/utilits.js'
 import { getProjectNav } from "src/pages/team/components/SideNavigation.js";
 import { vElementSize } from '@vueuse/components'
+import { useQuasar } from 'quasar';
 
+const $q = useQuasar();
 const props = defineProps({
   project_id: {
     type: String,
@@ -258,9 +255,32 @@ const onResize = ({ width, height }) => {
   };
 };
 
-const activeSplite = (val) => {
-  if(teamStore.kanban_rightDrawer === 'drop_kanban'){
+const splitterModel = ref(100);
+const lastSplitterModel = ref();
+watchEffect(() => {
+  if(splitterModel.value !== 100){
+    lastSplitterModel.value = splitterModel.value;
+  }
+})
+const toggleSplitterView = () => {
+  uiStore.splitterView = !uiStore.splitterView;
+  splitterModel.value = uiStore.splitterView ? lastSplitterModel.value || 50 : 100
+  uiStore.split_kanban_active = uiStore.splitterView ? 'right' : void 0
+  set_view_model('kanban')
+}
+const activeSplite = (val) => {  
+  if(uiStore.splitterView){
     uiStore.split_kanban_active = val;
+  }
+}
+const splitterModelClass = (side) => {
+  const activeClass = $q.dark.mode ? 'bg-black border-primary border' : 'bg-grey-1 border-primary border'
+  const normalClass = $q.dark.mode ? 'bg-darker border-placeholder' : 'bg-grey-3 border-placeholder'
+  if(side === 'left'){
+    return uiStore.split_kanban_active === 'left' ? activeClass : normalClass
+  }
+  if(side === 'right'){
+    return uiStore.split_kanban_active === 'right' ? activeClass : normalClass
   }
 }
 
@@ -292,29 +312,11 @@ watchEffect(() => {
 const rightDrawer = computed(() =>
   teamStore.kanban_rightDrawer ? true : false
 );
-const navigatorDrawer = ref();
-const onShow = () => {
-  navigatorDrawer.value = uiStore.navigatorDrawer;
-  uiStore.navigatorDrawer = false;
-  if(teamStore.kanban_rightDrawer === 'drop_kanban'){
-    uiStore.split_kanban_active = 'right';
-  }
-}
-const onHide = () => {
-  teamStore.dropKanbanID = void 0;
-  teamStore.kanban_rightDrawer = void 0;
-  uiStore.navigatorDrawer = navigatorDrawer.value;
-  uiStore.split_kanban_active = void 0;
-}
 
 const toggleRightDrawer = (val) => {
   teamStore.kanban_rightDrawer = teamStore.kanban_rightDrawer === val ? null : val;
 };
-const rightDrawer_width = computed(() =>
-  teamStore.kanban_rightDrawer === "thread" ? 460 
-  : teamStore.kanban_rightDrawer === 'drop_kanban' ? uiStore.mainWindowSize?.width / 2
-  : 400
-);
+const rightDrawer_width = computed(() => teamStore.kanban_rightDrawer === "thread" ? 460 : 400);
 const closeThread = () => {
   teamStore.kanban_rightDrawer = null;
   teamStore.thread = null;

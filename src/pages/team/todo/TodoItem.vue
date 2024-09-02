@@ -126,6 +126,8 @@
         <span
           style="height: 30px"
           class="flex flex-center"
+          @mouseenter="hideAddTodo"
+          @mouseleave="showAddTodo"
         >
           <q-btn
             v-if="element.fingerprint ||
@@ -296,6 +298,8 @@ const emit = defineEmits([
   "todoDeleted",
   "editing",
   "unediting",
+  "hideAddTodo",
+  "showAddTodo",
 ]);
 
 const {
@@ -490,6 +494,12 @@ const enterThread = (thread) => {
     teamStore.thread = thread;
   }
 };
+const showAddTodo = () => {
+  emit('showAddTodo')
+}
+const hideAddTodo = () => {
+  emit('hideAddTodo')
+}
 
 watch(
   mm_wsStore,

@@ -40,7 +40,7 @@
           <AffairsFilter />
         </div>
         <q-btn v-if="uiStore.app === 'brand'" flat dense icon="mdi-cards-outline" @click="$router.push('/brand')" />
-        {{ teamStore.kanban?.id }}
+        {{ uiStore.split_kanban_active }}
         <q-space />
         <template v-if="$q.screen.gt.xs">
           <q-btn

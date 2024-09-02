@@ -107,11 +107,9 @@
 <script setup>
 import { computed, ref, toRef } from "vue";
 import { kanbanUpdate, kanbanDelete } from "src/api/strapi/project.js";
-import { useRoute } from "vue-router";
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 
 import { userStore, teamStore, uiStore } from "src/hooks/global/useStore.js";
-const route = useRoute();
 
 const props = defineProps({
   kanban: {
@@ -126,21 +124,13 @@ const emit = defineEmits(["enterKanban", "removeKanban"]);
 const kanbanRef = toRef(props, "kanban");
 const isActived = computed(
   () =>
-    teamStore.kanban?.id === kanbanRef.value?.id
+    teamStore.kanban_id === kanbanRef.value?.id
 );
 const enterKanban = (kanban) => {
   if(uiStore.split_kanban_active === 'right'){
     teamStore.dropKanbanID = Number(kanban.id);
   } else {
     emit("enterKanban", kanban);
-  }
-};
-const openDropKanban = (kanban) => {
-  if(teamStore.cardDragging && teamStore.kanban?.id !== kanban.id){
-    teamStore.rightDrawerOpen = true;
-    teamStore.dropKanbanID = Number(kanban.id);
-    teamStore.rightDrawer = 'drop_kanban';
-    teamStore.rightDrawerWidth = uiStore.mainWindowSize?.width / 2;
   }
 };
 

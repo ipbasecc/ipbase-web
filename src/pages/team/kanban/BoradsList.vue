@@ -1,10 +1,7 @@
 <template>
   <q-list v-if="teamStore.project && boards" class="fit column no-wrap q-pa-xs">
     <template v-if="useAuths('read', ['board'], 'boardList')">
-      <div
-        v-if="
-          multiple_boards || isEmpty || teamStore.navigation === 'classroom'
-        "
+      <div v-if="multiple_boards || isEmpty || teamStore.navigation === 'classroom'"
         class="row no-wrap"
       >
         <BoradToggler :isEmpty />
@@ -35,18 +32,11 @@
           <template #item="{ element }">
             <div class="column no-wrap">
               <div class="row no-wrap items-center hovered-item op-5 relative-position">
-                <q-icon
-                  size="sm"
-                  name="tag"
-                  :class="
-                    useAuths('order', ['group']) ? 'dragBar' : ''
-                  "
+                <q-icon size="sm" name="tag"
+                  :class="useAuths('order', ['group']) ? 'dragBar' : ''"
                 />
-                <span
-                  class="q-space q-pa-sm"
-                  :class="
-                    useAuths('order', ['group']) ? 'dragBar' : ''
-                  "
+                <span class="q-space q-pa-sm"
+                  :class="useAuths('order', ['group']) ? 'dragBar' : ''"
                 >
                   {{ element.name === 'Initial_Group' ? $t(element.name) : element.name }}
                 </span>
@@ -157,31 +147,17 @@
                 </template>
                 <template #footer v-if="useAuths('create', ['kanban']) && addKanban_targetId === element.id">
                   <div class="row no-wrap items-center border radius-xs q-pa-xs">
-                    <q-input
-                      v-model="createKanba_title"
-                      square
-                      filled
-                      dense
-                      autofocus
-                      type="text"
+                    <q-input v-model="createKanba_title"
+                      square filled dense autofocus type="text"
                       :placeholder="$t('kanban_name')"
                       @keyup.esc="addKanban_targetId = null"
-                      @keyup.enter="
-                        kanbanCreateFn(element.id, createKanba_type)
-                      "
-                      @keyup.ctrl.enter="
-                        kanbanCreateFn(element.id, createKanba_type)
-                      "
+                      @keyup.enter="kanbanCreateFn(element.id, teamStore?.navigation)"
+                      @keyup.ctrl.enter="kanbanCreateFn(element.id, teamStore?.navigation)"
                       class="col border-bottom"
                     >
                       <template v-slot:append>
-                        <q-btn
-                          flat
-                          round
-                          dense
-                          size="sm"
-                          icon="check"
-                          @click="kanbanCreateFn(element.id, createKanba_type)"
+                        <q-btn flat round dense size="sm" icon="check"
+                          @click="kanbanCreateFn(element.id, teamStore?.navigation)"
                         />
                       </template>
                     </q-input>
@@ -191,14 +167,9 @@
             </div>
           </template>
         </draggable>
-        <q-input
-          v-if="createGroup_ing"
+        <q-input v-if="createGroup_ing"
           v-model="createGroup_name"
-          dense
-          square
-          filled
-          autofocus
-          type="text"
+          dense square filled autofocus type="text"
           :placeholder="$t('new_group_name')"
           class="q-pa-xs border radius-xs"
           @keyup.enter="createGroupFn()"
@@ -209,22 +180,14 @@
             <q-icon size="xs" name="tag" class="undrag" />
           </template>
           <template v-if="createGroup_name" v-slot:append>
-            <q-btn
-              flat
-              round
-              dense
-              size="sm"
-              icon="check"
+            <q-btn flat round dense size="sm" icon="check"
               @click="createGroupFn()"
             />
           </template>
         </q-input>
       </q-scroll-area>
-      <q-btn
-        v-if="useAuths('create', ['group']) && !isEmpty"
-        size="md"
-        flat
-        class="full-width"
+      <q-btn v-if="useAuths('create', ['group']) && !isEmpty"
+        size="md" flat class="full-width"
         :class="
           teamStore.board?.groups?.length > 0
             ? 'border'
@@ -232,9 +195,7 @@
         "
         @click="createGroup_ing = !createGroup_ing"
       >
-        <q-icon
-          size="1rem"
-          class="op-5"
+        <q-icon size="1rem" class="op-5"
           :name="createGroup_ing ? 'arrow_back_ios_new' : 'add'"
         />
         <span v-if="teamStore.board?.groups?.length === 0">{{
@@ -436,7 +397,6 @@ const createGroupFn = async () => {
 const kanbanDraging = ref(false);
 const createKanba_ing = ref(false);
 const createKanba_title = ref("");
-const createKanba_type = ref("kanban");
 const addKanban_targetId = ref();
 const kanbanCreateFn = async (group_id, type) => {
   if (!createKanba_title.value || createKanba_ing.value || !group_id) return;
@@ -444,7 +404,6 @@ const kanbanCreateFn = async (group_id, type) => {
   const res = await createKanban(group_id, createKanba_title.value, type);
   if (res) {
     createKanba_title.value = "";
-    createKanba_type.value = "kanban";
     createKanba_ing.value = false;
     addKanban_targetId.value = null;
   }
