@@ -35,34 +35,8 @@
                 class="radius-sm q-pa-xs"
                 style="max-width: 202px"
             >
-              <q-item class="justify-center font-large">
-                <div class="row items-center justify-start gap-xs">
-                  <div
-                      v-for="i in emojis"
-                      :key="i"
-                      class="col-2"
-                      @click="toggleEmoji(i)"
-                  >
-                    <q-responsive
-                        :ratio="1"
-                        class="cursor-pointer q-pa-xs border radius-xs emoji"
-                    >
-                      <span v-if="i" class="flex flex-center">{{ i }}</span>
-                      <q-btn
-                          v-else
-                          dense
-                          flat
-                          label="x"
-                          class="flex flex-center"
-                      />
-                    </q-responsive>
-                  </div>
-                </div>
-              </q-item>
-              <q-item
-                  v-if="useAuths('title', ['kanban'])"
-                  class="no-padding"
-              >
+            <template v-if="useAuths('title', ['kanban'])">
+              <q-item class="no-padding">
                 <q-input
                     v-model="params.data.title"
                     dense
@@ -87,6 +61,21 @@
                   </template>
                 </q-input>
               </q-item>
+              <q-separator spaced />
+              <q-item class="justify-center font-large">
+                <div class="grid-container">
+                  <div v-for="i in uiStore.emojis"
+                    :key="i"
+                    class="grid-item cursor-pointer"
+                    @click="toggleEmoji(i)"
+                  >
+                    <span v-if="i" class="flex flex-center">{{ i }}</span>
+                    <q-btn v-else dense size="sm" flat round icon="close" />
+                  </div>
+                  <q-space />
+                </div>
+              </q-item>
+            </template>
               <template v-if="useAuths('delete', ['kanban'])">
                 <q-separator spaced />
                 <q-item
@@ -138,22 +127,6 @@ const enterKanban = (kanban) => {
     emit("enterKanban", kanban);
   }
 };
-
-const emojis = [
-  "💋",
-  "❤",
-  "💢",
-  "💯",
-  "💩",
-  "😓",
-  "🥵",
-  "🫣",
-  "😬",
-  "🤪",
-  "😍",
-  "😇",
-  "",
-];
 
 const params = ref({
   project_id: teamStore.project.id,
@@ -237,7 +210,17 @@ const send_chat_Msg = async (MsgContent) => {
   border: 1px solid #00000000;
   margin: 2px;
 }
-.emoji:hover {
-  border: 1px solid #333;
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 创建4列 */
+  grid-gap: 10px; /* 网格间距 */
+}
+
+.grid-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
 }
 </style>

@@ -68,6 +68,23 @@ export default defineStore("ui", {
     only_electron: ['classroom'],
     split_kanban_active: void 0,
     splitterView: false,
+    emojis:[
+      "💋",
+      "🔥",
+      "💗",
+      "💢",
+      "💯",
+      "😬",
+      "😍",
+      "😇",
+      "🤔",
+      "😓",
+      "🥵",
+      "🤪",
+      "🤬",
+      "💩",
+      "",
+    ]
   }),
   actions: {
     $reset() {
