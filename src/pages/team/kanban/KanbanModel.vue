@@ -302,11 +302,7 @@ watch(kanban_id, async () => {
   }
 },{immediate: true,deep:false})
 
-const kanbanHeight = computed(() => 
-  uiStore.splitterView
-  ? uiStore.mainWindowSize?.height - 2
-  : uiStore.mainWindowSize?.height
-);
+const kanbanHeight = computed(() => uiStore.mainWindowSize?.height - 2);
 const reelHeight = computed( () =>
   (uiStore.mainWindowSize?.height - 48) / _kanbanSource.value?.columns?.length - 64 || 240
 );
