@@ -4,7 +4,7 @@
     class="column no-wrap items-center border-placeholder"
     :class="`${__dragging_column ? '' : 'full-height'}
         ${columnRef && view_modelRef === 'kanban' ? 'gap-xs ' : 'gap-md '}`"
-  >
+  >{{uiStore.scrollX_byWheel}}
     <template v-if="columnRef && view_modelRef === 'kanban'">
       <div class="row no-wrap items-center q-px-xs q-pt-xs gap-xs radius-xs transparent font-medium columnDragBar"
         :style="$q.screen.gt.xs ? 'width: 322px' : 'width: 100%'"
@@ -849,15 +849,10 @@ watch(
 // 有竖向滚动条，当鼠标进入分栏后，禁用滚轮横向滚动
 const hasScrollBar = ref();
 const columnScrollRef = ref(null);
-onMounted(() => {
+const setMouseWheelScroll = () => {
   if(!columnScrollRef.value) return
-  // console.log("columnScrollRef", columnScrollRef.value.getScroll());
   const {verticalSize, verticalContainerSize} = columnScrollRef.value.getScroll();
   hasScrollBar.value = verticalSize > verticalContainerSize;
-})
-const setMouseWheelScroll = () => {
-  uiStore.scrollX_byWheel = !hasScrollBar.value;
-  
 }
 const dragHandler = (val) => {
   if (uiStore.draging || $q.screen.lt.sm) return;
