@@ -379,9 +379,7 @@ const createColumnFn = async () => {
           data: {
             is: "column",
             by_user: userStore.userId,
-            kanban_id: teamStore.card
-              ? teamStore.card?.card_kanban?.id
-              : teamStore.kanban?.id,
+            kanban_id: kanban.value?.id,
             action: "columnCreated",
             body: res.data,
           },
@@ -443,7 +441,7 @@ const dragscrollend = () => {
 const syncStoreByKanban = async () => {
   if(teamStore.card){
     teamStore.cardKanban = kanban.value;
-  } else {
+  } else if(!teamStore.dropKanbanID) {
     teamStore.kanban = kanban.value;
   }
   await putKanbanCache(kanban.value);
@@ -466,7 +464,7 @@ watch(
           strapi.data?.is === "column" &&
           strapi.data.kanban_id === kanban.value.id &&
           strapi.data.action === "columnCreated"
-        ) {
+        ) {        
           kanban.value.columns.push(strapi.data.body);
           syncStoreByKanban();
         }
