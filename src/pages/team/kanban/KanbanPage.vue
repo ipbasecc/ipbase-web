@@ -262,8 +262,14 @@ watchEffect(() => {
     lastSplitterModel.value = splitterModel.value;
   }
 })
+const navigatorDrawerStatus = uiStore.navigatorDrawer
 const toggleSplitterView = () => {
   uiStore.splitterView = !uiStore.splitterView;
+  if(uiStore.splitterView){
+    uiStore.navigatorDrawer = false
+  } else {
+    uiStore.navigatorDrawer = navigatorDrawerStatus
+  }
   splitterModel.value = uiStore.splitterView ? lastSplitterModel.value || 50 : 100
   uiStore.split_kanban_active = uiStore.splitterView ? 'right' : void 0
   set_view_model('kanban')

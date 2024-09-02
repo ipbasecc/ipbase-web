@@ -2,9 +2,11 @@
   <!-- 此处需要一个真实的根节点、否则拖拽插件不能正常工作 -->
   <div
     class="column no-wrap items-center border-placeholder"
-    :class="`${__dragging_column ? '' : 'full-height'}
-        ${columnRef && view_modelRef === 'kanban' ? 'gap-xs ' : 'gap-md '}`"
-  >{{uiStore.scrollX_byWheel}}
+    :class="`
+      ${__dragging_column ? '' : 'full-height'}
+      ${columnRef && view_modelRef === 'kanban' ? 'gap-xs ' : 'gap-md '}
+    `"
+  >
     <template v-if="columnRef && view_modelRef === 'kanban'">
       <div class="row no-wrap items-center q-px-xs q-pt-xs gap-xs radius-xs transparent font-medium columnDragBar"
         :style="$q.screen.gt.xs ? 'width: 322px' : 'width: 100%'"

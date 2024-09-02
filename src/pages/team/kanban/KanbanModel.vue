@@ -66,54 +66,32 @@
               @cardDelete="cardDelete"
             />
           </div>
-          <template v-if=" useAuths('create', [authBase.collection]) && !uiStore.activeReel && !isShared">
-            <div
-              :class="`${view_model !== 'kanban' ? 'row' : ''} ${
+          <template v-if="useAuths('create', [authBase.collection]) && !uiStore.activeReel && !isShared">
+            <div :class="`${view_model !== 'kanban' ? 'row' : ''} ${
                 view_model === 'segment' ? 'flex-center' : ''
               }`"
               style="min-width: 322px"
             >
               <div v-if="new_column_ing" class="q-pa-xs q-mb-xl radius-xs border">
-                <q-input
-                  v-model="new_column_name"
-                  type="text"
+                <q-input v-model="new_column_name"
                   :placeholder="`${columnLabel} ${$t('title')}`"
-                  dense
-                  square
-                  filled
-                  autofocus
+                  dense square filled autofocus type="text"
                   @keyup.enter="createColumnFn"
                   @keyup.esc="new_column_ing = false"
                 >
                   <template v-slot:append>
-                    <q-btn
-                      v-if="new_column_name"
-                      dense
-                      flat
-                      size="sm"
-                      round
-                      icon="add"
+                    <q-btn v-if="new_column_name" dense flat size="sm" round icon="add"
                       @click="createColumnFn"
                     />
-                    <q-btn
-                      v-else
-                      dense
-                      flat
-                      size="sm"
-                      round
-                      icon="close"
+                    <q-btn v-else dense flat size="sm" round icon="close"
                       @click="new_column_ing = false"
                     />
                   </template>
                 </q-input>
               </div>
-              <q-btn
-                v-else-if="kanban.columns.length === 0"
-                dense
+              <q-btn v-else-if="kanban.columns.length === 0"
+                dense align="left" color="primary" icon="add"
                 :class="view_model === 'list' ? '' : 'full-width'"
-                align="left"
-                color="primary"
-                icon="add"
                 :label="`${$t('add_new')}${columnLabel}`"
                 @click="new_column_ing = true"
               />
