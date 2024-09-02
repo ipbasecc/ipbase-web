@@ -59,7 +59,6 @@
 <script setup>
 import useGetMyMatedate from "src/hooks/global/useGetMyMatedata.js";
 import { loginAndInit } from "src/hooks/init.js";
-import useStore from "src/stores/store.js";
 
 import {
   computed,
@@ -67,17 +66,14 @@ import {
   provide,
   ref,
   watch,
-  watchEffect,
   onBeforeMount,
 } from "vue";
-import { useRoute } from "vue-router";
 
 import BrandMenu from "src/components/VIewComponents/BrandMenu.vue";
 import AccountMenu from "src/components/VIewComponents/AccountMenu.vue";
 
 import { useQuasar } from "quasar";
-import router from "src/router";
-import { userStore, teamStore } from "src/hooks/global/useStore.js";
+import { userStore, teamStore, uiStore } from "src/hooks/global/useStore.js";
 import { clearLocalDB } from "pages/team/hooks/useUser";
 
 import { init_stratpi, init_mattermost } from "src/common/init.js";
@@ -86,14 +82,12 @@ init_stratpi();
 init_mattermost();
 
 onBeforeMount(async () => {
+  uiStore.pageLoaded = true;
   if (!teamStore.init) {
     await loginAndInit();
   }
 });
-
-const route = useRoute();
 const $q = useQuasar();
-const store = useStore();
 
 const isLogged = ref();
 const { fineMeErr } = useGetMyMatedate;

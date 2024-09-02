@@ -121,6 +121,7 @@ watchEffect(() => {
   }
 });
 onBeforeMount(async() => {
+  uiStore.pageLoaded = true;
   if(!teamStore.init){
     await loginAndInit();
     if(teamStore.init && !teamStore.init.default_team){

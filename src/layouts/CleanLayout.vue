@@ -58,6 +58,7 @@ const $q = useQuasar();
 const is_development = ref(process.env.DEV);
 onBeforeMount(() => {
   uiStore.topbarShow = false
+  uiStore.pageLoaded = true
 })
 
 const isMax = ref(false);
