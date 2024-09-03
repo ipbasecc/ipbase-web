@@ -677,4 +677,6 @@ export default {
 
   splite_kanban_tip: '分割视图',
   splite_kanban_right_view_tip: '请在右侧看板列表中点选看板',
+  add_member_from_team: '从团队中添加',
+  add_member_by_invite_link: '通过邀请链接添加',
 };

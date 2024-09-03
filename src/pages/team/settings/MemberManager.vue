@@ -2,17 +2,23 @@
   <div class="fit column q-space">
     <template v-if="authBase && __members && member_roles">
       <div v-if="byInfo.by !== 'card'" class="q-pa-md">
-        <q-btn
-          color="primary"
-          dense
-          unelevated
-          class="full-width"
-          :disable="!useAuths('invite_uris', [authBase.collection])"
-          @click="inviteFn(teamStore.project)"
-        >
-          <q-icon name="group_add" size="xs" />
-          <span class="q-ml-md">{{ $t('invite') }}</span>
-        </q-btn>
+        <q-btn-group dense unelevated class="full-width">
+          <q-btn color="primary" class="q-space"
+            :disable="!useAuths('invite_uris', [authBase.collection])"
+            @click="inviteFn(teamStore.project)"
+          >
+            <q-icon name="group_add" size="xs" />
+            <span class="q-ml-md">{{ $t('invite') }}</span>
+            <q-tooltip v-if="byInfo.by !== 'team'" class="font-medius border" :class="$q.dark.mode ? 'bg-black' : 'bg-white'">
+              {{ $t('add_member_by_invite_link') }}
+            </q-tooltip>
+          </q-btn>
+          <q-btn v-if="byInfo.by !== 'team'" split color="blue" icon="mdi-account-plus" @click="toggleAddFromeTeam()">
+            <q-tooltip class="font-medius border" :class="$q.dark.mode ? 'bg-black' : 'bg-white'">
+              {{ $t('add_member_from_team') }}
+            </q-tooltip>
+          </q-btn>
+        </q-btn-group>
         <q-dialog v-model="open_invite" persistent>
           <TeamInvite :byInfo />
         </q-dialog>
@@ -107,6 +113,37 @@
       </div>
     </template>
     <div v-else>{{ $t('no_premission_to_view') }}</div>
+    <q-dialog v-model="addFromTeam" persistent>
+      <q-card bordered style="min-width: 24rem;">
+        <q-card-section class="border-bottom row items-center">
+          {{ $t('add_member_from_team') }}
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+        <q-card-section>
+          <q-list>
+            <q-item v-for="i in members_for_from" :key="i.id" clickable v-ripple class="radius-xs">
+                <q-item-section top avatar>
+                  <UserAvatar
+                    v-if="i.by_user?.mm_profile?.id"
+                    :user_id="i.by_user?.mm_profile?.id"
+                    :strapi_member="i"
+                    :size="34"
+                    :indicator_size="'10px'"
+                  />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{ i.by_user.username }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-btn dense flat round icon="mdi-plus"
+                  @click="setRoleFn(i,member_roles.find(i => i.subject === 'member'),'add')" />
+                </q-item-section>
+            </q-item>
+          </q-list>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -200,10 +237,31 @@ const authBase = computed(() => {
   return res;
 });
 
+const addFromTeam = ref(false);
+const toggleAddFromeTeam = () => {
+  addFromTeam.value = !addFromTeam.value;
+};
+
 const project_members = computed(() => teamStore.project?.project_members);
 const card_members = computed(() => teamStore.card?.card_members);
+const team_members_not_in_card = computed(() => team_members.value.filter(i => !card_members.value.map(j => j.id).includes(i.id)));
 const team_members = computed(() => teamStore.team?.members);
+const team_members_not_in_project = computed(() => team_members.value.filter(i => !project_members.value.map(j => j.id).includes(i.id)));
 const channel_members = computed(() => teamStore.channel?.members);
+const team_members_not_in_channel = computed(() => team_members.value.filter(i => !channel_members.value.map(j => j.id).includes(i.id)));
+const members_for_from = computed(() => {
+  let members
+  if (byInfo.value?.by === "project") {
+    members = team_members_not_in_project.value;
+  }
+  if (byInfo.value?.by === "card") {
+    members = team_members_not_in_card.value;
+  }
+  if (byInfo.value?.by === "channel") {
+    members = team_members_not_in_channel.value;
+  }
+  return members
+});
 
 const project_member_roles = computed(() => teamStore.project?.member_roles);
 const card_member_roles = computed(() => teamStore.card?.member_roles);
@@ -254,14 +312,14 @@ const __members = computed(() => {
 
 watchEffect(
   () => {
-    const adminRole = member_roles.value.find((i) => i.subject === "admin");
+    const adminRole = member_roles.value?.find((i) => i.subject === "admin");
     admin_members.value = adminRole?.id
       ? __members.value?.filter((i) =>
           i.member_roles.map((j) => j.id).includes(adminRole?.id)
         )
       : [];
 
-    const unconfirmedRole = member_roles.value.find(
+    const unconfirmedRole = member_roles.value?.find(
       (i) => i.subject === "unconfirmed"
     );
     unconfirmed_members.value = unconfirmedRole?.id
@@ -270,13 +328,13 @@ watchEffect(
         )
       : [];
 
-    const blockedRole = member_roles.value.find((i) => i.subject === "blocked");
+    const blockedRole = member_roles.value?.find((i) => i.subject === "blocked");
     blocked_members.value = blockedRole?.id
       ? __members.value?.filter((i) =>
           i.member_roles.map((j) => j.id).includes(blockedRole?.id)
         )
       : [];
-    const externalRole = member_roles.value.find(
+    const externalRole = member_roles.value?.find(
       (i) => i.subject === "external"
     );
     external_members.value = externalRole?.id
@@ -371,35 +429,39 @@ const member_role_id = computed(
   () => member_roles.value?.find((i) => i.subject === "member")?.id
 );
 
-const setRoleFn = async (member, role) => {
+const setRoleFn = async (member, role, prop) => {
   const process_id = role.id;
-  let cur = new_roles_IDs.value;
-  const justChanngeRoles = ["unconfirmed", "blocked", "external"];
-
-  const targetMemberRoles = member.member_roles.map((k) => k.subject);
-  // 如果是设置为：被屏蔽 或 待审核 或 外部成员，那么直接设置目标角色
-  // 如果用户本来就是 待确认 被屏蔽 分组，如果被修改，那么也直接修改成目标分组
-  // 如果修改的是卡片成员角色，那么直接修改为目标角色，在卡片中，每个成员只对应一个角色
-  let needJustChange =
-    justChanngeRoles.filter((item) => new Set(targetMemberRoles).has(item))
-      ?.length > 0;
-  if (targetMemberRoles.includes("external") && role.subject === "external") {
-    cur = [unconfirmed_role_id.value];
-  } else if (
-    justChanngeRoles.includes(role.subject) ||
-    needJustChange ||
-    byInfo.value?.card_id
-  ) {
-    cur = [process_id];
+  let cur;
+  if(prop === 'add'){
+    cur = [role.id]
   } else {
-    // 已经是该角色 则减 否则 加
-    cur = (cur.includes(process_id) && cur.filter((i) => i !== process_id)) || [
-      ...cur,
-      process_id,
-    ];
-    // 如果删掉所有角色，那就切换成 待审核 角色
-    if (cur.length === 0) {
+    cur = new_roles_IDs.value;
+    const justChanngeRoles = ["unconfirmed", "blocked", "external"];
+    const targetMemberRoles = member.member_roles.map((k) => k.subject);
+    // 如果是设置为：被屏蔽 或 待审核 或 外部成员，那么直接设置目标角色
+    // 如果用户本来就是 待确认 被屏蔽 分组，如果被修改，那么也直接修改成目标分组
+    // 如果修改的是卡片成员角色，那么直接修改为目标角色，在卡片中，每个成员只对应一个角色
+    let needJustChange =
+      justChanngeRoles.filter((item) => new Set(targetMemberRoles).has(item))
+        ?.length > 0;
+    if (targetMemberRoles.includes("external") && role.subject === "external") {
       cur = [unconfirmed_role_id.value];
+    } else if (
+      justChanngeRoles.includes(role.subject) ||
+      needJustChange ||
+      byInfo.value?.card_id
+    ) {
+      cur = [process_id];
+    } else {
+      // 已经是该角色 则减 否则 加
+      cur = (cur.includes(process_id) && cur.filter((i) => i !== process_id)) || [
+        ...cur,
+        process_id,
+      ];
+      // 如果删掉所有角色，那就切换成 待审核 角色
+      if (cur.length === 0) {
+        cur = [unconfirmed_role_id.value];
+      }
     }
   }
   console.log("cur", cur);

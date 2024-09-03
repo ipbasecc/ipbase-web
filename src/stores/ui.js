@@ -84,7 +84,8 @@ export default defineStore("ui", {
       "🤬",
       "💩",
       "",
-    ]
+    ],
+    chat_pannel: false,
   }),
   actions: {
     $reset() {

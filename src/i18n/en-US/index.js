@@ -677,4 +677,6 @@ export default {
 
   splite_kanban_tip: 'Split View',
   splite_kanban_right_view_tip: 'Please select a board from the list on the right side.',
+  add_member_from_team: 'Add from team',
+  add_member_by_invite_link: 'Add by invite link',
 }

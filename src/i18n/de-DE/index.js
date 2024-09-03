@@ -677,4 +677,6 @@ export default {
 
   splite_kanban_tip: 'Geteilte Ansicht',
   splite_kanban_right_view_tip: 'Bitte wählen Sie eine Tafel aus der Liste auf der rechten Seite.',
+  add_member_from_team: 'Aus dem Team hinzufügen',
+  add_member_by_invite_link: 'Durch Einladungslink hinzufügen',
 };

@@ -12,11 +12,9 @@
       transition-hide="fade"
       @show="force_fetch"
     >
-      <q-card v-if="fetched_user" bordered>
+      <q-card v-if="fetched_user" bordered style="min-width: 22rem;">
         <q-card-section class="row no-wrap q-py-xs q-px-sm">
-          <div class="row q-space">
-            <q-chip v-for="i in member_roles" :key="i" :label="translate(i)" />
-          </div>
+          <q-space />
           <div>
             <q-btn flat round dense size="sm" icon="close" v-close-popup />
           </div>
@@ -118,9 +116,10 @@ const member = computed(() =>
   mmstore.members.find((i) => i.user_id === user_idRef.value)
 );
 
-const member_roles = computed(() =>
-  strapi_member.value?.member_roles.map((i) => i.subject)
-);
+const member_roles = computed(() =>{
+
+  return strapi_member.value?.member_roles.map((i) => i.subject)
+});
 
 const avatar = ref();
 watchEffect(() => {

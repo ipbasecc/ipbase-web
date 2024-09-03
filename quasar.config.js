@@ -320,8 +320,8 @@ export default configure((ctx) => {
         },
         linux: {
           icon: "build/icons",
-          // target: ["rpm", "deb", "appImage", "snap"],
-          target: ["rpm"],
+          target: ["rpm", "deb", "appImage", "snap"],
+          // target: ["rpm"],
           category: "Network",
         },
       },

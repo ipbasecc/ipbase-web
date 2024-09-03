@@ -54,18 +54,13 @@
           {{ $t('channel') }}
         </q-item-label>
         <template v-if="team.team_channels?.length > 0">
-          <q-item
-            v-for="i in team.team_channels"
-            :key="i.id"
-            clickable
-            v-ripple
-            :class="`${
-              teamStore?.mm_channel?.id === i.mm_channel?.id
-                ? 'border active-listitem'
-                : 'border-placeholder'
-            }
-                ${i.auth && !i.auth?.read ? 'op-5' : ''}
-                `"
+          <q-item v-for="i in team.team_channels"
+            :key="i.id" clickable v-ripple
+            :class="`${teamStore?.mm_channel?.id === i.mm_channel?.id
+              ? 'border active-listitem'
+              : 'border-placeholder'}
+              ${i.auth && !i.auth?.read ? 'op-5' : ''}
+            `"
             class="radius-xs q-pa-xs hovered-item overflow-hidden full-width"
             @click="enterChannel(i)"
           >
@@ -512,6 +507,7 @@ const enterProject = async (project) => {
 const deEnter = ref(false);
 const enterChannel = async (channel) => {
   if (deEnter.value) return;
+  uiStore.chat_pannel = false; // 关闭聊天面板，否则因为数据切换可能导致数据错误而报错
   if (channel?.auth && !channel?.auth?.read) {
     $q.notify($t('channel_not_join_or_was_blocked'));
     return;

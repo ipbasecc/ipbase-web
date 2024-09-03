@@ -28,8 +28,8 @@
       <q-btn
         dense
         flat
-        :color="powerPannel === 'pinneds' ? 'green' : ''"
-        :icon="powerPannel === 'pinneds' ? 'mdi-pin-off' : 'mdi-pin'"
+        :color="uiStore.chat_pannel === 'pinneds' ? 'green' : ''"
+        :icon="uiStore.chat_pannel === 'pinneds' ? 'mdi-pin-off' : 'mdi-pin'"
         @click="togglePowerpannel('pinneds')"
       >
         <q-tooltip> {{ $t('pinned_messages') }} </q-tooltip>
@@ -38,7 +38,7 @@
         v-if="strapi_channel_id && useAuths('manageMember', ['channel'])"
         dense
         flat
-        :color="powerPannel === 'MemberManager' ? 'green' : ''"
+        :color="uiStore.chat_pannel === 'MemberManager' ? 'green' : ''"
         icon="manage_accounts"
         @click="togglePowerpannel('MemberManager')"
       />
@@ -94,10 +94,10 @@
           <SendmsgBox :channel_id="channel_id" />
         </div>
       </template>
-      <template v-if="powerPannel" v-slot:separator>
+      <template v-if="uiStore.chat_pannel" v-slot:separator>
         <div class="fit" :class="isEnter ? 'bg-primary' : ''"></div>
       </template>
-      <template v-if="powerPannel" v-slot:after>
+      <template v-if="uiStore.chat_pannel" v-slot:after>
         <div
           class="absolute-full"
           :class="
@@ -105,18 +105,18 @@
           "
         >
           <ThreadContainer
-            v-if="powerPannel === 'thread' && thread"
+            v-if="uiStore.chat_pannel === 'thread' && thread"
             :chatInfo
             :fullHeight="false"
             @closeThread="closeThread"
           />
           <PinnedsContainder
-            v-if="powerPannel === 'pinneds'"
+            v-if="uiStore.chat_pannel === 'pinneds'"
             :channel_id="channel_id"
             :key="channel_id"
           />
           <MemberManager
-            v-if="powerPannel === 'MemberManager'"
+            v-if="uiStore.chat_pannel === 'MemberManager'"
             :byInfo
             class="absolute-full"
           />
@@ -125,7 +125,7 @@
     </q-splitter>
     <template v-else>
       <div class="q-space column">
-        <template v-if="powerPannel">
+        <template v-if="uiStore.chat_pannel">
           <div
             class="absolute-full"
             :class="
@@ -133,18 +133,18 @@
             "
           >
             <ThreadContainer
-              v-if="powerPannel === 'thread' && thread"
+              v-if="uiStore.chat_pannel === 'thread' && thread"
               :chatInfo
               :fullHeight="false"
               @closeThread="closeThread"
             />
             <PinnedsContainder
-              v-if="powerPannel === 'pinneds'"
+              v-if="uiStore.chat_pannel === 'pinneds'"
               :channel_id="channel_id"
               :key="channel_id"
             />
             <MemberManager
-              v-if="powerPannel === 'MemberManager'"
+              v-if="uiStore.chat_pannel === 'MemberManager'"
               :byInfo
               class="absolute-full"
             />
@@ -483,7 +483,6 @@ watch(
   { immediate: true, deep: false }
 );
 
-const powerPannel = ref();
 const thread = ref();
 const splitterModel = ref(100);
 const limits = ref([100, 100]);
@@ -504,14 +503,14 @@ const enterThread = (msg) => {
 const closeThread = () => {
   togglePowerpannel("thread");
   thread.value = void 0;
-  powerPannel.value = null;
+  uiStore.chat_pannel = null;
 };
 const togglePowerpannel = (pannel) => {
   if (thread.value) {
     thread.value = void 0;
   }
-  powerPannel.value = powerPannel.value !== pannel ? pannel : "";
-  if (powerPannel.value) {
+  uiStore.chat_pannel = uiStore.chat_pannel !== pannel ? pannel : "";
+  if (uiStore.chat_pannel) {
     open_powerPannel();
   } else {
     close_powerPannel();

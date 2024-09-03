@@ -41,7 +41,6 @@ provide("isExternal", false);
 const router = useRouter();
 
 const project = ref();
-const mm_channel = computed(() => teamStore.mm_channel);
 const loading = ref(false);
 const getProject = async (_id) => {
   if (loading.value) return;
@@ -61,7 +60,7 @@ const getProject = async (_id) => {
     projectRemovedFn();
   }
   loading.value = false;
-  teamStore.channel = teamStore.project?.mm_channel;
+  teamStore.mm_channel = teamStore.project?.mm_channel;
 };
 onBeforeMount(async () => {
   if (project_id.value) {
