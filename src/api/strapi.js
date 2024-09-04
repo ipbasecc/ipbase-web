@@ -191,3 +191,52 @@ export async function addMedia(params) {
     return error;
   }
 }
+
+// 发送添加好友请求
+export async function addFriend(params) {
+  try {
+    const res = await api.post(`/friend-requests`, params);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create({
+      color: 'red',
+      message: error.response.data.error.message
+    })    
+    return error;
+  }
+}
+// 处理好友请求 不带 data
+export async function processFriendReq(params) {
+  try {
+    const res = await api.post(`/contacts/process_request`, params);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+// 编辑好友 不带 data
+export async function processFriend(params) {
+  try {
+    const res = await api.post(`/contacts/process_friend`, params);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+// 检查是否被屏蔽
+export async function checkBlocked(params) {
+  try {
+    const res = await api.post(`contacts/check_blocked`, params);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}

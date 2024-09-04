@@ -1,6 +1,6 @@
 {
   "name": "ipbase",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "ipbase project",
   "productName": "ipbase",
   "author": "auxcc <jerr@foxmail.com>",
@@ -125,6 +125,7 @@
     "vue-draggable-plus": "^0.5.3",
     "vue-dragscroll": "^4.0.5",
     "vue-hooks": "^0.3.2",
+    "vue-hooks-plus": "^2.2.1",
     "vue-i18n": "^9.13.1",
     "vue-particles": "^1.0.9",
     "vue-router": "^4.3.2",

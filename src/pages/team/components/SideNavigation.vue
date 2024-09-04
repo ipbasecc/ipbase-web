@@ -39,7 +39,7 @@
           @click="enterIntro('intro')"
         >
           <q-item-section side class="q-pr-sm">
-            <q-icon name="developer_board" :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`" />
+            <q-icon name="mdi-chart-bubble" :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`" />
           </q-item-section>
           <q-item-section class="overflow-hidden"> {{ $t('navigation_Quadrant') }} </q-item-section>
           <div
@@ -507,6 +507,7 @@ const enterProject = async (project) => {
 const deEnter = ref(false);
 const enterChannel = async (channel) => {
   if (deEnter.value) return;
+  teamStore.direct_user = void 0;
   uiStore.chat_pannel = false; // 关闭聊天面板，否则因为数据切换可能导致数据错误而报错
   if (channel?.auth && !channel?.auth?.read) {
     $q.notify($t('channel_not_join_or_was_blocked'));

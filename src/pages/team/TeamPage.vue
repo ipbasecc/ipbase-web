@@ -34,19 +34,14 @@
       >
         <BoradsList v-if="showBoard" />
         <ChatList v-else-if="teamStore.navigation === 'chat'" />
-        <StorageList
-          v-else-if="
-            teamStore.navigation === 'storage' && teamStore.project?.storages
-          "
+        <StorageList v-else-if="teamStore.navigation === 'storage' && teamStore.project?.storages"
           :storages="teamStore.project?.storages"
         />
-        <ScheduleList
-          v-else-if="teamStore.navigation === 'schedule'"
+        <ScheduleList v-else-if="teamStore.navigation === 'schedule'"
           :schedules="teamStore.project?.schedules"
           :by_info="byInfo"
         />
-        <DocumentList
-          v-else-if="teamStore.navigation === 'document'"
+        <DocumentList v-else-if="teamStore.navigation === 'document'"
           :documents="teamStore.project?.project_documents"
           :by_info="byInfo"
         />

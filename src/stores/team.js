@@ -8,6 +8,7 @@ export default defineStore("team", {
     channel: null, // Strapi team-channel
     mm_team: null,
     mm_channel: null, // Mattermost channel
+    direct_user: null,
     navigation: null,
     project: null,
     project_id: null,
@@ -149,5 +150,10 @@ export default defineStore("team", {
       this.all_todos = [];
       this.all_todogroups = [];
     },
+    $reset_channel() {
+      this.channel = null;
+      this.mm_channel = null;
+      this.direct_user = null;
+    }
   },
 });

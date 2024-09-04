@@ -1,6 +1,6 @@
 <!-- 项目聊天主体页面 -->
 <template>
-  <div class="fit column no-wrap overflow-hidden">
+  <div class="absolute-full column no-wrap overflow-hidden">
     <q-bar
       class="border-bottom"
       :class="$q.dark.mode ? 'bg-dark text-grey-1' : 'bg-grey-1 text-grey-10'"
@@ -42,11 +42,20 @@
         icon="manage_accounts"
         @click="togglePowerpannel('MemberManager')"
       />
+      <q-btn
+        v-if="teamStore?.direct_user"
+        dense
+        flat
+        :color="uiStore.chat_pannel === 'MemberManager' ? 'green' : ''"
+        icon="info"
+        @click="togglePowerpannel('directMemberInfo')"
+      />
     </q-bar>
     <q-splitter
       v-if="$q.screen.gt.xs"
       v-model="splitterModel"
       :limits="limits"
+      :separator-style="uiStore.chat_pannel ? '' : 'display: none'"
       class="q-space"
       ref="separatorRef"
     >
@@ -91,18 +100,18 @@
               </div>
             </q-infinite-scroll>
           </q-scroll-area>
-          <SendmsgBox :channel_id="channel_id" />
+          <div v-if="teamStore.mm_channel?.wasblocked || teamStore.mm_channel?.isblocked" class="full-width q-pa-xl border flex flex-center">
+            {{ `${teamStore.mm_channel?.wasblocked ? '您已被对方屏蔽' : '您已屏蔽对方'}，不能发送消息` }}
+          </div>
+          <SendmsgBox v-else :channel_id="channel_id" />
         </div>
       </template>
       <template v-if="uiStore.chat_pannel" v-slot:separator>
         <div class="fit" :class="isEnter ? 'bg-primary' : ''"></div>
       </template>
       <template v-if="uiStore.chat_pannel" v-slot:after>
-        <div
-          class="absolute-full"
-          :class="
-            $q.dark.mode ? 'bg-grey-10 text-grey-1' : 'bg-grey-1 text-grey-10'
-          "
+        <div class="absolute-full"
+          :class="$q.dark.mode ? 'bg-grey-10 text-grey-1' : 'bg-grey-1 text-grey-10'"
         >
           <ThreadContainer
             v-if="uiStore.chat_pannel === 'thread' && thread"
@@ -119,6 +128,9 @@
             v-if="uiStore.chat_pannel === 'MemberManager'"
             :byInfo
             class="absolute-full"
+          />
+          <DirectMemberInfo v-if="teamStore?.direct_user && uiStore.chat_pannel === 'directMemberInfo'"
+            :directMember="teamStore.direct_user"
           />
         </div>
       </template>
@@ -225,7 +237,7 @@ import SendmsgBox from "src/pages/Chat/components/wigets/SendmsgBox.vue";
 import PinnedsContainder from "src/pages/Chat/components/PinnedsContainder.vue";
 import { useFetchAvatar } from "src/pages/Chat/hooks/useFetchAvatar.js";
 
-import { getPostsOfChannel, getUsersByIDs } from "src/api/mattermost.js";
+import { getPostsOfChannel, getUsersByIDs, getChannelByID as getMmChannelByID } from "src/api/mattermost.js";
 import { getChannelByID } from "src/api/strapi/team.js";
 import {
   mergePosts,
@@ -238,6 +250,7 @@ import { mmUser, teamStore, uiStore } from "src/hooks/global/useStore.js";
 import useMmws from "src/stores/mmws.js";
 import { removeLastChannel } from "pages/team/chat/TeamChat";
 import { i18n } from 'src/boot/i18n.js';
+import DirectMemberInfo from './components/DirectMemberInfo.vue'
 
 const $t = i18n.global.t;
 
@@ -284,9 +297,6 @@ const __posts = ref();
 const __channelMessages = ref();
 
 const initMessage = () => {
-  console.log('__base', __base.value);
-  console.log('__beforCache', __order.value);
-  console.log('__afterCache', __order.value);
   __order.value = [
     ...__beforCache.value.order,
     ...__base.value.order,
@@ -368,6 +378,13 @@ watch(
     if (channel_id.value) {
       await initChannel(channel_id.value);
       await __viewChannel(channel_id.value);
+      // 如果通过连接直接访问到聊天界面，需要获取Strapi频道、Mattermost频道
+      if(!teamStore.mm_channel){
+        const res = await getMmChannelByID(channel_id.value);
+        if(res?.data){
+          teamStore.mm_channel = res.data;
+        }
+      }
     }
   },
   { immediate: true, deep: false }

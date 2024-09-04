@@ -9,8 +9,7 @@
       v-if="$q.screen.gt.xs"
       class="row no-wrap items-center cursor-pointer q-pb-sm relative-position"
     >
-      <q-img
-        src="../../../public/logo.png"
+      <q-img src="../../../public/logo.png"
         :ratio="1"
         height="30px"
         width="30px"
@@ -36,8 +35,7 @@
           "
           @click="to(i)"
         >
-          <div
-            v-if="uiStore.app === i.val"
+          <div v-if="uiStore.app === i.val"
             class="flex absolute-left full-height q-pl-xs q-py-sm"
           >
             <div style="width: 3px; background-color: var(--q-primary)"></div>
@@ -91,9 +89,17 @@ const apps = [
   {
     val: "teams",
     label: 'team',
-    icon: "mark_chat_read",
+    icon: "developer_board",
     description: 'app_team_purpose',
     to: "teams",
+    enable: true,
+  },
+  {
+    val: "chats",
+    label: 'chats',
+    icon: "mark_chat_read",
+    description: 'app_chat_purpose',
+    to: "chats",
     enable: true,
   },
   {
@@ -145,6 +151,7 @@ const getFirstSegment = (fullPath) => {
 };
 const to = async (i) => {
   uiStore.app = i.val;
+  teamStore && teamStore.$reset_channel();
   await localforage.setItem("last_module", i.to);
   await router.push(`/${i.to}`);
 };

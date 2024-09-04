@@ -152,6 +152,19 @@ const routes = [
         name: "AffairsPage",
       },
       {
+        path: "/chats",
+        component: () => import("src/pages/team/ChatsPage.vue"),
+        name: "ChatsPage",
+        children: [
+          {
+            path: "/chats/:channel_id",
+            component: () => import("src/pages/team/chat/ChatContainter.vue"),
+            name: "DirectChatPage",
+            props: true,
+          }
+        ]
+      },
+      {
         path: "/teams/threads",
         component: () => import("pages/team/ThreadsPage.vue"),
         name: "team_threads_homepage",

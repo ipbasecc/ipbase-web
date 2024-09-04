@@ -33,3 +33,13 @@ export async function loginAndInit () {
       init(_fetch)
     }
 }
+export async function refetchUser () {
+    const init = (_me) => {        
+      userStore.$process(_me);
+      process(_me);
+    }
+    const _fetch = await fetch_StrapiMe('unCache');
+    if(_fetch){
+      init(_fetch)
+    }
+}

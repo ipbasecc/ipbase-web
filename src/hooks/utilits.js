@@ -341,3 +341,35 @@ export function sortByField(arr, field, order = 'desc') {
     return b[field] - a[field];
   });
 }
+
+export function isUserInDMChannel(dmChannelName, userId) {
+  /**
+   * 判断私信频道名称是否包含指定的用户ID。
+   *
+   * @param {string} dmChannelName - 私信频道的名称，如 '97nsifbu1tgw78xxc5mafk3rxo__tuykwfena7b68nzutag89tr7pw'
+   * @param {string} userId - 要检查的用户ID
+   * @returns {boolean} 如果用户ID在频道名称中，则返回true，否则返回false
+   */
+  // 将频道名称按照'_'分割成数组
+  const parts = dmChannelName.split('_');
+  
+  // 检查用户ID是否在分割后的数组中
+  return parts.includes(userId);
+}
+
+export function extractDMUserID(dmChannelName, self_id) {
+  /**
+   * 判断私信频道名称是否包含指定的用户ID。
+   *
+   * @param {string} dmChannelName - 私信频道的名称，如 '97nsifbu1tgw78xxc5mafk3rxo__tuykwfena7b68nzutag89tr7pw'
+   * @param {string} userId - 要检查的用户ID
+   * @returns {boolean} 如果用户ID在频道名称中，则返回true，否则返回false
+   */
+  // 将频道名称按照'_'分割成数组
+  const parts = dmChannelName.split('_');
+  // console.log('parts', parts, parts.filter(i => i !== self_id && i !== '')[0]);
+  
+  
+  // 检查用户ID是否在分割后的数组中
+  return parts.filter(i => i !== self_id && i !== '')[0];
+}

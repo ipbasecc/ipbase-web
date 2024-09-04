@@ -1,6 +1,6 @@
 <template>
   <ChatContainter
-    v-if="channel_id && teamStore.channel"
+    v-if="channel_id"
     v-bind="$attrs"
     :channel_id
     :key="channel_id"

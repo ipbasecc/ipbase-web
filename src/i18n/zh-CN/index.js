@@ -679,4 +679,8 @@ export default {
   splite_kanban_right_view_tip: '请在右侧看板列表中点选看板',
   add_member_from_team: '从团队中添加',
   add_member_by_invite_link: '通过邀请链接添加',
+
+  send_friend_request: '发送好友请求',
+  add_friend_msg_label: '留言',
+  send_friend_dlog_title: '添加好友',
 };

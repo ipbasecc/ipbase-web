@@ -25,6 +25,7 @@
         :user_id="msg.user_id"
         :size="avatar_size"
         :status="member_status"
+        :strapi_member
         :class="!MsgOnly && $q.screen.gt.xs ? 'q-ml-xl' : ''"
       />
     </template>
@@ -267,6 +268,9 @@ const { msg, prev, container, curThreadId } = toRefs(props);
 
 const html = msg.value?.message && marked.parse(msg.value.message);
 const member = ref();
+const strapi_member = computed(() => {  
+  return teamStore.team?.members?.find((i) => i.by_user?.mm_profile?.id === msg.value?.user_id);
+})
 useFetch_mmMember(msg.value?.user_id).then((res) => {
   member.value = res;
   const exits = mmstore.members.map((i) => i.id);
@@ -279,7 +283,7 @@ useFetch_mmMember(msg.value?.user_id).then((res) => {
   }
 });
 const member_status = computed(
-  () => mmstore.members.find((i) => i.user_id === msg.value?.user_id)?.status
+  () => mmstore.members?.find((i) => i.user_id === msg.value?.user_id)?.status
 );
 
 const avatar_size = ref(32);
