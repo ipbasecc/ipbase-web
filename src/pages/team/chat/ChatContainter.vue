@@ -1,6 +1,6 @@
 <!-- 项目聊天主体页面 -->
 <template>
-  <div class="absolute-full column no-wrap overflow-hidden">
+  <div class="absolute-full column no-wrap overflow-hidden" :class="$q.dark.mode ? 'bg-darker text-grey-1' : 'bg-grey-1 text-grey-10'">
     <q-bar
       class="border-bottom"
       :class="$q.dark.mode ? 'bg-dark text-grey-1' : 'bg-grey-1 text-grey-10'"
