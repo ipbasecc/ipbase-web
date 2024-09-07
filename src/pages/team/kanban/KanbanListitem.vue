@@ -116,7 +116,7 @@ const emit = defineEmits(["enterKanban", "removeKanban"]);
 const kanbanRef = toRef(props, "kanban");
 const isActived = computed(
   () =>
-    teamStore.kanban_id === kanbanRef.value?.id
+    teamStore.kanban.id === kanbanRef.value?.id
 );
 const unEnter = ref(false)
 const enterKanban = (kanban) => {

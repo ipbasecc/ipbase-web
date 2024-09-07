@@ -248,10 +248,15 @@ const initKanban = async (kid) => {
       // 当有 teamStore.card 时，说明card的详情弹框是打开状态
       if (teamStore.card) {
         teamStore.cardKanban = _attachExpand;
-      } else if(!teamStore.dropKanbanID) {
-        teamStore.kanban = _attachExpand;
-        teamStore.kanban_type = _attachExpand.type;
-        await putKanbanCache(_attachExpand);
+      } else {
+        if(teamStore.dropKanbanID && uiStore.split_kanban_active === 'right'){
+          teamStore.dropKanban = kanban.value;
+        } else {
+          teamStore.kanban = kanban.value;
+          teamStore.kanban_type = kanban.value.type;
+          teamStore.kanban_id = kanban.value.id;
+          await putKanbanCache(_attachExpand);
+        }
       }
     }
   };
@@ -275,7 +280,6 @@ defineExpose({
 })
 watch(kanban_id, async () => {
   if(kanban_id.value){
-    teamStore.kanban_id = kanban_id.value;
     await initKanban(kanban_id.value);
   }
 },{immediate: true,deep:false})

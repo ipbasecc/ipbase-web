@@ -28,6 +28,7 @@ export default defineStore("team", {
     rightDrawer: void 0,
     rightDrawerWidth: 420,
     dropKanbanID: void 0,
+    dropKanban: void 0,
     need_refecth_projects: false,
     filter_txt: "",
     cardDragging: false,
