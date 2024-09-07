@@ -19,11 +19,29 @@
 <script setup>
 import { ref, toRefs, shallowRef, onMounted, toRef, watch, onBeforeUnmount } from "vue";
 import CardPage from "src/pages/team/card/CardPage.vue";
-
-import * as echarts from "echarts";
 import { updateCard } from "src/api/strapi/project.js";
 import { useQuasar } from "quasar";
 import { teamStore } from "src/hooks/global/useStore.js";
+
+import * as echarts from 'echarts/core';
+import {
+  TimelineComponent,
+  TooltipComponent,
+  GridComponent,
+  GraphicComponent
+} from 'echarts/components';
+import { CustomChart, LineChart } from 'echarts/charts';
+import { CanvasRenderer } from 'echarts/renderers';
+
+echarts.use([
+  LineChart,
+  TimelineComponent,
+  TooltipComponent,
+  GridComponent,
+  GraphicComponent,
+  CustomChart,
+  CanvasRenderer
+]);
 
 const $q = useQuasar();
 const props = defineProps({
@@ -59,6 +77,7 @@ const CardId = ref();
 const chartRef = shallowRef();
 
 let chart;
+
 const initECharts = () => {
   if (!chartRef.value || !taskContainerSIzeRef.value) return;
   chart = echarts.init(chartRef.value, $q.dark.mode ? "dark" : "light");
@@ -178,9 +197,7 @@ const initECharts = () => {
       true
     );
   };
-  const setDrag = () => {
-    console.log('auth.value?.modifty', auth.value?.modify);
-    
+  const setDrag = () => {    
     if(teamStore.shareInfo || !auth.value?.modify) return
     chart.setOption({
       // 声明一个 graphic component，里面有若干个 type 为 'circle' 的 graphic elements。

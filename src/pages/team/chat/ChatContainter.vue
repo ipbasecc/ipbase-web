@@ -29,7 +29,7 @@
         dense
         flat
         :color="uiStore.chat_pannel === 'pinneds' ? 'green' : ''"
-        :icon="uiStore.chat_pannel === 'pinneds' ? 'mdi-pin-off' : 'mdi-pin'"
+        icon="mdi-tag-multiple"
         @click="togglePowerpannel('pinneds')"
       >
         <q-tooltip> {{ $t('pinned_messages') }} </q-tooltip>

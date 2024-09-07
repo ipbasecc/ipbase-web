@@ -1,5 +1,5 @@
 <template>
-  <tr class="hovered-item relative-position">
+  <tr v-bind="$attrs" class="hovered-item relative-position">
     <td v-if="!teamStore.shareInfo">
       <div class="fit flex flex-center hover-show dragBar">
         <q-icon name="drag_indicator" />
@@ -383,160 +383,12 @@
         </q-dialog>
       </q-icon>
     </td>
-    <q-popup-proxy v-if="!teamStore.shareInfo" context-menu>
-      <q-list bordered dense class="radius-sm q-pa-xs text-no-wrap">
-        <template v-if="!content_channging">
-          <q-item class="radius-xs">
-            <q-item-section>
-              <div class="row no-wrap gap-sm">
-                <q-btn
-                  v-if="cardRef.type === 'task'"
-                  flat
-                  dense
-                  size="sm"
-                  stack
-                  icon="mdi-arrow-expand"
-                  class="op-5"
-                  padding="sm"
-                  @click="
-                    _enterCard(
-                      useAuths('read', ['card']) || isCreator
-                    )
-                  "
-                >
-                  <q-tooltip>
-                    <span class="font-medium">{{ $t('task_detial') }}</span>
-                  </q-tooltip>
-                </q-btn>
-                <q-btn
-                  v-if="useAuths('name', ['card']) || isCreator"
-                  flat
-                  dense
-                  size="sm"
-                  stack
-                  icon="title"
-                  class="op-5"
-                  padding="sm"
-                  @click="name_changing = true"
-                >
-                  <q-tooltip>
-                    <span class="font-medium">{{ $t('rename_card') }}</span>
-                  </q-tooltip>
-                </q-btn>
-              </div>
-            </q-item-section>
-          </q-item>
-          <q-separator spaced class="op-5" />
-        </template>
-        <q-item
-          v-if="
-            show_byPreference?.color_marker?.value &&
-            (useAuths('color_marker', ['card']) || isCreator)
-          "
-        >
-          <q-item-section>
-            <div class="row no-wrap gap-sm">
-              <q-icon
-                v-for="marker in colorMarks"
-                :key="marker"
-                dense
-                :size="cardRef?.color_marker === marker ? '24px' : '16px'"
-                flat
-                round
-                padding="none"
-                :color="marker"
-                :name="
-                  cardRef?.color_marker === marker
-                    ? 'mdi-checkbox-marked-circle'
-                    : 'mdi-checkbox-blank-circle'
-                "
-                class="cursor-pointer"
-                v-close-popup
-                @click="setCardColor(cardRef, marker)"
-              />
-            </div>
-          </q-item-section>
-        </q-item>
-        <q-separator
-          v-if="
-            useAuths('type', ['card']) ||
-            useAuths('status', ['card']) ||
-            isCreator
-          "
-          spaced
-          class="op-5"
-        />
-        <q-item
-          v-if="useAuths('type', ['card']) || isCreator"
-          class="radius-xs"
-          clickable
-        >
-          <q-item-section>{{ $t('change_to') }}：</q-item-section>
-          <q-item-section side>
-            <q-icon name="keyboard_arrow_right" />
-          </q-item-section>
-          <q-menu auto-close anchor="top end" self="top start">
-            <q-list dense bordered class="radius-sm q-pa-xs text-no-wrap">
-              <q-item
-                v-for="i in cardTypes"
-                :key="i.val"
-                dense
-                clickable
-                class="radius-xs"
-                :class="i.val === cardRef.type ? 'bg-primary' : ''"
-                @click="setCardType(cardRef, i.val)"
-              >
-                <q-item-section side
-                  ><q-icon :name="i.icon" size="xs"
-                /></q-item-section>
-                <q-item-section
-                  ><span class="q-pr-md">{{ $t(i.label) }}</span></q-item-section
-                >
-              </q-item>
-            </q-list>
-          </q-menu>
-        </q-item>
-        <q-item
-          v-if="
-            (useAuths('status', ['card']) || isCreator) &&
-            cardRef.type === 'task' &&
-            show_byPreference?.status?.value
-          "
-          class="radius-xs"
-          clickable
-        >
-          <q-item-section>{{ $t('status') }}：</q-item-section>
-          <q-item-section side>
-            <q-icon name="keyboard_arrow_right" />
-          </q-item-section>
-          <q-menu auto-close anchor="top end" self="top start">
-            <StatusMenu
-              :status="cardRef.status"
-              :modify="true"
-              @statusChange="_card_statusChange"
-              :isList="true"
-            />
-          </q-menu>
-        </q-item>
-        <template v-if="useAuths('delete', ['card']) || isCreator">
-          <q-separator spaced class="op-5" />
-          <q-item
-            class="radius-xs"
-            clickable
-            v-close-popup
-            @click="removeCard(cardRef, belong_card)"
-          >
-            <q-item-section>{{ $t('delete_card') }}</q-item-section>
-          </q-item>
-        </template>
-      </q-list>
-    </q-popup-proxy>
-    <!-- 重要度、紧急度 左边框颜色标记 -->
-    <div class="absolute-left full-height z-fab"
-      :class="`${highlight ? 'highlight transition' : ''}`"
-      :style="`${style}`"
-    ></div>
   </tr>
+  <!-- 重要度、紧急度 左边框颜色标记 -->
+  <div class="absolute-left full-height z-fab"
+    :class="`${highlight ? 'highlight transition' : ''}`"
+    :style="`${style}`"
+  />
 </template>
 
 <script setup>
