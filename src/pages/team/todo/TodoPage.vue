@@ -2,7 +2,7 @@
   <div
     class="column no-wrap"
     :class="`
-      ${!card && ($q.dark.mode ? 'bg-dark' : 'bg-grey-1')}
+      ${!card ? $q.dark.mode ? 'fit bg-dark' : 'fit bg-grey-1' : ''}
     `"
     :style="isFeedback ? 'max-width: 36rem' : ''"
   >
