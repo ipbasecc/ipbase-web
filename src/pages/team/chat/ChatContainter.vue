@@ -23,6 +23,7 @@
       >
         <q-tooltip> {{ $t('clean_cache') }} </q-tooltip>
       </q-btn>
+      {{hasMore}}
       <q-space />
       <q-btn
           dense
@@ -399,7 +400,7 @@ const getPosts = async () => {
 const merageMsg = (newMessages = {}) => {
   if (newMessages) {
     const {order, posts} = newMessages;
-    hasMore.value = order?.length === 0
+    hasMore.value = order?.length !== 0
 
     const currentMessageIds = new Set(messages.value?.map(msg => msg.id));
     let newMessageEntries = order.reverse().map(postId => posts[postId]).filter(msg => !currentMessageIds.has(msg.id));
