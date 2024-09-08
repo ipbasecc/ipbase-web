@@ -23,7 +23,6 @@
       >
         <q-tooltip> {{ $t('clean_cache') }} </q-tooltip>
       </q-btn>
-      {{hasMore}}
       <q-space />
       <q-btn
           dense
@@ -60,18 +59,18 @@
     >
       <template v-slot:before>
         <div class="fit column">
+          <q-resize-observer @resize="onResize" />
           <q-scroll-area v-model="scrollModel"
                          class="q-space"
                          ref="scrollAreaRef"
                          @scroll="scrollHandler"
           >
-            <q-resize-observer @resize="onResize" />
             <q-pull-to-refresh @refresh="refresh">
               <q-infinite-scroll v-if="messages?.length > 0"
                                  reverse
                                  @load="onLoad"
-                                 :disable="!hasMore"
-                                 :offset="520"
+                                 :disable="!hasMore || fetchCount === 0"
+                                 :offset="scrollContainer?.height + 100"
                                  :debounce="300"
                                  class="column justify-end"
                                  :style="`min-height: ${scrollContainer?.height}px`"
@@ -180,53 +179,67 @@
           </div>
         </template>
         <template v-else>
-          <q-scroll-area
-              v-model="scrollModel"
-              :thumb-style="thumbStyle"
-              :bar-style="barStyle"
-              class="q-space q-pb-lg"
-              ref="scrollAreaRef"
+          <q-resize-observer @resize="onResize" />
+          <q-scroll-area v-model="scrollModel"
+                         class="q-space"
+                         ref="scrollAreaRef"
+                         @scroll="scrollHandler"
           >
-            <q-resize-observer @resize="onResize" />
-            <q-infinite-scroll
-                v-if="messages?.order?.length > 0"
-                reverse
-                class="column justify-end q-pt-xl"
-                :style="`min-height: ${scrollContainer?.height}px`"
-                :debounce="300"
-                :offset="100"
-                :disable="!hasMore"
-                @load="onLoad"
-            >
-              <div class="column no-wrap relative-position article">
-                <template v-for="(i, index) in messages.order" :key="i">
-                  <MessageItem
-                      v-if="!messages.posts[i]?.root_id"
-                      :msg="messages.posts[i]"
-                      :prev="messages.posts[messages.order[index - 1]]"
-                      :index="index"
-                      :inThread="false"
-                      :curThreadId="thread?.id"
-                      :showUnreadAfterCache
-                      :after
-                      :MsgOnly="!$q.screen.gt.xs"
-                      container="channel"
-                      @togglePowerpannel="togglePowerpannel"
-                      @enterThread="enterThread"
-                      @getUnreadAfterCache="getMore(channel_id)"
-                  />
-                </template>
-              </div>
-            </q-infinite-scroll>
+            <q-pull-to-refresh @refresh="refresh">
+              <q-infinite-scroll v-if="messages?.length > 0"
+                                 reverse
+                                 @load="onLoad"
+                                 :disable="!hasMore || fetchCount === 0"
+                                 :offset="scrollContainer?.height + 100"
+                                 :debounce="300"
+                                 class="column justify-end"
+                                 :style="`min-height: ${scrollContainer?.height}px`"
+              >
+                <div class="column no-wrap relative-position article messages_list">
+                  <div class="full-width column no-wrap flex-center q-pb-xl q-mb-xl" style="height: 66vh">
+                    <ChatStarter style="max-width: 560px;max-height: 560px" />
+                    <span class="text-h1">
+                    Channel Chat start here
+                  </span>
+                  </div>
+
+                  <template v-for="(i, index) in messages" :key="i.id">
+                    <MessageItem
+                        v-if="!i.root_id"
+                        :msg="i"
+                        :prev="messages[index - 1]"
+                        :index="index"
+                        :inThread="false"
+                        :MsgOnly="!$q.screen.gt.xs"
+                        container="channel"
+                        @togglePowerpannel="togglePowerpannel"
+                        @enterThread="enterThread"
+                    />
+                    <div v-if="i.id === lastCacheID && hasMsgInAfter && fetchCount > 0" class="row flex-center relative-position">
+                      <div class="absolute-full flex flex-center">
+                        <q-separator class="full-width op-3" />
+                      </div>
+                      <q-btn
+                          dense
+                          size="sm"
+                          padding="2px 12px"
+                          rounded
+                          outline
+                          color="primary"
+                          :label="$t('show_unread_history_message')"
+                          class="blur-sm"
+                          @click="fetchMore"
+                      />
+                    </div>
+                  </template>
+                </div>
+              </q-infinite-scroll>
+            </q-pull-to-refresh>
           </q-scroll-area>
-          <SendmsgBox :channel_id="channel_id">
-            <template v-slot:disableTip>
-              <div class="absolute-full bg-black op-5"></div>
-              <div class="absolute-full column flex-center">
-                {{ $t('chose_a_channel') }}
-              </div>
-            </template>
-          </SendmsgBox>
+          <div v-if="teamStore.mm_channel?.wasblocked || teamStore.mm_channel?.isblocked" class="full-width q-pa-xl border flex flex-center">
+            {{ `${teamStore.mm_channel?.wasblocked ? '您已被对方屏蔽' : '您已屏蔽对方'}，不能发送消息` }}
+          </div>
+          <SendmsgBox v-else :channel_id="channel_id" />
         </template>
       </div>
     </template>
