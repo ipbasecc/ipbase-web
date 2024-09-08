@@ -192,16 +192,16 @@ const queryElement = () => {
     refetchElement = rf;
     watch(result,() => {
         if(result.value) {
-            element.value = result.value?.element.data.attributes;
-            attachments.value = element.value?.attachments?.data?.length > 0 && element.value.attachments.data || null;
+            element.value = result.value?.element?.data?.attributes;
+            attachments.value = element.value?.attachments?.data?.length > 0 && element.value?.attachments?.data || null;
 
-            workStore.creator = element.value?.is_opus && element.value.makers?.length > 0 && element.value.makers || null
+            workStore.creator = element.value?.is_opus && element.value.makers?.length > 0 && element.value?.makers || null
             viewed_count.value = element.value?.viewed_count || 0;
             favorite_count.value =  element.value?.favorite_count || 0;
             liked_count.value =  element.value?.liked_count || 0;
             unliked_count.value =  element.value?.unliked_count || 0;
 
-            elementPostId.value =  element.value?.post?.data.id || null;
+            elementPostId.value =  element.value?.post?.data?.id || null;
 
             isViewed.value = element.value?.viewed_by?.data?.length ? true : false;
         }

@@ -173,9 +173,6 @@ importers:
       '@types/file-saver':
         specifier: ^2.0.7
         version: 2.0.7
-      '@types/ws':
-        specifier: ^8.5.12
-        version: 8.5.12
       '@vue/apollo-composable':
         specifier: ^4.2.1
         version: 4.2.1(@apollo/client@3.11.8(graphql@16.9.0)(subscriptions-transport-ws@0.9.19(graphql@16.9.0)))(graphql@16.9.0)(typescript@5.5.4)(vue@3.5.3(typescript@5.5.4))
@@ -188,12 +185,6 @@ importers:
       ali-oss:
         specifier: ^6.21.0
         version: 6.21.0
-      apollo-link-ws:
-        specifier: ^1.0.20
-        version: 1.0.20(graphql@16.9.0)(subscriptions-transport-ws@0.9.19(graphql@16.9.0))
-      apollo-utilities:
-        specifier: ^1.3.4
-        version: 1.3.4(graphql@16.9.0)
       artplayer:
         specifier: ^5.1.7
         version: 5.1.7
@@ -378,6 +369,9 @@ importers:
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
+      vite:
+        specifier: ^5.4.3
+        version: 5.4.3(@types/node@22.5.4)(sass@1.78.0)(terser@5.31.6)
       vite-plugin-checker:
         specifier: ^0.7.2
         version: 0.7.2(eslint@8.57.0)(optionator@0.9.4)(typescript@5.5.4)(vite@5.4.3(@types/node@22.5.4)(sass@1.78.0)(terser@5.31.6))
@@ -2406,9 +2400,6 @@ packages:
   '@types/webfontloader@1.6.38':
     resolution: {integrity: sha512-kUaF72Fv202suFx6yBrwXqeVRMx7hGtJTesyESZgn9sEPCUeDXm2p0SiyS1MTqW74nQP4p7JyrOCwZ7pNFns4w==}
 
-  '@types/ws@8.5.12':
-    resolution: {integrity: sha512-3tPRkv1EtkDpzlgyKyI8pGsGZAGPEaXeu0DOj5DI25Ja91bdAYddYHbADRYVrZMRbfW+1l5YwXVDKohDJNQxkQ==}
-
   '@types/yauzl@2.10.3':
     resolution: {integrity: sha512-oJoftv0LSuaDZE3Le4DbKX+KS9G36NzOeSap90UIK0yMA/NhKJhqlSGtNDORNRaIbQfzjXDrQa0ytJ6mNRGz/Q==}
 
@@ -2484,9 +2475,6 @@ packages:
   '@wry/context@0.7.4':
     resolution: {integrity: sha512-jmT7Sb4ZQWI5iyu3lobQxICu2nC/vbUhP0vIdd6tHC9PTfenmRmuIFqktc6GH9cgi+ZHnsLWPvfSvc4DrYmKiQ==}
     engines: {node: '>=8'}
-
-  '@wry/equality@0.1.11':
-    resolution: {integrity: sha512-mwEVBDUVODlsQQ5dfuLUS5/Tf7jqUKyhKYHmVi4fPB6bDMOfWvUPJmKgS1Z7Za/sOI3vzWt4+O7yCiL/70MogA==}
 
   '@wry/equality@0.5.7':
     resolution: {integrity: sha512-BRFORjsTuQv5gxcXsuDXx6oGRhuVsEGwZy6LOzRRfgu+eSfxbhUQ9L9YtSEIuIjY/o7g3iWFjrc5eSY1GXP2Dw==}
@@ -2586,21 +2574,6 @@ packages:
   anymatch@3.1.3:
     resolution: {integrity: sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw==}
     engines: {node: '>= 8'}
-
-  apollo-link-ws@1.0.20:
-    resolution: {integrity: sha512-mjSFPlQxmoLArpHBeUb2Xj+2HDYeTaJqFGOqQ+I8NVJxgL9lJe84PDWcPah/yMLv3rB7QgBDSuZ0xoRFBPlySw==}
-    peerDependencies:
-      subscriptions-transport-ws: ^0.9.0
-
-  apollo-link@1.2.14:
-    resolution: {integrity: sha512-p67CMEFP7kOG1JZ0ZkYZwRDa369w5PIjtMjvrQd/HnIV8FRsHRqLqK+oAZQnFa1DDdZtOtHTi+aMIW6EatC2jg==}
-    peerDependencies:
-      graphql: ^0.11.3 || ^0.12.3 || ^0.13.0 || ^14.0.0 || ^15.0.0
-
-  apollo-utilities@1.3.4:
-    resolution: {integrity: sha512-pk2hiWrCXMAy2fRPwEyhvka+mqwzeP60Jr1tRYi5xru+3ko94HI9o6lK0CT33/w4RDlxWchmdhDCrvdr+pHCig==}
-    peerDependencies:
-      graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
 
   app-builder-bin@4.0.0:
     resolution: {integrity: sha512-xwdG0FJPQMe0M0UA4Tz0zEB8rBJTRA5a476ZawAqiBkMv16GRK5xpXThOjMaEOFnZ6zabejjG4J3da0SXG63KA==}
@@ -5853,9 +5826,6 @@ packages:
     resolution: {integrity: sha512-uivwYcQaxAucv1CzRp2n/QdYPo4ILf9VXgH19zEIjFx2EJufV16P0JtJVpYHy89DItG6Kwj2oIUjrcK5au+4tQ==}
     engines: {node: '>=8'}
 
-  ts-invariant@0.4.4:
-    resolution: {integrity: sha512-uEtWkFM/sdZvRNNDL3Ehu4WVpwaulhwQszV8mrtcdeE8nN00BV9mAmQ88RkrBhFgl9gMgvjJLAQcZbnPXI9mlA==}
-
   tslib@1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
 
@@ -6476,9 +6446,6 @@ packages:
   zeed-dom@0.10.11:
     resolution: {integrity: sha512-7ukbu6aQKx34OQ7PfUIxOuAhk2MvyZY/t4/IJsVzy76zuMzfhE74+Dbyp8SHiUJPTPkF0FflP1KVrGJ7gk9IHw==}
     engines: {node: '>=14.13.1'}
-
-  zen-observable-ts@0.8.21:
-    resolution: {integrity: sha512-Yj3yXweRc8LdRMrCC8nIc4kkjWecPAUVh0TI0OUrWXx6aX790vLcDlWca6I4vsyCGH3LpWxq0dJRcMOFoVqmeg==}
 
   zen-observable-ts@1.2.5:
     resolution: {integrity: sha512-QZWQekv6iB72Naeake9hS1KxHlotfRpe+WGNbNx5/ta+R3DNjVO2bswf63gXlWDcs+EMd7XY8HfVQyP1X6T4Zg==}
@@ -8798,10 +8765,6 @@ snapshots:
 
   '@types/webfontloader@1.6.38': {}
 
-  '@types/ws@8.5.12':
-    dependencies:
-      '@types/node': 22.5.4
-
   '@types/yauzl@2.10.3':
     dependencies:
       '@types/node': 22.5.4
@@ -8916,10 +8879,6 @@ snapshots:
   '@wry/context@0.7.4':
     dependencies:
       tslib: 2.7.0
-
-  '@wry/equality@0.1.11':
-    dependencies:
-      tslib: 1.14.1
 
   '@wry/equality@0.5.7':
     dependencies:
@@ -9041,30 +9000,6 @@ snapshots:
     dependencies:
       normalize-path: 3.0.0
       picomatch: 2.3.1
-
-  apollo-link-ws@1.0.20(graphql@16.9.0)(subscriptions-transport-ws@0.9.19(graphql@16.9.0)):
-    dependencies:
-      apollo-link: 1.2.14(graphql@16.9.0)
-      subscriptions-transport-ws: 0.9.19(graphql@16.9.0)
-      tslib: 1.14.1
-    transitivePeerDependencies:
-      - graphql
-
-  apollo-link@1.2.14(graphql@16.9.0):
-    dependencies:
-      apollo-utilities: 1.3.4(graphql@16.9.0)
-      graphql: 16.9.0
-      ts-invariant: 0.4.4
-      tslib: 1.14.1
-      zen-observable-ts: 0.8.21
-
-  apollo-utilities@1.3.4(graphql@16.9.0):
-    dependencies:
-      '@wry/equality': 0.1.11
-      fast-json-stable-stringify: 2.1.0
-      graphql: 16.9.0
-      ts-invariant: 0.4.4
-      tslib: 1.14.1
 
   app-builder-bin@4.0.0: {}
 
@@ -9245,7 +9180,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  backo2@1.0.2: {}
+  backo2@1.0.2:
+    optional: true
 
   bail@2.0.2: {}
 
@@ -10202,7 +10138,8 @@ snapshots:
 
   event-target-shim@5.0.1: {}
 
-  eventemitter3@3.1.2: {}
+  eventemitter3@3.1.2:
+    optional: true
 
   events@3.3.0: {}
 
@@ -10951,7 +10888,8 @@ snapshots:
 
   isstream@0.1.2: {}
 
-  iterall@1.3.0: {}
+  iterall@1.3.0:
+    optional: true
 
   jackspeak@3.4.3:
     dependencies:
@@ -12708,6 +12646,7 @@ snapshots:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
+    optional: true
 
   sumchecker@3.0.1:
     dependencies:
@@ -12725,7 +12664,8 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  symbol-observable@1.2.0: {}
+  symbol-observable@1.2.0:
+    optional: true
 
   symbol-observable@4.0.0: {}
 
@@ -12905,10 +12845,6 @@ snapshots:
   ts-invariant@0.10.3:
     dependencies:
       tslib: 2.7.0
-
-  ts-invariant@0.4.4:
-    dependencies:
-      tslib: 1.14.1
 
   tslib@1.14.1: {}
 
@@ -13492,7 +13428,8 @@ snapshots:
 
   wrappy@1.0.2: {}
 
-  ws@7.5.10: {}
+  ws@7.5.10:
+    optional: true
 
   ws@8.17.1: {}
 
@@ -13560,11 +13497,6 @@ snapshots:
   zeed-dom@0.10.11:
     dependencies:
       css-what: 6.1.0
-
-  zen-observable-ts@0.8.21:
-    dependencies:
-      tslib: 1.14.1
-      zen-observable: 0.8.15
 
   zen-observable-ts@1.2.5:
     dependencies:

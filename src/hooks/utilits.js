@@ -373,3 +373,21 @@ export function extractDMUserID(dmChannelName, self_id) {
   // 检查用户ID是否在分割后的数组中
   return parts.filter(i => i !== self_id && i !== '')[0];
 }
+
+export function generateUrlParams(ops) {
+  // 检查每个字段，如果值存在，则添加到参数字符串中
+  let params = [];
+  for (let key in ops) {
+    if (ops[key] !== void 0 && ops[key] !== null && ops[key] !== '') {
+      params.push(`${encodeURIComponent(key)}=${encodeURIComponent(ops[key])}`);
+    }
+  }
+
+  // 如果有参数，则将它们以问号开始拼接到 URL
+  if (params.length > 0) {
+    return `${params.join('&')}`;
+  } else {
+    // 如果没有参数，则返回基础 URL
+    return `?`;
+  }
+}

@@ -70,7 +70,7 @@ function __dict() {
     { key: "share", value: "分享" },
     { key: "schedule", value: "规划" },
     { key: "card_schedule", value: "任务规划" },
-    { key: "card_schedule_event", value: "任务规划事件" },
+    { key: "card_schedule_event", value: "任务规划事件" }
   ];
   return obj;
 }

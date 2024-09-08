@@ -20,8 +20,7 @@
           {{$t('you')}}
         </q-avatar>
       </template>
-      <UserAvatar
-        v-else
+      <UserAvatar v-else
         :user_id="msg.user_id"
         :size="avatar_size"
         :status="member_status"
@@ -29,8 +28,7 @@
         :class="!MsgOnly && $q.screen.gt.xs ? 'q-ml-xl' : ''"
       />
     </template>
-    <div
-      v-else
+    <div v-else
       class="hover-show transition"
       :style="`min-width: ${avatar_size + (!MsgOnly ? 48 : 0)}px;`"
     >
@@ -178,22 +176,6 @@
         @click="toggle_flagged(msg)"
       />
     </div>
-  </div>
-  <div v-if="showUnreadAfterCache && msg.id === after" class="row flex-center relative-position">
-    <div class="absolute-full flex flex-center">
-      <q-separator class="full-width op-3" />
-    </div>
-    <q-btn
-      dense
-      size="sm"
-      padding="2px 12px"
-      rounded
-      outline
-      color="primary"
-      :label="$t('show_unread_history_message')"
-      class="blur-sm"
-      @click="getUnreadAfterCache"
-    />
   </div>
 </template>
 

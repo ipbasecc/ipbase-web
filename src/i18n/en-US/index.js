@@ -71,7 +71,6 @@ export default {
   upload_tip_rBtn: 'Click the button on the right or drag the image here to upload a preview image',
   support: 'Support',
   pick_file: 'Pick file',
-  upload_file: 'Upload file',
   upload_complated: 'Upload complated',
   upload_pick_or_drop_tip: 'Click the button to select the file, or drag the file below',
   by_time: 'at',
@@ -294,7 +293,6 @@ export default {
   no_verifild_cant_access: 'You have not passed the administrator verification and cannot access this team temporarily',
   was_blocked_cant_access: 'You have been blocked by the team administrator and please try to contact the administrator to appeal',
 
-  invite_member: 'invite member',
   manage_member: 'manage member',
   team_settings: 'team settings',
   leave_team: 'Leave team',
@@ -313,7 +311,6 @@ export default {
   no_unread_thread: 'no unread thread',
   items_talk_message: 'messages',
   send_to_self: 'send self',
-  send_message: 'send message',
 
   theme: 'Theme',
   profile: 'profile',
@@ -409,7 +406,6 @@ export default {
   thumbnial: 'thumbnail',
   title: 'title',
   content: 'content',
-  todo: 'todo',
   progress: 'progress',
   follower: 'follower',
   more_actions: 'actions',

@@ -71,7 +71,6 @@ export default {
   upload_tip_rBtn: '点击右侧按钮、或拖拽图片到此处上传预览图',
   support: '支持',
   pick_file: '选择文件',
-  upload_file: '上传文件',
   upload_complated: '上传完成',
   upload_pick_or_drop_tip: '点击按钮选择文件，或拖拽文件到下方',
   by_time: '于',
@@ -294,7 +293,6 @@ export default {
   no_verifild_cant_access: '您尚未通过管理员验证，暂时不能访问此团队',
   was_blocked_cant_access: '您已被该团队管理员屏蔽，请尝试联系管理员申诉',
 
-  invite_member: '邀请成员',
   manage_member: '成员管理',
   team_settings: '团队设置',
   leave_team: '离开团队',
@@ -313,7 +311,6 @@ export default {
   no_unread_thread: '没有未读主题',
   items_talk_message: '条讨论',
   send_to_self: '给自己留言',
-  send_message: '发送消息',
 
   theme: '主题',
   profile: '个人资料',
@@ -409,7 +406,6 @@ export default {
   thumbnial: '预览图',
   title: '名称',
   content: '内容',
-  todo: '待办',
   progress: '进度',
   follower: '关注者',
   more_actions: '操作',
@@ -655,7 +651,7 @@ export default {
   tips_unsupport: '您可以将文件打包为压缩包后上传',
   affairs_filter: '事务筛选',
 
-  class_overview: '介绍',
+  class_overview: '概览',
   class_forum: '讨论',
   class_kanban: '延伸课',
   class_documents: '文档',

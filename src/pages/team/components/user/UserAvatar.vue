@@ -1,11 +1,9 @@
 <template>
-  <q-avatar
-    v-if="avatar"
+  <q-avatar @click="fetch_user"
     :size="`${size}px`"
-    @click="fetch_user"
     @mouseenter="fetchStatuse(user_idRef)"
   >
-    <img :src="avatar" alt="avatar" />
+    <img v-if="avatar" :src="avatar" alt="avatar" />
     <q-popup-proxy
       v-if="!disable_cardRef && !teamStore.direct_user"
       transition-show="fade"

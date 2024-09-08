@@ -1,15 +1,10 @@
 <template>
-  <div
-    v-if="cardRef.expand"
+  <div v-if="cardRef.expand"
     :key="`card-${cardRef.id}`"
     class="flex flex-center"
     :class="`
         ${cardRef.status === 'completed' && teamStore.navigation === 'kanban' ? 'op-3' : ''}
-        ${
-          $q.dark.mode && !actived
-            ? 'text-grey-1'
-            : 'text-grey-9'
-        }
+        ${ $q.dark.mode && !actived ? 'text-grey-1' : 'text-grey-9' }
       `"
     ref="cardDomRef"
     :style="`${$q.screen.gt.xs ? 'width: 320px' : 'width: 100%'}`"

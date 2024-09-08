@@ -71,7 +71,6 @@ export default {
   upload_tip_rBtn: 'Klicken Sie auf die Schaltfläche rechts oder ziehen Sie Bilder hierher, um Vorschaubilder hochzuladen',
   support: 'Unterstützung',
   pick_file: 'Datei auswählen',
-  upload_file: 'Datei hochladen',
   upload_complated: 'Hochladen abgeschlossen',
   upload_pick_or_drop_tip: 'Klicken Sie auf die Schaltfläche, um eine Datei auszuwählen, oder ziehen Sie die Datei hierher',
   by_time: 'Um',
@@ -293,8 +292,7 @@ export default {
   
   no_verifild_cant_access: 'Sie wurden noch nicht vom Administrator bestätigt und können diese Gruppe vorübergehend nicht aufrufen',
   was_blocked_cant_access: 'Sie wurden von diesem Gruppenadministrator blockiert, bitte versuchen Sie, sich an den Administrator zu wenden',
-  
-  invite_member: 'Mitglied einladen',
+
   manage_member: 'Mitgliederverwaltung',
   team_settings: 'Teameinstellungen',
   leave_team: 'Team verlassen',
@@ -313,7 +311,6 @@ export default {
   no_unread_thread: 'Keine ungelesenen Themen',
   items_talk_message: 'Diskussionsnachrichten',
   send_to_self: 'Eigene Nachricht senden',
-  send_message: 'Nachricht senden',
   
   theme: 'Thema',
   profile: 'Profil',
@@ -409,7 +406,6 @@ export default {
   thumbnial: 'Vorschaubild',
   title: 'Titel',
   content: 'Inhalt',
-  todo: 'Zu erledigen',
   progress: 'Fortschritt',
   follower: 'Follower',
   more_actions: 'Mehr Aktionen',

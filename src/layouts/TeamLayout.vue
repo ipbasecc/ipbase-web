@@ -82,9 +82,9 @@
         </div>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn flat dense padding="xs md" :label="$t('connect_refused_btn_pageRefresh_label')" @click="pageRefresh()" />
+        <q-btn flat dense padding="xs md" :label="$t('connect_refused_btn_label')" v-close-popup @click="serverRefusedHandler()" />
         <q-space />
-        <q-btn dense padding="xs md" :label="$t('connect_refused_btn_label')" color="primary" v-close-popup @click="serverRefusedHandler()" />
+        <q-btn dense padding="xs md" :label="$t('connect_refused_btn_pageRefresh_label')" color="primary" @click="pageRefresh()" />
       </q-card-actions>
     </q-card>
   </q-dialog>

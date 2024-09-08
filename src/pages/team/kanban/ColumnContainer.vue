@@ -217,7 +217,7 @@
         @mouseenter="setMouseWheelScroll"
       >
         <VueDraggable v-model="filteredCards"
-          :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+          :animation="200" :forceFallback="true" :fallbackOnBody="true"
           handle=".dragBar" filter=".undrag" group="tasks"
           chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
           class="q-py-xs radius-sm column gap-sm no-wrap forbid"
@@ -240,8 +240,7 @@
             />
           </template>
         </VueDraggable>
-        <div
-          v-if="!teamStore.cardDragging"
+        <div v-if="!teamStore.cardDragging"
           data-dragscroll
           class="q-space"
           style="order: 9999; opacity: 0"
@@ -391,26 +390,15 @@
           class="bg-primary radius-full"
           style="width: 5px; height: 5px"
         />
-        <q-btn v-if="
-            useAuths('name', ['column']) ||
-            useAuths('delete', ['column']) ||
-            isCreator
-          "
-          dense
-          size="sm"
-          flat
-          round
-          icon="more_vert"
+        <q-btn v-if=" useAuths('name', ['column']) || useAuths('delete', ['column']) || isCreator"
+          dense size="sm" flat round icon="more_vert"
         >
           <q-menu class="border shadow-24">
             <q-list dense class="q-pa-xs radius-sm" style="min-width: 100px">
-              <template
-                v-if="useAuths('name', ['column'])"
-              >
+              <template v-if="useAuths('name', ['column'])">
                 <q-item class="no-padding">
                   <q-item-section>
-                    <q-input
-                      v-model="params.data.name"
+                    <q-input v-model="params.data.name"
                       type="text"
                       :placeholder="$t('column_name')"
                       dense
@@ -436,15 +424,12 @@
                   </q-item-section>
                 </q-item>
               </template>
-              <template
-                v-if="useAuths('delete', ['column'])"
-              >
+              <template v-if="useAuths('delete', ['column'])">
                 <q-separator spaced />
-                <q-item
+                <q-item @click="deleteColumnFn()"
                   clickable
                   v-close-popup
                   class="radius-xs"
-                  @click="deleteColumnFn()"
                 >
                   <q-item-section>{{$t('delete_column')}}</q-item-section>
                 </q-item>
@@ -454,7 +439,7 @@
         </q-btn>
       </div>
       <VueDraggable v-model="filteredCards" target=".taskItems"
-        :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+        :animation="300" :forceFallback="true" :fallbackOnBody="true"
         handle=".dragBar" filter=".undrag" group="tasks"
         chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
         class="full-width forbid"
