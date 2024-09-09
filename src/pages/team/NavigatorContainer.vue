@@ -38,7 +38,7 @@
         </div>
         <div v-if="uiStore.app === 'affairs'">
           <AffairsFilter v-if="$q.screen.gt.sm" />
-          <span>个人事务</span>
+          <span v-else>个人事务</span>
         </div>
         <div v-if="uiStore.app === 'chats'">
           <span>个人沟通</span>

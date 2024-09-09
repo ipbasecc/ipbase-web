@@ -1229,13 +1229,23 @@ watch(
           strapi.data.card_id === cardRef.value.id &&
           strapi.data.action === "card_todo_created"
         ) {
-          // console.log("card_todo_created post", post);
           strapi.data.body.mm_thread = post
+          const processAfter = (after, todos) => {
+            if(!after) {
+              return [...todos, strapi.data.body]
+            } else {
+              const _index = todos.findIndex((t) => t.id === after);
+              if(_index !== -1){
+                todos.splice(_index + 1, 0, strapi.data.body);
+                return todos
+              }
+            }
+          }
           cardRef.value.todogroups = cardRef.value.todogroups.map((g) => ({
             ...g,
             todos:g.id === Number(strapi.data.group_id)
                   && !g.todos?.map((todo) => todo.id).includes(strapi.data.body.id)
-                  ? [...g.todos, strapi.data.body]
+                  ? processAfter(strapi.data.after, g.todos)
                   : g.todos
           }));
           syncCardStore();

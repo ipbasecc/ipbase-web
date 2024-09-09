@@ -1,6 +1,6 @@
 <template>
   <!-- 需要解决自动聚焦问题，用户点击后，光标自动聚焦开始输入 -->
-  <div
+  <div v-bind="$attrs"
     :contenteditable="editable"
     ref="classlessInput"
     style="writing-mode: lr"
@@ -17,9 +17,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, toRefs, watch } from "vue";
-import { onClickOutside } from "@vueuse/core";
-import { removeHtmlTags } from "src/hooks/utilits.js";
+import {onMounted, onUnmounted, ref, toRefs, watch} from "vue";
+import {onClickOutside} from "@vueuse/core";
+import {removeHtmlTags} from "src/hooks/utilits.js";
 import {uiStore} from 'src/hooks/global/useStore';
 
 const props = defineProps({
@@ -45,9 +45,8 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["update", "cannel", "ctrlEnter", "shiftEnter"]);
+const emit = defineEmits(["update", "cannel", "ctrlEnter", "shiftEnter", "syncContent"]);
 const { autofocus, todogroup } = toRefs(props);
-
 const model = defineModel();
 const editable = ref(props.auth);
 
@@ -70,7 +69,7 @@ watch(
   model,
   () => {
     if (model.value) {
-      model.value = removeHtmlTags(model.value);
+      model.value = removeHtmlTags(classlessInput.value.innerText);
     }
   },
   { immediate: true, deep: true }
@@ -79,6 +78,7 @@ watch(
 // 按下win键时会触发blur，因此这里不使用默认方法触发blur
 // 改用 onClickOutside
 const blur = () => {
+  console.log('blur')
   model.value = classlessInput.value?.innerText;
   // editable.value = false;
   emit("update");
@@ -91,6 +91,12 @@ onClickOutside(classlessInput, () => {
     blur();
   }
 });
+watch(inputValue, () => {
+  if(inputValue.value) {
+    console.log('inputValue', inputValue.value)
+    emit('syncContent', inputValue.value);
+  }
+},{immediate:false,deep:false})
 
 onUnmounted(() => {
   if (classlessInput.value?.innerText) {

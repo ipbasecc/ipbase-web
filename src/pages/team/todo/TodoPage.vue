@@ -65,8 +65,7 @@
           >
             <div class="q-space column no-wrap gap-xs scroll-y">
               <q-resize-observer @resize="onColumnResize" />
-              <div
-                v-if="updateTodogroup_target !== i.id"
+              <div v-if="updateTodogroup_target !== i.id"
                 data-no-dragscroll
                 class="row no-wrap items-center q-py-sm border-bottom q-mb-sm hovered-item"
                 @mouseenter="outsideScroll(i, true)"
@@ -307,7 +306,7 @@
                     type="text"
                     :placeholder="$t('todo_content')"
                     @keydown.esc="cannelCreateTodo()"
-                    @keyup.ctrl.enter="keepCreate(i)"
+                    @keyup.ctrl.enter="keepCreate(i, null)"
                   >
                     <template v-slot:append>
                       <q-btn
@@ -335,7 +334,7 @@
                       color="primary"
                       :label="$t('confirm')"
                       padding="xs sm"
-                      @click="createTodoFn(i, '')"
+                      @click="createTodoFn(i, null)"
                     />
                   </div>
                 </div>
@@ -643,9 +642,7 @@
             </template>
           </div>
         </template>
-          <template
-            v-if="layout === 'row' && !uiStore.isShared && !isFeedback"
-          >
+          <template v-if="layout === 'row' && !uiStore.isShared && !isFeedback">
             <div
               class="column no-wrap gap-xs q-pa-sm undrag"
               :style="layout === 'row' ? 'width: 320px' : ''"
@@ -802,8 +799,6 @@
         <template v-for="i in todogroups" :key="i.id">
           <div
             class="column no-wrap gap-xs q-py-xs radius-xs"
-            @mouseenter="show_addTodo_ofGroup = i.id"
-            @mouseleave="show_addTodo_ofGroup = void 0"
           >
             <div
               class="row no-wrap items-center q-px-sm hovered-item"
@@ -953,97 +948,99 @@
                     @unediting="uneditting()"
                     @showAddTodo="showAddTodo"
                     @hideAddTodo="hideAddTodo"
-                  />
-                </template>
-              </VueDraggable>
-                <template v-if="!uiStore.dragging && useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])">
-                  <div class="row no-wrap gap-xs items-start q-pl-xs q-pr-sm todo_in_card relative-position hovered-item"
-                    :class="todo_add_ing === i.id
-                        ? 'border-info radius-xs border-solid border-xs'
-                        : 'border-placeholder'
-                    "
-                    style="order: 99999"
+                    @mouseenter="show_addTodo_ofGroup = element.id"
+                    @mouseleave="show_addTodo_ofGroup = void 0"
                   >
-                    <template v-if="todo_add_ing !== i.id">
-                      <div :class="
-                          show_addTodo_ofGroup === i.id && enableAddTodo ? 'op-null' : 'op-0'
-                        "
-                        class="column justify-center items-end q-space q-pr-md bg-primary overflow-show transition"
-                        style="height: 1px"
+                    <template v-if="!uiStore.dragging && useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])">
+                      <div class="row no-wrap gap-xs items-start q-pl-xs q-pr-sm todo_in_card relative-position hovered-item"
+                           :class="todo_add_ing === element.id
+                      ? 'border-info radius-xs border-solid border-xs'
+                      : 'border-placeholder'
+                  "
+                           style="order: 99999"
                       >
-                        <q-btn
-                          dense
-                          unelevated
-                          color="primary"
-                          size="xs"
-                          round
-                          icon="mdi-plus"
-                          @click="createAddTodo(i.id)"
-                        />
+                        <template v-if="todo_add_ing !== element.id">
+                          <div :class="
+                            show_addTodo_ofGroup === element.id && enableAddTodo ? 'op-null' : 'op-0'
+                          "
+                               class="column justify-center items-end q-space q-pr-md bg-primary overflow-show transition"
+                               style="height: 1px"
+                          >
+                            <q-btn
+                                dense
+                                unelevated
+                                color="primary"
+                                size="xs"
+                                round
+                                icon="mdi-plus"
+                                @click="createAddTodo(element.id)"
+                            />
+                          </div>
+                        </template>
+                        <div v-else class="full-width column no-wrap border-top">
+                          <div class="full-width row no-wrap">
+                            <div
+                                class="transition flex flex-center"
+                                style="height: 30px"
+                            >
+                              <q-checkbox
+                                  v-model="todo_params.data.status"
+                                  size="xs"
+                                  dense
+                                  :disable="!todo_params.data.content"
+                              >
+                              </q-checkbox>
+                            </div>
+                            <ClasslessInput
+                                v-if="todo_add_ing === element.id"
+                                v-model="todo_params.data.content"
+                                :auth="useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])"
+                                :todogroup="i"
+                                :baseClass="`q-space q-pa-xs`"
+                                :autofocus="true"
+                                style="
+                                  min-height: 30px;
+                                  max-width: 240px;
+                                  cursor: text;
+                                "
+                                @update="createTodoFn(i, element, '')"
+                                @ctrlEnter="createTodoFn(i, element, '')"
+                                @cannel="cannelCreateTodo"
+                            ></ClasslessInput>
+                          </div>
+                          <div
+                              v-if="todo_add_ing === element.id && !$q.screen.gt.xs"
+                              class="row no-wrap items-center q-py-xs"
+                          >
+                            <q-btn
+                                flat
+                                dense
+                                :label="$t('cancel')"
+                                padding="xs sm"
+                                @click="cannelCreateTodo"
+                            />
+                            <q-space />
+                            <q-btn
+                                :disable="!todo_params.data.content"
+                                dense
+                                color="primary"
+                                :label="$t('confirm')"
+                                padding="xs sm"
+                                @click="createTodoFn(i, element, '')"
+                            />
+                          </div>
+                          <q-inner-loading :showing="todo_creating" size="sm">
+                            <q-spinner-dots
+                                color="primary"
+                                size="1em"
+                            />
+                          </q-inner-loading>
+                        </div>
                       </div>
                     </template>
-                    <div v-else class="full-width column no-wrap border-top">
-                      <div class="full-width row no-wrap">
-                        <div
-                          class="transition flex flex-center"
-                          style="height: 30px"
-                        >
-                          <q-checkbox
-                            v-model="todo_params.data.status"
-                            size="xs"
-                            dense
-                            :disable="!todo_params.data.content"
-                          >
-                          </q-checkbox>
-                        </div>
-                        <ClasslessInput
-                          v-if="todo_add_ing === i.id"
-                          v-model="todo_params.data.content"
-                          :auth="useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])"
-                          :todogroup="i"
-                          :baseClass="`q-space q-pa-xs`"
-                          :autofocus="true"
-                          style="
-                            min-height: 30px;
-                            max-width: 240px;
-                            cursor: text;
-                          "
-                          @update="createTodoFn(i, '')"
-                          @ctrlEnter="createTodoFn(i)"
-                          @shiftEnter="keepCreate(i)"
-                          @cannel="cannelCreateTodo"
-                        ></ClasslessInput>
-                      </div>
-                      <div
-                        v-if="todo_add_ing === i.id && !$q.screen.gt.xs"
-                        class="row no-wrap items-center q-py-xs"
-                      >
-                        <q-btn
-                          flat
-                          dense
-                          :label="$t('cancel')"
-                          padding="xs sm"
-                          @click="cannelCreateTodo"
-                        />
-                        <q-space />
-                        <q-btn
-                          :disable="!todo_params.data.content"
-                          dense
-                          color="primary"
-                          :label="$t('confirm')"
-                          padding="xs sm"
-                          @click="createTodoFn(i, '')"
-                        />
-                      </div>
-                      <q-inner-loading :showing="todo_creating" size="sm">
-                        <q-spinner-dots
-                          color="primary"
-                          size="1em"
-                        />
-                      </q-inner-loading>
-                    </div>
-                  </div>
+                  </TodoItem>
                 </template>
+              </VueDraggable>
             </div>
           </div>
         </template>
@@ -1631,7 +1628,7 @@ const createAddTodo = (_id) => {
   }
 };
 
-const createTodoFn = async (i) => {
+const createTodoFn = async (i, todo) => {
   if (!i.todos) {
     i.todos = [];
   }
@@ -1645,6 +1642,9 @@ const createTodoFn = async (i) => {
     todogroup_id: i.id,
     data: {},
   };
+  if(todo){
+    create_params.after = todo.id
+  }
   create_params.data.content = todo_params.value.data.content;
   console.log('window.fingerprint', window.fingerprint)
   if (teamStore.shareInfo) {    
@@ -1655,19 +1655,22 @@ const createTodoFn = async (i) => {
   let res = await createTodo(create_params);
   todo_params.value.data.content = "";
   if (res?.data) {
-    todo_add_ing.value = void 0;
-    console.log('createTodo',res?.data);
-    
-    // backend send ws data but
-    // always create at here, when get ws create event, check exits item, current user no need create
-    i.todos = [...i.todos, res.data];
-    todo_creating.value = false;
+    // console.log('createTodo',res?.data);
+
+    // const todoIndex = i.todos.findIndex(t => t.id === todo.id)
+    // if (todoIndex !== -1) {
+    //   i.todos.splice(todoIndex + 1, 0, res?.data);
+    // }
+    if(!card.value){
+      i.todos = [...i.todos, res.data];
+    }
+    cannelCreateTodo();
   }
   return res?.data;
 };
 
-const keepCreate = async (i) => {
-  const _create = await createTodoFn(i);
+const keepCreate = async (i, todo) => {
+  const _create = await createTodoFn(i, todo);
   if (_create) {
     todo_add_ing.value = i.id;
   }

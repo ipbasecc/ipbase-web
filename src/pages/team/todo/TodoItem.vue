@@ -1,9 +1,10 @@
 <template>
   <div
     v-if="element"
-    class="dragItem"
+    class="dragItem column no-wrap"
     :class="`
       ${active ? 'border-info radius-xs border-solid border-xs' : 'border-placeholder'}
+      ${todo_add_ing ? '' : 'hovered-item'}
       ${element.mm_thread && teamStore.thread?.id === element.mm_thread?.id ? 'border-green radius-xs' : ''}
     `"
   >
@@ -212,6 +213,7 @@
         />
       </q-inner-loading>
     </div>
+    <slot />
     <q-popup-proxy context-menu>
       <TodoMenu
         :element
@@ -228,7 +230,7 @@
 
 <script setup>
 import {computed, ref, toRefs, watch} from "vue";
-import {deleteTodo, updateTodo} from "src/api/strapi/project.js";
+import {createTodo, deleteTodo, updateTodo} from "src/api/strapi/project.js";
 import ThreadBtn from "src/pages/team/components/widgets/ThreadBtn.vue";
 import FileList from "src/components/Utilits/FileList.vue";
 import StrapiUpload from "src/components/Utilits/StrapiUpload.vue";
@@ -503,6 +505,57 @@ const showAddTodo = () => {
 }
 const hideAddTodo = () => {
   emit('hideAddTodo')
+}
+
+const todo_add_ing = ref(void 0);
+const todo_creating = ref(false);
+const show_addTodo_ofGroup = ref(void 0);
+const create_params = ref({
+  todogroup_id: todogroup.value.id,
+  before: void 0,
+  data: {
+    content: void 0,
+    status: false
+  }
+});
+
+const createAddTodo = (id) => {
+  todo_add_ing.value = id
+}
+const syncContent = (val) => {
+  console.log('syncContent', val)
+  create_params.value.data.content = val
+}
+const createTodoFn = async (i, props) => {
+  todo_creating.value = true;
+  // console.log('window.fingerprint', window.fingerprint)
+  if (teamStore.shareInfo) {
+    create_params.value.shareInfo = teamStore.shareInfo;
+    create_params.value.data.fingerprint = window.fingerprint;
+  }
+  create_params.value.before = i.id;
+  console.log('create_params.value', create_params.value)
+  if (!create_params.value?.data?.content || create_params.value?.data?.content === '') return
+  let res = await createTodo(create_params);
+  create_params.value.data.content = "";
+  if (res?.data) {
+    // backend send ws data but
+    // always create at here, when get ws create event, check exits item, current user no need create
+    const todoIndex = i.todos.findIndex(t => t.id === element.value?.id)
+    i.todos = i.todos.splice(todoIndex + 1, 0, res?.data);
+    // i.todos = [...i.todos, res.data];
+    if(props === 'keepCreate'){
+      todo_add_ing.value = res?.data.id
+      await createTodoFn(res?.data)
+    } else {
+      cannelCreateTodo();
+    }
+  }
+  return res?.data;
+};
+const cannelCreateTodo = () => {
+  todo_creating.value = false;
+  todo_add_ing.value = null
 }
 
 watch(
