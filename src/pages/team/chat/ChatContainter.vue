@@ -444,6 +444,7 @@ const merageMsg = (newMessages = {}) => {
         fetchMore();
         console.log('auto fetchMore')
       } else {
+        lastCacheID.value = order[0]
         before.value = order.reverse()[0];
       }
     } else {
