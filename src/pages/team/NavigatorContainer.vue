@@ -37,7 +37,7 @@
           />
         </div>
         <div v-if="uiStore.app === 'affairs'">
-          <AffairsFilter v-if="$q.screen.gt.sm" />
+          <AffairsFilter v-if="$q.screen.gt.sm && uiStore.navigatorDrawer === false" />
           <span v-else>个人事务</span>
         </div>
         <div v-if="uiStore.app === 'chats'">
@@ -226,6 +226,7 @@
             />
           </div>
           <ChatNavigation v-if="uiStore.app === 'chats'" />
+          <AffairsList v-if="uiStore.app === 'affairs'" />
         </q-drawer>
         <q-drawer
           v-model="uiStore.projectRightDrawer"
@@ -312,6 +313,7 @@ import {enalbe_channel, enalbe_project, isExternal,} from "src/pages/team/hooks/
 import AffairsFilter from './todo/affairs/AffairsFilter.vue'
 import RemovedPic from './components/widgets/icons/RemovedPic.vue'
 import ChatNavigation from './chat/components/ChatNavigation.vue'
+import AffairsList from 'src/pages/team/todo/affairs/AffairsList.vue'
 
 // 团队状态是否存在 blocked 或 unconfirmed
 const userStatus_byTeam = computed(() => teamStore.team?.status);
@@ -338,7 +340,7 @@ watch(
   { immediate: true, deep: false }
 );
 const haveSubNav = computed(() => {
-  const enabelSubNavApps = ["teams", "chats"];
+  const enabelSubNavApps = ["teams", "chats", 'affairs'];
   return enabelSubNavApps.includes(uiStore.app) && $q.screen.gt.xs;
 });
 

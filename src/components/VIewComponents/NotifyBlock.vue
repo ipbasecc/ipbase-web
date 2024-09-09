@@ -3,9 +3,9 @@
     class="container full-width radius-md border relative-position"
     style="height: 7rem"
   >
-    <div class="box fit column no-wrap gap-xs q-pa-xs">
+    <div class="box fit column no-wrap gap-xs q-pa-xxs">
       <template v-if="uiStore.unreads.team">
-        <div class="row no-wrap flex-center gap-xs unselected">
+        <div class="row no-wrap flex-center gap-xs unselected q-pa-xxs">
           <q-icon name="mdi-message-alert" />
           <span>{{uiStore.unreads.team.msg_count}}</span>
           <q-tooltip class="transparent">
@@ -16,7 +16,7 @@
             </q-card>
           </q-tooltip>
         </div>
-        <div class="row no-wrap flex-center gap-xs unselected">
+        <div class="row no-wrap flex-center gap-xs unselected q-pa-xxs">
           <span class="font-medium font-bold-600">@</span>
           <span>{{uiStore.unreads.team.mention_count}}</span>
           <q-tooltip class="transparent">
@@ -29,7 +29,7 @@
         </div>
       </template>
       <q-space />
-      <span>{{ $time("HH:mm") }}</span>
+      <span class="bg-black border flex flex-center full-width overflow-hidden q-px-xs radius-xs shadow-14 text-info unselected">{{ $time("HH:mm") }}</span>
     </div>
   </div>
 </template>

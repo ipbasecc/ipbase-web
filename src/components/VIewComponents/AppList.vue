@@ -115,7 +115,7 @@ const apps = [
   {
     val: "affairs",
     label: 'affairs',
-    icon: "mdi-calendar-clock",
+    icon: "mdi-check-all",
     description: 'app_affairs_purpose',
     to: "affairs",
     enable: true,

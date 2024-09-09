@@ -41,10 +41,8 @@
           </div>
         </q-drawer>
         <q-page-container>
-          <q-page>
-            <q-pull-to-refresh class="absolute-full" :class="$q.screen.gt.sm ? '' : 'font-large'" @refresh="pullDownRefresh">
+          <q-page :class="$q.screen.gt.sm ? '' : 'font-large'">
               <RouterView />
-            </q-pull-to-refresh>
           </q-page>
         </q-page-container>
         <q-footer

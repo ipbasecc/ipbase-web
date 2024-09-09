@@ -78,6 +78,8 @@
                     !isFeedback
                   "
                   class="q-pr-sm"
+                  @mouseenter="uiStore.dragKanbanScrollEnable = false"
+                  @mouseleave="uiStore.dragKanbanScrollEnable = true"
                 >
                   <q-icon name="drag_indicator" class="dragBar" />
                 </div>
