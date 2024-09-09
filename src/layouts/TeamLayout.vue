@@ -49,7 +49,7 @@
         </q-page-container>
         <q-footer
           v-if="!$q.screen.gt.xs && !uiStore.hide_footer"
-          class="transparent border-top"
+          class="transparent border-top q-pb-lg"
         >
           <AppList />
         </q-footer>

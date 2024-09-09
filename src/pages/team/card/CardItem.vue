@@ -1268,7 +1268,7 @@ watch(
           strapi.data?.attachedTo_id === cardRef.value.id &&
           strapi.data.action === "removeVersion"
         ) {
-          function isSameId(element) {
+          const isSameId = (element) => {
             return element.id === strapi.data.removed_id;
           }
           const index = cardRef.value.overviews.findIndex(isSameId);
@@ -1281,7 +1281,7 @@ watch(
           strapi.data?.attachedTo_id === cardRef.value.id &&
           strapi.data.action === "newVersion"
         ) {
-          function isSameId(element) {
+          const isSameId = (element) => {
             return element.id === strapi.data?.body?.id;
           }
           const index = cardRef.value.overviews.findIndex(isSameId);

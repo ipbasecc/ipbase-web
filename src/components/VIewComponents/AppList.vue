@@ -74,17 +74,6 @@
           >
             <div style="height: 3px; background-color: var(--q-primary)"></div>
           </div>
-          <q-tooltip class="transparent">
-            <q-card bordered>
-              <q-card-section :class="$q.dark.mode ? 'text-grey-1' : 'text-grey-10'">
-                <div class="font-x-large font-bold-600">{{ $t(i.label) }}</div>
-                <q-separator spaced />
-                <div class="font-medium text-no-wrap">
-                  {{ $t(i.description) }}
-                </div>
-              </q-card-section>
-            </q-card>
-          </q-tooltip>
         </q-avatar>
       </template>
     </template>
