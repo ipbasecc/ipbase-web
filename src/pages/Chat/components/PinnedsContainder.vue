@@ -3,13 +3,20 @@
     class="fit column no-warp"
     :class="$q.dark.mode ? 'bg-grey-10 text-grey-1' : 'bg-grey-1 text-grey-10'"
   >
-    <q-bar
+    <q-toolbar
       class="transparent border-bottom"
       :class="$q.dark.mode ? 'bg-grey-10' : 'bg-white'"
-      style="height: 42px"
     >
-      <span class="font-large unselected">置顶的消息：</span>
-    </q-bar>
+      <q-btn
+          flat
+          dense
+          size="sm"
+          icon="mdi-chevron-left"
+          :color="$q.dark.mode ? 'white' : 'black'"
+          @click="closePinned()"
+      />
+      <span class="font-large unselected q-ml-sm">置顶的消息：</span>
+    </q-toolbar>
     <q-scroll-area class="q-space">
       <div
         v-for="(i, index) in pinneds"
@@ -30,12 +37,8 @@
 </template>
 
 <script setup>
-import { ref, toRef, watch } from "vue";
-import {
-  getPinneds,
-  getUsersByIDs,
-  getUserStatusBy_ids,
-} from "src/api/mattermost.js";
+import {ref, toRef, watch} from "vue";
+import {getPinneds, getUsersByIDs, getUserStatusBy_ids,} from "src/api/mattermost.js";
 
 import MessageItem from "src/pages/team/chat/MessageItem.vue";
 
@@ -48,7 +51,7 @@ const props = defineProps({
     default: "",
   },
 });
-
+const emit = defineEmits(['closePinned'])
 const channel_idRef = toRef(props, "channel_id");
 
 const mm_wsStore = useMmws();
@@ -105,6 +108,10 @@ const getPinnedsFn = async () => {
   }
 };
 getPinnedsFn();
+
+const closePinned = () => {
+  emit('closePinned')
+}
 
 watch(
   mm_wsStore,

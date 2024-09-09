@@ -42,12 +42,14 @@
         </q-drawer>
         <q-page-container>
           <q-page>
-            <RouterView />
+            <q-pull-to-refresh class="absolute-full" :class="$q.screen.gt.sm ? '' : 'font-large'" @refresh="pullDownRefresh">
+              <RouterView />
+            </q-pull-to-refresh>
           </q-page>
         </q-page-container>
         <q-footer
           v-if="!$q.screen.gt.xs && !uiStore.hide_footer"
-          class="transparent border-top q-pa-xs"
+          class="transparent border-top"
         >
           <AppList />
         </q-footer>
@@ -91,23 +93,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watchEffect, onUnmounted, onBeforeMount } from "vue";
-import { loginAndInit } from 'src/hooks/init.js'
-import { useRoute, useRouter } from "vue-router";
+import {computed, onBeforeMount, onMounted, onUnmounted, ref, watchEffect} from "vue";
+import {loginAndInit} from 'src/hooks/init.js'
+import {useRoute, useRouter} from "vue-router";
 import AccountMenu from "../pages/team/components/AccountMenu.vue";
 import AppList from "components/VIewComponents/AppList.vue";
 import shortcut from "src/pages/team/hooks/useShortcut.js";
-import { useQuasar } from "quasar";
+import {useQuasar} from "quasar";
 import useWatcher from "src/pages/team/wsWatcher.js";
-import { _ws, closeWs } from "src/pages/team/ws.js";
+import {_ws, closeWs} from "src/pages/team/ws.js";
 import AppUtils from "src/components/VIewComponents/AppUtils.vue";
 import {clearLocalDB} from "pages/team/hooks/useUser";
 import InitializationUser from 'src/pages/team/settings/initialization/InitializationUser.vue'
-import { teamStore, uiStore, userStore } from "src/hooks/global/useStore";
+import {teamStore, uiStore, userStore} from "src/hooks/global/useStore";
 
-import { getUserData } from "src/hooks/global/useGetMyMatedata.js";
+import {getUserData} from "src/hooks/global/useGetMyMatedata.js";
 import localforage from "localforage";
-import { toggleTeam } from "src/pages/team/hooks/useTeam.js";
+import {toggleTeam} from "src/pages/team/hooks/useTeam.js";
 
 getUserData();
 
@@ -154,7 +156,7 @@ const needLogin = computed(() =>
   || uiStore.axiosError?.response?.data?.error?.name === 'UnauthorizedError'
 );
 
-const need_show_footer = ["teams", "AffairsPage", "team_threads_homepage"];
+const need_show_footer = ["teams", "AffairsPage", "team_threads_homepage", "ChatsPage"];
 const route = useRoute();
 const router = useRouter();
 const routeName = computed(() => route.name);
@@ -177,6 +179,10 @@ const serverRefusedHandler = () => {
 const pageRefresh = () => {
   window.location.reload();
 };
+const pullDownRefresh = (done) => {
+  done();
+  pageRefresh();
+}
 
 onMounted(() => {
   shortcut();

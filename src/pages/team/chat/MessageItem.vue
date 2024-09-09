@@ -180,22 +180,16 @@
 </template>
 
 <script setup>
-import { ref, toRefs, computed, inject } from "vue";
-import { useFetch_mmMember } from "src/hooks/mattermost/api.js";
+import {computed, ref, toRefs} from "vue";
+import {useFetch_mmMember} from "src/hooks/mattermost/api.js";
 import UserAvatar from "src/pages/team/components/user/UserAvatar.vue";
 import showFile from "src/pages/Chat/components/wigets/showFile.vue";
 
-import {
-  followThread,
-  updateUserPreferences,
-  deleteUserPreferences,
-  pinPost,
-  unpinPost,
-} from "src/api/mattermost.js";
-import { fetch_userPreferences } from "src/hooks/mattermost/useMattermost.js";
+import {deleteUserPreferences, followThread, pinPost, unpinPost, updateUserPreferences,} from "src/api/mattermost.js";
+import {fetch_userPreferences} from "src/hooks/mattermost/useMattermost.js";
 
-import { marked } from "marked";
-import { mmstore, mmUser, teamStore } from "src/hooks/global/useStore.js";
+import {marked} from "marked";
+import {mmstore, mmUser, teamStore} from "src/hooks/global/useStore.js";
 import TimeAgo from "pages/team/components/widgets/TimeAgo.vue";
 
 const props = defineProps({
@@ -242,10 +236,7 @@ const emit = defineEmits([
   "getUnreadAfterCache",
   "toggle_flagged",
 ]);
-const isExternal = inject("isExternal");
-const getUnreadAfterCache = () => {
-  emit("getUnreadAfterCache");
-};
+const isExternal = computed(() => teamStore.isExternal);
 const { msg, prev, container, curThreadId } = toRefs(props);
 
 const html = msg.value?.message && marked.parse(msg.value.message);

@@ -13,7 +13,8 @@
           layout === 'column' &&
           !hideToolbar &&
           !uiStore.isShared &&
-          !isFeedback
+          !isFeedback &&
+          $q.screen.gt.sm
         "
         class="border-bottom"
         :class="
@@ -22,15 +23,6 @@
         style="height: 40px"
       >
         <slot name="bar_left" />
-        <q-btn
-          v-if="show_backHome"
-          flat
-          dense
-          size="sm"
-          icon="mdi-chevron-left"
-          :color="$q.dark.mode ? 'white' : 'black'"
-          @click="backHome()"
-        />
         <q-toolbar-title>
           {{ kanban_id ? $t('todo_attach_txt_private_kanban') + ' ' + $t(asTitle) : $t('todo_attach_txt_person') + ' ' + $t(asTitle) }}
         </q-toolbar-title>
@@ -265,8 +257,8 @@
                 :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
                 :disabled="isFeedback" handle=".dragItem" filter="textarea" group="todo"
                 chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
-                class="column gap-xs"
-                :class="`${teamStore.cardDragging ? 'q-space' : ''}`"
+                class="column"
+                :class="`${teamStore.cardDragging ? 'q-space' : ''}${$q.screen.gt.sm ? 'gap-xs' : 'gap-sm'}`"
                 :style="todoDragging ? 'min-height: 50px;' : ''"
                 @sort="dragTodo_sort(i)"
                 @start="
@@ -555,8 +547,7 @@
               :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
               :disabled="isFeedback" handle=".dragItem" filter="textarea" group="todo"
               chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
-              class="column gap-xs"
-              :class="`${teamStore.cardDragging ? 'q-space' : ''}`"
+              :class="`column ${teamStore.cardDragging ? 'q-space' : ''} ${$q.screen.gt.sm ? 'gap-xs' : 'gap-sm'}`"
               :style="todoDragging ? 'min-height: 50px;' : ''"
               @sort="dragTodo_sort(i)"
               @start="
@@ -1162,32 +1153,32 @@
 // 实现效果：
 // 1.卡片上可以独立展示自己的todogroups
 // 2.用户针对不同的看板可以自己增加todogroups，作为对应的私有内容，仅供自己查阅
-import { computed, onBeforeMount, ref, toRefs, watch, watchEffect } from "vue";
+import {computed, onBeforeMount, ref, toRefs, watch, watchEffect} from "vue";
 import {
   createTodo,
   createTodogroup,
   deleteTodogroup,
+  findCardFeedback,
+  findCardFeedbackByShare,
   updateCard,
   updateTodo,
   updateTodogroup,
-  findCardFeedback,
-  findCardFeedbackByShare,
 } from "src/api/strapi/project.js";
-import { updateUserTodogroups } from "src/api/strapi.js";
-import { VueDraggable } from 'vue-draggable-plus'
+import {updateUserTodogroups} from "src/api/strapi.js";
+import {VueDraggable} from 'vue-draggable-plus'
 import ClasslessInput from "src/components/Utilits/ClasslessInput.vue";
 import StrapiUpload from "src/components/Utilits/StrapiUpload.vue";
 
-import { useQuasar } from "quasar";
+import {useQuasar} from "quasar";
 import PersonTip from "./tips/PersonTip.vue";
 import ProjectTip from "./tips/ProjectTip.vue";
 
 import TodoItem from "./TodoItem.vue";
-import { teamStore, uiStore, userStore } from "src/hooks/global/useStore.js";
+import {teamStore, uiStore, userStore} from "src/hooks/global/useStore.js";
 import localforage from "localforage";
 
-import { objectsIsEqual } from "src/hooks/utilits.js";
-import { useRouter, useRoute } from "vue-router";
+import {objectsIsEqual} from "src/hooks/utilits.js";
+import {useRoute, useRouter} from "vue-router";
 
 const userId = computed(() => teamStore.init?.id);
 
@@ -1851,10 +1842,6 @@ const hideAddTodo = () => {
 
 const route = useRoute();
 const router = useRouter();
-const show_backHome = computed(() => route.name === "AffairsPage");
-const backHome = () => {
-  router.push("/teams");
-};
 </script>
 
 <style lang="scss">

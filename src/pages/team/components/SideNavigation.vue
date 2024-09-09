@@ -1,6 +1,6 @@
 <template>
   <q-scroll-area class="q-px-sm">
-    <q-list dense class="column gap-xs" :style="`width: ${width - 16}px;`">
+    <q-list :dense="$q.screen.gt.sm" class="column gap-xs" :style="`width: ${width - 16}px;`">
       <template v-if="$q.screen.gt.xs">
         <!-- 讨论主题-->
         <q-item v-if="enable_threads"
@@ -8,8 +8,7 @@
             teamStore?.mm_channel?.id === 'threads'
               ? 'border active-listitem'
               : 'border-placeholder'
-          }
-                  `"
+          }`"
           class="overflow-hidden radius-xs q-pa-xs hovered-item full-width"
           clickable
           v-ripple
@@ -68,7 +67,7 @@
               <q-btn
                 flat
                 dense
-                size="sm"
+                :size="$q.screen.gt.sm ? '' : 'md'"
                 :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`"
                 :icon="i.mm_channel?.type === 'O' ? 'public' : 'lock'"
                 @mouseenter="deEnter = true"
@@ -314,39 +313,31 @@
 </template>
 
 <script setup>
-import {ref, computed, watch, watchEffect} from 'vue';
-import { useRouter, useRoute } from "vue-router";
-import {
-  fetch_userPreferences,
-  getTeamMembers,
-} from "src/hooks/mattermost/useMattermost.js";
-import { getTeamByID } from 'src/api/strapi/team.js'
+import {computed, ref, watch, watchEffect} from 'vue';
+import {useRoute, useRouter} from "vue-router";
+import {fetch_userPreferences, getTeamMembers,} from "src/hooks/mattermost/useMattermost.js";
+import {getChannelByID, getTeamByID, removeChannel, updateChannel} from 'src/api/strapi/team.js'
 import {
   deleteChannel as deleteMmChannel,
   getChannelByID as getMmChannelByID,
-  getUnreadsForTeam,
-  getChannelUnreads
+  getChannelUnreads,
+  getUnreadsForTeam
 } from "src/api/mattermost.js";
-import {
-  getChannelByID,
-  updateChannel,
-  removeChannel,
-} from "src/api/strapi/team.js";
-import { getProjectNav } from "./SideNavigation.js";
+import {getProjectNav} from "./SideNavigation.js";
 import TeamInvite from "./widgets/TeamInvite.vue";
 import UnreadBlock from 'src/pages/team/components/widgets/UnreadBlock.vue'
 import CreateProject from "./CreateProject.vue";
 import EditChannel from "./EditChannel.vue";
-import { createChannel } from "src/pages/team/hooks/useCreateChannel.js";
-import { useQuasar, debounce } from "quasar";
+import {createChannel} from "src/pages/team/hooks/useCreateChannel.js";
+import {debounce, useQuasar} from "quasar";
 import {mm_wsStore, teamStore, uiStore} from 'src/hooks/global/useStore.js';
-import { i18n } from 'src/boot/i18n.js';
+import {i18n} from 'src/boot/i18n.js';
 import {
-  isExternal,
   enable_threads,
+  enalbe_channel,
   enalbe_dashboard,
   enalbe_project,
-  enalbe_channel,
+  isExternal,
   teamMode
 } from "src/pages/team/hooks/useConfig.js";
 import useProject from 'src/hooks/project/useProject.js';

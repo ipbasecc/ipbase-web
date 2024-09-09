@@ -36,8 +36,12 @@
             size="1em"
           />
         </div>
-        <div v-if="uiStore.app === 'affairs'" class="">
-          <AffairsFilter />
+        <div v-if="uiStore.app === 'affairs'">
+          <AffairsFilter v-if="$q.screen.gt.sm" />
+          <span>个人事务</span>
+        </div>
+        <div v-if="uiStore.app === 'chats'">
+          <span>个人沟通</span>
         </div>
         <q-btn v-if="uiStore.app === 'brand'" flat dense icon="mdi-cards-outline" @click="$router.push('/brand')" />
         <q-space />
@@ -284,16 +288,8 @@
 </template>
 
 <script setup>
-import {
-  ref,
-  computed,
-  onBeforeMount,
-  watch,
-  reactive,
-  onMounted,
-  nextTick,
-} from "vue";
-import { useRoute, useRouter } from "vue-router";
+import {computed, nextTick, onBeforeMount, onMounted, reactive, ref, watch,} from "vue";
+import {useRoute, useRouter} from "vue-router";
 
 import FlagsContainder from "src/pages/team/chat/FlagsContainder.vue";
 import CreateTeam from "src/pages/team/components/CreateTeam.vue";
@@ -306,17 +302,13 @@ import WelcomePage from "src/pages/team/WelcomePage.vue";
 import TeamList from "src/pages/team/components/TeamList.vue";
 import TodoPage from "src/pages/team/todo/TodoPage.vue";
 import localforage from "localforage";
-import { ossStore, teamStore, uiStore } from "src/hooks/global/useStore.js";
-import { useMouse } from "@vueuse/core";
-import { useQuasar } from "quasar";
+import {ossStore, teamStore, uiStore} from "src/hooks/global/useStore.js";
+import {useMouse} from "@vueuse/core";
+import {useQuasar} from "quasar";
 import WindowToggle from "src/pages/team/components/widgets/icons/WindowToggle.vue";
 import FileTransfer from "pages/team/components/widgets/icons/FileTransfer.vue";
 import BgBrand from "src/components/VIewComponents/BgBrand.vue";
-import {
-  isExternal,
-  enalbe_project,
-  enalbe_channel,
-} from "src/pages/team/hooks/useConfig.js";
+import {enalbe_channel, enalbe_project, isExternal,} from "src/pages/team/hooks/useConfig.js";
 import AffairsFilter from './todo/affairs/AffairsFilter.vue'
 import RemovedPic from './components/widgets/icons/RemovedPic.vue'
 import ChatNavigation from './chat/components/ChatNavigation.vue'

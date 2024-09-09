@@ -1,7 +1,9 @@
 <template>
   <q-avatar @click="fetch_user"
-    :size="`${size}px`"
-    @mouseenter="fetchStatuse(user_idRef)"
+            :square="props.square"
+            :size="`${size}px`"
+            :class="props.square ? 'radius-sm' : ''"
+            @mouseenter="fetchStatuse(user_idRef)"
   >
     <img v-if="avatar" :src="avatar" alt="avatar" />
     <q-popup-proxy
@@ -102,29 +104,18 @@
 </template>
 
 <script setup>
-import { ref, toRefs, toRef, watch, computed, watchEffect } from "vue";
-import {
-  createDirect,
-  getUser,
-  updateUserPreferences,
-  getUserStatus,
-} from "src/api/mattermost.js";
+import {computed, ref, toRef, toRefs, watch, watchEffect} from "vue";
+import {createDirect, getUser, getUserStatus, updateUserPreferences,} from "src/api/mattermost.js";
 import StatusIndicator from "src/pages/Chat/components/wigets/StatusIndicator.vue";
 
 import localforage from "localforage";
-import { useRouter } from "vue-router";
+import {useRouter} from "vue-router";
 
-import { useFetchAvatar } from "src/pages/Chat/hooks/useFetchAvatar.js";
-import {
-  mmstore,
-  mm_wsStore,
-  mmUser,
-  uiStore,
-  teamStore,
-  userStore
-} from "src/hooks/global/useStore.js";
-import { addFriend } from 'src/api/strapi.js'
-import { useCheckBlocked, findStrapiUser_by_mmID_inTeam } from 'src/pages/team/chat/hooks/useMm.js'
+import {useFetchAvatar} from "src/pages/Chat/hooks/useFetchAvatar.js";
+import {mm_wsStore, mmstore, mmUser, teamStore, uiStore, userStore} from "src/hooks/global/useStore.js";
+import {addFriend} from 'src/api/strapi.js'
+import {findStrapiUser_by_mmID_inTeam, useCheckBlocked} from 'src/pages/team/chat/hooks/useMm.js'
+import {__dict} from "src/hooks/dict.js";
 
 let router = useRouter();
 
@@ -142,6 +133,10 @@ const props = defineProps({
     default: "14px",
   },
   disable_card: {
+    type: Boolean,
+    default: false,
+  },
+  square: {
     type: Boolean,
     default: false,
   },
@@ -324,7 +319,6 @@ watch(
   { immediate: false, deep: true }
 );
 
-import { __dict } from "src/hooks/dict.js";
 const dict = __dict();
 const translate = (i) => {
   return dict.find((item) => item.key === i)?.value || i;

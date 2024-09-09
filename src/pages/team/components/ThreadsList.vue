@@ -68,7 +68,7 @@
                   </div>
                 </q-item-label>
                 <div
-                  class="font-medium cursor-pointer transition q-py-md"
+                  class="cursor-pointer transition q-py-md"
                   :class="hovered === thread.id ? 'op-none' : 'op-8'"
                   v-html="marked.parse(thread.post?.message)"
                   @click="getThreadFn(thread)"
@@ -102,18 +102,14 @@
 </template>
 
 <script setup>
-import {
-  getThreadsByUserTeamID,
-  readThread,
-  readAllThreads,
-} from "src/api/mattermost.js";
-import {ref, computed, watch, watchEffect} from "vue";
+import {getThreadsByUserTeamID, readAllThreads, readThread,} from "src/api/mattermost.js";
+import {computed, ref, watch, watchEffect} from "vue";
 import UserAvatar from "src/pages/team/components/user/UserAvatar.vue";
 import UserName from "./user/UserName.vue";
 import TimeAgo from "./widgets/TimeAgo.vue";
-import { marked } from "marked";
+import {marked} from "marked";
 import NoItem from "./widgets/NoItem.vue";
-import { mm_wsStore, teamStore } from "src/hooks/global/useStore.js";
+import {mm_wsStore, teamStore} from "src/hooks/global/useStore.js";
 import {sync_all_profiles} from "pages/team/hooks/useMattermost";
 
 const emit = defineEmits(["enterThread"]);

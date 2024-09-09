@@ -1,9 +1,10 @@
 <template>
   <div
-    class="full-width no-wrap items-center"
+    class="full-width no-wrap flex-center"
     :class="`${$q.screen.gt.xs ? 'column' : 'row'} ${
-      $q.screen.gt.md ? 'gap-md' : 'gap-sm'
+      $q.screen.gt.md ? 'gap-md' : 'gap-md'
     }`"
+    :style="`${$q.screen.gt.xs ? '' : 'height: 72px'}`"
   >
     <div
       v-if="$q.screen.gt.xs"
@@ -55,28 +56,48 @@
       </template>
     </template>
     <template v-else>
-      <q-tabs v-model="defaultApp" class="q-px-xl">
-        <q-tab
-          v-for="i in enabledApps"
-          :key="i.val"
-          :name="i.val"
-          :icon="i.icon"
-          :label="i.label"
-          :class="`text-grey-1${$q.dark.mode ? '' : '0'}`"
-          @click="to(i)"
-        />
-      </q-tabs>
+      <template v-for="i in enabledApps" :key="i.val">
+        <q-avatar
+            square
+            :icon="i.icon"
+            class="radius-sm cursor-pointer transition"
+            :class="
+              uiStore.app === i.val
+                ? `bg-primary-dark border app-active`
+                : 'border-placeholder'
+            "
+            size="64px"
+            @click="to(i)"
+        >
+          <div v-if="uiStore.app === i.val"
+               class="column absolute-top full-width q-px-sm q-pt-xs"
+          >
+            <div style="height: 3px; background-color: var(--q-primary)"></div>
+          </div>
+          <q-tooltip class="transparent">
+            <q-card bordered>
+              <q-card-section :class="$q.dark.mode ? 'text-grey-1' : 'text-grey-10'">
+                <div class="font-x-large font-bold-600">{{ $t(i.label) }}</div>
+                <q-separator spaced />
+                <div class="font-medium text-no-wrap">
+                  {{ $t(i.description) }}
+                </div>
+              </q-card-section>
+            </q-card>
+          </q-tooltip>
+        </q-avatar>
+      </template>
     </template>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watchEffect, onBeforeMount } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import {computed, onBeforeMount, ref, watchEffect} from "vue";
+import {useRoute, useRouter} from "vue-router";
 import localforage from "localforage";
 
-import { uiStore, teamStore } from "src/hooks/global/useStore";
-import { useQuasar } from "quasar";
+import {teamStore, uiStore} from "src/hooks/global/useStore";
+import {useQuasar} from "quasar";
 
 import BrandMenu from "src/components/VIewComponents/BrandMenu.vue";
 import NotifyBlock from "src/components/VIewComponents/NotifyBlock.vue";
@@ -124,7 +145,7 @@ const apps = [
     icon: "mdi-cards",
     description: 'app_brand_purpose',
     to: "brand",
-    enable: true,
+    enable: $q.screen.gt.xs
   },
 ];
 const enabledApps = computed(() => apps.filter((i) => i.enable));
@@ -138,6 +159,8 @@ onBeforeMount(() => {
     defaultApp.value = "teams";
   } else if (routeName.value === "team_threads_homepage") {
     defaultApp.value = "threads";
+  } else if (routeName.value === "ChatsPage") {
+    defaultApp.value = "chats";
   } else {
     defaultApp.value = "teams";
   }

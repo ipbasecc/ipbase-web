@@ -24,10 +24,10 @@
         @mouseenter="hoverOn = `todo_${element.id}`"
         @mouseleave="hoverOn = null"
       >
-        <span v-if="displayType === 'todo'" style="height: 30px" class="flex flex-center">
+        <span v-if="displayType === 'todo'" :style="`height: ${autoSize}px`" class="flex flex-center">
           <q-checkbox
             v-model="element.status"
-            size="30px"
+            :size="`${autoSize}px`"
             dense
             :disable="
               (inCard &&
@@ -39,7 +39,7 @@
           >
           </q-checkbox>
         </span>
-        <div class="column no-wrap q-space">
+        <div class="column no-wrap q-space" :style="$q.screen.gt.xs ? '' : 'line-height: 32px;'">
           <div
             class="column no-wrap"
             :class="`
@@ -124,7 +124,7 @@
           </template>
         </div>
         <span
-          style="height: 30px"
+          :style="`height: ${autoSize}px`"
           class="flex flex-center"
           @mouseenter="hideAddTodo"
           @mouseleave="showAddTodo"
@@ -227,16 +227,18 @@
 </template>
 
 <script setup>
-import { computed, ref, toRefs, watch } from "vue";
-import { deleteTodo, updateTodo } from "src/api/strapi/project.js";
+import {computed, ref, toRefs, watch} from "vue";
+import {deleteTodo, updateTodo} from "src/api/strapi/project.js";
 import ThreadBtn from "src/pages/team/components/widgets/ThreadBtn.vue";
 import FileList from "src/components/Utilits/FileList.vue";
 import StrapiUpload from "src/components/Utilits/StrapiUpload.vue";
 import TodoInput from "./TodoInput.vue";
 import TodoMenu from "./TodoMenu.vue";
 
-import { mm_wsStore, teamStore, uiStore } from "src/hooks/global/useStore.js";
-import { todoItemUpdate, todoDeleted } from "src/hooks/team/useCard.js";
+import {mm_wsStore, teamStore, uiStore} from "src/hooks/global/useStore.js";
+import {todoDeleted, todoItemUpdate} from "src/hooks/team/useCard.js";
+
+import {useQuasar} from 'quasar'
 
 const props = defineProps({
   uiOptions: {
@@ -301,6 +303,8 @@ const emit = defineEmits([
   "hideAddTodo",
   "showAddTodo",
 ]);
+const $q = useQuasar();
+const autoSize = $q.screen.gt.xs ? 30 : 40
 
 const {
   uiOptions,

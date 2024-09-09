@@ -1,6 +1,15 @@
 <template>
     <div v-if="directMember" class="column">
         <q-toolbar class="transparent border-bottom">
+            <q-btn
+                flat
+                dense
+                size="sm"
+                icon="mdi-chevron-left"
+                :color="$q.dark.mode ? 'white' : 'black'"
+                @click="closeInfo()"
+            />
+            <span class="font-large unselected q-ml-sm">查看资料：</span>
             <q-space />
             <q-btn class="gt-xs" size="12px" flat dense round icon="more_vert">
                 <q-menu class="radius-sm">
@@ -25,7 +34,7 @@
             <UserAvatar
                 :user_id="directMember?.mm_profile?.id"
                 :size="128"
-                :strapi_member="i?.mm_profile"
+                :strapi_member="directMember?.mm_profile"
             />
             <q-list>
                 <q-item v-if="directMember.username">
@@ -43,12 +52,12 @@
 </template>
 
 <script setup>
-import { ref, toRefs, computed } from 'vue'
+import {computed, toRefs} from 'vue'
 import UserAvatar from '../../components/user/UserAvatar.vue'
-import { processFriend } from 'src/api/strapi.js'
-import { teamStore } from 'src/hooks/global/useStore';
-import { useRouter } from 'vue-router';
-import { useCheckBlocked } from 'src/pages/team/chat/hooks/useMm.js'
+import {processFriend} from 'src/api/strapi.js'
+import {teamStore} from 'src/hooks/global/useStore';
+import {useRouter} from 'vue-router';
+import {useCheckBlocked} from 'src/pages/team/chat/hooks/useMm.js'
 
 const router = useRouter();
 const props = defineProps({
@@ -57,6 +66,10 @@ const props = defineProps({
         default: () => ({})
     }
 })
+const emit = defineEmits(['closeInfo'])
+const closeInfo = () => {
+  emit('closeInfo')
+}
 const { directMember } = toRefs(props);
 const isBlocked = computed(() => {
     return teamStore.init?.contact?.blockeds?.map(i => i.id)?.includes(directMember.value.id);

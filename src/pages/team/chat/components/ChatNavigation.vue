@@ -1,7 +1,7 @@
 <template>
-    <q-scroll-area class="absolute-full">
-        <q-resize-observer @resize="onResize" />
-        <q-pull-to-refresh @refresh="refresh" :style="`min-height: ${contianerSize?.height}px;`">
+  <q-resize-observer @resize="onResize" />
+    <q-scroll-area v-bind="$attrs" class="absolute-full">
+        <q-pull-to-refresh :disable="!$q.screen.gt.sm" @refresh="refresh" :style="`min-height: ${contianerSize?.height}px;`">
             <q-list class="q-pa-xs">
             <q-expansion-item
                 v-if="friend_requests_unProcessed?.length > 0"
@@ -50,29 +50,31 @@
                     </q-item-section>
                 </q-item>
             </q-expansion-item>
-            <q-expansion-item
-                v-if="contact.contacters?.length > 0"
-                default-opened
-                group="friends"
-                label="好友"
-            >
-                <q-item v-for="i in contact.contacters" :key="i.id" v-ripple clickable
-                    class="radius-xs"
-                    :class="teamStore?.direct_user?.mm_profile?.id === i?.mm_profile?.id ? 'border active-sublistitem' : ''"
-                    @click="createDirectChannel(self_mm_id, i)"
-                >
-                    <q-item-section avatar>
-                        <UserAvatar
-                            :user_id="i?.mm_profile?.id"
-                            :size="avatar_size"
-                            :strapi_member="i?.mm_profile"
-                        />
-                    </q-item-section>
-                    <q-item-section :class="$q.dark.mode ? 'text-white' : 'text-grey-10'">
-                        {{ i.username }}
-                    </q-item-section>
-                </q-item>
-            </q-expansion-item>
+              <q-expansion-item
+                  v-if="contact.contacters?.length > 0"
+                  default-opened
+                  group="friends"
+                  label="好友"
+              >
+                  <q-item v-for="i in contact.contacters" :key="i.id" v-ripple clickable
+                      class="radius-xs"
+                      :class="teamStore?.direct_user?.mm_profile?.id === i?.mm_profile?.id ? 'border active-sublistitem' : ''"
+                      @click="createDirectChannel(self_mm_id, i)"
+                  >
+                      <q-item-section avatar>
+                          <UserAvatar
+                              :user_id="i?.mm_profile?.id"
+                              :size="avatar_size"
+                              :strapi_member="i?.mm_profile"
+                              :square="!$q.screen.gt.sm"
+                              :disable_card="true"
+                          />
+                      </q-item-section>
+                      <q-item-section :class="$q.dark.mode ? 'text-white' : 'text-grey-10'">
+                          {{ i.username }}
+                      </q-item-section>
+                  </q-item>
+              </q-expansion-item>
             <q-expansion-item
                 v-if="contact.blockeds?.length > 0"
                 group="friends"
@@ -101,39 +103,29 @@
                 </q-item>
             </q-expansion-item>
             </q-list>
-            <q-dialog v-model="blockWar" persistent>
-                <q-card>
-                    <q-card-section class="row items-center">
-                        <q-avatar icon="signal_wifi_off" color="primary" text-color="white" />
-                        <span class="q-ml-sm">You are currently not connected to any network.</span>
-                    </q-card-section>
-                    <q-card-actions align="right">
-                        <q-btn flat label="Cancel" color="primary" v-close-popup />
-                        <q-btn flat label="Turn on Wifi" color="primary" v-close-popup />
-                    </q-card-actions>
-                </q-card>
-            </q-dialog>
         </q-pull-to-refresh>
     </q-scroll-area>
 </template>
 
 <script setup>
-import { ref, computed, watchEffect } from 'vue'
-import {teamStore} from 'src/hooks/global/useStore';
+import {computed, nextTick, onMounted, ref, watchEffect} from 'vue'
+import {teamStore, uiStore} from 'src/hooks/global/useStore';
 import UserAvatar from '../../components/user/UserAvatar.vue'
-import { processFriendReq, processFriend } from 'src/api/strapi.js'
-import { useCheckBlocked } from 'src/pages/team/chat/hooks/useMm.js'
-import { refetchUser } from 'src/hooks/init.js'
-import { createDirect, updateUserPreferences } from "src/api/mattermost.js";
-import { extractDMUserID } from 'src/hooks/utilits.js'
-import { useRouter } from 'vue-router';
+import {processFriend, processFriendReq} from 'src/api/strapi.js'
+import {useCheckBlocked} from 'src/pages/team/chat/hooks/useMm.js'
+import {refetchUser} from 'src/hooks/init.js'
+import {createDirect, updateUserPreferences} from "src/api/mattermost.js";
+import {extractDMUserID} from 'src/hooks/utilits.js'
+import {useRouter} from 'vue-router';
+import {useQuasar} from "quasar";
+
+const $q = useQuasar();
 
 const blockWared = ref(false);
-
 const router = useRouter();
 const contact = computed(() => teamStore.init?.contact);
 const friend_requests_unProcessed = computed(() => contact.value?.friend_requests?.filter(i => !i.status));
-const avatar_size = ref(32);
+const avatar_size = ref($q.screen.gt.xs ? 32 : 48);
 
 const contianerSize = ref();
 const onResize = (size) => {
@@ -220,6 +212,11 @@ const refresh = async (done) => {
     await refetchUser()
     done();
 }
+
+onMounted(async () => {
+  await nextTick();
+  uiStore.app = 'chats'
+})
 
 </script>
 

@@ -3,20 +3,21 @@
     <q-bar
         class="border-bottom"
         :class="$q.dark.mode ? 'bg-dark text-grey-1' : 'bg-grey-1 text-grey-10'"
+        :style="`height: ${!$q.screen.gt.sm ? '48px' : ''}`"
     >
       <q-btn
           flat
-          dense
+          :dense="$q.screen.gt.sm"
           v-if="!$q.screen.gt.sm"
-          size="sm"
+          :size="$q.screen.gt.sm ? 'sm' : ''"
           icon="mdi-chevron-left"
           :color="$q.dark.mode ? 'white' : 'black'"
           @click="backList()"
       />
       <q-btn
           flat
-          dense
-          size="sm"
+          :dense="$q.screen.gt.sm"
+          :size="$q.screen.gt.sm ? 'sm' : ''"
           icon="mdi-refresh"
           :color="$q.dark.mode ? 'white' : 'black'"
           @click="cleanCacheReInit(channel_id)"
@@ -25,7 +26,7 @@
       </q-btn>
       <q-space />
       <q-btn
-          dense
+          :dense="$q.screen.gt.sm"
           flat
           :color="uiStore.chat_pannel === 'pinneds' ? 'green' : ''"
           icon="mdi-tag-multiple"
@@ -35,7 +36,7 @@
       </q-btn>
       <q-btn
           v-if="strapi_channel_id && useAuths('manageMember', ['channel'])"
-          dense
+          :dense="$q.screen.gt.sm"
           flat
           :color="uiStore.chat_pannel === 'MemberManager' ? 'green' : ''"
           icon="manage_accounts"
@@ -43,7 +44,7 @@
       />
       <q-btn
           v-if="teamStore?.direct_user"
-          dense
+          :dense="$q.screen.gt.sm"
           flat
           :color="uiStore.chat_pannel === 'MemberManager' ? 'green' : ''"
           icon="info"
@@ -70,7 +71,7 @@
                                  reverse
                                  @load="onLoad"
                                  :disable="!hasMore || fetchCount === 0"
-                                 :offset="scrollContainer?.height + 100"
+                                 :offset="scrollContainer?.height * 2"
                                  :debounce="300"
                                  class="column justify-end"
                                  :style="`min-height: ${scrollContainer?.height}px`"
@@ -78,11 +79,10 @@
                 <div class="column no-wrap relative-position article messages_list">
                   <div class="full-width column no-wrap flex-center q-pb-xl q-mb-xl" style="height: 66vh">
                     <ChatStarter style="max-width: 560px;max-height: 560px" />
-                    <span class="text-h1">
-                    Channel Chat start here
-                  </span>
+                    <span :class="$q.screen.gt.sm ? 'text-h1' : 'font-bold-600 font-larger'">
+                      Channel Chat start
+                    </span>
                   </div>
-
                   <template v-for="(i, index) in messages" :key="i.id">
                     <MessageItem
                         v-if="!i.root_id"
@@ -170,11 +170,16 @@
                 v-if="uiStore.chat_pannel === 'pinneds'"
                 :channel_id="channel_id"
                 :key="channel_id"
+                @closePinned="togglePowerpannel('pinneds')"
             />
             <MemberManager
                 v-if="uiStore.chat_pannel === 'MemberManager'"
                 :byInfo
                 class="absolute-full"
+            />
+            <DirectMemberInfo v-if="teamStore?.direct_user && uiStore.chat_pannel === 'directMemberInfo'"
+                              :directMember="teamStore.direct_user"
+                              @closeInfo="togglePowerpannel('directMemberInfo')"
             />
           </div>
         </template>
@@ -190,17 +195,17 @@
                                  reverse
                                  @load="onLoad"
                                  :disable="!hasMore || fetchCount === 0"
-                                 :offset="scrollContainer?.height + 100"
+                                 :offset="scrollContainer?.height * 2"
                                  :debounce="300"
                                  class="column justify-end"
                                  :style="`min-height: ${scrollContainer?.height}px`"
               >
                 <div class="column no-wrap relative-position article messages_list">
                   <div class="full-width column no-wrap flex-center q-pb-xl q-mb-xl" style="height: 66vh">
-                    <ChatStarter style="max-width: 560px;max-height: 560px" />
-                    <span class="text-h1">
-                    Channel Chat start here
-                  </span>
+                    <ChatStarter style="max-width: 66vw;max-height: 66vw" />
+                    <span :class="$q.screen.gt.sm ? 'text-h1' : 'font-bold-600 font-larger'">
+                      Channel Chat start
+                    </span>
                   </div>
 
                   <template v-for="(i, index) in messages" :key="i.id">
@@ -246,12 +251,12 @@
   </div>
 </template>
 <script setup>
-import {computed, ref, onMounted, onUnmounted, nextTick, watch, useTemplateRef} from "vue";
-import { getPostsOfChannel, getUsersByIDs, getChannelByID as getMmChannelByID } from "src/api/mattermost.js";
-import { generateUrlParams } from 'src/hooks/utilits.js'
+import {computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch} from "vue";
+import {getChannelByID as getMmChannelByID, getPostsOfChannel} from "src/api/mattermost.js";
+import {generateUrlParams} from 'src/hooks/utilits.js'
 import {db} from "boot/dexie";
 import MessageItem from "pages/team/chat/MessageItem.vue";
-import {teamStore, uiStore, mm_wsStore, mmUser} from "src/hooks/global/useStore";
+import {mm_wsStore, mmUser, teamStore, uiStore} from "src/hooks/global/useStore";
 import SendmsgBox from "pages/Chat/components/wigets/SendmsgBox.vue";
 import {getChannelByID} from "src/api/strapi/team";
 import {useFetchAvatar} from "pages/Chat/hooks/useFetchAvatar";
@@ -261,8 +266,11 @@ import ThreadContainer from "pages/team/chat/ThreadContainer.vue";
 import PinnedsContainder from "pages/Chat/components/PinnedsContainder.vue";
 import ChatStarter from 'src/pages/team/components/widgets/icons/ChatStarter.vue'
 import {removeLastChannel} from "pages/team/chat/TeamChat";
-import { useQuasar, debounce } from "quasar";
-import { i18n } from 'src/boot/i18n.js';
+import {useQuasar} from "quasar";
+import {i18n} from 'src/boot/i18n.js';
+import {useRouter} from "vue-router";
+
+const router = useRouter();
 const $t = i18n.global.t;
 const $q = useQuasar();
 
@@ -275,7 +283,7 @@ const byInfo = computed(() => ({
   channel_id: strapi_channel_id.value,
 }));
 const chatInfo = computed(() => ({
-  mm_channel_id: channel_id.value,
+  mm_channel_id: channel_id,
   post_id: thread.value?.id,
 }));
 
@@ -332,15 +340,11 @@ const scrollHandler = ({verticalSize,verticalPosition}) => {
   to_bottom.value = verticalSize - verticalPosition
 }
 async function onLoad (index, done)  {
-  // const getOldScrollInfo = scrollAreaRef.value?.getScroll();
-  // const to_bottom = getOldScrollInfo.verticalSize - getOldScrollInfo.verticalPosition;
-  // console.log('p', getOldScrollInfo.verticalPosition, 'b', to_bottom)
   await fetchMore();
   await nextTick();
   const { verticalSize } = scrollAreaRef.value?.getScroll();
   const new_position = verticalSize - to_bottom.value;
   scrollAreaRef.value?.setScrollPosition("vertical", new_position, 0)
-  // console.log('p', new_position, 'b', to_bottom)
   done();
 }
 async function refresh (done) {
@@ -368,6 +372,10 @@ const backList = async () => {
     await removeLastChannel(teamStore.project?.id);
     uiStore.showMainContentList = true;
     await router.push(`/teams/projects/${teamStore.project?.id}/chat`);
+  } else if(teamStore.direct_user) {
+    teamStore.direct_user = null
+    teamStore.mm_channel = null
+    await router.push(`/chats`);
   } else {
     await router.push('/teams');
   }
@@ -474,8 +482,16 @@ const initMsgs = async () => {
   }
 }
 onMounted(async () => {
+  uiStore.hide_footer = true
   messages.value =  await initCache();
   await initMsgs();
+  // 如果通过连接直接访问到聊天界面，需要获取Strapi频道、Mattermost频道
+  if(!teamStore.mm_channel){
+    const res = await getMmChannelByID(channel_id.value);
+    if(res?.data){
+      teamStore.mm_channel = res.data;
+    }
+  }
 });
 
 const cleanCacheReInit = async () => {

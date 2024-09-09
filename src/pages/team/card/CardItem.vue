@@ -15,16 +15,13 @@
       </q-card-section>
     </q-card>
     <!-- 此处qCard组件不能添加class名：card，会导致其内部的input组件无法框选、或点击修改光标位置 -->
-    <q-card
-      v-else-if="cardRef && viewTypeRef === 'card'"
+    <q-card v-else-if="cardRef && viewTypeRef === 'card'"
       bordered
       flat
       class="full-width column no-wrap overflow-hidden"
       :class="`${content_channging ? 'focus' : ''}
         ${$q.screen.gt.xs ? 'cardBody' : ''}
-        ${actived
-          ? 'border-primary'
-          : ''}
+        ${actived ? 'border-primary' : ''}
       `"
       :tabindex="cardRef.id"
       @dblclick="tryEnter"
@@ -575,16 +572,8 @@
 </template>
 
 <script setup>
-import {
-  reactive,
-  ref,
-  toRef,
-  toRefs,
-  watch,
-  watchEffect,
-  computed
-} from "vue";
-import { useMagicKeys } from "@vueuse/core";
+import {computed, reactive, ref, toRef, toRefs, watch, watchEffect} from "vue";
+import {useMagicKeys} from "@vueuse/core";
 import StatusMenu from "src/pages/team/components/user/StatusMenu.vue";
 import CardPage from "./CardPage.vue";
 import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
@@ -592,43 +581,37 @@ import overlappingAvatar from "src/pages/team/components/widgets/overlappingAvat
 import TodoPage from "src/pages/team/todo/TodoPage.vue";
 import CardExecutor from "src/pages/team/card/components/CardExecutor.vue";
 
-import { useRoute } from "vue-router";
-import { useQuasar } from "quasar";
+import {useRoute} from "vue-router";
+import {useQuasar} from "quasar";
 import {
+  _deleteTodogroup,
   attachExecutor,
-  unfollowCard,
-  followCard,
+  cacheExpand,
   clac_cardEdgeStyle,
-  updateCardName,
-  updateCardThread,
-  setCardType,
+  createTodogroup,
+  enterCard,
+  followCard,
+  leaveCard,
+  removeCard,
   setCardColor,
+  setCardSharecode,
+  setCardType,
+  setScore,
+  setStatus,
   todogroupSort,
   todogroupUpdate,
-  _deleteTodogroup,
-  createTodogroup,
   todoSort,
-  setScore,
-  updateJsonContent,
-  removeCard,
-  enterCard,
-  leaveCard,
-  setStatus,
-  cacheExpand,
-  setCardSharecode,
-  findThread
+  unfollowCard,
+  updateCardName,
+  updateCardThread,
+  updateJsonContent
 } from "src/hooks/team/useCard.js";
-import { findCard } from "src/api/strapi/project.js";
-import { isEqual } from "lodash-es";
-import { useProjectCardPreference } from "src/pages/team/hooks/useSettingTemplate.js";
+import {findCard} from "src/api/strapi/project.js";
+import {isEqual} from "lodash-es";
+import {useProjectCardPreference} from "src/pages/team/hooks/useSettingTemplate.js";
 import ThreadBtn from "../components/widgets/ThreadBtn.vue";
 import ReName from "../components/widgets/icons/ReName.vue";
-import {
-  userStore,
-  teamStore,
-  mm_wsStore,
-  uiStore,
-} from "src/hooks/global/useStore.js";
+import {mm_wsStore, teamStore, uiStore, userStore,} from "src/hooks/global/useStore.js";
 import ClassPage from "./ClassPage.vue";
 import FileViewer from "src/components/VIewComponents/FileViewer.vue";
 import CreateShare from "pages/team/components/CreateShare.vue";
