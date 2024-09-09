@@ -232,6 +232,7 @@ const routes = [
         path: "/brand",
         component: () => import("pages/IndexPage.vue"),
         props: true,
+        name: "brand",
         meta: {
           requireAuth: false,
           title: "易乎APP",

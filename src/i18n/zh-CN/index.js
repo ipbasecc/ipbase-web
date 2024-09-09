@@ -99,6 +99,8 @@ export default {
   app_brand_purpose: '打造你的个人、团队品牌',
   threads: '主题',
   app_threads_purpose: '访问你参与讨论的主题',
+  chats: '沟通',
+  app_chat_purpose: '与您的好友对话',
 
   manual: '操作手册',
   shortcut: '快捷键',

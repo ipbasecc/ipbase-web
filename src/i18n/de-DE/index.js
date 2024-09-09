@@ -99,6 +99,8 @@ export default {
   app_brand_purpose: 'Baue deine persönliche oder Teamsmarke auf',
   threads: 'Themen',
   app_threads_purpose: 'Besuche die Diskussionsthemen, an denen du teilgenommen hast',
+  chats: 'Kommunikation',
+  app_chat_purpose: 'Unterhaltung mit Ihren Freunden.',
 
   manual: 'Bedienungsanleitung',
   shortcut: 'Tastenkürzel',

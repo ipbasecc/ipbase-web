@@ -72,9 +72,9 @@
         <AutoAvatar :attributes="userDataRef"/>
     </q-item-section>
     <q-item-section @click="channelId && $router.push(`/brand/${channelId}`)">
-        {{ userDataRef.username }}
+        {{ userDataRef.username }} - {{followsIds.includes(userIdRef)}}
     </q-item-section>
-    <q-item-section v-if="isLogged" side>
+    <q-item-section v-if="isLogged && !is_current_user" side class="hover-show">
         <q-btn
             :color="isFollowed ? `${$q.dark.mode ? 'grey-4' : 'grey-6'}` : 'primary'"
             :label="isFollowed ? `取消` : `关注`"
@@ -124,12 +124,15 @@
 </template>
 
 <script setup>
-import { ref, inject, toRef, watch, watchEffect } from "vue";
-import { updateFollows } from "src/apollo/api/api.js";
+import {computed, inject, ref, toRef, watch, watchEffect} from "vue";
+import {updateFollows} from "src/apollo/api/api.js";
+import {updateFollowed} from 'src/api/strapi.js'
 import useUserStore from 'src/stores/user.js'
-import { useQuasar } from 'quasar';
+import {useQuasar} from 'quasar';
 import AutoAvatar from 'src/components/VIewComponents/AutoAvatar.vue';
 import DirectMmchat from 'src/components/VIewComponents/Chat/DirectMmchat.vue';
+import {teamStore} from "src/hooks/global/useStore";
+
 const $q = useQuasar()
 
 const props = defineProps({
@@ -163,13 +166,13 @@ const channelId = ref(userDataRef.value.user_channel?.data?.id || null)
 
 const userStore = useUserStore();
 const isLogged = ref();
-const follows = ref(userStore.follows);
-const followsIds = ref(Array.isArray(follows.value) && follows.value.map(i => i.id) || []);
-const isFollowed = ref(followsIds.value.includes(userIdRef.value));
+const follows = computed(() => teamStore.init?.followed);
+const followsIds = computed(() => follows.value?.map(i => i.id));
+const isFollowed = computed(() => followsIds.value?.includes(Number(userIdRef.value)));
 
 const is_current_user = ref(false);
 watchEffect(() => {
-    is_current_user.value = userStore.userId === userIdRef.value;
+    is_current_user.value = userStore.userId === Number(userIdRef.value);
 })
 
 watch(userStore, () => {
@@ -183,10 +186,24 @@ watch(userStore, () => {
 
 const updateFollowsParams = ref({
     data: {
-        follows: []
+        new_follow: null,
+        unfollow: null
     }
 });
-const updateFollowsFn = async () => {
+const updateFollowsFn = async (_targetUser_id) => {
+  updateFollowsParams.value.data = {}
+  if(isFollowed.value){
+    updateFollowsParams.value.data.unfollow = props.userId
+  } else {
+    updateFollowsParams.value.data.new_follow = props.userId
+  }
+
+  const res = await updateFollowed(updateFollowsParams.value);
+  if(res?.data){
+    teamStore.init.followed = res.data
+  }
+}
+const _updateFollowsFn = async () => {
     if(isFollowed.value) {
         followsIds.value = followsIds.value.filter(i => i !== userIdRef.value);
     } else {

@@ -131,7 +131,7 @@ const apps = [
   {
     val: "brand",
     label: 'brand',
-    icon: "mdi-cards",
+    icon: "mdi-creation",
     description: 'app_brand_purpose',
     to: "brand",
     enable: $q.screen.gt.xs
@@ -150,6 +150,8 @@ onBeforeMount(() => {
     defaultApp.value = "threads";
   } else if (routeName.value === "ChatsPage") {
     defaultApp.value = "chats";
+  }  else if (routeName.value === "brand") {
+    defaultApp.value = "brand";
   } else {
     defaultApp.value = "teams";
   }

@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+
 const gqlAggregate = {
   // 频道 / 个人 部分
   // *
@@ -3757,9 +3758,11 @@ const gqlAggregate = {
   `,
   updateFollows: gql`
     mutation updateFollows(
+      $updateFollowsId: ID!,
       $data: UsersPermissionsUserInput!
     ) {
       updateUsersPermissionsUser(
+        id: $updateFollowsId,
         data: $data
       ) {
         data {

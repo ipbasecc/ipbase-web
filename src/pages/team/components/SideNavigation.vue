@@ -69,7 +69,7 @@
                 dense
                 :size="$q.screen.gt.sm ? '' : 'md'"
                 :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`"
-                :icon="i.mm_channel?.type === 'O' ? 'public' : 'lock'"
+                :icon="i.mm_channel?.type === 'O' ? 'mdi-pound' : 'mdi-pound-box'"
                 @mouseenter="deEnter = true"
                 @mouseleave="deEnter = false"
               >

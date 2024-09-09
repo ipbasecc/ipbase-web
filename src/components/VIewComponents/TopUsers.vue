@@ -4,7 +4,7 @@
         v-for="i in users" :key="i.id"
         :clickable="i.attributes.user_channel?.data?.id && true || false"
         v-ripple
-        class="radius-xs"
+        class="radius-xs hovered-item"
     >
         <OwnerCard :userData="i.attributes" :userId="i.id" :cardType="`user_card`" />
         <q-tooltip v-if="!i.attributes.user_channel?.data?.id">
@@ -15,9 +15,9 @@
 </template>
 
 <script setup>
-import { findUsers } from "src/apollo/api/api.js";
-import { ref, watch } from "vue"
-import OwnerCard  from "src/components/VIewComponents/CardContainer/UserMaincard.vue"
+import {findUsers} from "src/apollo/api/api.js";
+import {ref, watch} from "vue"
+import OwnerCard from "src/components/VIewComponents/CardContainer/UserMaincard.vue"
 
 const findUsersParams = ref({
     pagination: {

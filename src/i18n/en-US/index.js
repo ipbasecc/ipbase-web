@@ -99,6 +99,8 @@ export default {
   app_brand_purpose: 'Create your brand',
   threads: 'Threads',
   app_threads_purpose: 'Visit the topic you are participating in the discussion on',
+  chats: 'Communication',
+  app_chat_purpose: 'conversation with your friends.',
 
   manual: 'manual',
   shortcut: 'shortcut',

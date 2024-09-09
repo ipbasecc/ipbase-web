@@ -1,7 +1,7 @@
-import { api } from "boot/axios";
+import {api} from "boot/axios";
 import localforage from "localforage";
 import {Notify} from "quasar";
-import { i18n } from 'src/boot/i18n.js';
+import {i18n} from 'src/boot/i18n.js';
 
 const $t = i18n.global.t;
 export async function server(_url) {
@@ -156,6 +156,18 @@ export async function modifyConfig(params) {
   }
 }
 
+
+//修改用户配置
+export async function updateFollowed(params) {
+  try {
+    const res = await api.post(`users-permissions/user/me/updateFollowed`, params);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
 
 //更新用户数据
 export async function updateUser(user_id,params) {

@@ -117,7 +117,7 @@ import {addFriend} from 'src/api/strapi.js'
 import {findStrapiUser_by_mmID_inTeam, useCheckBlocked} from 'src/pages/team/chat/hooks/useMm.js'
 import {__dict} from "src/hooks/dict.js";
 
-let router = useRouter();
+const router = useRouter();
 
 const props = defineProps({
   user_id: {
