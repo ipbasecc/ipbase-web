@@ -174,7 +174,7 @@
           :width="navDrawerWidth"
           class="border-right"
         >
-          <div v-if="uiStore.app === 'teams'"
+          <div v-if="uiStore.app === 'teams' || uiStore.app === 'threads'"
             class="absolute-full column no-wrap"
             :class="$q.dark.mode ? '' : 'bg-primary-9 text-grey-1'"
           >

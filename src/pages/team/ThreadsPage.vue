@@ -8,7 +8,7 @@
       @mouseup="handleMouseUp"
     >
       <q-drawer
-        v-if="uiStore.app === 'teams' && $q.screen.gt.xs"
+        v-if="(uiStore.app === 'teams' || uiStore.app === 'threads') && $q.screen.gt.xs"
         side="left"
         v-model="uiStore.threadsDrawer"
         :breakpoint="640"
@@ -66,15 +66,15 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive, onBeforeMount } from "vue";
+import {computed, onBeforeMount, reactive, ref} from "vue";
 
 import ThreadContainer from "./chat/ThreadContainer.vue";
 import ThreadsList from "./components/ThreadsList.vue";
 import ResumeFolder from "./components/widgets/ResumeFolder.vue";
 import NavigatorContainer from "pages/team/NavigatorContainer.vue";
-import { uiStore } from "src/hooks/global/useStore";
-import { useMouse } from "@vueuse/core";
-import { useQuasar } from "quasar";
+import {uiStore} from "src/hooks/global/useStore";
+import {useMouse} from "@vueuse/core";
+import {useQuasar} from "quasar";
 
 const $q = useQuasar();
 const thread = ref();

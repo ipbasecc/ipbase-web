@@ -599,7 +599,7 @@ const inviteFn = (channel) => {
 const enterThreads = () => {
   teamStore.project = void 0;
   teamStore.project_id = void 0;
-  router.push(`/teams/threads`);
+  router.push(`/threads`);
   teamStore.mm_channel = {
     id: "threads",
   };

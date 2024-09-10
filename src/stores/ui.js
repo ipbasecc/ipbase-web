@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {Quasar} from 'quasar'
+import {Platform} from 'quasar'
 
 export default defineStore("ui", {
   state: () => ({
@@ -31,10 +31,10 @@ export default defineStore("ui", {
       {
         val: "threads",
         label: 'threads',
-        icon: "mdi-forum",
+        icon: "mdi-message-bulleted",
         description: 'app_threads_purpose',
         to: "threads",
-        enable: !Quasar.screen?.gt?.xs,
+        enable: Platform.is.mobile,
       },
       {
         val: "brand",
@@ -42,7 +42,7 @@ export default defineStore("ui", {
         icon: "mdi-creation",
         description: 'app_brand_purpose',
         to: "brand",
-        enable: Quasar.screen?.gt?.xs
+        enable: !Platform.is.mobile
       },
     ],
     app: void 0,
