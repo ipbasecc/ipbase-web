@@ -39,7 +39,7 @@
           :class="`${view_model === 'kanban' && $q.screen.gt.xs ? 'row gap-sm' : 'column'} ${
             uiStore.activeReel ? 'border-top q-py-sm' : 'fit'
           }`"
-          @change="dragColumn_done(kanban_id)"
+          @sort="dragColumn_done(kanban_id)"
         >
           <div v-for="element in kanban.columns" :key="element.id"
             v-show="!uiStore.activeReel || element.id === uiStore.activeReel"
@@ -331,6 +331,7 @@ watch(
 
 const __dragging_column = ref(false);
 const dragColumn_done = async (_kanban_id) => {
+  await nextTick();
   let params = {
     data: {
       columns: columns.value?.map((i) => i.id),

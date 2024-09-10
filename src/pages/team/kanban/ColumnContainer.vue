@@ -495,7 +495,6 @@ import {
   watchEffect,
   computed,
   onBeforeMount,
-  onMounted,
   nextTick
 } from "vue";
 import { VueDraggable } from 'vue-draggable-plus'
@@ -719,6 +718,7 @@ const dragCard_sort = async () => {
   }
 };
 const onSort = async () => {
+  await nextTick();
   await dragCard_sort()
 }
 

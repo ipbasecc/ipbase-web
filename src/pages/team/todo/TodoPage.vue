@@ -1224,7 +1224,7 @@
 // 实现效果：
 // 1.卡片上可以独立展示自己的todogroups
 // 2.用户针对不同的看板可以自己增加todogroups，作为对应的私有内容，仅供自己查阅
-import {computed, onBeforeMount, ref, toRefs, watch, watchEffect} from "vue";
+import {computed, onBeforeMount, ref, toRefs, watch, nextTick, watchEffect} from "vue";
 import {
   createTodo,
   createTodogroup,
@@ -1604,6 +1604,7 @@ const updateTodogroupFn = async (i) => {
   }
 };
 const dragTodo_sort = async (i) => {
+  await nextTick();
   let sort = i.todos.map((i) => i.id);
   if (card.value || _for.value === "card_todo") {
     emit("todoSort", i, sort);
@@ -1626,6 +1627,7 @@ const dragTodo_sort = async (i) => {
   }
 };
 const dragTodogroup_sort = async () => {
+  await nextTick();
   dragging.value = false;
   const sort = todogroups.value.map((i) => i.id);
   if (card.value || _for.value === "card_todo") {

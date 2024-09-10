@@ -225,7 +225,7 @@
 </template>
 
 <script setup>
-import { ref, inject, watch } from "vue";
+import { ref, inject, watch, nextTick } from "vue";
 import { VueDraggable } from 'vue-draggable-plus'
 import { findChannelMatedataByID, UpdateChannel } from "src/apollo/api/api.js";
 import useUserStore from "src/stores/user.js";
@@ -256,6 +256,7 @@ const UpdateChannelParams = ref({
 });
 
 const motifyChannelNavigation = () => {
+  await nextTick();
   UpdateChannelParams.value.data.navigation = navigation.value;
 };
 
