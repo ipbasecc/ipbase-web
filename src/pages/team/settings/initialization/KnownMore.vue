@@ -11,7 +11,7 @@
                         clickable v-ripple @click="readit(i.val)"
                         :active="readed.includes(i.val)"
                         class="q-mb-xs radius-xs transition"
-                        :class="actived === i.val ? 'bg-positive border text-white' : readed.includes(i.val) ? 'bg-grey-4 border' : void 0"
+                        :class="actived === i.val ? 'bg-positive border' : readed.includes(i.val) ? 'bg-grey-4 border' : void 0"
                         :style="`height: ${actived === i.val ? 4.6 : 2.4}rem;`"
                     >
                         <q-item-section side>
@@ -33,7 +33,7 @@
             <ShareFeedback  v-if="actived === 'share_feedback'" />
             <TeamPerson  v-if="actived === 'team_person'" />
         </div>
-        <q-responsive v-else :ratio="16/9" style="order: 1" class="full-width">
+        <q-responsive v-else :ratio="16/9" style="order: 1" class="full-width text-white">
             <TeamMode v-if="actived === 'team_mode'" />
             <ChatChannel v-if="actived === 'channel'" />
             <ProjectManager v-if="actived === 'project'" />
@@ -45,7 +45,7 @@
   </template>
   
 <script setup>
-import { ref, watchEffect } from 'vue'
+import {ref, watchEffect} from 'vue'
 import TeamMode from './KnownMore/TeamMode.vue'
 import ChatChannel from './KnownMore/ChatChannel.vue'
 import ProjectManager from './KnownMore/ProjectManager.vue'

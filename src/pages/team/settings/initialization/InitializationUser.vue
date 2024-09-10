@@ -8,7 +8,10 @@
     :bordered="!$q.screen.lt.sm"
     :vertical="$q.screen.lt.sm"
     class="initialization column no-wrap"
-    :class="$q.screen.lt.sm ? 'transparent q-pb-xl' : ''"
+    :class="`
+      ${$q.screen.lt.sm ? 'transparent q-pb-xl' : ''}
+      ${$q.dark.mode ? 'text-white' : 'text-black'}
+    `"
   >
     <q-step
       :name="1"
@@ -57,9 +60,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { teamStore, userStore } from "src/hooks/global/useStore";
-import { updateUser } from 'src/api/strapi.js'
+import {computed, ref} from 'vue'
+import {teamStore} from "src/hooks/global/useStore";
+import {updateUser} from 'src/api/strapi.js'
 import TeamProcess from './TeamProcess.vue'
 import ChannelProcess from './ChannelProcess.vue'
 import KnownMore from './KnownMore.vue'

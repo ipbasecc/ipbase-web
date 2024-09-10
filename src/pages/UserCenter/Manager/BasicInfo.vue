@@ -1,5 +1,5 @@
 <template>
-  <div class="limit fit no-wrap" :class="style">
+  <div class="limit fit no-wrap" :class="styleClass">
     <div class="q-pa-md">
       <div>
         <UpdateAvatar
@@ -275,19 +275,19 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, inject, onBeforeMount } from "vue";
-import { updateUser } from "src/api/strapi.js";
+import {computed, inject, onBeforeMount, ref, watch} from "vue";
+import {updateUser} from "src/api/strapi.js";
 import UploadFile from "src/components/Utilits/UploadFile.vue";
 // import UpdateAvatar from "src/pages/Chat/components/user/Settings/UpdateAvatar.vue";
 import UpdateAvatar from "src/pages/team/components/user/Settings/UpdateAvatar.vue";
 
-import { useQuasar } from "quasar";
-import { useI18n } from "vue-i18n";
+import {useQuasar} from "quasar";
+import {useI18n} from "vue-i18n";
 import localforage from "localforage";
-import { userStore } from "src/hooks/global/useStore";
+import {userStore} from "src/hooks/global/useStore";
 
 const props = defineProps({
-  style: {
+  styleClass: {
     type: String,
     default: "row gap-xxl q-pa-xl",
   },
@@ -308,6 +308,7 @@ onBeforeMount(() => {
   cover.value = userStore.cover;
   brand.value = userStore.brand;
   self_tags.value = userStore.self_tags;
+  delete userStore.config.id
 })
 const update_params = ref({
   data: {

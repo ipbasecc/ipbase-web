@@ -834,7 +834,7 @@ input:-internal-autofill-selected {
   box-shadow: 4px 4px 20px -10px #00222c;
 }
 .active-sublistitem {
-  background: linear-gradient(45deg, #ffffff, #ebebeb 80%);
+  background: linear-gradient(200deg, #ffffff, #ebebeb 80%);
 }
 
 .body--dark .active-sublistitem {
@@ -863,11 +863,6 @@ input:-internal-autofill-selected {
   box-shadow: 0 0 86px -20px rgb(0 22 255 / 43%) !important;
 }
 .q-menu {
-  -webkit-box-shadow: 10px 10px 72px -25px rgba(0, 0, 0, 0.75);
-  -moz-box-shadow: 10px 10px 72px -25px rgba(0, 0, 0, 0.75);
-  box-shadow: 10px 10px 72px -25px rgba(0, 0, 0, 0.75);
-}
-.q-dialog__inner > .q-card {
   -webkit-box-shadow: 10px 10px 72px -25px rgba(0, 0, 0, 0.75);
   -moz-box-shadow: 10px 10px 72px -25px rgba(0, 0, 0, 0.75);
   box-shadow: 10px 10px 72px -25px rgba(0, 0, 0, 0.75);
@@ -1097,6 +1092,14 @@ body.body--dark .shadow-10 {
 body.body--dark .bg-message {
   background-color: #191e22;
 }
+.q-dialog__inner > .q-card {
+  -webkit-box-shadow: 10px 10px 72px -25px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 10px 10px 72px -25px rgba(0, 0, 0, 0.75);
+  box-shadow: 10px 10px 72px -25px rgba(0, 0, 0, 0.75);
+}
+.q-dialog__inner--minimized {
+  padding: 48px 24px;
+}
 .q-dialog-plugin {
   background: transparent;
   border: 1px solid rgb(191 191 191);
@@ -1166,6 +1169,21 @@ body.body--dark .q-dialog-plugin .q-dialog__title {
 }
 .bg-primary-op-xs {
   background-color: #1976d245;
+}
+.bg-repeat {
+  background-repeat: repeat;
+}
+.bg-repeat-x {
+  background-repeat: repeat-x;
+}
+.bg-repeat-y {
+  background-repeat: repeat-y;
+}
+.bg-contain {
+  background-size: contain;
+}
+.bg-cover {
+  background-size: cover;
 }
 
 .q-tabs--vertical.q-indicator-dense .q-tab__indicator {

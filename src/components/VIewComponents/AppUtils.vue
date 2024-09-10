@@ -70,10 +70,10 @@
     </q-btn>
     <q-dialog v-model="infoDlg" full-height>
       <q-card bordered class="column" style="min-width: 60vw">
-        <q-bar class="transparent border-bottom q-py-xs">
+        <q-toolbar class="transparent border-bottom q-py-xs">
           <q-space />
-          <q-btn dense round icon="close" @click="helpItem = void 0"></q-btn>
-        </q-bar>
+          <q-btn dense round flat icon="close" @click="helpItem = void 0"></q-btn>
+        </q-toolbar>
         <q-card-section class="q-space">
           <AppManual v-if="helpItem === 'manual'" class="fit" />
           <AppShortcut v-if="helpItem === 'shortcut'" class="fit" />
@@ -88,14 +88,13 @@
   </div>
 </template>
 <script setup>
-import { ref, computed, onBeforeMount } from "vue";
-import { useI18n } from "vue-i18n";
+import {computed, onBeforeMount, ref} from "vue";
+import {useI18n} from "vue-i18n";
 import AppManual from "src/components/VIewComponents/AppManual.vue";
 import AppShortcut from "src/components/VIewComponents/AppShortcut.vue";
 import localforage from "localforage";
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 import DownloadApp from './DownloadApp.vue'
-import AppIcon from 'src/pages/team/components/widgets/icons/AppIcon.vue'
 
 const is_development = process.env.DEV;
 const showDownloadApp = ref(false);
