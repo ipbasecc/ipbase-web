@@ -925,7 +925,7 @@
                 </q-btn>
               </div>
             </div>
-            <div class="column no-wrap gap-xs" :class="!i.todos || i.todos.filter(i => !i.status)?.length === 0 ? 'hovered-item' : ''">
+            <div class="column no-wrap gap-xs" :class="!i.todos || i.todos.filter(j => !j.status)?.length === 0 ? 'hovered-item' : ''">
               <VueDraggable v-model="i.todos"
                 :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
                 handle=".dragItem" filter=".undrag" group="todo"
