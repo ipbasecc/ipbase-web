@@ -51,7 +51,7 @@ onMounted(() => {
 });
 
 const emit = defineEmits(["ctrlEnter", "shiftEnter", "ESC"]);
-const ESC = (event) => {
+const ESC = () => {
   modelValue.value = '';
   emit('ESC')
 };

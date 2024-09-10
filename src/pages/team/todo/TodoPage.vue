@@ -858,7 +858,7 @@
                       round
                       icon="more_vert"
                   >
-                    <q-menu class="radius-sm shadow-12" @hide="todo_add_ing = todo_add_ing">
+                    <q-menu class="radius-sm shadow-12">
                       <q-list
                           dense
                           bordered
