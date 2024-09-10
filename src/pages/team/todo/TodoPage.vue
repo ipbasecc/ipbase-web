@@ -900,33 +900,18 @@
                           <q-separator spaced />
                           <q-item
                               clickable
-                              v-close-popup
+                              :v-close-popup="rf_deleteTodogroup"
                               class="radius-xs"
-                              @click="deleteTodogroupFn(i)"
+                              :class="rf_deleteTodogroup ? 'bg-negative' : ''"
+                              @click="rf_deleteTodogroupFn(i)"
                           >
                             <q-item-section side
                             ><q-icon name="mdi-close" size="xs"
                             /></q-item-section>
-                            <q-item-section class="q-pr-md"
-                            >{{$t('delete_todogroup')}}</q-item-section
-                            >
+                            <q-item-section class="q-pr-md">
+                              {{ !rf_deleteTodogroup ? $t('delete_todogroup') : $t('rf_delete_todogroup') }}
+                            </q-item-section>
                           </q-item>
-                          <template v-if="i.todos?.length > 0">
-                            <q-item
-                                clickable
-                                v-close-popup
-                                class="radius-xs"
-                                @click="rf_deleteTodogroupFn(i)"
-                            >
-                              <q-item-section side>
-                                <q-icon name="mdi-close-circle" size="xs" />
-                              </q-item-section>
-                              <q-item-section class="q-pr-md">
-                                {{$t('rf_delete_todogroup')}}
-                              </q-item-section>
-                              <div class="absolute-full bg-negative op-2"></div>
-                            </q-item>
-                          </template>
                         </template>
                       </q-list>
                     </q-menu>

@@ -20,15 +20,15 @@
 </template>
 
 <script setup>
-import { toRefs, ref, watchEffect, watch, computed, onBeforeUnmount } from "vue";
+import {computed, onBeforeUnmount, ref, toRefs, watch} from "vue";
 import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
 
-import { updateDocument } from "src/api/strapi/project.js";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
+import {updateDocument} from "src/api/strapi/project.js";
+import {send_MattersMsg} from "src/pages/team/hooks/useSendmsg.js";
 import localforage from "localforage";
-import { userStore, teamStore, mm_wsStore } from "src/hooks/global/useStore.js";
-import { isEqual } from "lodash-es";
-import { i18n } from 'src/boot/i18n.js';
+import {mm_wsStore, teamStore, userStore} from "src/hooks/global/useStore.js";
+import {isEqual} from "lodash-es";
+import {i18n} from 'src/boot/i18n.js';
 
 const $t = i18n.global.t;
 
@@ -52,17 +52,17 @@ const props = defineProps({
 
 const { document, by_info } = toRefs(props);
 
-let updateChatMsg = void 0;
-let jsonContent = void 0;
+const updateChatMsg = ref({});
+const jsonContent = ref({});
 const updateDocumentFn = async () => {
-  if (!jsonContent) return;
-  const isChanged = !isEqual(document.value.jsonContent, jsonContent);
+  if (!jsonContent.value) return;
+  const isChanged = !isEqual(document.value.jsonContent, jsonContent.value);
   // console.log("isChanged", isChanged);
   if (!isChanged) return;
   let params = {
     document_id: document.value.id,
     data: {
-      jsonContent: jsonContent,
+      jsonContent: jsonContent.value,
     },
   };
   if (by_info.value.project_id) {
@@ -77,7 +77,7 @@ const updateDocumentFn = async () => {
 
   let res = await updateDocument(document.value.id, params);
   if (res) {
-    updateChatMsg = {
+    updateChatMsg.value = {
       props: {
         strapi: {
           data: {
@@ -92,10 +92,10 @@ const updateDocumentFn = async () => {
     };
 
     if (by_info.value.project_id) {
-      updateChatMsg.body = `${userStore.me.username} ${$t('changed_project_props')}'${teamStore.project.name}' ${$t('inner_document')}'${document.value.title}' ${$t('of_content')}`;
+      updateChatMsg.value.body = `${userStore.me.username} ${$t('changed_project_props')}'${teamStore.project.name}' ${$t('inner_document')}'${document.value.title}' ${$t('of_content')}`;
     }
     if (by_info.value.card_id) {
-      updateChatMsg.body = `${userStore.me.username} ${$t('changed_card_props')}'${teamStore.card.name}' ${$t('inner_document')}'${document.value.title}'${document.value.title}' ${$t('of_content')}`;
+      updateChatMsg.value.body = `${userStore.me.username} ${$t('changed_card_props')}'${teamStore.card.name}' ${$t('inner_document')}'${document.value.title}'${document.value.title}' ${$t('of_content')}`;
     }
     if (by_info.value.user_id) {
       process_documentContent_change(res.data);
@@ -106,7 +106,7 @@ const updateDocumentFn = async () => {
   }
 };
 onBeforeUnmount(() => {
-  send_chat_Msg(updateChatMsg);
+  send_chat_Msg(updateChatMsg.value);
 });
 
 const count = ref(15);
@@ -122,12 +122,12 @@ const startCountdown = () => {
 };
 
 const tiptapUpdate = async (val) => {
-  jsonContent = val;
+  jsonContent.value = val;
   count.value = 15;
   startCountdown();
 };
 const tiptapBlur = async (val) => {
-  jsonContent = val;
+  jsonContent.value = val;
   await updateDocumentFn(val);
 };
 const send_chat_Msg = (MsgContent) => {
