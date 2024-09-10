@@ -799,13 +799,10 @@
         @start="dragStart" @sort="dragTodogroup_sort" @end="dragEnd"
       >
         <template v-for="i in todogroups" :key="i.id">
-          <div
-            class="column no-wrap gap-xs q-py-xs radius-xs"
-          >
-            <div
-              class="row no-wrap items-center q-px-sm hovered-item"
-              @mouseenter="moveTarget = `group_${i.id}`"
-              @mouseleave="moveTarget = null"
+          <div class="column no-wrap gap-xs q-py-xs radius-xs">
+            <div class="row no-wrap items-center q-px-sm hovered-item"
+                 @mouseenter="moveTarget = `group_${i.id}`"
+                 @mouseleave="moveTarget = null"
             >
               <div class="row no-wrap q-space font-bold-600">
                 <span class="undrag">{{ i.name }}</span>
@@ -866,7 +863,7 @@
                           clickable
                           v-close-popup
                           class="radius-xs"
-                          @click="createAddTodo(i.id)"
+                          @click="createAddTodo(`group_${i.id}`)"
                         >
                           <q-item-section side>
                             <q-icon name="mdi-playlist-plus" size="xs" />
@@ -928,7 +925,7 @@
                 </q-btn>
               </div>
             </div>
-            <div class="column no-wrap gap-xs">
+            <div class="column no-wrap gap-xs" :class="!i.todos || i.todos.filter(i => !i.status)?.length === 0 ? 'hovered-item' : ''">
               <VueDraggable v-model="i.todos"
                 :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
                 handle=".dragItem" filter=".undrag" group="todo"
@@ -1005,13 +1002,13 @@
                                   max-width: 240px;
                                   cursor: text;
                                 "
-                                @update="createTodoFn(i, element, '')"
-                                @ctrlEnter="createTodoFn(i, element, '')"
+                                @update="createTodoFn(i, element)"
+                                @ctrlEnter="createTodoFn(i, element)"
                                 @cannel="cannelCreateTodo"
                             ></ClasslessInput>
                           </div>
                           <div
-                              v-if="todo_add_ing === element.id && !$q.screen.gt.xs"
+                              v-if="todo_add_ing === element.id && $q.screen.gt.xs"
                               class="row no-wrap items-center q-py-xs"
                           >
                             <q-btn
@@ -1028,7 +1025,7 @@
                                 color="primary"
                                 :label="$t('confirm')"
                                 padding="xs sm"
-                                @click="createTodoFn(i, element, '')"
+                                @click="createTodoFn(i, element)"
                             />
                           </div>
                           <q-inner-loading :showing="todo_creating" size="sm">
@@ -1043,13 +1040,93 @@
                   </TodoItem>
                 </template>
               </VueDraggable>
+              <template v-if="!uiStore.dragging && useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])">
+                <div class="row no-wrap gap-xs items-start q-pl-xs q-pr-sm todo_in_card relative-position"
+                     :class="todo_add_ing === `group_${i.id}`
+                      ? 'border-info radius-xs border-solid border-xs'
+                      : 'border-placeholder hover-show'"
+                     style="order: 99999"
+                >
+                  <template v-if="todo_add_ing !== `group_${i.id}`">
+                    <div class="column justify-center items-end q-space q-pr-md bg-primary overflow-show transition"
+                         style="height: 1px"
+                    >
+                      <q-btn
+                          dense
+                          unelevated
+                          color="primary"
+                          size="xs"
+                          round
+                          icon="mdi-plus"
+                          @click="createAddTodo(`group_${i.id}`)"
+                      />
+                    </div>
+                  </template>
+                  <div v-else class="full-width column no-wrap border-top">
+                    <div class="full-width row no-wrap">
+                      <div
+                          class="transition flex flex-center"
+                          style="height: 30px"
+                      >
+                        <q-checkbox
+                            v-model="todo_params.data.status"
+                            size="xs"
+                            dense
+                            :disable="!todo_params.data.content"
+                        >
+                        </q-checkbox>
+                      </div>
+                      <ClasslessInput
+                          v-model="todo_params.data.content"
+                          :auth="useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])"
+                          :todogroup="i"
+                          :baseClass="`q-space q-pa-xs`"
+                          :autofocus="true"
+                          style="
+                                  min-height: 30px;
+                                  max-width: 240px;
+                                  cursor: text;
+                                "
+                          @update="createTodoFn(i, null)"
+                          @ctrlEnter="createTodoFn(i, null)"
+                          @cannel="cannelCreateTodo"
+                      ></ClasslessInput>
+                    </div>
+                    <div
+                        v-if="todo_add_ing === `group_${i.id}` && $q.screen.gt.xs"
+                        class="row no-wrap items-center q-py-xs"
+                    >
+                      <q-btn
+                          flat
+                          dense
+                          :label="$t('cancel')"
+                          padding="xs sm"
+                          @click="cannelCreateTodo"
+                      />
+                      <q-space />
+                      <q-btn
+                          :disable="!todo_params.data.content"
+                          dense
+                          color="primary"
+                          :label="$t('confirm')"
+                          padding="xs sm"
+                          @click="createTodoFn(i, null)"
+                      />
+                    </div>
+                    <q-inner-loading :showing="todo_creating" size="sm">
+                      <q-spinner-dots
+                          color="primary"
+                          size="1em"
+                      />
+                    </q-inner-loading>
+                  </div>
+                </div>
+              </template>
             </div>
           </div>
         </template>
       </VueDraggable>
-      <template
-        v-if="useAuths('create', [authBase.collection])"
-      >
+      <template v-if="useAuths('create', [authBase.collection])">
         <template v-if="todogroups?.length > 0">
           <div v-if="!createTodogroup_ing" class="q-px-xs">
             <q-btn
@@ -1107,7 +1184,7 @@
               @keyup.esc="createTodogroup_ing = false"
               @keyup.enter="createTodogroupFn()"
             >
-              <template v-slot:append>
+              <template v-if="params.data.name" v-slot:append>
                 <q-btn
                   flat
                   round

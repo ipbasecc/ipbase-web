@@ -102,13 +102,13 @@ const to = async (i) => {
 /**
  * use full path visitor, auto set uiStore.app to highlight navigation btn
  * @param fullPath
+ * @param index
  * @returns {*}
  */
 const getSegmentByPath = (fullPath, index) => {
   // 使用 split 方法将 fullPath 按照 / 分割成数组
-  const segments = fullPath.split("/").filter((i) => i !== '');
+  const segments = fullPath.split("/")?.filter((i) => i !== '');
 
-  // 返回第一个非空的部分
   if(segments[index])
   return segments[index] || null;
 };
