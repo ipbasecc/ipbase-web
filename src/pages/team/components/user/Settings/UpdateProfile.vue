@@ -1,6 +1,6 @@
 <template>
   <div class="column no-wrap gap-md q-pa-lg">
-    <BasicInfo style="column" />
+    <BasicInfo styleClass="column" />
   </div>
 </template>
 
