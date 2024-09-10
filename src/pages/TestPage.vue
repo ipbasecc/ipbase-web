@@ -11,16 +11,20 @@
 
     <q-page-container>
       <q-page class="q-pa-md">
-        {{ medias }}
+        content: {{content}}
+        <EditableDiv v-model="content" />
       </q-page>
     </q-page-container>
   </q-layout>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { queryMedias, addMedia } from 'src/api/strapi.js';
-import { uiStore } from "src/hooks/global/useStore.js";
+import {onMounted, ref} from 'vue';
+import {addMedia, queryMedias} from 'src/api/strapi.js';
+import {uiStore} from "src/hooks/global/useStore.js";
+import EditableDiv from 'src/components/Utilits/InputDiv.vue';
+
+const content = ref('');
 
 const medias = ref();
 const fetchMedias = async () => {

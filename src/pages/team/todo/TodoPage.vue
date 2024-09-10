@@ -155,7 +155,7 @@
                             type="text"
                             :placeholder="$t('group_name')"
                             class="col"
-                            @keyup.esc="cannelUpdateGroupHandler()"
+                            @keyup.esc="cancelUpdateGroupHandler()"
                             @keyup.ctrl.enter="updateTodogroupFn(i)"
                             @keyup.enter="updateTodogroupFn(i)"
                           >
@@ -307,7 +307,7 @@
                     autogrow
                     type="text"
                     :placeholder="$t('todo_content')"
-                    @keydown.esc="cannelCreateTodo()"
+                    @keydown.esc="cancelCreateTodo()"
                     @keyup.ctrl.enter="keepCreate(i, null)"
                   >
                     <template v-slot:append>
@@ -327,7 +327,7 @@
                       dense
                       :label="$t('cancel')"
                       padding="xs sm"
-                      @click="cannelCreateTodo"
+                      @click="cancelCreateTodo"
                     />
                     <q-space />
                     <q-btn
@@ -445,7 +445,7 @@
                           type="text"
                           :placeholder="$t('group_name')"
                           class="col"
-                          @keyup.esc="cannelUpdateGroupHandler()"
+                          @keyup.esc="cancelUpdateGroupHandler()"
                           @keyup.ctrl.enter="updateTodogroupFn(i)"
                           @keyup.enter="updateTodogroupFn(i)"
                         >
@@ -596,7 +596,7 @@
                   autogrow
                   type="text"
                   :placeholder="$t('todo_content')"
-                  @keydown.esc="cannelCreateTodo()"
+                  @keydown.esc="cancelCreateTodo()"
                   @keyup.ctrl.enter="keepCreate(i)"
                 >
                   <template v-slot:append>
@@ -616,7 +616,7 @@
                     dense
                     :label="$t('cancel')"
                     padding="xs sm"
-                    @click="cannelCreateTodo"
+                    @click="cancelCreateTodo"
                   />
                   <q-space />
                   <q-btn
@@ -842,90 +842,100 @@
                 </q-popup-proxy>
               </div>
               <div class="row no-wrap gap-xs hover-show transition">
-                <q-btn
-                  v-if="useAuths('delete', [authBase.collection])"
-                  flat
-                  dense
-                  size="sm"
-                  round
-                  icon="more_vert"
-                >
-                  <q-menu class="radius-sm shadow-12">
-                    <q-list
+
+                <q-btn-group flat class="border">
+                  <q-btn flat
+                         size="sm"
+                         padding="xs"
+                         icon="mdi-plus"
+                         @click="createAddTodo(`group_${i.id}`)"
+                  />
+                  <q-btn
+                      v-if="useAuths('delete', [authBase.collection]) || useAuths('create', [authBase.collection])"
+                      flat
                       dense
-                      bordered
-                      class="radius-sm q-pa-xs text-no-wrap"
-                    >
-                      <template
-                        v-if="useAuths('create', [authBase.collection])"
+                      size="sm"
+                      round
+                      icon="more_vert"
+                  >
+                    <q-menu class="radius-sm shadow-12" @hide="todo_add_ing = todo_add_ing">
+                      <q-list
+                          dense
+                          bordered
+                          class="radius-sm q-pa-xs text-no-wrap"
                       >
-                        <q-item
-                          clickable
-                          v-close-popup
-                          class="radius-xs"
-                          @click="createAddTodo(`group_${i.id}`)"
+                        <template
+                            v-if="useAuths('create', [authBase.collection])"
                         >
-                          <q-item-section side>
-                            <q-icon name="mdi-playlist-plus" size="xs" />
-                          </q-item-section>
-                          <q-item-section class="q-pr-md">
-                            {{$t('add_todo')}}
-                          </q-item-section>
-                        </q-item>
-                        <q-item
-                          clickable
-                          v-close-popup
-                          class="radius-xs"
-                          @click="createGroupHandler"
-                        >
-                          <q-item-section side>
-                            <q-icon name="mdi-plus-circle-outline" size="xs" />
-                          </q-item-section>
-                          <q-item-section class="q-pr-md">
-                            {{$t('add_todogroup')}}
-                          </q-item-section>
-                        </q-item>
-                      </template>
-                      <template
-                        v-if="useAuths('delete', [authBase.collection])"
-                      >
-                        <q-separator spaced />
-                        <q-item
-                          clickable
-                          v-close-popup
-                          class="radius-xs"
-                          @click="deleteTodogroupFn(i)"
-                        >
-                          <q-item-section side
-                            ><q-icon name="mdi-close" size="xs"
-                          /></q-item-section>
-                          <q-item-section class="q-pr-md"
-                            >{{$t('delete_todogroup')}}</q-item-section
-                          >
-                        </q-item>
-                        <template v-if="i.todos?.length > 0">
                           <q-item
-                            clickable
-                            v-close-popup
-                            class="radius-xs"
-                            @click="rf_deleteTodogroupFn(i)"
+                              clickable
+                              class="radius-xs"
+                              v-close-popup
+                              @click="createAddTodo(`group_${i.id}`)"
                           >
                             <q-item-section side>
-                              <q-icon name="mdi-close-circle" size="xs" />
+                              <q-icon name="mdi-playlist-plus" size="xs" />
                             </q-item-section>
                             <q-item-section class="q-pr-md">
-                              {{$t('rf_delete_todogroup')}}
+                              {{$t('add_todo')}}
                             </q-item-section>
-                            <div class="absolute-full bg-negative op-2"></div>
+                          </q-item>
+                          <q-item
+                              clickable
+                              v-close-popup
+                              class="radius-xs"
+                              @click="createGroupHandler"
+                          >
+                            <q-item-section side>
+                              <q-icon name="mdi-plus-circle-outline" size="xs" />
+                            </q-item-section>
+                            <q-item-section class="q-pr-md">
+                              {{$t('add_todogroup')}}
+                            </q-item-section>
                           </q-item>
                         </template>
-                      </template>
-                    </q-list>
-                  </q-menu>
-                </q-btn>
+                        <template
+                            v-if="useAuths('delete', [authBase.collection])"
+                        >
+                          <q-separator spaced />
+                          <q-item
+                              clickable
+                              v-close-popup
+                              class="radius-xs"
+                              @click="deleteTodogroupFn(i)"
+                          >
+                            <q-item-section side
+                            ><q-icon name="mdi-close" size="xs"
+                            /></q-item-section>
+                            <q-item-section class="q-pr-md"
+                            >{{$t('delete_todogroup')}}</q-item-section
+                            >
+                          </q-item>
+                          <template v-if="i.todos?.length > 0">
+                            <q-item
+                                clickable
+                                v-close-popup
+                                class="radius-xs"
+                                @click="rf_deleteTodogroupFn(i)"
+                            >
+                              <q-item-section side>
+                                <q-icon name="mdi-close-circle" size="xs" />
+                              </q-item-section>
+                              <q-item-section class="q-pr-md">
+                                {{$t('rf_delete_todogroup')}}
+                              </q-item-section>
+                              <div class="absolute-full bg-negative op-2"></div>
+                            </q-item>
+                          </template>
+                        </template>
+                      </q-list>
+                    </q-menu>
+                  </q-btn>
+                </q-btn-group>
+
               </div>
             </div>
-            <div class="column no-wrap gap-xs" :class="!i.todos || i.todos.filter(j => !j.status)?.length === 0 ? 'hovered-item' : ''">
+            <div class="column no-wrap gap-xs" :class="noneDisplayGroup(i) && todo_add_ing !== `group_${i.id}` ? 'hovered-item' : ''">
               <VueDraggable v-model="i.todos"
                 :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
                 handle=".dragItem" filter=".undrag" group="todo"
@@ -990,7 +1000,7 @@
                               >
                               </q-checkbox>
                             </div>
-                            <ClasslessInput
+                            <InputDiv
                                 v-if="todo_add_ing === element.id"
                                 v-model="todo_params.data.content"
                                 :auth="useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])"
@@ -1004,8 +1014,8 @@
                                 "
                                 @update="createTodoFn(i, element)"
                                 @ctrlEnter="createTodoFn(i, element)"
-                                @cannel="cannelCreateTodo"
-                            ></ClasslessInput>
+                                @cancel="cancelCreateTodo"
+                            ></InputDiv>
                           </div>
                           <div
                               v-if="todo_add_ing === element.id && $q.screen.gt.xs"
@@ -1016,7 +1026,7 @@
                                 dense
                                 :label="$t('cancel')"
                                 padding="xs sm"
-                                @click="cannelCreateTodo"
+                                @click="cancelCreateTodo"
                             />
                             <q-space />
                             <q-btn
@@ -1040,7 +1050,7 @@
                   </TodoItem>
                 </template>
               </VueDraggable>
-              <template v-if="!uiStore.dragging && useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])">
+              <template v-if="(noneDisplayGroup(i) || todo_add_ing === `group_${i.id}`) && !uiStore.dragging && useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])">
                 <div class="row no-wrap gap-xs items-start q-pl-xs q-pr-sm todo_in_card relative-position"
                      :class="todo_add_ing === `group_${i.id}`
                       ? 'border-info radius-xs border-solid border-xs'
@@ -1076,7 +1086,7 @@
                         >
                         </q-checkbox>
                       </div>
-                      <ClasslessInput
+                      <InputDiv
                           v-model="todo_params.data.content"
                           :auth="useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])"
                           :todogroup="i"
@@ -1089,8 +1099,8 @@
                                 "
                           @update="createTodoFn(i, null)"
                           @ctrlEnter="createTodoFn(i, null)"
-                          @cannel="cannelCreateTodo"
-                      ></ClasslessInput>
+                          @ESC="cancelCreateTodo"
+                      ></InputDiv>
                     </div>
                     <div
                         v-if="todo_add_ing === `group_${i.id}` && $q.screen.gt.xs"
@@ -1101,7 +1111,7 @@
                           dense
                           :label="$t('cancel')"
                           padding="xs sm"
-                          @click="cannelCreateTodo"
+                          @click="cancelCreateTodo"
                       />
                       <q-space />
                       <q-btn
@@ -1242,7 +1252,7 @@ import {
 } from "src/api/strapi/project.js";
 import {updateUserTodogroups} from "src/api/strapi.js";
 import {VueDraggable} from 'vue-draggable-plus'
-import ClasslessInput from "src/components/Utilits/ClasslessInput.vue";
+import InputDiv from "src/components/Utilits/InputDiv.vue";
 import StrapiUpload from "src/components/Utilits/StrapiUpload.vue";
 
 import {useQuasar} from "quasar";
@@ -1416,6 +1426,9 @@ const emit = defineEmits([
   "todoSort",
   "disableAction",
 ]);
+const noneDisplayGroup = (group) => {
+  return !group.todos || group.todos.filter(j => !j.status)?.length === 0
+}
 const fetchFeedback = async () => {
   if (!isFeedback.value) return;
   let res;
@@ -1541,7 +1554,7 @@ const createGroupHandler = () => {
     );
   }
 };
-const cannelUpdateGroupHandler = () => {
+const cancelUpdateGroupHandler = () => {
   params.value.data.name = "";
   updateTodogroup_target.value = null;
 };
@@ -1702,9 +1715,12 @@ const uneditting = () => {
   }, 300);
 };
 const createAddTodo = (_id) => {
-  if (!uiStore.edittingTodo) {
+  /**
+   * updateValue event in q-menu,need setTimeout, unknown why
+   */
+  setTimeout(() => {
     todo_add_ing.value = _id;
-  }
+  },1)
 };
 
 const createTodoFn = async (i, todo) => {
@@ -1743,7 +1759,7 @@ const createTodoFn = async (i, todo) => {
     if(!card.value){
       i.todos = [...i.todos, res.data];
     }
-    cannelCreateTodo();
+    cancelCreateTodo();
   }
   return res?.data;
 };
@@ -1754,7 +1770,7 @@ const keepCreate = async (i, todo) => {
     todo_add_ing.value = i.id;
   }
 };
-const cannelCreateTodo = () => {
+const cancelCreateTodo = () => {
   todo_params.value.data.content = "";
   todo_add_ing.value = void 0;
 };
