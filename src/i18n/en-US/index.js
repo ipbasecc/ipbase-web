@@ -9,6 +9,7 @@ export default {
   upload_file: "File upload",
   upload: "Upload",
   download: "Download",
+  close: 'close',
   channel_nav_posts: "Post",
   channel_nav_articles: "Article",
   channel_nav_videos: "Video",
@@ -677,4 +678,6 @@ export default {
   splite_kanban_right_view_tip: 'Please select a board from the list on the right side.',
   add_member_from_team: 'Add from team',
   add_member_by_invite_link: 'Add by invite link',
+
+  version_updated_notify: 'The application has been updated. Please use "Shift + F5" or "Ctrl + Shift + R" to reload the application.'
 }

@@ -29,13 +29,20 @@
         </div>
       </template>
       <q-space />
-      <span class="bg-black border flex flex-center full-width overflow-hidden q-px-xs radius-xs shadow-14 text-info unselected">{{ $time("HH:mm") }}</span>
+      <span class="bg-black border flex flex-center full-width overflow-hidden q-px-xs radius-xs shadow-14 text-info unselected font-smaller">
+        {{ $time('HH:mm') }}
+      </span>
     </div>
   </div>
 </template>
 <script setup>
-import { uiStore } from "src/hooks/global/useStore";
+import {onUnmounted} from 'vue';
+import {uiStore} from "src/hooks/global/useStore";
+import {$time, clearTimer} from 'src/hooks/useTime.js'
 
+onUnmounted(() => {
+  clearTimer();
+})
 </script>
 <style scoped>
 .container {

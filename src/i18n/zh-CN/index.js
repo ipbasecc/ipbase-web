@@ -9,6 +9,7 @@ export default {
   upload_file: "文件上传",
   upload: "上传",
   download: "下载",
+  close: '关闭',
   channel_nav_posts: "动态",
   channel_nav_articles: "文章",
   channel_nav_videos: "视频",
@@ -681,4 +682,6 @@ export default {
   send_friend_request: '发送好友请求',
   add_friend_msg_label: '留言',
   send_friend_dlog_title: '添加好友',
+
+  version_updated_notify: '应用已更新，请使用“Shift + F5”或“Ctrl + Shift + r”重载应用。'
 };

@@ -9,6 +9,7 @@ export default {
   upload_file: "Datei hochladen",
   upload: "Hochladen",
   download: "Herunterladen",
+  close: 'Schließen',
   channel_nav_posts: "Beiträge",
   channel_nav_articles: "Artikel",
   channel_nav_videos: "Videos",
@@ -677,4 +678,6 @@ export default {
   splite_kanban_right_view_tip: 'Bitte wählen Sie eine Tafel aus der Liste auf der rechten Seite.',
   add_member_from_team: 'Aus dem Team hinzufügen',
   add_member_by_invite_link: 'Durch Einladungslink hinzufügen',
+
+  version_updated_notify: 'Die Anwendung wurde aktualisiert. Bitte verwenden Sie "Shift + F5" oder "Strg + Umschalt + R" zum Neuladen der Anwendung.'
 };
