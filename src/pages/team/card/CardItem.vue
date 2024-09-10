@@ -8,7 +8,6 @@
       `"
     ref="cardDomRef"
     :style="`${$q.screen.gt.xs ? 'width: 320px' : 'width: 100%'}`"
-       @click="selectCard()"
   >
     <q-card v-if="cardRef?.error" bordered>
       <q-card-section>
@@ -669,26 +668,6 @@ const videoOption = {
 const isExternal = computed(() => teamStore.project?.isExternal || false);
 const isDilgMode = ref(true);
 const actived = ref(false);
-const selectedCard = ref(false);
-const hideCard = ref(false);
-const selectCard = () => {
-  selectedCard.value = cardRef.value
-}
-onKeyStroke('Delete', async (e) => {
-  e.preventDefault();
-  if(selectedCard.value?.id === cardRef.value?.id){
-    hideCard.value = true; // only for hide card now
-    await removeCard(selectedCard.value);
-  }
-}, { dedupe: true });
-onKeyStroke('Backspace', async (e) => {
-  e.preventDefault();
-  if(selectedCard.value?.id === cardRef.value?.id){
-    // console.log('ready for delete')
-    hideCard.value = true; // only for hide card now
-    await removeCard(selectedCard.value);
-  }
-}, { dedupe: true });
 
 watchEffect(() => {
   isDilgMode.value = !isExternal.value && !uiStore.isFocusMode
