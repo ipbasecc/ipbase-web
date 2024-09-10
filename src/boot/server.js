@@ -43,7 +43,7 @@ export async function $server() {
         progress: true,
         color: 'negative',
         message: $t('version_updated_notify'),
-        position: 'top',
+        position: 'bottom',
         actions: [
           { label: $t('close'), color: 'deep-orange', handler: () => { /* ... */ } }
         ]

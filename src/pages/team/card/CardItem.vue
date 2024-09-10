@@ -1,5 +1,5 @@
 <template>
-  <div v-if="cardRef.expand"
+  <div v-if="cardRef.expand && !hideCard"
     :key="`card-${cardRef.id}`"
     class="flex flex-center"
     :class="`
@@ -8,6 +8,7 @@
       `"
     ref="cardDomRef"
     :style="`${$q.screen.gt.xs ? 'width: 320px' : 'width: 100%'}`"
+       @click="selectCard()"
   >
     <q-card v-if="cardRef?.error" bordered>
       <q-card-section>
@@ -102,7 +103,7 @@
             {{ cardRef.expand === "collapse" ? $t('expand') : $t('collapse') }} {{ $t('card') }}
           </q-tooltip>
         </q-btn>
-        <q-chip v-if="multiple_versions" dense outline color="green" :label="$t('multiple_versions')" class="undrag cursor-pointer">
+        <q-chip v-if="multiple_versions && cardRef.type === 'classroom'" dense outline color="green" :label="$t('multiple_versions')" class="undrag cursor-pointer">
           <q-menu v-if="!uiStore.only_electron.includes(teamStore.navigation) || $q.platform.is.electron">
             <q-list bordered dense class="radius-sm q-pa-xs column gap-xs">
               <q-item
@@ -617,6 +618,7 @@ import FileViewer from "src/components/VIewComponents/FileViewer.vue";
 import CreateShare from "pages/team/components/CreateShare.vue";
 import DownloadApp from 'src/components/VIewComponents/DownloadApp.vue'
 import useOverview from 'src/pages/team/hooks/useOverview.js'
+import { onKeyStroke } from "@vueuse/core";
 
 const $q = useQuasar();
 const route = useRoute();
@@ -666,7 +668,28 @@ const videoOption = {
 
 const isExternal = computed(() => teamStore.project?.isExternal || false);
 const isDilgMode = ref(true);
-const actived = ref(false)
+const actived = ref(false);
+const selectedCard = ref(false);
+const hideCard = ref(false);
+const selectCard = () => {
+  selectedCard.value = cardRef.value
+}
+onKeyStroke('Delete', async (e) => {
+  e.preventDefault();
+  if(selectedCard.value?.id === cardRef.value?.id){
+    hideCard.value = true; // only for hide card now
+    await removeCard(selectedCard.value);
+  }
+}, { dedupe: true });
+onKeyStroke('Backspace', async (e) => {
+  e.preventDefault();
+  if(selectedCard.value?.id === cardRef.value?.id){
+    // console.log('ready for delete')
+    hideCard.value = true; // only for hide card now
+    await removeCard(selectedCard.value);
+  }
+}, { dedupe: true });
+
 watchEffect(() => {
   isDilgMode.value = !isExternal.value && !uiStore.isFocusMode
   actived.value = teamStore.thread?.id === cardRef.value.mm_thread?.id || teamStore.card?.id === cardRef.value.id;

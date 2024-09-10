@@ -158,6 +158,38 @@
             </template>
           </TodoPage>
         </template>
+        <template v-if="$q.screen.gt.xs">
+          <q-dialog v-model="uiStore.topPannel" seamless position="top" full-width>
+            <div class="q-pt-lg">
+            <q-card flat bordered @mouseenter="setTip" @mouseleave="showDeleteTip = false" class="radius-md">
+                <q-card-section style="height: 8rem;width: 50vw" class="border full-width">
+                  <VueDraggable v-model="_dropCards"
+                                group="tasks"
+                                ref="draggableRef"
+                                class="fit flex flex-center overflow-hidden op-1"
+                                @end="showDeleteTip = false"
+                  >
+                  </VueDraggable>
+                  <div class="absolute-full flex flex-center">
+                    <div class="absolute-full q-pa-md">
+                      <div class="radius-sm" :class="showDeleteTip ? 'bg-negative op-1 fit' : ''" />
+                    </div>
+                    <q-avatar v-if="!showDeleteTip" size="xl" color="red" text-color="white" icon="mdi-delete-forever" />
+                    <q-chip
+                        v-else
+                        color="negative"
+                        size="xl"
+                        text-color="white"
+                        icon="mdi-delete-forever"
+                        :label="$t('delete_card_warning')"
+                    />
+                  </div>
+                </q-card-section>
+            </q-card>
+            </div>
+            
+          </q-dialog>
+        </template>
       </q-page>
     </q-page-container>
   </q-layout>
@@ -181,6 +213,27 @@ import { ensureTrailingSlash } from 'src/hooks/utilits.js'
 import { getProjectNav } from "src/pages/team/components/SideNavigation.js";
 import { vElementSize } from '@vueuse/components'
 import { useQuasar } from 'quasar';
+import {VueDraggable} from "vue-draggable-plus";
+import { removeCard } from "src/hooks/team/useCard.js";
+
+const _dropCards = ref([]);
+const showDeleteTip = ref(false)
+const setTip = () => {
+  if(uiStore.draging) {
+    showDeleteTip.value = true
+  }
+}
+watchEffect(async () => {
+  if (_dropCards.value?.length > 0) {
+    try {
+      await Promise.all(_dropCards.value.map((card) => removeCard(card)));
+      _dropCards.value = [];
+    } catch (error) {
+      console.error("An error occurred while removing cards:", error);
+      // 这里可以添加更多的错误处理逻辑
+    }
+  }
+});
 
 const $q = useQuasar();
 const props = defineProps({

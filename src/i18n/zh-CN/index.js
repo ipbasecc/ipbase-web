@@ -683,5 +683,6 @@ export default {
   add_friend_msg_label: '留言',
   send_friend_dlog_title: '添加好友',
 
-  version_updated_notify: '应用已更新，请使用“Shift + F5”或“Ctrl + Shift + r”重载应用。'
+  version_updated_notify: '应用已更新，请使用“Shift + F5”或“Ctrl + Shift + r”重载应用。',
+  delete_card_warning: '删除当前内容'
 };

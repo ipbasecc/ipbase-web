@@ -761,8 +761,10 @@ const cardDelete = (card_id) => {
 const dragStart = (event) => {  
   teamStore.cardDragging = true;
   uiStore.draging = true;
+  uiStore.topPannel = true;
 };
 const dragEnd = () => {
+  uiStore.topPannel = false;
   // console.log('dragEnd');
   setTimeout(() => {
     teamStore.cardDragging = false;
