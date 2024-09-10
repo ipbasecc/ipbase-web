@@ -1,12 +1,55 @@
-import { defineStore } from "pinia";
+import {defineStore} from "pinia";
+import {Quasar} from 'quasar'
 
 export default defineStore("ui", {
   state: () => ({
+    apps: [
+      {
+        val: "teams",
+        label: 'team',
+        icon: "developer_board",
+        description: 'app_team_purpose',
+        to: "teams",
+        enable: true,
+      },
+      {
+        val: "chats",
+        label: 'chats',
+        icon: "mark_chat_read",
+        description: 'app_chat_purpose',
+        to: "chats",
+        enable: true,
+      },
+      {
+        val: "affairs",
+        label: 'affairs',
+        icon: "mdi-check-all",
+        description: 'app_affairs_purpose',
+        to: "affairs",
+        enable: true,
+      },
+      {
+        val: "threads",
+        label: 'threads',
+        icon: "mdi-forum",
+        description: 'app_threads_purpose',
+        to: "threads",
+        enable: !Quasar.screen?.gt?.xs,
+      },
+      {
+        val: "brand",
+        label: 'brand',
+        icon: "mdi-creation",
+        description: 'app_brand_purpose',
+        to: "brand",
+        enable: Quasar.screen?.gt?.xs
+      },
+    ],
+    app: void 0,
     axiosStauts: void 0,
     axiosStautsCode: void 0,
     axiosError: void 0,
     serverResfused: false,
-    app: void 0,
     pageLoaded: false,
     pageTitle: null,
     message: null,

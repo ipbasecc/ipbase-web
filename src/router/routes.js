@@ -165,7 +165,7 @@ const routes = [
         ]
       },
       {
-        path: "/teams/threads",
+        path: "/threads",
         component: () => import("pages/team/ThreadsPage.vue"),
         name: "team_threads_homepage",
         props: true,

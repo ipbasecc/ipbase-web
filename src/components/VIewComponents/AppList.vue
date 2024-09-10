@@ -81,99 +81,43 @@
 </template>
 
 <script setup>
-import {computed, onBeforeMount, ref, watchEffect} from "vue";
+import {computed, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import localforage from "localforage";
-
 import {teamStore, uiStore} from "src/hooks/global/useStore";
-import {useQuasar} from "quasar";
 
 import BrandMenu from "src/components/VIewComponents/BrandMenu.vue";
 import NotifyBlock from "src/components/VIewComponents/NotifyBlock.vue";
-
-const $q = useQuasar();
+import localforage from "localforage";
 
 const router = useRouter();
 const route = useRoute();
-const apps = [
-  {
-    val: "teams",
-    label: 'team',
-    icon: "developer_board",
-    description: 'app_team_purpose',
-    to: "teams",
-    enable: true,
-  },
-  {
-    val: "chats",
-    label: 'chats',
-    icon: "mark_chat_read",
-    description: 'app_chat_purpose',
-    to: "chats",
-    enable: true,
-  },
-  {
-    val: "affairs",
-    label: 'affairs',
-    icon: "mdi-check-all",
-    description: 'app_affairs_purpose',
-    to: "affairs",
-    enable: true,
-  },
-  {
-    val: "threads",
-    label: 'threads',
-    icon: "mdi-forum",
-    description: 'app_threads_purpose',
-    to: "teams/threads",
-    enable: !$q.screen.gt.xs,
-  },
-  {
-    val: "brand",
-    label: 'brand',
-    icon: "mdi-creation",
-    description: 'app_brand_purpose',
-    to: "brand",
-    enable: $q.screen.gt.xs
-  },
-];
-const enabledApps = computed(() => apps.filter((i) => i.enable));
-const active = ref();
-const routeName = computed(() => route.name);
-const defaultApp = ref("teams");
-onBeforeMount(() => {
-  if (routeName.value === "AffairsPage") {
-    defaultApp.value = "affairs";
-  } else if (routeName.value === "teams" || teamStore.navigation) {
-    defaultApp.value = "teams";
-  } else if (routeName.value === "team_threads_homepage") {
-    defaultApp.value = "threads";
-  } else if (routeName.value === "ChatsPage") {
-    defaultApp.value = "chats";
-  }  else if (routeName.value === "brand") {
-    defaultApp.value = "brand";
-  } else {
-    defaultApp.value = "teams";
-  }
-});
-
-const getFirstSegment = (fullPath) => {
-  // 使用 split 方法将 fullPath 按照 / 分割成数组
-  const segments = fullPath.split("/");
-  // 返回第一个非空的部分
-  return segments.find((segment) => segment !== "");
-};
+const enabledApps = computed(() => uiStore.apps?.filter((i) => i.enable));
 const to = async (i) => {
   uiStore.app = i.val;
   teamStore && teamStore.$reset_channel();
   await localforage.setItem("last_module", i.to);
   await router.push(`/${i.to}`);
 };
-const topLeave_byRoute = computed(() => getFirstSegment(route.fullPath));
-watchEffect(() => {
-  active.value = topLeave_byRoute.value;
-  uiStore.app = topLeave_byRoute.value;
-});
+
+/**
+ * use full path visitor, auto set uiStore.app to highlight navigation btn
+ * @param fullPath
+ * @returns {*}
+ */
+const getSegmentByPath = (fullPath, index) => {
+  // 使用 split 方法将 fullPath 按照 / 分割成数组
+  const segments = fullPath.split("/").filter((i) => i !== '');
+
+  // 返回第一个非空的部分
+  if(segments[index])
+  return segments[index] || null;
+};
+const topLeave_byRoute = computed(() => getSegmentByPath(route.fullPath, 0));
+watch(topLeave_byRoute, () => {
+  if(topLeave_byRoute.value && !uiStore.app){
+    uiStore.app = topLeave_byRoute.value;
+  }
+},{immediate:true})
 </script>
 
 <style lang="scss" scoped>
