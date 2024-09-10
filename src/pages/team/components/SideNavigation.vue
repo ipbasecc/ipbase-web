@@ -77,23 +77,23 @@
                   <q-list dense bordered class="radius-sm q-pa-xs">
                     <q-item
                       clickable
-                      auto-close
+                      v-close-popup
                       class="radius-xs"
                       @click.stop="setChannelType('O', i)"
                     >
                       <q-item-section side
-                        ><q-icon name="public" :color="`grey-1${$q.dark.mode ? '' : '0'}`"
+                        ><q-icon name="mdi-pound" :color="`grey-1${$q.dark.mode ? '' : '0'}`"
                       /></q-item-section>
                       <q-item-section>{{ $t('public_channel') }}</q-item-section>
                     </q-item>
                     <q-item
                       clickable
-                      auto-close
+                      v-close-popup
                       class="radius-xs"
                       @click.stop="setChannelType('P', i)"
                     >
                       <q-item-section side
-                        ><q-icon name="lock" :color="`grey-1${$q.dark.mode ? '' : '0'}`"
+                        ><q-icon name="mdi-pound-box" :color="`grey-1${$q.dark.mode ? '' : '0'}`"
                       /></q-item-section>
                       <q-item-section>{{ $t('private_channel') }}</q-item-section>
                     </q-item>
