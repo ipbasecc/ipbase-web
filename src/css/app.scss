@@ -735,6 +735,7 @@ input:-internal-autofill-selected {
   margin: 1.5rem 0;
   padding: 0.75rem 1rem;
   border: 1px solid #333;
+  overflow: auto;
 }
 .body--light .tiptap pre {
   background: #f8f8f8;
