@@ -1,5 +1,5 @@
-import {ref} from 'vue';
-import {date} from "quasar";
+import { ref } from 'vue';
+import { date } from "quasar";
 
 let timer; // 用于存储定时器的变量
 export function $time(_formate) {

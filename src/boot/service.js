@@ -1,5 +1,5 @@
-import {boot} from "quasar/wrappers";
-import {Platform} from "quasar";
+import { boot } from "quasar/wrappers";
+import { Platform } from "quasar";
 
 export function $pathService(_path) {
   const appURI = process.env.APP_URI;

@@ -36,10 +36,9 @@
   </div>
 </template>
 <script setup>
-import {onUnmounted} from 'vue';
-import {uiStore} from "src/hooks/global/useStore";
-import {$time, clearTimer} from 'src/hooks/useTime.js'
-
+import { onUnmounted } from 'vue';
+import { uiStore } from "src/hooks/global/useStore";
+import { $time, clearTimer } from 'src/hooks/useTime.js'
 onUnmounted(() => {
   clearTimer();
 })

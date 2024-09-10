@@ -87,7 +87,7 @@ export default defineStore("user", {
     storages: null,
     todogroups: void 0,
     affairsFilters: null,
-    affairsFilterIDs: null,
+    affairsFilterIDs: [],
   }),
   actions: {
     $reset() {

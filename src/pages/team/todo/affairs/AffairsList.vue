@@ -22,7 +22,7 @@ const options = computed(() => {
   return userStore.todogroups?.map((group) => {
     return {
       id: group.id,
-      show: userStore.affairsFilterIDs?.includes(group.id),
+      show: userStore.affairsFilterIDs?.includes(group.id) || true,
       label: group.name,
       value: group.id,
     };

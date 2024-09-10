@@ -275,16 +275,16 @@
 </template>
 
 <script setup>
-import {computed, inject, onBeforeMount, ref, watch} from "vue";
-import {updateUser} from "src/api/strapi.js";
+import {ref, computed, watch, inject, onBeforeMount, onMounted} from "vue";
+import { updateUser } from "src/api/strapi.js";
 import UploadFile from "src/components/Utilits/UploadFile.vue";
 // import UpdateAvatar from "src/pages/Chat/components/user/Settings/UpdateAvatar.vue";
 import UpdateAvatar from "src/pages/team/components/user/Settings/UpdateAvatar.vue";
 
-import {useQuasar} from "quasar";
-import {useI18n} from "vue-i18n";
+import { useQuasar } from "quasar";
+import { useI18n } from "vue-i18n";
 import localforage from "localforage";
-import {userStore} from "src/hooks/global/useStore";
+import { userStore } from "src/hooks/global/useStore";
 
 const props = defineProps({
   styleClass: {

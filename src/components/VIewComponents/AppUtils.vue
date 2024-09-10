@@ -88,8 +88,8 @@
   </div>
 </template>
 <script setup>
-import {computed, onBeforeMount, ref} from "vue";
-import {useI18n} from "vue-i18n";
+import { ref, computed, onBeforeMount } from "vue";
+import { useI18n } from "vue-i18n";
 import AppManual from "src/components/VIewComponents/AppManual.vue";
 import AppShortcut from "src/components/VIewComponents/AppShortcut.vue";
 import localforage from "localforage";

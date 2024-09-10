@@ -18,8 +18,7 @@
   </template>
   
   <script setup>
-  import {ref} from 'vue'
-
+  import { ref } from 'vue'
   const slide = ref(1)
   const contral = ref(false)
   </script>

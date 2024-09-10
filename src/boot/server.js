@@ -1,7 +1,8 @@
 import localforage from "localforage";
-import {ref} from "vue";
-import {Notify, Platform} from 'quasar'
+import { ref } from "vue";
+import { Notify } from 'quasar'
 import {i18n} from 'src/boot/i18n.js';
+import { Platform } from 'quasar'
 
 const $t = i18n.global.t;
 
