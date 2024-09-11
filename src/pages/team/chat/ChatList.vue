@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { uniqueById } from "src/hooks/utilits.js";
 import { createDirect, getChannelByID } from "src/api/mattermost.js";
@@ -155,6 +155,26 @@ watch(
   },
   { immediate: true, deep: false }
 );
+
+/**
+ * 如果用户使用URL地址直接访问到聊天页面
+ * 但是URL中没有指定频道ID，这里处理默认逻辑
+ */
+onMounted(async() => {
+  await nextTick();
+  console.log(teamStore.init);
+  const _project_id = computed(() => route.params?.project_id || null);
+  if(_project_id.value && !project.value && teamStore.init?.default_team?.projects?.length > 0) {
+    teamStore.project = teamStore.init?.default_team?.projects.find(i => i.id == _project_id.value);
+    const _mm_channel = teamStore.project?.mm_channel;
+    
+    if(_mm_channel) {
+      await gotoChannel(_mm_channel);
+    }
+  } else if(project_mm_channel.value) {
+    await gotoChannel(project_mm_channel.value);
+  }
+})
 </script>
 
 <style lang="scss" scoped></style>
