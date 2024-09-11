@@ -35,6 +35,8 @@ const content_channging = ref(false);
 
 const emit = defineEmits(["documentChanged"]);
 const updateDocumentFn = async (val) => {
+  console.log('updateDocumentFn',val);
+  
   if (!val) return;
   let params = {
     project_id: teamStore.project.id,

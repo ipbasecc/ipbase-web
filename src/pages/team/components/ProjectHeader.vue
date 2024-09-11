@@ -9,7 +9,6 @@
       <q-btn v-else flat icon="mdi-chevron-left" padding="xs" @click="backHome()" />
       <template v-if="teamStore.project">
         <ProjectNavigation />
-        {{teamStore.navigation}}
         <q-space />
         <MembersIndicator
           v-if="teamStore?.project?.id && membersForAvatar && $q.screen.gt.xs"

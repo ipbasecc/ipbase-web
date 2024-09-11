@@ -73,7 +73,7 @@ const routes = [
                   },
                   {
                     path: "/teams/projects/:project_id/document",
-                    component: () => import("src/pages/team/document/DocumentPage.vue"),
+                    component: () => import("src/pages/team/document/DocumentBody.vue"),
                     name: "team_project_document_homepage",
                     props: true,
                   },

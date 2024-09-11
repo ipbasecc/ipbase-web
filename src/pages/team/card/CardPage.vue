@@ -348,8 +348,10 @@
               <template v-slot:after>
                 <q-scroll-area class="fit">
                   <DocumentBody
-                    v-if="document_id"
-                    :document_id="document_id.toString()"
+                    v-if="teamStore.active_document"
+                    :current_document="teamStore.active_document"
+                    :withSaveBtb="true"
+                    :withImageBtb="true"
                     :by_info="byInfo"
                   />
                 </q-scroll-area>
@@ -507,7 +509,7 @@ import MemberManager from "src/pages/team/settings/MemberManager.vue";
 import MembersIndicator from "src/pages/team/components/MembersIndicator.vue";
 import KanbanContainer from "./KanbanContainer.vue";
 import DocumentList from "src/pages/team/document/DocumentList.vue";
-import DocumentBody from "src/pages/team/document/DocumentBody.vue";
+import DocumentBody from "src/pages/team/card/components/DocumentPage.vue";
 import StoragePage from "src/pages/team/storage/StoragePage.vue";
 import SchedulePage from "src/pages/team/schedule/SchedulePage.vue";
 
@@ -772,6 +774,7 @@ watch(
 
 const current_document = ref();
 onBeforeUnmount(() => {
+  teamStore.card = null;
   current_document.value = null;
   if (isIntro.value) {
     teamStore.project = null;

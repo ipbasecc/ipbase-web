@@ -1,9 +1,11 @@
 <template>
-  <DocumentTiptap v-if="document" :document :by_info :contentStyle />
+  <DocumentTiptap v-if="teamStore.active_document" :key="teamStore.active_document.id"
+    :document="teamStore.active_document" :by_info :contentStyle
+  />
 </template>
 
 <script setup>
-import {computed, ref, toRefs, watch, watchEffect} from "vue";
+import {computed, ref, toRefs, watch, watchEffect, onBeforeUnmount} from "vue";
 import {getDocument} from "src/api/strapi/project.js";
 import {mm_wsStore, teamStore, userStore} from "src/hooks/global/useStore.js";
 import DocumentTiptap from "./DocumentTiptap.vue";
@@ -37,26 +39,30 @@ const contentStyle = computed(() => {
 
 const document = ref();
 watchEffect(async () => {
-  if (document_id.value && teamStore) {
-    if (by_info.value.by === "project") {
-      by_info.value.project_id = teamStore.project?.id;
-    } else if (by_info.value.by === "card") {
-      by_info.value.card_id = teamStore.card?.id;
-    } else {
-      by_info.value.user_id = userStore.userId;
-    }
-    if (teamStore.card?.card_documents) {
-      document.value = teamStore.card.card_documents?.find(
-        (i) => i.id === Number(document_id.value)
-      );
-    } else {
-      const fetch = await getDocument(document_id.value);
-      if (fetch?.data) {
-        document.value = fetch.data;
-      }
-    }
+  if (by_info.value.by === "project") {
+    by_info.value.project_id = teamStore.project?.id;
+  } else if (by_info.value.by === "card") {
+    by_info.value.card_id = teamStore.card?.id;
+  } else {
+    by_info.value.user_id = userStore.userId;
   }
 });
+onBeforeUnmount(() => {
+  teamStore.active_document = null;
+});
+// watch([document_id, document], async () => {
+//   const fetchDoucment = async (_docid) => {
+//     const {data} = await getDocument(_docid);
+//     if (data) {
+//       return data;
+//     }
+//   }
+//   if (document_id.value && !document.value) {
+//     console.log("document_id.value", document_id.value);
+    
+//     document.value = await fetchDoucment(document_id.value);
+//   }
+// },{immediate:true,deep:false})
 watch(
   mm_wsStore,
   async () => {

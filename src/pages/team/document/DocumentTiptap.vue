@@ -1,6 +1,7 @@
 <template>
   <TipTap
     v-if="by_info && document"
+    :key="document.id"
     :jsonContent="document.jsonContent"
     :editable="
       !teamStore.shareInfo &&
@@ -20,7 +21,7 @@
 </template>
 
 <script setup>
-import {computed, onBeforeUnmount, ref, toRefs, watch} from "vue";
+import {computed, ref, toRefs, watch, watchEffect, onBeforeUnmount} from "vue";
 import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
 
 import {updateDocument} from "src/api/strapi/project.js";
@@ -34,12 +35,6 @@ const $t = i18n.global.t;
 
 const userId = computed(() => teamStore.init?.id);
 const props = defineProps({
-  document: {
-    type: Object,
-    default() {
-      return {};
-    },
-  },
   by_info: {
     type: Object,
     default: null,
@@ -50,7 +45,11 @@ const props = defineProps({
   },
 });
 
-const { document, by_info } = toRefs(props);
+const { by_info } = toRefs(props);
+const document = ref(null);
+watchEffect(() => {
+  document.value = teamStore.active_document;
+})
 
 const updateChatMsg = ref({});
 const jsonContent = ref({});
@@ -77,6 +76,7 @@ const updateDocumentFn = async () => {
 
   let res = await updateDocument(document.value.id, params);
   if (res) {
+    teamStore.active_document.jsonContent = res.data.jsonContent;
     updateChatMsg.value = {
       props: {
         strapi: {
@@ -93,6 +93,7 @@ const updateDocumentFn = async () => {
 
     if (by_info.value.project_id) {
       updateChatMsg.value.body = `${userStore.me.username} ${$t('changed_project_props')}'${teamStore.project.name}' ${$t('inner_document')}'${document.value.title}' ${$t('of_content')}`;
+      await send_chat_Msg(updateChatMsg.value);
     }
     if (by_info.value.card_id) {
       updateChatMsg.value.body = `${userStore.me.username} ${$t('changed_card_props')}'${teamStore.card.name}' ${$t('inner_document')}'${document.value.title}'${document.value.title}' ${$t('of_content')}`;
@@ -105,9 +106,6 @@ const updateDocumentFn = async () => {
     }, 3000);
   }
 };
-onBeforeUnmount(() => {
-  send_chat_Msg(updateChatMsg.value);
-});
 
 const count = ref(15);
 let intervalId = null;
@@ -130,8 +128,14 @@ const tiptapBlur = async (val) => {
   jsonContent.value = val;
   await updateDocumentFn(val);
 };
-const send_chat_Msg = (MsgContent) => {
-  send_MattersMsg(MsgContent);
+onBeforeUnmount(async() => {
+  if(updateChatMsg.value){
+    await send_chat_Msg(updateChatMsg.value);
+  }
+});
+const send_chat_Msg = async (MsgContent) => {
+  await send_MattersMsg(MsgContent);
+  updateChatMsg.value = null;
 };
 
 const process_documentContent_change = (val) => {

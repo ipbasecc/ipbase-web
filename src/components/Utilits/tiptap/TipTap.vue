@@ -257,6 +257,8 @@ const cleanHtmlHandler = (val) => {
 };
 const init = () => {
   editor.value = new Editor({
+    content: tiptapContent.value,
+    editable: isEditable.value,
     autofocus: props.autofocus,
     editorProps: {
       clipboardTextParser(text, $context) {
@@ -280,8 +282,6 @@ const init = () => {
       }),
       Markdown,
     ],
-    editable: isEditable.value,
-    content: tiptapContent.value,
     // triggered on every change
     onUpdate: () => {
       tiptapUpdate();
@@ -361,7 +361,6 @@ watch(
       tiptapContent.value =
         props.need === "json" ? jsonContentRef.value : contentRef.value;
       init();
-      // console.log('reINIT');
     }
   },
   { immediate: true, deep: false }
@@ -372,6 +371,7 @@ const json = computed(() => editor.value && editor.value.getJSON());
 const html = computed(() => editor.value && editor.value.getHTML());
 
 const tiptapBlur = async () => {
+  
   emit("tiptapClose", html.value);
   const cur = JSON.stringify(json.value);
   const prv = JSON.stringify(tiptapContent.value);

@@ -61,7 +61,9 @@ export default defineStore("team", {
     isExternal: false,
     isFocusMode: false,
     shareInfo: null,
-    status: void 0
+    status: void 0,
+    documents: [],
+    active_document: null,
   }),
   actions: {
     $reset() {

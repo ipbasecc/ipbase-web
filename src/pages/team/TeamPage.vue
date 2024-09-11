@@ -42,6 +42,7 @@
           :by_info="byInfo"
         />
         <DocumentList v-else-if="teamStore.navigation === 'document'"
+          :sortAuth="useAuths('modify', ['project'])"
           :documents="teamStore.project.project_documents"
           :by_info="byInfo"
         />
@@ -106,6 +107,7 @@
               />
               <DocumentList
                   v-if="teamStore.navigation === 'document'"
+                  :sortAuth="useAuths('modify', ['project'])"
                   :documents="teamStore.project?.project_documents"
                   :by_info="byInfo"
               />

@@ -586,7 +586,7 @@ export async function updateCardRole(card_id, parmars) {
   }
 }
 
-// 更新文档
+// 获取文档
 export async function getDocument(document_id) {
   try {
     const res = await api.get(`/documents/${document_id}`);

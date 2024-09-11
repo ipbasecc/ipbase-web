@@ -136,19 +136,18 @@
 </template>
 
 <script setup>
-import {ref, toRefs, watchEffect, watch, onBeforeMount, onMounted, nextTick} from 'vue';
+import {ref, toRefs, computed, watch, onBeforeMount, onMounted, nextTick} from 'vue';
 import { useRouter, useRoute } from "vue-router";
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import { VueDraggable } from 'vue-draggable-plus'
-import { updateCard } from "src/api/strapi/project.js";
-
 import {
+  updateCard,
   createDocument,
   deleteDocument,
   updateDocument,
   updateProject,
+  getDocument
 } from "src/api/strapi/project.js";
-
 import {userStore, mm_wsStore, teamStore, uiStore} from 'src/hooks/global/useStore.js';
 
 import { i18n } from 'src/boot/i18n.js';
@@ -157,12 +156,7 @@ const $t = i18n.global.t;
 
 const router = useRouter();
 const route = useRoute();
-const actived_id = ref();
-watchEffect(() => {
-  if (!teamStore.card && !actived_id.value && route.params?.document_id) {
-    actived_id.value = Number(route.params.document_id);
-  }
-});
+const actived_id = computed(() => teamStore.active_document?.id);
 
 const props = defineProps({
   by_info: {
@@ -205,29 +199,52 @@ const findIcon_byType = (type) => {
 };
 
 const unEnter = ref(false);
-const enterDocument = (element) => {
+const activeDocument = async (document_id) => {
+    const {data} = await getDocument(document_id);
+    if(data) {
+      if(teamStore.card) {
+        teamStore.card.card_documents = [data];
+      } else if (teamStore.project) {
+        teamStore.project.project_documents = [data];
+      }
+      await enterDocument(data);
+    }
+}
+const enterDocument = async (element) => {
   if (unEnter.value) return;
-  if (by_info.value?.project_id) {
+  /**
+   * 如果卡片弹框开启状态，从文档列表中获取并激活
+   * 否则，从项目文档列表中获取并激活
+   */
+  if(teamStore.card?.card_documents?.length > 0){    
+    teamStore.active_document = teamStore.card.card_documents.find((i) => i.id === element.id);
+  } else if(teamStore.project?.project_documents?.length > 0) {
+    teamStore.active_document = teamStore.project?.project_documents?.find((i) => i.id === element.id);
     router.push(
       `/teams/projects/${teamStore.project?.id}/document/${element.id}`
     );
     uiStore.showMainContentList = false;
-  }
-  if (by_info.value?.card_id) {
-    actived_id.value = element.id;
-    emit("enterDocument", element.id);
-  }
-  if (by_info.value.user_id) {
+  } else {
+    /**
+     * 此种情况应该不会出现，除非用户端非预料问题，直接获取并激活
+     */
+    await activeDocument(element.id)
   }
 };
+onMounted(async() => {
+  await nextTick();
+  if(route.params.document_id && !teamStore.active_document) {
+    await activeDocument(route.params.document_id)
+  }
+})
 
 const loading = ref(false);
 const creating = ref(false);
 const createDocument_title = ref();
 const process_createdData = (val) => {
   if (by_info.value.project_id) {
-    if (!teamStore.project?.project_documents) {
-      teamStore.project.project_documents = [];
+    if(!teamStore.project?.project_documents){
+      teamStore.project.project_documents = []
     }
     if (
       !teamStore.project?.project_documents?.map((i) => i.id)?.includes(val.id)
@@ -236,10 +253,14 @@ const process_createdData = (val) => {
     }
   }
   if (by_info.value?.card_id) {
-    if (!teamStore.card?.card_documents) {
-      teamStore.card.card_documents = [];
+    if(!teamStore.card?.card_documents){
+      teamStore.card.card_documents = []
     }
-    teamStore.card.card_documents.push(val);
+    if (
+      !teamStore.card?.card_documents?.map((i) => i.id)?.includes(val.id)  
+    ) {
+      teamStore.card.card_documents.push(val);
+    }
   }
   if (by_info.value.user_id) {
   }

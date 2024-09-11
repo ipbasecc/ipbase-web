@@ -522,7 +522,6 @@ watch(
       if (isCurClint) return;
       let strapi = post?.props?.strapi;
       if (strapi) {
-        console.log(strapi.data);
         if (
           strapi.data?.is == by_info.value?.by &&
           strapi.data?.project_id == teamStore.project?.id &&

@@ -187,7 +187,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed, nextTick } from "vue";
+import { ref, watch, computed, nextTick, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import BoradToggler from "./BoradToggler.vue";
 import KanbanListitem from "src/pages/team/kanban/KanbanListitem.vue";
@@ -229,10 +229,10 @@ const multiple_boards = computed(
 const isEmpty = computed(() => boards.value?.length === 0);
 const navigation = computed(() => teamStore.navigation);
 watch(
-  navigation,
+  [navigation, boards],
   async () => {
     if (boards.value?.length > 0) {
-      if(teamStore.board.type !== navigation.value) {
+      if(teamStore.board?.type !== navigation.value) {
         const _boards = teamStore.project?.boards?.filter(i => i.type === navigation.value) || []
         teamStore.board = _boards[0];
       }
@@ -248,6 +248,17 @@ watch(
     }
   },{ immediate: true, deep: true }
 );
+onMounted(async() => {
+  await nextTick();
+  /**
+   * 如果用户直接使用URL访问，此时还没有初始化store数据
+   * 在这里初始化
+   * teamStore.project赋值后，hook中的watchEffect会自动触发，之后本组件watch也会触发更新
+   */
+  if (!teamStore.project && route.params?.project_id) {
+    teamStore.project = teamStore.init?.default_team?.projects?.find(i => i.id === Number(route.params?.project_id));
+  }
+})
 
 const $q = useQuasar();
 const loading = ref(false);

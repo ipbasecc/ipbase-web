@@ -58,8 +58,8 @@ const props = defineProps({
     default: "",
   },
   storage_id: {
-    type: Number,
-    default: NaN,
+    type: String,
+    default: null,
   },
   by: {
     type: String,
