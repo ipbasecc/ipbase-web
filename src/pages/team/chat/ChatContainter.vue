@@ -269,6 +269,7 @@ import {removeLastChannel} from "pages/team/chat/TeamChat";
 import {useQuasar} from "quasar";
 import {i18n} from 'src/boot/i18n.js';
 import {useRouter} from "vue-router";
+import { __viewChannel } from "src/hooks/mattermost/useMattermost.js";
 
 const router = useRouter();
 const $t = i18n.global.t;
@@ -486,6 +487,7 @@ onMounted(async () => {
   uiStore.hide_footer = true
   messages.value =  await initCache();
   await initMsgs();
+  
   // 如果通过连接直接访问到聊天界面，需要获取Strapi频道、Mattermost频道
   if(!teamStore.mm_channel){
     const res = await getMmChannelByID(channel_id.value);
@@ -493,6 +495,8 @@ onMounted(async () => {
       teamStore.mm_channel = res.data;
     }
   }
+
+  await __viewChannel(channel_id);
 });
 
 const cleanCacheReInit = async () => {

@@ -255,7 +255,7 @@ const UpdateChannelParams = ref({
   },
 });
 
-const motifyChannelNavigation = () => {
+const motifyChannelNavigation = async () => {
   await nextTick();
   UpdateChannelParams.value.data.navigation = navigation.value;
 };
