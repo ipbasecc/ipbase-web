@@ -160,9 +160,9 @@
         </template>
         <template v-if="$q.screen.gt.xs">
           <q-dialog v-model="uiStore.topPannel" seamless position="top" full-width>
-            <div class="q-pt-lg">
+            <div class="q-pt-md">
             <q-card flat bordered @mouseenter="setTip" @mouseleave="showDeleteTip = false" class="radius-md">
-                <q-card-section style="height: 8rem;width: 50vw" class="border full-width">
+                <q-card-section style="height: 4rem;width: 50vw" class="border full-width">
                   <VueDraggable v-model="_dropCards"
                                 group="tasks"
                                 ref="draggableRef"
@@ -171,14 +171,14 @@
                   >
                   </VueDraggable>
                   <div class="absolute-full flex flex-center">
-                    <div class="absolute-full q-pa-md">
+                    <div class="absolute-full q-pa-xs">
                       <div class="radius-sm" :class="showDeleteTip ? 'bg-negative op-1 fit' : ''" />
                     </div>
-                    <q-avatar v-if="!showDeleteTip" size="xl" color="red" text-color="white" icon="mdi-delete-forever" />
+                    <q-avatar v-if="!showDeleteTip" size="lg" color="red" text-color="white" icon="mdi-delete-forever" />
                     <q-chip
                         v-else
                         color="negative"
-                        size="xl"
+                        size="md"
                         text-color="white"
                         icon="mdi-delete-forever"
                         :label="$t('delete_card_warning')"
