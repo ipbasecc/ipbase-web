@@ -59,29 +59,18 @@
       class="shadow-24 radius-sm"
     >
       <q-list bordered dense class="radius-sm q-pa-xs">
-        <draggable
-          v-if="!isEmpty"
-          :list="boards"
-          animation="300"
-          :delay="30"
-          :fallbackTolerance="2"
-          :force-fallback="true"
-          :fallbackOnBody="true"
-          :item-key="(key) => key"
-          :sort="true"
-          :touchStartThreshold="2"
-          :scroll="true"
-          handle=".dragBar"
-          ghost-class="ghostColumn"
-          chosen-class="chosenGroupClass"
-          drag-class="dragClass"
+        <VueDraggable  v-if="!isEmpty" v-model="boards"
+          :animation="300" :delay="1" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
           group="boards"
+          chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
+          handle=".dragBar"
           class="q-py-xs radius-sm column gap-sm no-wrap q-pa-xs"
-          @change="dragBoard_sort"
+          @sort="dragBoard_sort"
         >
-          <template #item="{ element }">
+          <template v-for="element in boards" :key="element.id">
             <div
               class="row no-wrap gap-sm items-center radius-xs border q-py-sm q-pl-md q-pr-sm hovered-item"
+              :class="element.id === teamStore.board?.id ? 'bg-primary text-white' : ''"
             >
               <q-icon
                 name="task_alt"
@@ -155,7 +144,7 @@
               </q-btn>
             </div>
           </template>
-        </draggable>
+        </VueDraggable>
         <template v-if="useAuths('create', ['board'])">
           <q-separator v-if="!isEmpty" spaced />
           <q-item
@@ -202,7 +191,7 @@
 </template>
 
 <script setup>
-import { ref, toRefs, watch, computed } from "vue";
+import { ref, toRefs, watch, computed, nextTick } from "vue";
 import {
   updateProject,
   createBoard,
@@ -212,6 +201,7 @@ import {
 import { useRouter } from "vue-router";
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import draggable from "vuedraggable";
+import { VueDraggable } from 'vue-draggable-plus'
 import { teamStore, userStore, mm_wsStore } from "src/hooks/global/useStore.js";
 import { boards } from "./BoradsList.js";
 import { i18n } from 'src/boot/i18n.js';
@@ -332,8 +322,16 @@ const deleteBoardFn = async (board_id) => {
   }
 };
 const dragBoard_sort = async () => {
+  await nextTick();
+  const rebuildallSort = () => {
+    const newSort = boards.value.map((i) => i.id);
+    let allSort_after = teamStore.project.boards.map((i) => i.id);
+    allSort_after = allSort_after.filter((i) => !newSort.includes(i));
+    allSort_after = [...newSort, ...allSort_after];
+    return allSort_after;
+  }
   let params = {
-    boards: teamStore.project.boards.map((i) => i.id),
+    boards: rebuildallSort(),
   };
   let res = await updateProject(teamStore.project.id, params);
   if (res) {

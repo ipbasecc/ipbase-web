@@ -1,4 +1,4 @@
-import { computed } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import localforage from "localforage";
 import { groupCreate, kanbanCreate } from "src/api/strapi/project.js";
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
@@ -92,16 +92,10 @@ export const board_type = computed(() => {
   }
   return _type;
 });
-export const boards = computed(() => {
-  let _boards = [];
-  if (teamStore.project?.boards?.length > 0) {
-    _boards = teamStore.project?.boards.filter(
-      (i) => i.type === board_type.value
-    );
-  }
-
-  return _boards;
-});
+export const boards = ref([]);
+watchEffect(() => {
+  boards.value = teamStore.project?.boards?.filter((i) => i.type === board_type.value)
+})
 
 const send_chat_Msg = async (MsgContent) => {
   await send_MattersMsg(MsgContent);

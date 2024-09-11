@@ -232,7 +232,9 @@ watch(
   async () => {
     if (Array.isArray(boards.value)) {
       if (boards.value.length > 0) {
-        teamStore.board = boards.value[0];
+        if(!teamStore.board) {
+          teamStore.board = boards.value[0];
+        }
       } else {
         teamStore.board = null;
         getLastKanban(teamStore.project?.id, board_type.value).then((res) => {

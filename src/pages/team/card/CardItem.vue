@@ -1,5 +1,5 @@
 <template>
-  <div v-if="cardRef.expand && !hideCard"
+  <div v-if="cardRef.expand"
     :key="`card-${cardRef.id}`"
     class="flex flex-center"
     :class="`
