@@ -384,7 +384,7 @@ const dragCard_sort = async () => {
           data: {
             is: "column",
             by_user: userStore.userId,
-            column_id: kanban_idRef.value.id,
+            column_id: columnRef.value?.id,
             action: "orderCard",
             order: params.data.cards,
           },
@@ -691,20 +691,55 @@ watch(
         }
         if (
           strapi.data?.is === "column" &&
-          strapi.data.column_id === columnRef.value.id &&
+          strapi.data.column_id === columnRef.value?.id &&
           strapi.data.action === "orderCard"
         ) {
+          console.log('orderCard');
+          
+          await nextTick();
           const order = strapi.data.order;
-          if (!order || order?.length === 0) return;
-          const _column_cards = columnRef.value.cards.map((i) => i.id); // IDs
-          if (!_column_cards || _column_cards?.length === 0) return;
-          if (order === _column_cards) return; // 排序没变
+          let _all_cards = teamStore.kanban.columns?.map(column => column.cards).flat();
 
-          const _all_cards = teamStore.kanban?.columns?.map((i) => i.cards);
-          if (!_all_cards || _all_cards?.length === 0) return;
-          columnRef.value.cards = order.map((i) =>
-            _all_cards.find((j) => j.id === i)
-          );
+          // 如果 从 分栏 a 中移动卡片到 分栏 b,
+          // a 的移出行为将导致 store 中 card 被移出
+          // b 重新获取 all_cards时将不会得到被移出的卡片
+          // 所以 将a中被移出的卡片添加到流浪卡片中
+          // b 在获取all_cards后检查流浪卡片是否存在，如果存在则添加到all_cards中
+          const _notExit_cards_inOrder = columnRef.value.cards.filter(i => !order.includes(i.id));
+          if(_notExit_cards_inOrder.length > 0){
+            teamStore.kanban.wandringCards = _notExit_cards_inOrder;
+          }
+          if(teamStore.kanban.wandringCards){
+            _all_cards = [..._all_cards, ...teamStore.kanban.wandringCards];
+          }
+          const syncCards = async (_order) => {
+            const targetIds = _order;
+            // 创建一个包含所有异步操作的promise数组
+            const cardPromises = targetIds.map(async (id) => {
+              const card = _all_cards.find(i => i.id === id);
+              if (!card) {
+                const res = await findCard(id);
+                if (res?.data) {
+                  return res.data;
+                } else {
+                  return {
+                    id: -1,
+                    error: 'card_fetch_error'
+                  };
+                }
+              }
+              return card;
+            });
+
+            // 使用Promise.all等待所有异步操作完成
+            const cards = await Promise.allSettled(cardPromises);
+            console.log(cards);
+            
+
+            // 更新卡片数组
+            columnRef.value.cards = cards.map(i => i.status === "fulfilled" && i.value);
+          }
+          await syncCards(order);
         }
       }
     }
