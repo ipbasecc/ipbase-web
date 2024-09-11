@@ -227,27 +227,26 @@ const multiple_boards = computed(
 );
 
 const isEmpty = computed(() => boards.value?.length === 0);
+const navigation = computed(() => teamStore.navigation);
 watch(
-  boards,
+  navigation,
   async () => {
-    if (Array.isArray(boards.value)) {
-      if (boards.value.length > 0) {
-        if(!teamStore.board) {
-          teamStore.board = boards.value[0];
-        }
-      } else {
-        teamStore.board = null;
-        getLastKanban(teamStore.project?.id, board_type.value).then((res) => {
-          if (res) {
-            removeLastKanban(teamStore.project?.id, board_type.value);
-          }
-        });
-        teamStore.kanban_id = null;
-        teamStore.kanban = null;
+    if (boards.value?.length > 0) {
+      if(teamStore.board.type !== navigation.value) {
+        const _boards = teamStore.project?.boards?.filter(i => i.type === navigation.value) || []
+        teamStore.board = _boards[0];
       }
+    } else {
+      teamStore.board = null;
+      getLastKanban(teamStore.project?.id, board_type.value).then((res) => {
+        if (res) {
+          removeLastKanban(teamStore.project?.id, board_type.value);
+        }
+      });
+      teamStore.kanban_id = null;
+      teamStore.kanban = null;
     }
-  },
-  { immediate: true, deep: true }
+  },{ immediate: true, deep: true }
 );
 
 const $q = useQuasar();
