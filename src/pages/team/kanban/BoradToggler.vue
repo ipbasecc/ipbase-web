@@ -200,7 +200,6 @@ import {
 } from "src/api/strapi/project.js";
 import { useRouter } from "vue-router";
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
-import draggable from "vuedraggable";
 import { VueDraggable } from 'vue-draggable-plus'
 import { teamStore, userStore, mm_wsStore } from "src/hooks/global/useStore.js";
 import { boards } from "./BoradsList.js";

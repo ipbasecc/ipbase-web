@@ -1,222 +1,213 @@
 <template>
   <q-scroll-area v-if="schedules" class="fit">
     <q-list dense>
-      <draggable
-        :list="schedules"
-        animation="300"
-        :fallbackTolerance="2"
-        :force-fallback="true"
-        :fallbackOnBody="true"
-        :item-key="(key) => key"
-        :sort="true"
-        :touchStartThreshold="4"
-        :scroll="true"
-        ghost-class="ghostColumn"
-        chosen-class="chosenGroupClass"
-        drag-class="dragClass"
+      <VueDraggable v-model="schedules"
+        :animation="300" :delay="1" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+        group="schedule"
+        chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
         handle=".dragBar"
-        group="groups"
         class="radius-sm column no-wrap q-pa-xs"
-        @change="orderSchedule(schedules)"
+        @sort="orderSchedule"
       >
-        <template #item="{ element }">
-          <q-item
-            clickable
-            v-ripple
-            class="col radius-xs dragBar hovered-item overflow-hidden"
-            :class="actived_id === element.id ? 'border active-sublistitem' : 'border-placeholder'"
-            :active-class="` ${
-              findColor_byIcon(element.icon)
-                ? `text-${findColor_byIcon(element.icon)}`
-                : `${$q.dark.mode ? 'text-grey-3' : 'text-grey-9'}`
-            }`"
-            :active="actived_id === element.id"
-            style="min-height: 40px;"
-          >
-            <q-item-section side @click="enterSchedule(element)">
-              <q-icon
-                :name="element.icon"
-                :color="findColor_byIcon(element.icon)"
-              >
-                <q-menu class="radius-sm">
-                  <q-list bordered dense class="q-pa-xs radius-sm">
-                    <q-item
-                      v-for="icon in icons"
-                      :key="icon.val"
-                      clickable
-                      v-close-popup
-                      class="radius-xs"
-                      @click="setIcon(element, icon.val)"
-                    >
-                      <q-item-section side
-                        ><q-icon :name="icon.val" :color="icon.color"
-                      /></q-item-section>
-                      <q-item-section>{{ $t(icon.tip) }}</q-item-section>
-                    </q-item>
-                  </q-list>
-                </q-menu>
-              </q-icon>
-            </q-item-section>
-            <q-item-section @click="enterSchedule(element)">{{
-              element.name
-            }}</q-item-section>
-            <q-item-section side class="hover-show transition absolute-right z-fab q-mr-xs">
-              <q-btn flat round dense size="sm" icon="more_vert">
-                <q-menu
-                  class="radius-sm"
-                  :class="$q.dark.mode ? 'text-grey-1' : 'text-grey-9'"
-                >
-                  <q-list
-                    bordered
-                    dense
-                    class="radius-sm q-pa-xs"
-                    style="min-width: 16rem"
+      <template v-for="element in schedules" :key="element.id">
+        <q-item
+          clickable
+          v-ripple
+          class="col radius-xs dragBar hovered-item overflow-hidden"
+          :class="actived_id === element.id ? 'border active-sublistitem' : 'border-placeholder'"
+          :active-class="` ${
+            findColor_byIcon(element.icon)
+              ? `text-${findColor_byIcon(element.icon)}`
+              : `${$q.dark.mode ? 'text-grey-3' : 'text-grey-9'}`
+          }`"
+          :active="actived_id === element.id"
+          style="min-height: 40px;"
+        >
+          <q-item-section side @click="enterSchedule(element)">
+            <q-icon
+              :name="element.icon"
+              :color="findColor_byIcon(element.icon)"
+            >
+              <q-menu class="radius-sm">
+                <q-list bordered dense class="q-pa-xs radius-sm">
+                  <q-item
+                    v-for="icon in icons"
+                    :key="icon.val"
+                    clickable
+                    v-close-popup
+                    class="radius-xs"
+                    @click="setIcon(element, icon.val)"
                   >
-                    <q-item class="no-padding column no-wrap gap-xs">
-                      <q-input
-                        dense
-                        filled
-                        v-model="params.data.name"
-                        autofocus
-                        type="text"
-                        class="radius-xs"
-                        :placeholder="element.name"
+                    <q-item-section side
+                      ><q-icon :name="icon.val" :color="icon.color"
+                    /></q-item-section>
+                    <q-item-section>{{ $t(icon.tip) }}</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-icon>
+          </q-item-section>
+          <q-item-section @click="enterSchedule(element)">{{
+            element.name
+          }}</q-item-section>
+          <q-item-section side class="hover-show transition absolute-right z-fab q-mr-xs">
+            <q-btn flat round dense size="sm" icon="more_vert">
+              <q-menu
+                class="radius-sm"
+                :class="$q.dark.mode ? 'text-grey-1' : 'text-grey-9'"
+                @show="params.data.name = element.name"
+              >
+                <q-list
+                  bordered
+                  dense
+                  class="radius-sm q-pa-xs"
+                  style="min-width: 16rem"
+                >
+                  <q-item class="no-padding column no-wrap gap-xs">
+                    <q-input
+                      dense
+                      filled
+                      v-model="params.data.name"
+                      autofocus
+                      type="text"
+                      class="radius-xs"
+                      :aria-placeholder="element.name"
+                      @keyup.enter="update(element)"
+                      @keydown.esc="params.data.name = element.name"
+                    >
+                      <template v-slot:append>
+                        <q-btn
+                          flat
+                          round
+                          dense
+                          size="xs"
+                          icon="check"
+                          :disable="loading"
+                          v-close-popup
+                          @click="update(element)"
+                        />
+                      </template>
+                    </q-input>
+                    <q-input
+                      dense
+                      filled
+                      v-model="params.data.description"
+                      square
+                      type="textarea"
+                      class="radius-xs"
+                      :placeholder="
+                        element.description || $t('schedula_desc_placeholder')
+                      "
+                    />
+                  </q-item>
+                  <q-separator spaced />
+                  <q-item
+                    v-if="!element.disable_share"
+                    :clickable="!loading"
+                    class="radius-xs q-px-sm q-py-xs"
+                    v-close-popup
+                    @click.stop="share(element)"
+                  >
+                    <q-item-section side
+                      ><q-icon name="share"
+                    /></q-item-section>
+                    <q-item-section>{{ $t('share') }}</q-item-section>
+                    <q-item-section v-if="waring(element)" side>
+                      <q-icon
+                        color="red"
+                        size="0.7rem"
+                        name="mdi-checkbox-blank-circle"
                       >
-                        <template v-slot:append>
-                          <q-btn
-                            flat
-                            round
-                            dense
-                            size="xs"
-                            icon="check"
-                            :disable="loading"
-                            v-close-popup
-                            @click="update(element)"
-                          />
-                        </template>
-                      </q-input>
-                      <q-input
-                        dense
-                        filled
-                        v-model="params.data.description"
-                        square
-                        type="textarea"
-                        class="radius-xs"
-                        :placeholder="
-                          element.description || $t('schedula_desc_placeholder')
-                        "
-                      />
-                    </q-item>
-                    <q-separator spaced />
-                    <q-item
-                      v-if="!element.disable_share"
-                      :clickable="!loading"
-                      class="radius-xs q-px-sm q-py-xs"
-                      v-close-popup
-                      @click.stop="share(element)"
-                    >
-                      <q-item-section side
-                        ><q-icon name="share"
-                      /></q-item-section>
-                      <q-item-section>{{ $t('share') }}</q-item-section>
-                      <q-item-section v-if="waring(element)" side>
-                        <q-icon
-                          color="red"
-                          size="0.7rem"
-                          name="mdi-checkbox-blank-circle"
-                        >
-                          <q-tooltip class="font-medium">
-                            {{ $t('share_expried') }}
-                          </q-tooltip>
-                        </q-icon>
-                      </q-item-section>
-                    </q-item>
-                    <q-separator spaced />
-                    <q-item
-                      :clickable="!loading"
-                      class="radius-xs q-px-sm q-py-xs"
-                      v-close-popup
-                      @click.stop="remove(element)"
-                    >
-                      <q-item-section side
-                        ><q-icon name="delete"
-                      /></q-item-section>
-                      <q-item-section>{{ $t('delete') }}</q-item-section>
-                    </q-item>
-                  </q-list>
-                </q-menu>
-              </q-btn>
-            </q-item-section>
-            <q-item-section v-if="waring(element)" side>
-              <q-icon
-                color="red"
-                size="0.7rem"
-                name="mdi-checkbox-blank-circle"
-              >
-                <q-tooltip class="font-medium"> {{ $t('share_expried') }} </q-tooltip>
-              </q-icon>
-            </q-item-section>
-            <div
-              v-if="actived_id === element.id"
-              class="absolute-left bg-primary"
-              style="width: 3px"
-            ></div>
-          </q-item>
-        </template>
-        <template #footer>
-          <q-item
-            v-if="!creating"
-            clickable
-            v-ripple
-            class="radius-xs q-pa-sm"
-            :class="schedules?.length === 0 ? 'active-sublistitem border-dashed border-op-xl border-xs' : 'hovered-item'"
-            style="min-height: 40px;"
-            @click="creating = true"
+                        <q-tooltip class="font-medium">
+                          {{ $t('share_expried') }}
+                        </q-tooltip>
+                      </q-icon>
+                    </q-item-section>
+                  </q-item>
+                  <q-separator spaced />
+                  <q-item
+                    :clickable="!loading"
+                    class="radius-xs q-px-sm q-py-xs"
+                    v-close-popup
+                    @click.stop="remove(element)"
+                  >
+                    <q-item-section side
+                      ><q-icon name="delete"
+                    /></q-item-section>
+                    <q-item-section>{{ $t('delete') }}</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-btn>
+          </q-item-section>
+          <q-item-section v-if="waring(element)" side>
+            <q-icon
+              color="red"
+              size="0.7rem"
+              name="mdi-checkbox-blank-circle"
+            >
+              <q-tooltip class="font-medium"> {{ $t('share_expried') }} </q-tooltip>
+            </q-icon>
+          </q-item-section>
+          <div
+            v-if="actived_id === element.id"
+            class="absolute-left bg-primary"
+            style="width: 3px"
+          ></div>
+        </q-item>
+      </template>
+      <q-item
+        v-if="!creating"
+        clickable
+        v-ripple
+        class="radius-xs q-pa-sm"
+        :class="schedules?.length === 0 ? 'active-sublistitem border-dashed border-op-xl border-xs' : 'hovered-item'"
+        style="min-height: 40px;"
+        @click="creating = true"
+      >
+        <q-item-section side class="q-pr-sm q-mr-xs">
+          <q-icon name="add" />
+        </q-item-section>
+        <q-item-section class="hover-show transition">
+          {{ $t('create_schedule') }}
+        </q-item-section>
+      </q-item>
+      <q-item v-else class="radius-xs border q-pa-xs">
+        <q-item-section>
+          <q-input
+            v-model="create_params.data.name"
+            dense
+            flat
+            square
+            autofocus
+            class="full-width"
+            @keydown.esc="cancelCreate()"
+            @blur="cancelCreate()"
+            @keyup.enter.prevent="create()"
+            filled
+            type="text"
+            :placeholder="$t('schedule_name')"
           >
-            <q-item-section side class="q-pr-sm q-mr-xs">
-              <q-icon name="add" />
-            </q-item-section>
-            <q-item-section class="hover-show transition">
-              {{ $t('create_schedule') }}
-            </q-item-section>
-          </q-item>
-          <q-item v-else class="radius-xs border q-pa-xs">
-            <q-item-section>
-              <q-input
-                v-model="create_params.data.name"
-                dense
+            <template v-slot:prepend>
+              <q-item-section side>
+                <q-icon name="event" />
+              </q-item-section>
+            </template>
+            <template v-if="create_params.data.name" v-slot:append>
+              <q-btn
                 flat
-                square
-                autofocus
-                class="full-width"
-                @keydown.esc="cancelCreate()"
-                @blur="cancelCreate()"
-                @keyup.enter.prevent="create()"
-                filled
-                type="text"
-                :placeholder="$t('schedule_name')"
-              >
-                <template v-slot:prepend>
-                  <q-item-section side>
-                    <q-icon name="event" />
-                  </q-item-section>
-                </template>
-                <template v-if="create_params.data.name" v-slot:append>
-                  <q-btn
-                    flat
-                    round
-                    dense
-                    size="xs"
-                    icon="check"
-                    :disable="loading"
-                    @click="create()"
-                  />
-                </template>
-              </q-input>
-            </q-item-section>
-          </q-item>
-        </template>
-      </draggable>
+                round
+                dense
+                size="xs"
+                icon="check"
+                :disable="loading"
+                @click="create()"
+              />
+            </template>
+          </q-input>
+        </q-item-section>
+      </q-item>
+    </VueDraggable>
     </q-list>
     <q-dialog v-model="shareDlg" persistent>
       <ShareSchedule
@@ -229,11 +220,10 @@
 </template>
 
 <script setup>
-import { ref, toRefs, computed, watch } from "vue";
+import { ref, toRefs, computed, watch, nextTick, onBeforeMount } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
-import draggable from "vuedraggable";
-
+import { VueDraggable } from 'vue-draggable-plus'
 import {
   createSchedule,
   updateSchedule,
@@ -248,12 +238,6 @@ const route = useRoute();
 const actived_id = computed(() => Number(route.params.schedule_id));
 
 const props = defineProps({
-  schedules: {
-    type: Array,
-    default() {
-      return [];
-    },
-  },
   by_info: {
     type: Object,
     default() {
@@ -265,7 +249,15 @@ const props = defineProps({
   },
 });
 
-const { schedules, by_info } = toRefs(props);
+const { by_info } = toRefs(props);
+const schedules = ref([]);
+onBeforeMount(() => {
+  if(by_info.value?.project_id) {
+    schedules.value = teamStore.project?.schedules || [];
+  } else if(by_info.value?.by === "user") {
+    schedules.value = teamStore.init?.schedules
+  }
+});
 const icons = ref([
   { val: "event", tip: "schedule_tip_event", color: "" },
   { val: "handshake", tip: "schedule_tip_handshake", color: "blue" },
@@ -287,11 +279,10 @@ const create_params = ref({
 const process_createdData = (val) => {
   if (by_info.value.project_id) {
     teamStore.project.schedules.push(val);
-  }
-  if (by_info.value.card_id) {
-    teamStore.card.schedules.push(val);
+    schedules.value = teamStore.project.schedules
   }
   if (by_info.value.user_id) {
+    // teamStore.init.schedules.push(val);
   }
 };
 const create = async () => {
@@ -303,7 +294,7 @@ const create = async () => {
     creating.value = false;
     loading.value = false;
     create_params.value.data.name = "";
-    if (by_info.value?.by === "user" || !mm_wsStore.online) {
+    if (by_info.value?.by === "user") {
       process_createdData(val);
     }
   }
@@ -323,6 +314,7 @@ const process_updatedData = (val) => {
         return i;
       }
     });
+    schedules.value = teamStore.project.schedules
   }
   if (by_info.value.card_id) {
     let source = teamStore.card.schedules;
@@ -415,6 +407,7 @@ const process_removedData = (val) => {
   }
   if (by_info.value.user_id) {
   }
+  schedules.value = teamStore.project.schedules
 };
 const remove = async (i) => {
   const res = await deleteSchedule(i.id);
@@ -452,16 +445,18 @@ const process_orderData = (val) => {
     teamStore.project.schedules = val.map((i) =>
       teamStore.project.schedules.find((j) => j.id === i)
     );
+    schedules.value = teamStore.project.schedules
   }
   if (by_info.value?.by === "card") {
   }
   if (by_info.value?.by === "user") {
   }
 };
-const orderSchedule = async (schedules) => {
+const orderSchedule = async () => {
+  await nextTick();
   if (by_info.value?.by === "project") {
     const project_id = by_info.value.project_id;
-    const project_schedules_ids_withOrder = schedules.map((i) => i.id);
+    const project_schedules_ids_withOrder = schedules.value.map((i) => i.id);
     let params = {
       schedules: project_schedules_ids_withOrder,
     };
@@ -472,8 +467,6 @@ const orderSchedule = async (schedules) => {
     if (by_info.value?.by === "project") {
       res = await updateProject(project_id, params);
       Msg_body = res.data.schedules.map((i) => i.id);
-    }
-    if (by_info.value?.by === "card") {
     }
     if (by_info.value?.by === "user") {
     }
@@ -496,10 +489,6 @@ const orderSchedule = async (schedules) => {
       if (by_info.value?.by === "project") {
         chat_Msg.body = `${userStore.me.username}：对项目规划进行了排序`;
         chat_Msg.props.strapi.data.project_id = teamStore.project?.id;
-      }
-      if (by_info.value?.by === "card") {
-        chat_Msg.body = `${userStore.me.username}：对任务规划进行了排序`;
-        chat_Msg.props.strapi.data.card_id = teamStore.card?.id;
       }
       if (by_info.value?.by === "user") {
         process_orderData(Msg_body);
@@ -533,11 +522,13 @@ watch(
       if (isCurClint) return;
       let strapi = post?.props?.strapi;
       if (strapi) {
+        console.log(strapi.data);
         if (
-          strapi.data?.is === by_info.value?.by &&
-          strapi.data?.project_id === teamStore.project?.id &&
+          strapi.data?.is == by_info.value?.by &&
+          strapi.data?.project_id == teamStore.project?.id &&
           strapi.data.action === "schedule_created"
         ) {
+        console.log('by_info.value?.by', by_info.value?.by);
           process_createdData(strapi.data.body);
         }
         if (
