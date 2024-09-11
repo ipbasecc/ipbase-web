@@ -9,27 +9,16 @@
       <q-scroll-area v-if="useAuths('read', ['group']) && teamStore.board?.groups?.length > 0"
         class="q-space"
       >
-        <draggable
-          :list="teamStore.board?.groups"
-          :disabled="!$q.screen.gt.xs"
-          animation="300"
-          :delay="30"
-          :fallbackTolerance="2"
-          :force-fallback="true"
-          :fallbackOnBody="true"
-          :item-key="(key) => key"
-          :sort="true"
-          :touchStartThreshold="2"
-          :scroll="true"
-          ghost-class="ghostColumn"
-          chosen-class="chosenGroupClass"
-          drag-class="dragClass"
-          handle=".dragBar"
-          group="groups"
+        <VueDraggable v-model="teamStore.board.groups"
+          :disabled="!$q.screen.gt.xs" :animation="300" :delay="1" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+          group="groups" handle=".dragBar"
+          chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
           class="radius-sm column gap-sm no-wrap"
-          @change="groupOrderFn()"
+          @sort="groupOrderFn()"
+          @start="kanbanDraging = true"
+          @end="kanbanDraging = false"
         >
-          <template #item="{ element }">
+          <template  v-for="element in teamStore.board.groups" :key="element.id">
             <div class="column no-wrap">
               <div class="row no-wrap items-center hovered-item op-5 relative-position">
                 <q-icon size="sm" name="tag"
@@ -52,7 +41,7 @@
                     round
                     icon="more_vert"
                   >
-                    <q-menu class="radius-sm shadow-24" ref="more_vert_menu">
+                    <q-menu class="radius-sm shadow-24">
                       <q-list dense bordered class="radius-sm q-pa-xs">
                         <q-item
                           v-if="useAuths('name', ['group'])"
@@ -79,6 +68,7 @@
                                 dense
                                 size="sm"
                                 icon="check"
+                                v-close-popup
                                 @click="
                                   updateGroupFn(element.id, element, 'rename')
                                 "
@@ -119,33 +109,20 @@
                   </q-btn>
                 </div>
               </div>
-              <draggable
-                :list="element.kanbans"
-                animation="300"
-                :delay="30"
-                :fallbackTolerance="2"
-                :force-fallback="true"
-                :fallbackOnBody="true"
-                :item-key="(key) => key"
-                :sort="true"
-                :touchStartThreshold="6"
-                :scroll="true"
-                ghost-class="ghostColumn"
-                chosen-class="chosenGroupClass"
-                drag-class="dragClass"
-                handle=".dragBar"
-                filter=".undrag"
-                group="kanbans"
+              <VueDraggable v-model="element.kanbans"
+                :animation="300" :delay="1" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+                filter=".undrag" group="kanbans"
+                chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
                 class="q-py-xs radius-sm column no-wrap gap-xs q-pa-xs"
                 :style="kanbanDraging ? 'min-height: 1rem;' : ''"
-                @change="updateGroupFn(element.id, element, 'order')"
+                @sort="updateGroupFn(element.id, element, 'order')"
                 @start="kanbanDraging = true"
                 @end="kanbanDraging = false"
               >
-                <template #item="{ element: kanban }">
+                <template v-for="kanban in element.kanbans" :key="kanban.id">
                   <KanbanListitem :kanban="kanban" @enterKanban="enterKanban" @removeKanban="removeKanban" />
                 </template>
-                <template #footer v-if="useAuths('create', ['kanban']) && addKanban_targetId === element.id">
+                <template v-if="useAuths('create', ['kanban']) && addKanban_targetId === element.id">
                   <div class="row no-wrap items-center border radius-xs q-pa-xs">
                     <q-input v-model="createKanba_title"
                       square filled dense autofocus type="text"
@@ -163,10 +140,10 @@
                     </q-input>
                   </div>
                 </template>
-              </draggable>
+            </VueDraggable>
             </div>
           </template>
-        </draggable>
+      </VueDraggable>
         <q-input v-if="createGroup_ing"
           v-model="createGroup_name"
           dense square filled autofocus type="text"
@@ -210,11 +187,11 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import BoradToggler from "./BoradToggler.vue";
 import KanbanListitem from "src/pages/team/kanban/KanbanListitem.vue";
-import draggable from "vuedraggable";
+import { VueDraggable } from 'vue-draggable-plus'
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import {
   groupOrder,
@@ -271,11 +248,10 @@ watch(
   { immediate: true, deep: true }
 );
 
-const more_vert_menu = ref(null);
-
 const $q = useQuasar();
 const loading = ref(false);
 const groupOrderFn = async () => {
+  await nextTick();
   let params = {
     order: teamStore.board?.groups.map((i) => i.id),
   };
@@ -299,6 +275,7 @@ const groupOrderFn = async () => {
   }
 };
 const updateGroupFn = async (group_id, element, action) => {
+  await nextTick();
   let params = {
     name: element.name,
     kanbans: element.kanbans.map((i) => i.id),
@@ -345,7 +322,6 @@ const updateGroupFn = async (group_id, element, action) => {
       };
       await send_chat_Msg(chat_Msg);
     }
-    more_vert_menu.value.hide();
   }
 };
 const groupDeleteFn = async (element) => {
@@ -374,10 +350,8 @@ const groupDeleteFn = async (element) => {
       },
     };
     await send_chat_Msg(chat_Msg);
-    more_vert_menu.value.hide();
   } else {
     $q.notify(res.error.message);
-    more_vert_menu.value.hide();
   }
 };
 const createGroup_ing = ref(false);
@@ -390,7 +364,6 @@ const createGroupFn = async () => {
   if (res) {
     loading.value = false;
     createGroup_name.value = "";
-    more_vert_menu.value.hide();
   }
 };
 

@@ -31,7 +31,7 @@
           :isCreator_kanban="isCreator"
         />
         <VueDraggable v-else v-model="kanban.columns"
-          :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+          :animation="300" :delay="1" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
           filter=".undrag" group="column"
           chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
           :handle="setDragHandle(view_model)"
@@ -117,7 +117,7 @@
 </template>
 
 <script setup>
-import {ref, toRefs, watch, watchEffect, onMounted, computed, provide, nextTick} from "vue";
+import {ref, toRefs, watch, watchEffect, computed, provide, nextTick} from "vue";
 import { VueDraggable } from 'vue-draggable-plus'
 import { kanbanUpdate, createColumn } from "src/api/strapi/project.js";
 import ColumnContainer from "./ColumnContainer.vue";

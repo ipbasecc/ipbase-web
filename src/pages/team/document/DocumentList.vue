@@ -1,26 +1,14 @@
 <template>
   <q-scroll-area v-if="documents" class="fit">
     <q-list dense>
-      <draggable
-        :list="documents"
-        :disable="teamStore.shareInfo"
-        animation="300"
-        :fallbackTolerance="2"
-        :force-fallback="true"
-        :fallbackOnBody="true"
-        :item-key="(key) => key"
-        :sort="true"
-        :touchStartThreshold="4"
-        :scroll="true"
-        ghost-class="ghostColumn"
-        chosen-class="chosenGroupClass"
-        drag-class="dragClass"
-        handle=".dragBar"
-        group="groups"
+      <VueDraggable v-model="documents"
+        :disabled="!sortAuth" :animation="300" :delay="1" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+        handle=".dragBar" group="groups"
+        chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
         class="radius-sm column no-wrap q-pa-xs"
-        @change="orderDocuments(documents)"
+        @sort="orderDocuments"
       >
-        <template #item="{ element }">
+        <template v-for="element in documents" :key="element.id">
           <q-item
             clickable
             v-ripple
@@ -94,7 +82,7 @@
             ></div>
           </q-item>
         </template>
-        <template v-if="!teamStore.shareInfo" #footer>
+        <template v-if="!teamStore.shareInfo">
           <q-item v-if="!creating"
             clickable
             v-ripple
@@ -142,17 +130,17 @@
             </q-item-section>
           </q-item>
         </template>
-      </draggable>
+      </VueDraggable>
     </q-list>
   </q-scroll-area>
 </template>
 
 <script setup>
-import {ref, toRefs, watchEffect, watch, onMounted} from 'vue';
+import {ref, toRefs, watchEffect, watch, onBeforeMount, onMounted, nextTick} from 'vue';
 import { useRouter, useRoute } from "vue-router";
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
-
-import draggable from "vuedraggable";
+import { VueDraggable } from 'vue-draggable-plus'
+import { updateCard } from "src/api/strapi/project.js";
 
 import {
   createDocument,
@@ -177,12 +165,6 @@ watchEffect(() => {
 });
 
 const props = defineProps({
-  documents: {
-    type: Array,
-    default() {
-      return [];
-    },
-  },
   by_info: {
     type: Object,
     default() {
@@ -191,13 +173,27 @@ const props = defineProps({
       };
     },
   },
+  sortAuth: {
+    type: Boolean,
+    default: false,
+  },
 });
 const emit = defineEmits(["enterDocument"]);
 onMounted(() => {
   uiStore.closeDocumentsList = false
 })
 
-const { documents, by_info } = toRefs(props);
+const { by_info, sortAuth } = toRefs(props);
+const documents = ref([]);
+onBeforeMount(() => {
+  if(by_info.value?.project_id) {
+    documents.value = teamStore.project?.project_documents || [];
+  } else if(by_info.value?.card_id) {
+    documents.value = teamStore.card?.card_documents || [];
+  } else if(by_info.value?.by === "user") {
+    documents.value = teamStore.init?.user_documents
+  }
+});
 const types = ref([
   { type: "document", tip: "document", icon: "article" },
   { type: "pdf", tip: "PDF", icon: "picture_as_pdf" },
@@ -404,66 +400,68 @@ const remove = async (i) => {
 };
 
 const process_orderData = (val) => {
+  documents.value = val.map((i) =>
+    documents.value.find((j) => j.id === i)
+  );
+};
+
+const orderDocuments = async () => {
+  // console.log(event);
+  await nextTick();
+  let res;
+  let Msg_body;
+
+  const _documents_ids = documents.value.map((i) => i.id);
   if (by_info.value?.by === "project") {
-    teamStore.project.project_documents = val.map((i) =>
-      teamStore.project.project_documents.find((j) => j.id === i)
-    );
+    const project_id = teamStore.project?.id;
+    let params = {
+      project_documents: _documents_ids,
+    };
+    res = await updateProject(project_id, params);
+    Msg_body = res?.data.project_documents.map((i) => i.id);
   }
   if (by_info.value?.by === "card") {
-    teamStore.card.card_documents = val.map((i) =>
-      teamStore.card.card_documents.find((j) => j.id === i)
-    );
+    let params = {
+      data: {
+        card_documents: _documents_ids,
+      }
+    };
+    res = await updateCard(teamStore.card?.id, params);
+    console.log(res);
+    
+    Msg_body = res?.data.card_documents.map((i) => i.id);
   }
   if (by_info.value?.by === "user") {
+    Msg_body = res.data.user_documents.map((i) => i.id);
   }
-};
-const orderDocuments = async (documents) => {
-  if (by_info.value?.by === "project") {
-    const project_id = by_info.value.project_id;
-    const project_documents_ids_withOrder = documents.map((i) => i.id);
-    let params = {
-      project_documents: project_documents_ids_withOrder,
-    };
-    let res;
-    let Msg_body;
 
-    if (by_info.value?.by === "project") {
-      res = await updateProject(project_id, params);
-      Msg_body = res.data.project_documents.map((i) => i.id);
-    }
-    if (by_info.value?.by === "card") {
-      Msg_body = res.data.card_documents.map((i) => i.id);
-    }
-    if (by_info.value?.by === "user") {
-      Msg_body = res.data.user_documents.map((i) => i.id);
-    }
-
-    if (res) {
-      let chat_Msg = {
-        props: {
-          strapi: {
-            data: {
-              is: by_info.value?.by,
-              by_user: userStore.userId,
-              action: "document_ordered",
-              body: Msg_body,
-            },
+  if (res) {
+    let chat_Msg = {
+      props: {
+        strapi: {
+          data: {
+            is: by_info.value?.by,
+            by_user: userStore.userId,
+            action: "document_ordered",
+            body: Msg_body,
           },
         },
-      };
-      if (by_info.value?.by === "project") {
-        chat_Msg.body = `${userStore.me.username}：${$t('sorted_project_document')}`;
-        chat_Msg.props.strapi.data.project_id = teamStore.project?.id;
-      }
-      if (by_info.value?.by === "card") {
-        chat_Msg.body = `${userStore.me.username}：${$t('sorted_task_document')}`;
-        chat_Msg.props.strapi.data.card_id = teamStore.card?.id;
-      }
-      if (by_info.value?.by === "user") {
-        process_orderData(Msg_body);
-      } else {
-        await send_chat_Msg(chat_Msg);
-      }
+      },
+    };
+    
+    if (by_info.value?.by === "project") {
+      chat_Msg.body = `${userStore.me.username}：${$t('sorted_project_document')}`;
+      chat_Msg.props.strapi.data.project_id = teamStore.project?.id;
+    }
+    if (by_info.value?.by === "card") {
+      chat_Msg.body = `${userStore.me.username}：${$t('sorted_task_document')}`;
+      chat_Msg.props.strapi.data.card_id = teamStore.card?.id;
+    }
+
+    if (by_info.value?.by === "user") {
+      process_orderData(Msg_body);
+    } else {
+      await send_chat_Msg(chat_Msg);
     }
   }
 };
@@ -514,6 +512,7 @@ watch(
             strapi.data?.card_id === teamStore.card?.id) &&
           strapi.data.action === "document_ordered"
         ) {
+          console.log('document_ordered', strapi);
           process_orderData(strapi.data.body);
         }
       }

@@ -340,6 +340,7 @@
                 <DocumentList
                   :documents="teamStore.card.card_documents"
                   :by_info="byInfo"
+                  :sortAuth="useAuths('modify', ['card'])"
                   @enterDocument="enterDocument"
                 />
               </template>
@@ -453,6 +454,7 @@
                 v-if="!document_id"
                 :documents="teamStore.card.card_documents"
                 :by_info="byInfo"
+                :sortAuth="useAuths('modify', ['card'])"
                 @enterDocument="enterDocument"
             />
             <q-scroll-area v-if="document_id" class="fit">
@@ -683,7 +685,7 @@ onBeforeMount(async () => {
 });
 
 const rightDrawerOpen = ref(false);
-const rightDrawer = ref(null);
+const rightDrawer = ref('todo');
 const toggleRightDrawer = async (val) => {
   if (!rightDrawerOpen.value) {
     rightDrawer.value = val;
@@ -700,11 +702,6 @@ const toggleRightDrawer = async (val) => {
   const _key = `cardPage_rightDrawer_${activedCard_id.value}`
   await localforage.setItem(_key, _cache);
 };
-watchEffect(() => {
-  if(rightDrawerOpen.value && rightDrawer.value === 'todo' && current_model.value !== 'card_todo'){
-    // rightDrawerOpen.value = false
-  }
-})
 const activedCard_id = computed(() => Number(teamStore.activedCard_id));
 onBeforeMount(async () => {
   const _key = `cardPage_rightDrawer_${activedCard_id.value}`
@@ -716,7 +713,7 @@ onBeforeMount(async () => {
     rightDrawerOpen.value = false;
     rightDrawer.value = null;
   } else {
-    rightDrawerOpen.value = true;
+    rightDrawerOpen.value = false;
     rightDrawer.value = "todo";
   }
 });

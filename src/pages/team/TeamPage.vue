@@ -42,7 +42,7 @@
           :by_info="byInfo"
         />
         <DocumentList v-else-if="teamStore.navigation === 'document'"
-          :documents="teamStore.project?.project_documents"
+          :documents="teamStore.project.project_documents"
           :by_info="byInfo"
         />
         <div v-else class="absolute-full column flex-center">

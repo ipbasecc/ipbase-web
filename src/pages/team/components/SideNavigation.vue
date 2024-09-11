@@ -313,7 +313,7 @@
 </template>
 
 <script setup>
-import {computed, ref, watch, watchEffect} from 'vue';
+import {computed, ref, watch, watchEffect, nextTick, onMounted} from 'vue';
 import {useRoute, useRouter} from "vue-router";
 import {fetch_userPreferences, getTeamMembers,} from "src/hooks/mattermost/useMattermost.js";
 import {getChannelByID, getTeamByID, removeChannel, updateChannel} from 'src/api/strapi/team.js'
@@ -416,50 +416,48 @@ watchEffect(() => {
 const mm_team = computed(() => teamStore?.team?.mm_team);
 const page = ref(0);
 const per_page = ref(60);
-watch(
-  mm_team,
-  async () => {
-    if (mm_team.value) {
-      await fetch_userPreferences();
-      await getTeamMembers(mm_team.value?.id, page.value, per_page.value);
-      let mm_channels = []
-      const mm_uid = localStorage.getItem("mmUserId")
-      if(team.value?.team_channels?.length > 0 && enalbe_channel.value){
-        const filterMMChannel = team.value?.team_channels.filter(i => i.mm_channel)
-        mm_channels.push(...filterMMChannel.map(i => i.mm_channel?.id));
-      }
-      if(team.value.projects?.length > 0 && enalbe_project.value && teamMode.value === 'toMany'){
-        // can read
-        const filterHaveMM = team.value.projects.filter(i => i.mm_channel && i.auth?.read);
-        
-        if(filterHaveMM?.length > 0){
-          mm_channels.push(...filterHaveMM.map(i => i.mm_channel.id));
-        }
-      }
-      if(mm_channels.length > 0){
-        const promises = mm_channels.map(async (m) => {
-          const res = await getChannelUnreads(mm_uid, m);
-          if(res?.data) {
-            return res?.data;
-          }
-        })
-        const allSettleds = await Promise.allSettled(promises)
-        const fulfilleds = allSettleds.filter(i => i.status === "fulfilled")?.map((j) => j.value);
-        if(fulfilleds.length > 0){
-          uiStore.unreads.channels = fulfilleds
-        }
-      }
-      if(mm_uid){
-        const res = await getUnreadsForTeam(mm_uid, mm_team.value.id)
-        if(res?.data){
-          uiStore.unreads.team = res?.data
-        }
-      }
 
+onMounted(async() => {
+  await nextTick();
+  if (mm_team.value) {
+    await fetch_userPreferences();
+    await getTeamMembers(mm_team.value?.id, page.value, per_page.value);
+    let mm_channels = []
+    const mm_uid = localStorage.getItem("mmUserId")
+    if(team.value?.team_channels?.length > 0 && enalbe_channel.value){
+      const filterMMChannel = team.value?.team_channels.filter(i => i.mm_channel)
+      mm_channels.push(...filterMMChannel.map(i => i.mm_channel?.id));
     }
-  },
-  { immediate: true, deep: false }
-);
+    if(team.value.projects?.length > 0 && enalbe_project.value && teamMode.value === 'toMany'){
+      // can read
+      const filterHaveMM = team.value.projects.filter(i => i.mm_channel && i.auth?.read);
+      
+      if(filterHaveMM?.length > 0){
+        mm_channels.push(...filterHaveMM.map(i => i.mm_channel.id));
+      }
+    }
+    if(mm_channels.length > 0){
+      const promises = mm_channels.map(async (m) => {
+        const res = await getChannelUnreads(mm_uid, m);
+        if(res?.data) {
+          return res?.data;
+        }
+      })
+      const allSettleds = await Promise.allSettled(promises)
+      const fulfilleds = allSettleds.filter(i => i.status === "fulfilled")?.map((j) => j.value);
+      if(fulfilleds.length > 0){
+        uiStore.unreads.channels = fulfilleds
+      }
+    }
+    if(mm_uid){
+      const res = await getUnreadsForTeam(mm_uid, mm_team.value.id)
+      if(res?.data){
+        uiStore.unreads.team = res?.data
+      }
+    }
+
+  }
+})
 const enterProject = async (project) => {
   if (project?.auth && !project?.auth?.read) {
     $q.notify($t('project_not_join_or_was_blocked'));
@@ -635,7 +633,7 @@ const callbackChannelRefreshEvents = [
 ]
 watch(
   mm_wsStore,
-  async () => {
+  async () => {    
     // 判断消息类型
     if (mm_wsStore?.event?.event === "posted") {
       let post =
