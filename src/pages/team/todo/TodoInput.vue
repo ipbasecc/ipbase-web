@@ -10,7 +10,7 @@
       @blur="onBlur"
       @keydown.esc="cancelChange()"
       @keydown.ctrl.enter="ctrlEnter()"
-      @paste="handlePaste"
+      @paste="paste"
     >
       {{ content }}
       <slot />
@@ -95,8 +95,17 @@ const cancelChange = () => {
   emit("cannel");
 };
 
-const handlePaste = (event) => {
+const paste = async (event) => {
   event.preventDefault();
-  inputValue.value = (event.clipboardData || window.clipboardData).getData("text");
+  try {
+    const text = await navigator.clipboard.readText();
+    event.target.innerText = removeHtmlTags(text);
+    modelValue.value = removeHtmlTags(text);
+  } catch (err) {
+    console.error('Failed to read clipboard contents: ', err);
+    const text = (event.clipboardData || window.clipboardData).getData('text/plain');
+    modelValue.value = removeHtmlTags(text);
+  }
+  await nextTick(); // 确保 DOM 更新
 };
 </script>

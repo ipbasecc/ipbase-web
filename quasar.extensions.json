@@ -1,5 +1,10 @@
 {
   "@quasar/apollo": {
     "typescript": false
+  },
+  "@quasar/testing": {
+    "harnesses": [
+      "e2e-cypress"
+    ]
   }
 }

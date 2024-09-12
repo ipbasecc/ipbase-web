@@ -77,12 +77,7 @@
                                  :style="`min-height: ${scrollContainer?.height}px`"
               >
                 <div class="column no-wrap relative-position article messages_list">
-                  <div class="full-width column no-wrap flex-center q-pb-xl q-mb-xl" style="height: 66vh">
-                    <ChatStarter style="max-width: 560px;max-height: 560px" />
-                    <span :class="$q.screen.gt.sm ? 'text-h1' : 'font-bold-600 font-larger'">
-                      Channel Chat start
-                    </span>
-                  </div>
+                  <ChannelHeader />
                   <template v-for="(i, index) in messages" :key="i.id">
                     <MessageItem
                         v-if="!i.root_id"
@@ -201,12 +196,7 @@
                                  :style="`min-height: ${scrollContainer?.height}px`"
               >
                 <div class="column no-wrap relative-position article messages_list">
-                  <div class="full-width column no-wrap flex-center q-pb-xl q-mb-xl" style="height: 66vh">
-                    <ChatStarter style="max-width: 66vw;max-height: 66vw" />
-                    <span :class="$q.screen.gt.sm ? 'text-h1' : 'font-bold-600 font-larger'">
-                      Channel Chat start
-                    </span>
-                  </div>
+                  <ChannelHeader />
 
                   <template v-for="(i, index) in messages" :key="i.id">
                     <MessageItem
@@ -264,12 +254,12 @@ import MemberManager from "pages/team/settings/MemberManager.vue";
 import DirectMemberInfo from "pages/team/chat/components/DirectMemberInfo.vue";
 import ThreadContainer from "pages/team/chat/ThreadContainer.vue";
 import PinnedsContainder from "pages/Chat/components/PinnedsContainder.vue";
-import ChatStarter from 'src/pages/team/components/widgets/icons/ChatStarter.vue'
 import {removeLastChannel} from "pages/team/chat/TeamChat";
 import {useQuasar} from "quasar";
 import {i18n} from 'src/boot/i18n.js';
 import {useRouter} from "vue-router";
 import { __viewChannel } from "src/hooks/mattermost/useMattermost.js";
+import ChannelHeader from './components/ChannelHeader.vue'
 
 const router = useRouter();
 const $t = i18n.global.t;

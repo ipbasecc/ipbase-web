@@ -1,6 +1,6 @@
 {
   "name": "ipbase",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "ipbase project",
   "productName": "ipbase",
   "author": "auxcc <jerr@foxmail.com>",
@@ -133,6 +133,7 @@
     "@electron/packager": "^18.3.4",
     "@intlify/unplugin-vue-i18n": "^2.0.0",
     "@quasar/quasar-app-extension-apollo": "^2.2.3",
+    "@quasar/quasar-app-extension-testing": "^2.2.0",
     "autoprefixer": "^10.4.20",
     "dotenv": "^16.4.5",
     "electron": "^31.5.0",

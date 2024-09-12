@@ -11,19 +11,22 @@
 
     <q-page-container>
       <q-page class="q-pa-md">
-        content: {{content}}
-        <EditableDiv v-model="content" />
+        <q-color v-model="hex" class="my-picker" />
       </q-page>
     </q-page-container>
   </q-layout>
 </template>
 
 <script setup>
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, watch, computed, watchEffect} from 'vue';
 import {addMedia, queryMedias} from 'src/api/strapi.js';
 import {uiStore} from "src/hooks/global/useStore.js";
 import EditableDiv from 'src/components/Utilits/InputDiv.vue';
+import { useQuasar } from 'quasar'
 
+
+const $q = useQuasar()
+const hex = ref('#FF00FF')
 const content = ref('');
 
 const medias = ref();

@@ -357,6 +357,9 @@ importers:
       '@quasar/quasar-app-extension-apollo':
         specifier: ^2.2.3
         version: 2.2.3(@apollo/client@3.11.8(graphql@16.9.0)(subscriptions-transport-ws@0.9.19(graphql@16.9.0)))(@vue/apollo-composable@4.2.1(@apollo/client@3.11.8(graphql@16.9.0)(subscriptions-transport-ws@0.9.19(graphql@16.9.0)))(graphql@16.9.0)(typescript@5.5.4)(vue@3.5.3(typescript@5.5.4)))(graphql@16.9.0)(quasar@2.16.11)(vue@3.5.3(typescript@5.5.4))
+      '@quasar/quasar-app-extension-testing':
+        specifier: ^2.2.0
+        version: 2.2.0
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.45)
@@ -1748,6 +1751,11 @@ packages:
         optional: true
       graphql-ws:
         optional: true
+
+  '@quasar/quasar-app-extension-testing@2.2.0':
+    resolution: {integrity: sha512-QhACKnNlAr7mKx9Aa83kFprqQeGps+zCuZoypY4zQsY2+CPMWUZdxDAmP3J459EV8SNqD2+KiBTqUMRIkTIAEw==}
+    engines: {node: '>= 12.22.1', npm: '>= 6.14.12', yarn: '>= 1.17.3'}
+    deprecated: Deprecated. See https://github.com/quasarframework/quasar-testing/blob/dev/packages/testing/README.md#DEPRECATION-NOTICE
 
   '@quasar/render-ssr-error@1.0.3':
     resolution: {integrity: sha512-A8RF99q6/sOSe1Ighnh5syEIbliD3qUYEJd2HyfFyBPSMF+WYGXon5dmzg4nUoK662NgOggInevkDyBDJcZugg==}
@@ -3507,6 +3515,10 @@ packages:
   exec-sh@0.2.2:
     resolution: {integrity: sha512-FIUCJz1RbuS0FKTdaAafAByGS0CPvU3R0MeHxgtl+djzCc//F8HakL8GzmVNZanasTbTAY/3DRFA0KpVqj/eAw==}
 
+  execa@5.1.1:
+    resolution: {integrity: sha512-8uSpZZocAZRBAPIEINJj3Lo9HyGitllczc27Eh5YYojjMFMn8yHMDMaUHE2Jqfq05D/wucwI4JGURyXt1vchyg==}
+    engines: {node: '>=10'}
+
   express@4.19.2:
     resolution: {integrity: sha512-5T6nhjsT+EOMzuck8JjBHARTHfMht0POzlA60WV2pMD3gyXw2LZnZ+ueGdNxG+0calOJcWKbpFcuzLZ91YWq9Q==}
     engines: {node: '>= 0.10.0'}
@@ -3756,6 +3768,10 @@ packages:
     resolution: {integrity: sha512-nBF+F1rAZVCu/p7rjzgA+Yb4lfYXrpl7a6VmJrU8wF9I1CKvP/QwPNZHnOlwbTkY6dvtFIzFMSyQXbLoTQPRpA==}
     engines: {node: '>=8'}
 
+  get-stream@6.0.1:
+    resolution: {integrity: sha512-ts6Wi+2j3jQjqi70w5AlN8DFnkSwC+MqmxEzdEALB2qXZYV3X/b1CTfgPLGJNMeAWxdPfU8FO1ms3NUfaHCPYg==}
+    engines: {node: '>=10'}
+
   get-symbol-description@1.0.2:
     resolution: {integrity: sha512-g0QYk1dZBxGwk+Ngc+ltRH2IBp2f7zBkBMBJZCDerh6EhlhSR6+9irMCuT/09zD6qkarHUSn529sK/yL4S27mg==}
     engines: {node: '>= 0.4'}
@@ -3913,6 +3929,10 @@ packages:
   https-proxy-agent@5.0.1:
     resolution: {integrity: sha512-dFcAjpTQFgoLMzC2VwU+C/CbS7uRL0lWmxDITmqm7C+7F0Odmj6s9l6alZc6AELXhrnggM2CeWSXHGOdX2YtwA==}
     engines: {node: '>= 6'}
+
+  human-signals@2.1.0:
+    resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
+    engines: {node: '>=10.17.0'}
 
   humanize-ms@1.2.1:
     resolution: {integrity: sha512-Fl70vYtsAFb/C06PTS9dZBo7ihau+Tu/DNCk/OyHhea07S+aeMWpFFkUaXRa8fI+ScZbEI8dfSxwY7gxZ9SAVQ==}
@@ -4483,6 +4503,9 @@ packages:
 
   merge-descriptors@1.0.3:
     resolution: {integrity: sha512-gaNvAS7TZ897/rVaZ0nMtAyxNyi/pdbjbAwUpFQpN70GqnVfOiXpeUUMKRBmzXaSQ8DdTX4/0ms62r2K+hE6mQ==}
+
+  merge-stream@2.0.0:
+    resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
 
   merge2@1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
@@ -5667,6 +5690,10 @@ packages:
   strip-comments@2.0.1:
     resolution: {integrity: sha512-ZprKx+bBLXv067WTCALv8SSz5l2+XhpYCsVtSqlMnkAXMWDq+/ekVbl1ghqP9rUHTzv6sm/DwCOiYutU/yp1fw==}
     engines: {node: '>=10'}
+
+  strip-final-newline@2.0.0:
+    resolution: {integrity: sha512-BrpvfNAE3dcvq7ll3xVumzjKjZQ5tI1sEUIKr3Uoks0XUl45St3FlatVqef9prk4jRDzhW6WZg+3bk93y6pLjA==}
+    engines: {node: '>=6'}
 
   strip-json-comments@3.1.1:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
@@ -8048,6 +8075,12 @@ snapshots:
       quasar: 2.16.11
       vue: 3.5.3(typescript@5.5.4)
 
+  '@quasar/quasar-app-extension-testing@2.2.0':
+    dependencies:
+      chalk: 4.1.2
+      execa: 5.1.1
+      strip-ansi: 6.0.1
+
   '@quasar/render-ssr-error@1.0.3':
     dependencies:
       stack-trace: 1.0.0-pre2
@@ -10164,6 +10197,18 @@ snapshots:
     dependencies:
       merge: 1.2.1
 
+  execa@5.1.1:
+    dependencies:
+      cross-spawn: 7.0.3
+      get-stream: 6.0.1
+      human-signals: 2.1.0
+      is-stream: 2.0.1
+      merge-stream: 2.0.0
+      npm-run-path: 4.0.1
+      onetime: 5.1.2
+      signal-exit: 3.0.7
+      strip-final-newline: 2.0.0
+
   express@4.19.2:
     dependencies:
       accepts: 1.3.8
@@ -10461,6 +10506,8 @@ snapshots:
     dependencies:
       pump: 3.0.0
 
+  get-stream@6.0.1: {}
+
   get-symbol-description@1.0.2:
     dependencies:
       call-bind: 1.0.7
@@ -10677,6 +10724,8 @@ snapshots:
       debug: 4.3.7
     transitivePeerDependencies:
       - supports-color
+
+  human-signals@2.1.0: {}
 
   humanize-ms@1.2.1:
     dependencies:
@@ -11266,6 +11315,8 @@ snapshots:
   merge-descriptors@1.0.1: {}
 
   merge-descriptors@1.0.3: {}
+
+  merge-stream@2.0.0: {}
 
   merge2@1.4.1: {}
 
@@ -12643,6 +12694,8 @@ snapshots:
   strip-bom@3.0.0: {}
 
   strip-comments@2.0.1: {}
+
+  strip-final-newline@2.0.0: {}
 
   strip-json-comments@3.1.1: {}
 

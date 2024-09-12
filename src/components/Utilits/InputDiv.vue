@@ -1,20 +1,20 @@
 <template>
   <div
-      ref="editableDiv"
-      :contenteditable="auth"
-      :autofocus="autofocus"
-      :class="`${baseClass} ${auth ? activeClass : ''}`"
-      @input="updateValue"
-      @keydown.esc="ESC"
-      @keydown.ctrl.enter.stop="emit('ctrlEnter')"
-      @keydown.shift.enter.stop="emit('shiftEnter')"
-      @paste="handlePaste"
-      @blur="emit('ctrlEnter')"
+    ref="editableDiv"
+    :contenteditable="auth"
+    :class="`${baseClass} ${auth ? activeClass : ''}`"
+    @input="updateValue"
+    @keydown.esc="ESC"
+    @keydown.ctrl.enter.stop="emit('ctrlEnter')"
+    @keydown.shift.enter.stop="emit('shiftEnter')"
+    @paste="handlePaste"
+    @blur="emit('ctrlEnter')"
+    @focus="handleFocus"
   ></div>
 </template>
 
 <script setup>
-import {defineModel, onMounted, useTemplateRef} from 'vue';
+import {defineModel, onMounted, useTemplateRef, nextTick} from 'vue';
 import {removeHtmlTags} from "src/hooks/utilits.js";
 
 const { baseClass, activeClass, auth, autofocus } = defineProps({
@@ -50,14 +50,26 @@ onMounted(() => {
   }
 });
 
-const emit = defineEmits(["ctrlEnter", "shiftEnter", "ESC"]);
+const emit = defineEmits(["ctrlEnter", "shiftEnter", "ESC", "onFocus"]);
 const ESC = () => {
   modelValue.value = '';
   emit('ESC')
 };
-const handlePaste = (event) => {
+const handleFocus = () => {
+  emit('onFocus');
+}
+
+const handlePaste = async (event) => {
   event.preventDefault();
-  const pasteVal = (event.clipboardData || window.clipboardData).getData("text")
-  modelValue.value = removeHtmlTags(pasteVal);
+  try {
+    const text = await navigator.clipboard.readText();
+    event.target.innerText = removeHtmlTags(text);
+    modelValue.value = removeHtmlTags(text);
+  } catch (err) {
+    console.error('Failed to read clipboard contents: ', err);
+    const text = (event.clipboardData || window.clipboardData).getData('text/plain');
+    modelValue.value = removeHtmlTags(text);
+  }
+  await nextTick(); // 确保 DOM 更新
 };
 </script>

@@ -989,7 +989,6 @@
                                 v-if="todo_add_ing === element.id"
                                 v-model="todo_params.data.content"
                                 :auth="useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])"
-                                :todogroup="i"
                                 :baseClass="`q-space q-pa-xs`"
                                 :autofocus="true"
                                 style="
@@ -1000,10 +999,11 @@
                                 @update="createTodoFn(i, element)"
                                 @ctrlEnter="createTodoFn(i, element)"
                                 @cancel="cancelCreateTodo"
+                                @ESC="cancelCreateTodo"
                             ></InputDiv>
                           </div>
                           <div
-                              v-if="todo_add_ing === element.id && $q.screen.gt.xs"
+                              v-if="todo_add_ing === element.id && !$q.screen.gt.xs"
                               class="row no-wrap items-center q-py-xs"
                           >
                             <q-btn
@@ -1074,7 +1074,6 @@
                       <InputDiv
                           v-model="todo_params.data.content"
                           :auth="useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])"
-                          :todogroup="i"
                           :baseClass="`q-space q-pa-xs`"
                           :autofocus="true"
                           style="
@@ -1088,7 +1087,7 @@
                       ></InputDiv>
                     </div>
                     <div
-                        v-if="todo_add_ing === `group_${i.id}` && $q.screen.gt.xs"
+                        v-if="todo_add_ing === `group_${i.id}` && !$q.screen.gt.xs"
                         class="row no-wrap items-center q-py-xs"
                     >
                       <q-btn

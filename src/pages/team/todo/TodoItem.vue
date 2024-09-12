@@ -42,7 +42,7 @@
         </span>
         <div class="column no-wrap q-space" :style="$q.screen.gt.xs ? '' : 'line-height: 32px;'">
           <div
-            class="column no-wrap"
+            class="column no-wrap undrag"
             :class="`
                 ${element.status ? 'op-3 line-through' : ''}
                 ${

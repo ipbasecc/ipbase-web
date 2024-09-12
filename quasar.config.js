@@ -56,6 +56,7 @@ export default configure((ctx) => {
       "dexie",
       "ej2",
       "oss",
+      // 'addressbar-color',
       // 'localforage'
       // { path: 'websocket', server: false }
     ],
@@ -169,7 +170,12 @@ export default configure((ctx) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: ["Notify", "Dialog", "AppVisibility"],
+      plugins: [
+        "Notify",
+        "Dialog",
+        "AppVisibility",
+        // "AddressbarColor"
+      ],
     },
 
     // animations: 'all', // --- includes all animations

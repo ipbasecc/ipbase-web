@@ -1217,7 +1217,7 @@ watch(
           strapi.data.card_id === cardRef.value?.id &&
           strapi.data.action === "card_todo_updated"
         ) {
-          console.log("card_todo_updated ws", strapi.data);
+          // console.log("card_todo_updated ws", strapi.data);
           cardRef.value.todogroups = cardRef.value.todogroups.map((g) => ({
             ...g,
             todos: g.todos.map((t) =>
