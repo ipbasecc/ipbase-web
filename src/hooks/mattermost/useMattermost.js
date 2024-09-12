@@ -11,7 +11,6 @@ import {
 
 import localforage from "localforage";
 import {mmstore, mmUser, uiStore} from "src/hooks/global/useStore.js";
-import { throttle } from 'quasar'
 
 export function mergePosts(post1, post2, post3) {
   const mergedPosts = {};
@@ -154,6 +153,8 @@ let visibilityListenerAdded = false; // 用于跟踪是否已添加visibilitycha
 export async function __viewChannel(channel_id) {
   if (!channel_id || viewed.value) return;
 
+  let timerId
+  let autoView
   const view = async () => {
     findIndex(channel_id);
     if(!channelIndex.value) return
@@ -167,7 +168,6 @@ export async function __viewChannel(channel_id) {
     if (res) {
       updateUnreadCount(channel_id);
 
-      let timerId
       // 清除之前的定时器
       if (timerId) {
         clearTimeout(timerId);
@@ -176,45 +176,40 @@ export async function __viewChannel(channel_id) {
       timerId = setTimeout(() => {
         viewed.value = false; // 5秒后将viewed设置为false
       }, 5000);
+
+      autoView = setTimeout(() => {
+        view();
+      }, 50000);
     }
   }
 
   // 添加点击事件监听器，但只添加一次
   if (!clickListenerAdded) {
-    window.addEventListener("click", 
-      throttle(function() {
-        view
-      }, 3000 /* execute at most once every 0.3s */), { passive: true });
+    window.addEventListener("click", view, { passive: true });
     clickListenerAdded = true;
   }
 
   // 添加visibilitychange事件监听器，但只添加一次
   if (!visibilityListenerAdded) {
-    document.addEventListener("visibilitychange", 
-      throttle(function() {
-        view
-      }, 3000 /* execute at most once every 0.3s */));
+    document.addEventListener("visibilitychange", view);
     visibilityListenerAdded = true;
   }
 
   // 确保在组件卸载时移除事件监听器
   onUnmounted(() => {
     if (clickListenerAdded) {
-      window.removeEventListener("click", 
-        throttle(function() {
-          view
-        }, 3000 /* execute at most once every 0.3s */));
+      window.removeEventListener("click", view);
       clickListenerAdded = false;
     }
     if (visibilityListenerAdded) {
-      document.removeEventListener("visibilitychange", 
-        throttle(function() {
-          view
-        }, 3000 /* execute at most once every 0.3s */));
+      document.removeEventListener("visibilitychange", view);
       visibilityListenerAdded = false;
     }
     if (timerId) {
       clearTimeout(timerId);
+    }
+    if (autoView) {
+      clearTimeout(autoView);
     }
   });
 
