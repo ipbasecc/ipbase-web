@@ -9,7 +9,7 @@
   >
     <q-card-section
       v-if="create_with_name || name_onlyRef"
-      class="undrag q-pa-xs"
+      class="q-pa-xs"
     >
       <q-input
         v-model="params.data.name"
