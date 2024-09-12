@@ -241,7 +241,6 @@ import { getPostsOfChannel, getUsersByIDs, getChannelByID as getMmChannelByID } 
 import { getChannelByID } from "src/api/strapi/team.js";
 import {
   mergePosts,
-  __viewChannel,
 } from "src/hooks/mattermost/useMattermost.js";
 import { uniqueById } from "src/hooks/utilits.js";
 
@@ -378,7 +377,6 @@ watch(
     async () => {
       if (channel_id.value) {
         await initChannel(channel_id.value);
-        await __viewChannel(channel_id.value);
         // 如果通过连接直接访问到聊天界面，需要获取Strapi频道、Mattermost频道
         if(!teamStore.mm_channel){
           const res = await getMmChannelByID(channel_id.value);

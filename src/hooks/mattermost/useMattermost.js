@@ -1,4 +1,4 @@
-import {ref} from "vue";
+import {ref,onUnmounted} from "vue";
 import {
   getUser,
   getUserPreferences,
@@ -11,6 +11,7 @@ import {
 
 import localforage from "localforage";
 import {mmstore, mmUser, uiStore} from "src/hooks/global/useStore.js";
+import { throttle } from 'quasar'
 
 export function mergePosts(post1, post2, post3) {
   const mergedPosts = {};
@@ -128,10 +129,8 @@ export async function getTeamMembers(team_id, page, per_page) {
   }
 }
 
-// 执行view事件，保持与Mattermost的连接
 const mm_user_id = localStorage.getItem("mmUserId");
 const mm_channel_id = ref()
-const viewed = ref(false);
 const channelIndex = ref()
 const findIndex = (_mm_channel_id) => {
   const index = uiStore.unreads?.channels.findIndex(
@@ -146,30 +145,78 @@ const updateUnreadCount = (_mm_channel_id) => {
   uiStore.unreads.channels[channelIndex.value].msg_count = 0;
   uiStore.unreads.team.msg_count = uiStore.unreads.team.msg_count - unreadCount
 }
+
+// 执行view事件，保持与Mattermost的连接
+const viewed = ref(false);
+let clickListenerAdded = false; // 用于跟踪是否已添加点击事件监听器
+let visibilityListenerAdded = false; // 用于跟踪是否已添加visibilitychange事件监听器
+
 export async function __viewChannel(channel_id) {
+  if (!channel_id || viewed.value) return;
+
   const view = async () => {
-    if(!channel_id || viewed.value) return
     findIndex(channel_id);
     if(!channelIndex.value) return
-
+    if (viewed.value) return;
+    viewed.value = true;
     mm_channel_id.value = channel_id
     let params = {
       channel_id: channel_id,
     };
     let res = await viewChannel(mm_user_id, params);
     if (res) {
-      viewed.value = true;
       updateUnreadCount(channel_id);
-      setTimeout(() => {
-        viewed.value = false;
-      }, 3000);
+
+      let timerId
+      // 清除之前的定时器
+      if (timerId) {
+        clearTimeout(timerId);
+      }
+
+      timerId = setTimeout(() => {
+        viewed.value = false; // 5秒后将viewed设置为false
+      }, 5000);
     }
   }
+
+  // 添加点击事件监听器，但只添加一次
+  if (!clickListenerAdded) {
+    window.addEventListener("click", 
+      throttle(function() {
+        view
+      }, 3000 /* execute at most once every 0.3s */), { passive: true });
+    clickListenerAdded = true;
+  }
+
+  // 添加visibilitychange事件监听器，但只添加一次
+  if (!visibilityListenerAdded) {
+    document.addEventListener("visibilitychange", 
+      throttle(function() {
+        view
+      }, 3000 /* execute at most once every 0.3s */));
+    visibilityListenerAdded = true;
+  }
+
+  // 确保在组件卸载时移除事件监听器
+  onUnmounted(() => {
+    if (clickListenerAdded) {
+      window.removeEventListener("click", 
+        throttle(function() {
+          view
+        }, 3000 /* execute at most once every 0.3s */));
+      clickListenerAdded = false;
+    }
+    if (visibilityListenerAdded) {
+      document.removeEventListener("visibilitychange", 
+        throttle(function() {
+          view
+        }, 3000 /* execute at most once every 0.3s */));
+      visibilityListenerAdded = false;
+    }
+    if (timerId) {
+      clearTimeout(timerId);
+    }
+  });
+
   await view();
-// 当用户点击页面时，如果 viewed 为 false，则执行 view
-  window.addEventListener("click", view,
-    { passive: true }
-  );
-  // 当浏览器标签页面由非活跃状态切换为活跃状态时，执行 view
-  document.addEventListener("visibilitychange", view);
 }

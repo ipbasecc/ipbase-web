@@ -159,15 +159,6 @@ const getMembers = async () => {
 const current_tab = ref("chat");
 const router_base = ref();
 const tabs = ref([]);
-// watchEffect(() => {
-//   if (idRef.value && channel_nameRef.value) {
-//     router_base.value = `/chat/${channel_nameRef.value}/${idRef.value}`;
-//     tabs.value = [
-//       { name: "chat", label: "讨论", icon: "", to: `${router_base.value}` },
-//       //   { name: 'task',label: '任务', icon: '', to: `${router_base.value}/task`},
-//     ];
-//   }
-// });
 
 const channel_display_name = ref();
 const fetchChannel = async () => {
@@ -207,72 +198,11 @@ const fetchChannel = async () => {
   });
 };
 
-const sendMsg = async (Msg) => {
-  let parmars = {
-    channel_id: idRef.value,
-    message: Msg,
-  };
-  const res = await sendPost(parmars);
-  if (res) {
-    msg.value = "";
-  }
-};
-
-const directChannelId = ref();
-const createDirectChannel = async (a, b) => {
-  const res = await createDirect(a, b);
-  if (res.data) {
-    directChannelId.value = res.data.id;
-    // 传递 私聊频道元数据、聊天对象ID
-    emit(
-      "changeChannel",
-      res.data,
-      members.value.find((item) => item.user_id === a)
-    );
-  }
-};
-// a: 聊天对象ID
-const sendDirectMsg = async (a, b) => {
-  await createDirectChannel(a, b);
-};
-
-const extend_pannel_target = ref();
 const toggle_extend_pannel = (val) => {
   mmStore.extend_pannel_target =
     mmStore.extend_pannel_target === val ? null : val;
   mmStore.extend_pannel_target_history.push(mmStore.extend_pannel_target);
 };
-
-const viewed = ref(false);
-const __viewChannel = async () => {
-  let params = {
-    channel_id: idRef.value,
-  };
-  let res = await viewChannel(currentUerId, params);
-  if (res) {
-    viewed.value = true;
-    setTimeout(() => {
-      viewed.value = false;
-    }, 3000);
-  }
-};
-// 当用户点击页面时，如果 viewed 为 false，则执行 view
-window.addEventListener("click", () => {
-  if (!viewed.value) {
-    __viewChannel();
-  }
-});
-onMounted(() => {
-  __viewChannel();
-});
-// 当浏览器标签页面由非活跃状态切换为活跃状态时，执行 view
-onBeforeUnmount(() => {
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") {
-      __viewChannel();
-    }
-  });
-});
 
 watch(
   idRef,
