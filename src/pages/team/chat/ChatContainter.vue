@@ -335,6 +335,7 @@ const scroll_bottom = async (_val) => {
   );
 };
 const scrollPosition = ref()
+const keepPosition = ref(true);
 const to_bottom = ref();
 const scrollHandler = ({verticalSize,verticalPosition}) => {
   scrollPosition.value = verticalPosition;
@@ -343,9 +344,6 @@ const scrollHandler = ({verticalSize,verticalPosition}) => {
 async function onLoad (index, done)  {
   await fetchMore();
   await nextTick();
-  const { verticalSize } = scrollAreaRef.value?.getScroll();
-  const new_position = verticalSize - to_bottom.value;
-  scrollAreaRef.value?.setScrollPosition("vertical", new_position, 0)
   done();
 }
 async function refresh (done) {
@@ -361,12 +359,6 @@ async function refresh (done) {
 const autoScrollBottom = ref(false);
 const onResize = async (size) => {
   scrollContainer.value = size;
-  const scrollInfo = scrollAreaRef.value?.getScroll();
-  // 滚动条距离底部，当滚动条在底部时，这个距离是一个聊天容器的高度
-  const _bottom = scrollInfo.verticalSize - scrollInfo.verticalPosition;
-  if (autoScrollBottom.value && _bottom > scrollInfo.verticalContainerSize) {
-    await scroll_bottom(scrollContainer.value?.height);
-  }
 };
 const backList = async () => {
   if(teamStore.project){
@@ -410,9 +402,6 @@ const getPosts = async () => {
   fetching.value = true;
   const res = await getPostsOfChannel(channel_id, options.value);
   fetchCount.value++
-  if(fetchCount.value === 1){
-    scrollAreaRef.value?.setScrollPercentage("vertical", 1, 50)
-  }
   if (res?.data) {
     fetching.value = false
     return res.data;
@@ -426,7 +415,9 @@ const merageMsg = (newMessages = {}) => {
 
     const currentMessageIds = new Set(messages.value?.map(msg => msg.id));
     let newMessageEntries = order.reverse().map(postId => posts[postId]).filter(msg => !currentMessageIds.has(msg.id));
-
+    if(!newMessageEntries || newMessageEntries?.length === 0) {
+      keepPosition.value = true;
+    }
     if((!messages.value || messages.value?.length === 0) && order.length > 0){
       messages.value = newMessageEntries;
       before.value = newMessageEntries[0].id
@@ -442,8 +433,10 @@ const merageMsg = (newMessages = {}) => {
       if(!hasMsgInAfter.value){
         before.value = messages.value[0]?.id
         lastCacheID.value = null
-        fetchMore();
-        console.log('auto fetchMore')
+        if(!keepPosition.value){
+          fetchMore();
+          console.log('auto fetchMore')
+        }
       } else {
         lastCacheID.value = order[0]
         before.value = order.reverse()[0];
