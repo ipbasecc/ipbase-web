@@ -13,7 +13,7 @@
             clickable
             v-ripple
             class="col radius-xs dragBar hovered-item overflow-hidden"
-            :class="actived_id === element.id ? 'border' : 'border-placeholder'"
+            :class="actived_id === element.id ? 'border' : 'border-placeholder op-7'"
             :active-class="`${$q.dark.mode ? 'text-grey-3' : 'text-grey-9'}`"
             :active="actived_id === element.id"
             style="min-height: 40px;"

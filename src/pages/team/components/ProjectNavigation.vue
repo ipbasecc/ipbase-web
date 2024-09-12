@@ -2,12 +2,16 @@
   <q-tabs v-model="tab" dense stretch shrink inline-label no-caps>
     <template v-for="i in tabs" :key="i.name">
       <q-tab
-          :name="i.name"
-          :icon="$q.screen.gt.sm ? i.icon : void 0"
-          :label="$t(i.label)"
-          @click="goto(i)"
-          :class="$q.screen.gt.sm ? '' : 'q-px-xs'"
-      />
+        :name="i.name"
+        @click="goto(i)"
+        :class="`
+          ${$q.screen.gt.sm ? '' : 'q-px-xs'}
+          ${tab === i.name ? '' : 'op-7'}
+        `"
+      >
+        <q-icon v-if="$q.screen.gt.sm" :name="i.icon" size="1.4rem" />
+        <span class="q-ml-sm">{{ $t(i.label) }}</span>
+      </q-tab>
     </template>
   </q-tabs>
 </template>

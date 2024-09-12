@@ -4,7 +4,7 @@
         v-if="kanbanRef"
         class="hovered-item radius-xs q-pa-xs"
         :class="`
-        ${isActived ? 'border active-sublistitem' : !teamStore.dropKanbanID ? 'border-placeholder' : ''}
+        ${isActived ? 'border active-sublistitem' : `op-6 ${!teamStore.dropKanbanID ? 'border-placeholder' : ''}`}
         ${useAuths('order', ['kanban']) && $q.screen.gt.xs ? ' dragBar' : ''}
         ${teamStore.dropKanbanID === kanbanRef.id ? 'border border-dashed' : ''}
       `"

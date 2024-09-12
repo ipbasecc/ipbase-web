@@ -13,7 +13,7 @@
             clickable
             v-ripple
             class="col radius-xs dragBar hovered-item overflow-hidden"
-            :class="activeStorage === i.id ? 'border active-sublistitem' : 'border-placeholder'"
+            :class="activeStorage === i.id ? 'border active-sublistitem' : 'border-placeholder op-7'"
             :active-class="`${$q.dark.mode ? 'text-grey-3' : 'text-grey-9'}`"
             style="min-height: 40px;"
             @click="enterStorage(i.id)"

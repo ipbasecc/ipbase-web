@@ -20,11 +20,11 @@
         >
           <template  v-for="element in teamStore.board.groups" :key="element.id">
             <div class="column no-wrap">
-              <div class="row no-wrap items-center hovered-item op-5 relative-position">
-                <q-icon size="sm" name="tag"
+              <div class="row no-wrap items-center hovered-item relative-position">
+                <q-icon size="xs" name="mdi-pound"
                   :class="useAuths('order', ['group']) ? 'dragBar' : ''"
                 />
-                <span class="q-space q-pa-sm"
+                <span class="q-space q-px-xs q-py-sm"
                   :class="useAuths('order', ['group']) ? 'dragBar' : ''"
                 >
                   {{ element.name === 'Initial_Group' ? $t(element.name) : element.name }}
@@ -143,7 +143,7 @@
             </VueDraggable>
             </div>
           </template>
-      </VueDraggable>
+        </VueDraggable>
         <q-input v-if="createGroup_ing"
           v-model="createGroup_name"
           dense square filled autofocus type="text"

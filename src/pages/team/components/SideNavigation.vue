@@ -7,7 +7,7 @@
           :class="`${
             teamStore?.mm_channel?.id === 'threads'
               ? 'border active-listitem'
-              : 'border-placeholder'
+              : 'border-placeholder op-7'
           }`"
           class="overflow-hidden radius-xs q-pa-xs hovered-item full-width"
           clickable
@@ -29,7 +29,7 @@
           :class="`${
             teamStore?.mm_channel?.id === 'intro' || !teamStore?.mm_channel
               ? 'border active-listitem'
-              : 'border-placeholder'
+              : 'border-placeholder op-7'
           }
                 `"
           class="overflow-hidden radius-xs q-pa-xs hovered-item full-width"
@@ -49,7 +49,7 @@
         </q-item>
       </template>
       <template v-if="enalbe_channel">
-        <q-item-label header class="q-pa-sm non-selectable" :class="$q.screen.gt.xs ? 'text-grey-1' : `text-grey-1${$q.dark.mode ? '' : '0'}`">
+        <q-item-label header class="q-pa-sm non-selectable text-white">
           {{ $t('channel') }}
         </q-item-label>
         <template v-if="team.team_channels?.length > 0">
@@ -57,8 +57,8 @@
             :key="i.id" clickable v-ripple
             :class="`${teamStore?.mm_channel?.id === i.mm_channel?.id
               ? 'border active-listitem'
-              : 'border-placeholder'}
-              ${i.auth && !i.auth?.read ? 'op-5' : ''}
+              : 'border-placeholder op-7'}
+              ${i.auth && !i.auth?.read ? 'op-4' : ''}
             `"
             class="radius-xs q-pa-xs hovered-item overflow-hidden full-width"
             @click="enterChannel(i)"
@@ -233,7 +233,7 @@
       </template>
 
       <template v-if="enalbe_project">
-        <q-item-label header class="q-pa-sm non-selectable"
+        <q-item-label header class="q-pa-sm non-selectable text-white"
           :class="$q.screen.gt.xs ? 'text-grey-1' : `text-grey-1${$q.dark.mode ? '' : '0'}`"
         >{{ $t('project') }}</q-item-label>
         <template v-if="team.projects?.length > 0">
@@ -244,7 +244,7 @@
               :class="`${
                 teamStore?.project?.id === project.id
                   ? 'border active-listitem'
-                  : 'border-placeholder'
+                  : 'border-placeholder op-7'
               } ${project.auth && !project.auth?.read ? 'op-5' : ''}`"
               class="overflow-hidden radius-xs q-pa-xs full-width"
               @click="enterProject(project)"
