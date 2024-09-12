@@ -1727,7 +1727,7 @@ const createTodoFn = async (i, todo) => {
     create_params.after = todo.id
   }
   create_params.data.content = todo_params.value.data.content;
-  console.log('window.fingerprint', window.fingerprint)
+  // console.log('window.fingerprint', window.fingerprint)
   if (teamStore.shareInfo) {    
     create_params.shareInfo = teamStore.shareInfo;
     create_params.data.fingerprint = window.fingerprint;

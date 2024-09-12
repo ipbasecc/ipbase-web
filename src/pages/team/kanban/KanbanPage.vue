@@ -5,7 +5,7 @@
         class="border-bottom gap-sm q-pr-none overflow-hidden"
         :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-1'"
         style="height: 2.3rem"
-      >
+      >{{uiStore.topPannel}}
         <q-btn v-if="!$q.screen.gt.xs"
           flat dense size="sm" icon="mdi-chevron-left"
           :color="$q.dark.mode ? 'white' : 'black'"

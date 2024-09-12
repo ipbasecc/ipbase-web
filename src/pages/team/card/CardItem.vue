@@ -572,7 +572,7 @@
 </template>
 
 <script setup>
-import {computed, reactive, ref, toRef, toRefs, watch, watchEffect} from "vue";
+import {computed, reactive, ref, toRef, toRefs, watch, watchEffect, nextTick} from "vue";
 import {useMagicKeys} from "@vueuse/core";
 import StatusMenu from "src/pages/team/components/user/StatusMenu.vue";
 import CardPage from "./CardPage.vue";
@@ -993,7 +993,10 @@ watch(
   mm_wsStore,
   async () => {
     if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
-      let post = mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
+      let post
+      if(mm_wsStore.event?.data?.post){
+        post = JSON.parse(mm_wsStore.event.data.post);
+      }
       // console.log('post', post);
       const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
       if (!post) return;
@@ -1231,14 +1234,15 @@ watch(
           strapi.data.card_id === cardRef.value.id &&
           strapi.data.action === "card_todo_created"
         ) {
-          strapi.data.body.mm_thread = post
+          let _todo = strapi.data.body
+          _todo.mm_thread = JSON.parse(mm_wsStore.event.data.post)
           const processAfter = (after, todos) => {
             if(!after) {
               return [...todos, strapi.data.body]
             } else {
               const _index = todos.findIndex((t) => t.id === after);
               if(_index !== -1){
-                todos.splice(_index + 1, 0, strapi.data.body);
+                todos.splice(_index + 1, 0, _todo);
                 return todos
               }
             }
@@ -1249,7 +1253,7 @@ watch(
                   && !g.todos?.map((todo) => todo.id).includes(strapi.data.body.id)
                   ? processAfter(strapi.data.after, g.todos)
                   : g.todos
-          }));
+          }));          
           syncCardStore();
         }
         if (
