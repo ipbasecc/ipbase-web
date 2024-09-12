@@ -34,8 +34,8 @@ export async function $server() {
   let _url = await localforage.getItem('backend_url') || process.env.BACKEND_URI;
   const server = await fetchServerInfo(_url);
   if(server){
-    return server //临时提前，后续需要补充版本升级方案
     serverInfo.value = server;
+    return server //临时提前，后续需要补充版本升级方案
     const isWeb = () => {
       return Platform.is.chrome || Platform.is.opera || Platform.is.safari || Platform.is.edge
     }
