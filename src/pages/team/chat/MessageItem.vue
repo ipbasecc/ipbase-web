@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="msg"
+    v-if="msg?.message"
     v-bind="$attrs"
     class="row no-wrap gap-md q-py-xs q-px-md hovered-item"
     :class="`${is_sameUser ? '' : 'q-mt-sm'} ${
