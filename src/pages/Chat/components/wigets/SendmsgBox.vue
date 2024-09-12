@@ -8,7 +8,7 @@
           need="md"
           ref="tiptapRef"
           @tiptapUpdate="tiptapUpdate"
-          @keyup.ctrl.enter="sendMsg(msg)"
+          @ModEnter="sendMsg(msg)"
         >
           <template v-slot:more_btn>
             <uploadFile

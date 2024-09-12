@@ -139,6 +139,28 @@ import { Color } from "@tiptap/extension-color";
 import Image from "@tiptap/extension-image";
 import { Markdown } from "tiptap-markdown";
 
+import { Extension } from '@tiptap/core'
+import { Blockquote } from '@tiptap/extension-blockquote'
+import { Bold,  } from '@tiptap/extension-bold'
+import { BulletList,  } from '@tiptap/extension-bullet-list'
+import { Code,  } from '@tiptap/extension-code'
+import { CodeBlock,  } from '@tiptap/extension-code-block'
+import { Document } from '@tiptap/extension-document'
+import { Dropcursor,  } from '@tiptap/extension-dropcursor'
+import { Gapcursor } from '@tiptap/extension-gapcursor'
+import { HardBreak,  } from '@tiptap/extension-hard-break'
+import { Heading,  } from '@tiptap/extension-heading'
+import { History,  } from '@tiptap/extension-history'
+import { HorizontalRule,  } from '@tiptap/extension-horizontal-rule'
+import { Italic,  } from '@tiptap/extension-italic'
+import { ListItem,  } from '@tiptap/extension-list-item'
+import { OrderedList,  } from '@tiptap/extension-ordered-list'
+import { Paragraph,  } from '@tiptap/extension-paragraph'
+import { Strike,  } from '@tiptap/extension-strike'
+import { Text } from '@tiptap/extension-text'
+
+
+
 import "prismjs";
 import "prismjs/themes/prism.css";
 import { uiStore, userStore } from "src/hooks/global/useStore";
@@ -244,7 +266,8 @@ const emit = defineEmits([
   "tiptapClose",
   "tiptapUpdate",
   "tiptapChanged",
-  "mmMsgChange"
+  "mmMsgChange",
+  "ModEnter"
 ]);
 
 const tiptap = ref(null);
@@ -256,6 +279,18 @@ const cleanHtmlHandler = (val) => {
   return val.replace(/<[^>]*>?/gm, "");
 };
 const init = () => {
+  const _HardBreak = HardBreak.extend({
+    addKeyboardShortcuts() {
+      return {
+        // ↓ 禁用Ctrl + Enter,改为发送消息
+        'Mod-Enter': () => {
+          tiptapBlur();
+          emit("ModEnter");
+        },
+      }
+    },
+  })
+
   editor.value = new Editor({
     content: tiptapContent.value,
     editable: isEditable.value,
@@ -270,7 +305,6 @@ const init = () => {
     extensions: [
       TextStyle,
       Color,
-      StarterKit,
       TaskList,
       TaskItem.configure({
         nested: true,
@@ -281,6 +315,25 @@ const init = () => {
         placeholder: t('start_type_tip'),
       }),
       Markdown,
+      Extension,
+      Blockquote,
+      Bold,
+      BulletList,
+      Code,
+      CodeBlock,
+      Document,
+      Dropcursor,
+      Gapcursor,
+      _HardBreak,
+      Heading,
+      History,
+      HorizontalRule,
+      Italic,
+      ListItem,
+      OrderedList,
+      Paragraph,
+      Strike,
+      Text
     ],
     // triggered on every change
     onUpdate: () => {
@@ -370,7 +423,7 @@ const md = computed(() => editor.value?.storage?.markdown?.getMarkdown());
 const json = computed(() => editor.value && editor.value.getJSON());
 const html = computed(() => editor.value && editor.value.getHTML());
 
-const tiptapBlur = async () => {
+const tiptapBlur = () => {
   
   emit("tiptapClose", html.value);
   const cur = JSON.stringify(json.value);

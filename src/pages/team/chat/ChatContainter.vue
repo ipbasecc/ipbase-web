@@ -410,7 +410,7 @@ const getPosts = async () => {
   fetching.value = true;
   const res = await getPostsOfChannel(channel_id, options.value);
   fetchCount.value++
-  if(fetchCount === 1){
+  if(fetchCount.value === 1){
     scrollAreaRef.value?.setScrollPercentage("vertical", 1, 50)
   }
   if (res?.data) {
@@ -439,7 +439,7 @@ const merageMsg = (newMessages = {}) => {
         messages.value.splice(lastCacheIndex + 1, 0, ...newMessageEntries);
       }
       hasMsgInAfter.value = !order.includes(lastCacheID.value);
-      if(!hasMsgInAfter){
+      if(!hasMsgInAfter.value){
         before.value = messages.value[0]?.id
         lastCacheID.value = null
         fetchMore();
