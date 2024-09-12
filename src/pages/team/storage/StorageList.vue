@@ -1,49 +1,85 @@
 <template>
   <q-scroll-area v-if="storages" class="fit">
     <q-list class="full-width q-pa-xs">
-      <q-item
-        v-for="i in storages"
-        :key="i.id"
-        clickable
-        v-ripple
-        class="radius-xs overflow-hidden hovered-item"
-        :class="activeStorage === i.id ? 'border active-sublistitem' : 'border-placeholder'"
-        :active-class="`${$q.dark.mode ? 'text-grey-3' : 'text-grey-9'}`"
-        style="min-height: 40px;"
-        @click="enterStorage(i.id)"
+      <VueDraggable v-model="storages"
+        :disabled="!sortAuth" :animation="300" :delay="1" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+        handle=".dragBar" group="groups"
+        chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
+        class="radius-sm column no-wrap q-pa-xs"
+        @sort="orderStorages"
       >
-        <q-item-section side>
-          <AzureIcon v-if="i.type === 'azure_blob'" />
-          <q-icon v-else name="mdi-server-network" />
-        </q-item-section>
-        <template v-if="updateTarget === i.id">
-          <q-item-section>
-            <q-input
-              v-model="update_parmas.data.name"
-              dense
-              flat
-              square
-              autofocus
-              type="text"
-              class="full-width"
-              @keydown.esc="updateTarget = null"
-              @keyup.enter.prevent="updateFn(i)"
-          /></q-item-section>
-        </template>
-        <template v-else>
-          <q-item-section>{{ i.name }}</q-item-section>
-        </template>
-        <q-item-section side class="hover-show transition absolute-right z-fab q-mr-xs">
-          <q-btn
-            flat
-            dense
-            size="sm"
-            round
-            icon="more_vert"
-            @mouseenter="disableParentFn = true"
-            @mouseleave="disableParentFn = false"
+        <template v-for="i in storages" :key="i.id">
+          <q-item
+            clickable
+            v-ripple
+            class="col radius-xs dragBar hovered-item overflow-hidden"
+            :class="activeStorage === i.id ? 'border active-sublistitem' : 'border-placeholder'"
+            :active-class="`${$q.dark.mode ? 'text-grey-3' : 'text-grey-9'}`"
+            style="min-height: 40px;"
+            @click="enterStorage(i.id)"
           >
-            <q-menu class="radius-sm">
+            <q-item-section side>
+              <AzureIcon v-if="i.type === 'azure_blob'" />
+              <q-icon v-else name="mdi-server-network" />
+            </q-item-section>
+            <template v-if="updateTarget === i.id">
+              <q-item-section>
+                <q-input
+                  v-model="update_parmas.data.name"
+                  dense
+                  flat
+                  square
+                  autofocus
+                  type="text"
+                  class="full-width"
+                  @keydown.esc="updateTarget = null"
+                  @keyup.enter.prevent="updateFn(i)"
+              /></q-item-section>
+            </template>
+            <template v-else>
+              <q-item-section>{{ i.name }}</q-item-section>
+            </template>
+            <q-item-section side class="hover-show transition absolute-right z-fab q-mr-xs">
+              <q-btn
+                flat
+                dense
+                size="sm"
+                round
+                icon="more_vert"
+                @mouseenter="disableParentFn = true"
+                @mouseleave="disableParentFn = false"
+              >
+                <q-menu class="radius-sm">
+                  <q-list bordered dense class="radius-sm q-pa-xs">
+                    <q-item
+                      clickable
+                      v-ripple
+                      v-close-popup
+                      class="radius-xs"
+                      @click.stop="changeName(i)"
+                    >
+                      <q-item-section side>
+                        <q-icon name="edit" />
+                      </q-item-section>
+                      <q-item-section class="q-pr-md">{{ $t('rename') }}</q-item-section>
+                    </q-item>
+                    <q-item
+                      clickable
+                      v-ripple
+                      v-close-popup
+                      class="radius-xs"
+                      @click.stop="deleteFn(i)"
+                    >
+                      <q-item-section side>
+                        <q-icon name="close" />
+                      </q-item-section>
+                      <q-item-section class="q-pr-md">{{ $t('delete') }}</q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-menu>
+              </q-btn>
+            </q-item-section>
+            <q-popup-proxy context-menu class="radius-sm">
               <q-list bordered dense class="radius-sm q-pa-xs">
                 <q-item
                   clickable
@@ -70,43 +106,15 @@
                   <q-item-section class="q-pr-md">{{ $t('delete') }}</q-item-section>
                 </q-item>
               </q-list>
-            </q-menu>
-          </q-btn>
-        </q-item-section>
-        <q-popup-proxy context-menu class="radius-sm">
-          <q-list bordered dense class="radius-sm q-pa-xs">
-            <q-item
-              clickable
-              v-ripple
-              v-close-popup
-              class="radius-xs"
-              @click.stop="changeName(i)"
-            >
-              <q-item-section side>
-                <q-icon name="edit" />
-              </q-item-section>
-              <q-item-section class="q-pr-md">{{ $t('rename') }}</q-item-section>
-            </q-item>
-            <q-item
-              clickable
-              v-ripple
-              v-close-popup
-              class="radius-xs"
-              @click.stop="deleteFn(i)"
-            >
-              <q-item-section side>
-                <q-icon name="close" />
-              </q-item-section>
-              <q-item-section class="q-pr-md">{{ $t('delete') }}</q-item-section>
-            </q-item>
-          </q-list>
-        </q-popup-proxy>
-        <div
-          v-if="activeStorage === i.id"
-          class="absolute-left bg-primary"
-          style="width: 3px"
-        ></div>
-      </q-item>
+            </q-popup-proxy>
+            <div
+              v-if="activeStorage === i.id"
+              class="absolute-left bg-primary"
+              style="width: 3px"
+            ></div>
+          </q-item>
+        </template>
+      </VueDraggable>
       <q-item
         v-if="!creating"
         clickable
@@ -279,7 +287,7 @@
 </template>
 
 <script setup>
-import { ref, toRefs, watch, computed } from "vue";
+import { ref, toRefs, watch, computed, nextTick, onBeforeMount } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { fetch_MmMe } from "src/hooks/global/useFetchme.js";
@@ -288,19 +296,18 @@ import {
   createStorage,
   updateStorage,
   deleteStorage,
+  updateProject,
 } from "src/api/strapi/project.js";
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import { useCardname } from "src/hooks/project/useCardname.js";
+import { VueDraggable } from 'vue-draggable-plus'
 import AzureIcon from "../components/widgets/icons/AzureIcon.vue";
 import {userStore, mm_wsStore, teamStore, uiStore} from 'src/hooks/global/useStore.js';
 
+import { i18n } from 'src/boot/i18n.js';
+const $t = i18n.global.t;
+
 const props = defineProps({
-  storages: {
-    type: Array,
-    default() {
-      return [];
-    },
-  },
   belonged: {
     type: String,
     default: "project",
@@ -317,8 +324,46 @@ const props = defineProps({
       return {};
     },
   },
+  sortAuth: {
+    type: Boolean,
+    default: false,
+  },
+  by_info: {
+    type: Object,
+    default() {
+      return {
+        by: "project",
+      };
+    },
+  },
 });
-const { storages, belonged, card, user } = toRefs(props);
+const { belonged, card, user, sortAuth, by_info } = toRefs(props);
+const storages = ref([]);
+
+const create_parmas = ref({
+  data: {
+    name: "",
+    type: "local",
+  },
+});
+onBeforeMount(() => {
+  switch (by_info.value?.by) {
+    case "project":
+      storages.value = teamStore.project?.storages || [];
+      create_parmas.value.data.assign_project = teamStore.project.id;
+      break;
+    case "card":
+      // storages.value = [teamStore.card?.storage] || [];
+      create_parmas.value.data.assign_card = card.value.id;
+      break;
+    case "user":
+      storages.value = teamStore.init?.storages || [];
+      break;
+    default:
+      create_parmas.value.data.assign_project = teamStore.project.id;
+      storages.value = teamStore.project?.storages || []
+  }
+});
 const route = useRoute();
 const router = useRouter();
 
@@ -355,12 +400,6 @@ watch(
 );
 
 const creating = ref(false);
-const create_parmas = ref({
-  data: {
-    name: "",
-    type: "local",
-  },
-});
 const updateTarget = ref();
 const update_parmas = ref({
   data: {
@@ -382,15 +421,6 @@ const createFn = async (azureInfo) => {
   if (loading.value) return;
   creating.value = false;
   loading.value = true;
-  if (belonged.value === "project") {
-    create_parmas.value.data.assign_project = teamStore.project.id;
-  }
-  if (belonged.value === "card") {
-    create_parmas.value.data.assign_card = card.value.id;
-  }
-  if (belonged.value === "user") {
-    create_parmas.value.data.assign_user = user.value.id;
-  }
   if (azureInfo) {
     create_parmas.value.data.azureInfo = azureInfo;
   }
@@ -398,7 +428,7 @@ const createFn = async (azureInfo) => {
   if (res) {
     azureCreatingRef.value.hide();
     create_parmas.value.data.name = "";
-    if (belonged.value === "user") {
+    if (by_info.value?.by === "user") {
       userStore.storages.push(res.data);
     } else {
       let chat_Msg = {
@@ -413,11 +443,11 @@ const createFn = async (azureInfo) => {
           },
         },
       };
-      if (belonged.value === "project") {
+      if (by_info.value?.by === "project") {
         chat_Msg.body = `${userStore.me?.username}在“项目文件”中新建了存储: ${res.data?.name}`;
         chat_Msg.props.strapi.data.project_id = teamStore.project.id;
       }
-      if (belonged.value === "card") {
+      if (by_info.value?.by === "card") {
         chat_Msg.body = `${userStore.me?.username}为卡片:${useCardname(
           card.value
         )}新建了存储: ${res.data?.name}`;
@@ -454,7 +484,7 @@ const deleteFn = async (i) => {
           data: {
             is: "storage",
             by_user: userStore.userId,
-            action: "storage_deleted",
+            action: "storage_ordered",
             storage_id: i.id,
           },
         },
@@ -514,6 +544,57 @@ const updateFn = async (i) => {
         )} 的存储: ${i.name} 改名为: ${res.data?.name}`;
         chat_Msg.props.strapi.data.card_id = card.value.id;
       }
+      await send_chat_Msg(chat_Msg);
+    }
+  }
+};
+const process_orderData = (val) => {
+    storages.value = val.map((i) =>
+      storages.value.find((j) => j.id === i
+    )
+  );
+};
+const orderStorages = async () => {
+  // console.log(event);
+  await nextTick();
+  let res;
+  let Msg_body;
+
+  const _storages_ids = storages.value.map((i) => i.id);
+  // card只会绑定一个根存储，这里不需要有排序逻辑
+  if (by_info.value?.by === "project") {
+    const project_id = teamStore.project?.id;
+    let params = {
+      storages: _storages_ids,
+    };
+    res = await updateProject(project_id, params);
+    Msg_body = res?.data.storages.map((i) => i.id);
+  }
+  if (by_info.value?.by === "user") {
+    Msg_body = res.data.user_documents.map((i) => i.id);
+  }
+
+  if (res) {
+    let chat_Msg = {
+      props: {
+        strapi: {
+          data: {
+            is: by_info.value?.by,
+            by_user: userStore.userId,
+            action: "storage_ordered",
+            body: Msg_body,
+          },
+        },
+      },
+    };
+    
+    if (by_info.value?.by === "project") {
+      chat_Msg.body = `${userStore.me.username}：${$t('sorted_project_document')}`;
+      chat_Msg.props.strapi.data.project_id = teamStore.project?.id;
+    }
+    if (by_info.value?.by === "user") {
+      process_orderData(Msg_body);
+    } else {
       await send_chat_Msg(chat_Msg);
     }
   }
@@ -582,6 +663,14 @@ watch(
           strapi.data.action === "storage_updated"
         ) {
           card.value.storage = strapi.data.storage;
+        }
+        if (
+          strapi.data?.is === by_info.value?.by &&
+          (strapi.data?.project_id === teamStore.project?.id) &&
+          strapi.data.action === "storage_ordered"
+        ) {
+          console.log('storage_ordered', strapi);
+          process_orderData(strapi.data.body);
         }
       }
     }

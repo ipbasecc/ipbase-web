@@ -36,6 +36,8 @@
         <ChatList v-else-if="teamStore.navigation === 'chat'" />
         <StorageList v-else-if="teamStore.navigation === 'storage' && teamStore.project?.storages"
           :storages="teamStore.project?.storages"
+          :by_info="byInfo"
+          :sortAuth="useAuths('modify', ['project'])"
         />
         <ScheduleList v-else-if="teamStore.navigation === 'schedule'"
           :schedules="teamStore.project?.schedules"
@@ -99,7 +101,11 @@
             <template v-if="!$q.screen.gt.xs && uiStore.showMainContentList">
               <BoradsList v-if="showBoard" />
               <ChatList v-if="teamStore.navigation === 'chat'" />
-              <StorageList v-if="teamStore.navigation === 'storage' && teamStore.project?.storages" :storages="teamStore.project?.storages" />
+              <StorageList v-if="teamStore.navigation === 'storage' && teamStore.project?.storages"
+                :storages="teamStore.project?.storages"
+                :by_info="byInfo"
+                :sortAuth="useAuths('modify', ['project'])"
+              />
               <ScheduleList
                   v-if="teamStore.navigation === 'schedule'"
                   :schedules="teamStore.project?.schedules"
