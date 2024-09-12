@@ -847,7 +847,7 @@ watch(
           teamStore.card.card_documents.push(strapi.data.body);
           // 修改当前cards里的对应card，防止下次通过顶部tab切换时还是旧数据
           const isSameCardId = (element) => {
-            return element.id === teamStore.card.id;
+            return element.id === teamStore.card?.id;
           }
           const card_index = teamStore.cards.findIndex(isSameCardId);
           if (card_index !== -1) {
@@ -870,7 +870,7 @@ watch(
 
           // 修改当前cards里的对应card，防止下次通过顶部tab切换时还是旧数据
           const isSameCardId = (element) => {
-            return element.id === teamStore.card.id;
+            return element.id === teamStore.card?.id;
           }
           const card_index = teamStore.cards.findIndex(isSameCardId);
           if (card_index !== -1) {
@@ -893,7 +893,7 @@ watch(
 
           // 修改当前cards里的对应card，防止下次通过顶部tab切换时还是旧数据
           const isSameCardId = (element) => {
-            return element.id === teamStore.card.id;
+            return element.id === teamStore.card?.id;
           }
           const card_index = teamStore.cards.findIndex(isSameCardId);
           if (card_index !== -1) {
@@ -916,7 +916,7 @@ watch(
           );
           // 修改当前cards里的对应card，防止下次通过顶部tab切换时还是旧数据
           teamStore.cards
-            .find((i) => i.id === teamStore.card.id)
+            .find((i) => i.id === teamStore.card?.id)
             .card_documents.find(
               (i) => i.id === strapi.data.document_id
             ).jsonContent = strapi.data.jsonContent;
@@ -954,7 +954,7 @@ watch(
 
         if (
           strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card.id &&
+          strapi.data.card_id === teamStore.card?.id &&
           strapi.data.action === "card_todogroup_deleted"
         ) {
           teamStore.card.todogroups = teamStore.card.todogroups.filter(
@@ -979,7 +979,7 @@ watch(
         }
         if (
           strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card.id &&
+          strapi.data.card_id === teamStore.card?.id &&
           strapi.data.action === "card_todogroup_order"
         ) {
           // console.log('ws card_todogroup_order', all_todogroups.value)
@@ -1007,7 +1007,7 @@ watch(
         }
         if (
           strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card.id &&
+          strapi.data.card_id === teamStore.card?.id &&
           strapi.data.action === "card_todogroup_update"
         ) {
           // console.log("todogroupUpdate");
@@ -1022,7 +1022,7 @@ watch(
         }
         if (
           strapi.data?.is === "todogroup" &&
-          strapi.data.card_id === teamStore.card.id &&
+          strapi.data.card_id === teamStore.card?.id &&
           strapi.data.action === "card_todo_sort" &&
           teamStore.card?.todogroups
             ?.map((i) => i.id)
@@ -1048,7 +1048,7 @@ watch(
 
         if (
           strapi.data?.is === "todo" &&
-          strapi.data.card_id === teamStore.card.id &&
+          strapi.data.card_id === teamStore.card?.id &&
           strapi.data.action === "card_todo_created"
         ) {
           // console.log("card_todo_created ws", strapi.data);
@@ -1080,7 +1080,7 @@ watch(
         }
         if (
           strapi.data?.is === "todo" &&
-          strapi.data.card_id === teamStore.card.id &&
+          strapi.data.card_id === teamStore.card?.id &&
           strapi.data.action === "card_todo_deleted"
         ) {
           teamStore.card.todogroups = teamStore.card.todogroups?.map((g) => ({

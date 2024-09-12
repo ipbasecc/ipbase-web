@@ -23,6 +23,7 @@ import { updateCard } from "src/api/strapi/project.js";
 import { useQuasar } from "quasar";
 import { teamStore } from "src/hooks/global/useStore.js";
 
+// import * as echarts from 'echarts';
 import * as echarts from 'echarts/core';
 import {
   TimelineComponent,
@@ -198,7 +199,6 @@ const initECharts = () => {
     );
   };
   const setDrag = () => {    
-    if(teamStore.shareInfo || !auth.value?.modify) return
     chart.setOption({
       // 声明一个 graphic component，里面有若干个 type 为 'circle' 的 graphic elements。
       // 这里使用了 echarts.util.map 这个帮助方法，其行为和 Array.prototype.map 一样，但是兼容 es5 以下的环境。
@@ -223,14 +223,14 @@ const initECharts = () => {
             // 这个属性让圆点不可见（但是不影响他响应鼠标事件）。
             invisible: true,
             // 这个属性让圆点可以被拖拽。
-            draggable: true,
+            draggable: !teamStore.shareInfo && auth.value?.modify,
             ondragend: function (event) {
               // 此时dataItem数值还是旧数据，因此从根数据中取
               let last_data = axisDataRef.value[dataIndex];
               let params = {
                 data: {
-                  urgency: last_data[0]?.toFixed(2),
-                  importance: last_data[1]?.toFixed(2),
+                  urgency: +last_data[0]?.toFixed(2),
+                  importance: +last_data[1]?.toFixed(2),
                 },
               };
               updateCardFn(dataItem[3], params);
@@ -274,7 +274,7 @@ const initECharts = () => {
         //还会自适应容器的边界进行换行。
         extraCssText: "white-space:pre-wrap",
       },
-      graphic: axisDataRef.value.map(function (dataItem, dataIndex) {
+      graphic: axisDataRef.value?.map(function (dataItem, dataIndex) {
         return {
           type: "circle",
           // ...,
@@ -304,10 +304,10 @@ const initECharts = () => {
     });
   }
 
-  const enterCard = (dataIndex) => {
-    if (axisDataRef.value[dataIndex][4] === "task") {
+  const enterCard = (dataIndex) => {    
       teamStore.activedCard_id = axisDataRef.value[dataIndex][3];
       show_cardDetial.value = true;
+    if (axisDataRef.value[dataIndex][4] === "task") {
     }
   };
 
