@@ -366,6 +366,9 @@ importers:
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.45)
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
       cypress:
         specifier: ^13.6.6
         version: 13.14.2

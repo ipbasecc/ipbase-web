@@ -140,11 +140,14 @@
     "@quasar/quasar-app-extension-testing": "^2.2.0",
     "@quasar/quasar-app-extension-testing-e2e-cypress": "^6.1.0",
     "autoprefixer": "^10.4.20",
+    "cross-env": "^7.0.3",
+    "cypress": "^13.6.6",
     "dotenv": "^16.4.5",
     "electron": "^31.5.0",
     "electron-builder": "^24.13.3",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-cypress": "^2.15.1",
     "eslint-plugin-vue": "^9.28.0",
     "postcss": "^8.4.45",
     "prettier": "^2.8.8",
@@ -157,9 +160,7 @@
     "workbox-expiration": "^7.1.0",
     "workbox-precaching": "^7.1.0",
     "workbox-routing": "^7.1.0",
-    "workbox-strategies": "^7.1.0",
-    "cypress": "^13.6.6",
-    "eslint-plugin-cypress": "^2.15.1"
+    "workbox-strategies": "^7.1.0"
   },
   "engines": {
     "node": "^24 || ^22 || ^20 || ^18",
