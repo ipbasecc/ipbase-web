@@ -5,7 +5,7 @@
         class="border-bottom gap-sm q-pr-none overflow-hidden"
         :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-1'"
         style="height: 2.3rem"
-      >{{uiStore.topPannel}}
+      >
         <q-btn v-if="!$q.screen.gt.xs"
           flat dense size="sm" icon="mdi-chevron-left"
           :color="$q.dark.mode ? 'white' : 'black'"
@@ -196,7 +196,7 @@
 </template>
 
 <script setup>
-import {computed, watchEffect, ref, toRefs, onMounted} from 'vue';
+import {computed, watchEffect, ref, toRefs, onMounted, nextTick} from 'vue';
 import { useRouter, useRoute } from "vue-router";
 
 import KanbanModel from "./KanbanModel.vue";
@@ -214,9 +214,8 @@ import { getProjectNav } from "src/pages/team/components/SideNavigation.js";
 import { vElementSize } from '@vueuse/components'
 import { useQuasar } from 'quasar';
 import {VueDraggable} from "vue-draggable-plus";
-import { removeCard, todoDeleted } from "src/hooks/team/useCard.js";
+import { removeCard } from "src/hooks/team/useCard.js";
 import {
-  deleteTodo,
   deleteTodogroup,
 } from "src/api/strapi/project.js";
 
@@ -228,7 +227,6 @@ const setTip = () => {
   }
 }
 watchEffect(async () => {
-  console.log(_dropItems.value);
   if (_dropItems.value?.length > 0) {
     if(uiStore.dropGroup === 'tasks'){
         await Promise.all(_dropItems.value.map((card) => removeCard(card)));
@@ -237,20 +235,6 @@ watchEffect(async () => {
     if(uiStore.dropGroup === 'todogroup'){
         await Promise.all(_dropItems.value.map((i) => deleteTodogroup(i.id)));
         _dropItems.value = [];
-    }
-    if(uiStore.dropGroup === 'todo'){
-        let props = {}
-        if(uiStore.isShared){
-          props.fingerprint = window?.fingerprint
-        }
-        const { card, todogroup } = uiStore.dropTodo_belonged
-        await Promise.all(_dropItems.value.map((i) => deleteTodo(i.id, props)));
-        await Promise.all(_dropItems.value.map((i) => todoDeleted(card, todogroup.id, i.id)));
-        _dropItems.value = [];
-        uiStore.dropTodo_belonged = {
-          card: void 0,
-          todogroup: void 0,
-        }
     }
     uiStore.dropGroup = void 0;
   }

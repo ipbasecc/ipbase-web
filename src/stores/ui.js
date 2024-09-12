@@ -130,11 +130,6 @@ export default defineStore("ui", {
     ],
     chat_pannel: false,
     topPannel: false,
-    dropGroup: void 0,
-    dropTodo_belonged: {
-      card: void 0,
-      todogroup: void 0,
-    },
   }),
   actions: {
     $reset() {

@@ -920,12 +920,12 @@
 
               </div>
             </div>
-            <div class="column no-wrap gap-xs" :class="noneDisplayGroup(i) && todo_add_ing !== `group_${i.id}` ? 'hovered-item' : ''">
+            <div class="column no-wrap" :class="noneDisplayGroup(i) && todo_add_ing !== `group_${i.id}` ? 'hovered-item' : ''">
               <VueDraggable v-model="i.todos"
                 :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
                 handle=".dragItem" filter=".undrag" group="todo"
                 chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
-                class="column gap-xs"
+                class="column"
                 :style="`${todoDragging ? 'min-height: 62px;' : ''}`"
                 @start="tododragStart('todo', i)" @sort="dragTodo_sort(i)" @end="tododragEnd"
               >
@@ -945,7 +945,7 @@
                     @mouseenter="show_addTodo_ofGroup = element.id"
                     @mouseleave="show_addTodo_ofGroup = void 0"
                   >
-                    <template v-if="!uiStore.dragging && useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])">
+                    <template v-if="!uiStore.dragging && !uiStore.topPannel && useAuths('create', [authBase.of === 'card' ? 'card' : 'card_todo'])">
                       <div class="row no-wrap gap-xs items-start q-pl-xs q-pr-sm todo_in_card relative-position hovered-item"
                            :class="todo_add_ing === element.id
                       ? 'border-info radius-xs border-solid border-xs'
@@ -1825,17 +1825,10 @@ const todoDragging = ref(false);
 const tododragStart = (_gName, _g) => {
   todoDragging.value = true;
   uiStore.dragging = true;
-  uiStore.topPannel = true;
-  uiStore.dropGroup = _gName;
-  uiStore.dropTodo_belonged = {
-    card: card.value,
-    todogroup: _g
-  };
 };
 const tododragEnd = () => {
   todoDragging.value = false;
   uiStore.dragging = false;
-  uiStore.topPannel = false;
 };
 
 const colorMarks = [
