@@ -328,9 +328,9 @@ const scrollContainer = ref();
 const scroll_bottom = async (_val) => {
   await nextTick();
   scrollContainer.value &&
-  scrollAreaRef.value.setScrollPosition(
+  scrollAreaRef.value.setScrollPercentage(
       "vertical",
-      _val || scrollContainer.value?.height, // 总出现不能滚动到底的情况，给个暴力值
+      1, // 总出现不能滚动到底的情况，给个暴力值
       300
   );
 };
