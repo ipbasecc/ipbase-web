@@ -163,8 +163,8 @@
             <div class="q-pt-md">
             <q-card flat bordered @mouseenter="setTip" @mouseleave="showDeleteTip = false" class="radius-md">
                 <q-card-section style="height: 4rem;width: 50vw" class="border full-width">
-                  <VueDraggable v-model="_dropCards"
-                                group="tasks"
+                  <VueDraggable v-model="_dropItems"
+                                :group="uiStore.dropGroup"
                                 ref="draggableRef"
                                 class="fit flex flex-center overflow-hidden op-1"
                                 @end="showDeleteTip = false"
@@ -214,24 +214,45 @@ import { getProjectNav } from "src/pages/team/components/SideNavigation.js";
 import { vElementSize } from '@vueuse/components'
 import { useQuasar } from 'quasar';
 import {VueDraggable} from "vue-draggable-plus";
-import { removeCard } from "src/hooks/team/useCard.js";
+import { removeCard, todoDeleted } from "src/hooks/team/useCard.js";
+import {
+  deleteTodo,
+  deleteTodogroup,
+} from "src/api/strapi/project.js";
 
-const _dropCards = ref([]);
+const _dropItems = ref([]);
 const showDeleteTip = ref(false)
 const setTip = () => {
-  if(uiStore.draging) {
+  if(uiStore.dropGroup) {
     showDeleteTip.value = true
   }
 }
 watchEffect(async () => {
-  if (_dropCards.value?.length > 0) {
-    try {
-      await Promise.all(_dropCards.value.map((card) => removeCard(card)));
-      _dropCards.value = [];
-    } catch (error) {
-      console.error("An error occurred while removing cards:", error);
-      // 这里可以添加更多的错误处理逻辑
+  console.log(_dropItems.value);
+  if (_dropItems.value?.length > 0) {
+    if(uiStore.dropGroup === 'tasks'){
+        await Promise.all(_dropItems.value.map((card) => removeCard(card)));
+        _dropItems.value = [];
     }
+    if(uiStore.dropGroup === 'todogroup'){
+        await Promise.all(_dropItems.value.map((i) => deleteTodogroup(i.id)));
+        _dropItems.value = [];
+    }
+    if(uiStore.dropGroup === 'todo'){
+        let props = {}
+        if(uiStore.isShared){
+          props.fingerprint = window?.fingerprint
+        }
+        const { card, todogroup } = uiStore.dropTodo_belonged
+        await Promise.all(_dropItems.value.map((i) => deleteTodo(i.id, props)));
+        await Promise.all(_dropItems.value.map((i) => todoDeleted(card, todogroup.id, i.id)));
+        _dropItems.value = [];
+        uiStore.dropTodo_belonged = {
+          card: void 0,
+          todogroup: void 0,
+        }
+    }
+    uiStore.dropGroup = void 0;
   }
 });
 

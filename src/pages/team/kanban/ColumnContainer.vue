@@ -222,7 +222,7 @@
           chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
           class="q-py-xs radius-sm column gap-sm no-wrap forbid"
           :class="teamStore.cardDragging ? 'q-space' : ''"
-          @start="dragStart"
+          @start="dragStart('tasks')"
           @end="dragEnd"
           @sort="onSort"
           ref="draggableRef"
@@ -321,7 +321,7 @@
         class="q-py-xs radius-sm column gap-sm no-wrap forbid"
         :class="`${teamStore.cardDragging ? 'q-space' : ''} ${$q.screen.gt.xs ? '' : 'full-width'}`"
         @sort="onSort"
-        @start="dragStart"
+        @start="dragStart('tasks')"
         @end="dragEnd"
         ref="draggableRef"
       >
@@ -445,7 +445,7 @@
         class="full-width forbid"
         :class="teamStore.cardDragging ? 'q-space' : ''"
         @sort="onSort"
-        @start="dragStart"
+        @start="dragStart('tasks')"
         @end="dragEnd"
       >
         <q-markup-table dense flat bordered class="full-width q-space table-view">
@@ -758,10 +758,11 @@ const cardChange = (val) => {
 const cardDelete = (card_id) => {
   emit("cardDelete", card_id);
 };
-const dragStart = (event) => {  
+const dragStart = (_gName) => {  
   teamStore.cardDragging = true;
   uiStore.draging = true;
   uiStore.topPannel = true;
+  uiStore.dropGroup = _gName;
 };
 const dragEnd = () => {
   uiStore.topPannel = false;

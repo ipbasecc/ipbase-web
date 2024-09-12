@@ -796,7 +796,7 @@
         chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
         class="column no-wrap"
         :style="uiStore.dragging ? 'min-height: 6rem;' : ''"
-        @start="dragStart" @sort="dragTodogroup_sort" @end="dragEnd"
+        @start="dragStart('todogroup')" @sort="dragTodogroup_sort" @end="dragEnd"
       >
         <template v-for="i in todogroups" :key="i.id">
           <div class="column no-wrap gap-xs q-py-xs radius-xs">
@@ -927,7 +927,7 @@
                 chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
                 class="column gap-xs"
                 :style="`${todoDragging ? 'min-height: 62px;' : ''}`"
-                @start="tododragStart" @sort="dragTodo_sort(i)" @end="tododragEnd"
+                @start="tododragStart('todo', i)" @sort="dragTodo_sort(i)" @end="tododragEnd"
               >
                 <template v-for="element in i.todos" :key="element.id">
                   <TodoItem
@@ -1650,7 +1650,7 @@ const dragTodogroup_sort = async () => {
     }
     await updateCard(card_id, params);
   } else if (_for.value === "user_todos" || kanban_id.value) {
-    console.log('user_todos', todogroups.value)
+    // console.log('user_todos', todogroups.value)
     const _update = await updateUserTodogroups(params);
     if(_update?.data){
       teamStore.init.todogroups = _update.data
@@ -1822,13 +1822,20 @@ const hoverOn = ref("");
 const updateTodo_target = ref();
 const dragging = ref(false);
 const todoDragging = ref(false);
-const tododragStart = () => {
+const tododragStart = (_gName, _g) => {
   todoDragging.value = true;
   uiStore.dragging = true;
+  uiStore.topPannel = true;
+  uiStore.dropGroup = _gName;
+  uiStore.dropTodo_belonged = {
+    card: card.value,
+    todogroup: _g
+  };
 };
 const tododragEnd = () => {
   todoDragging.value = false;
   uiStore.dragging = false;
+  uiStore.topPannel = false;
 };
 
 const colorMarks = [
@@ -1905,15 +1912,18 @@ watch(
   },
   { immediate: false, deep: true }
 );
-const dragStart = () => {
+const dragStart = (_gName) => {
   dragging.value = true;
   uiStore.dragKanbanScrollEnable = false;
   uiStore.dragging = true;
+  uiStore.topPannel = true;
+  uiStore.dropGroup = _gName;
 };
 const dragEnd = () => {
   dragging.value = false;
   uiStore.dragKanbanScrollEnable = true;
   uiStore.dragging = false;
+  uiStore.topPannel = false;
 };
 
 const enableAddTodo = ref(true);
