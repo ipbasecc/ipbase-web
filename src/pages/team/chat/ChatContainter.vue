@@ -186,23 +186,22 @@
                          @scroll="scrollHandler"
           >
             <q-pull-to-refresh @refresh="refresh">
-              <q-infinite-scroll v-if="messages?.length > 0"
+              <q-infinite-scroll v-if="uiMessages?.length > 0"
                                  reverse
                                  @load="onLoad"
                                  :disable="!hasMore || fetchCount === 0"
                                  :offset="scrollContainer?.height * 2"
-                                 :debounce="300"
+                                 :debounce="30"
                                  class="column justify-end"
                                  :style="`min-height: ${scrollContainer?.height}px`"
               >
                 <div class="column no-wrap relative-position article messages_list">
                   <ChannelHeader />
-
-                  <template v-for="(i, index) in messages" :key="i.id">
+                  <template v-for="(i, index) in uiMessages" :key="i.id">
                     <MessageItem
                         v-if="!i.root_id"
                         :msg="i"
-                        :prev="messages[index - 1]"
+                        :prev="uiMessages[index - 1]"
                         :index="index"
                         :inThread="false"
                         :MsgOnly="!$q.screen.gt.xs"
@@ -540,6 +539,7 @@ const cleanCacheReInit = async () => {
 // 当组件卸载或不可见时更新缓存
 onUnmounted(() => {
   updateCache();
+  scrollContainer.value = null;
 });
 
 const mm_me = computed(() => mmUser.me);
@@ -556,6 +556,7 @@ watch(
             messages.value.find(msg => msg.id === message.root_id).reply_count = message.reply_count;
           }
           messages.value.push(message);
+          uiMessages.value = messages.value;
           updateCache();
 
           // 如果是自己发的消息，滚动到底部
@@ -572,10 +573,12 @@ watch(
             $q.notify({
               message: $t('got_new_messages'),
               avatar: avatar,
+              class: 'border',
               actions: [
                 {
                   label: $t('view_now'),
-                  color: "white",
+                  progress: true,
+                  class: 'border bg-primary text-white q-ml-xl',
                   handler: () => {
                     scroll_bottom();
                   },
@@ -583,7 +586,10 @@ watch(
               ],
             });
           } else {
-            scroll_bottom();
+            await nextTick();
+            setTimeout(() => {
+              scroll_bottom();
+            }, 1);
           }
         }
       }
