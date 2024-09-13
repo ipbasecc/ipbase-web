@@ -1,5 +1,5 @@
 <template>
-  <q-list dense class="full-width q-pa-xs">
+  <q-list class="full-width q-pa-xs">
     <q-item
       v-if="teamMode === 'toMany'"
       clickable
@@ -22,7 +22,7 @@
       <div
         v-if="channel_id === project_mm_channel?.id"
         class="absolute-left bg-primary"
-        style="width: 5px"
+        style="width: 3px"
       ></div>
     </q-item>
     <template v-if="project_users">

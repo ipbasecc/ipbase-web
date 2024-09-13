@@ -53,7 +53,6 @@
       </template>
       <!-- bottom info-->
       <div class="row no-wrap gap-xs items-center op-3">
-        {{ date.formatDate(msg.create_at, 'MM-DD / HH:mm:ss') }} - 上一条更早： {{ prev?.create_at <= msg?.create_at }}
         <div
           v-if="msg.is_pinned && container !== 'pinned'"
           class="row no-wrap gap-xs items-center cursor-pointer"
@@ -192,7 +191,6 @@ import {fetch_userPreferences} from "src/hooks/mattermost/useMattermost.js";
 import {marked} from "marked";
 import {mmstore, mmUser, teamStore} from "src/hooks/global/useStore.js";
 import TimeAgo from "pages/team/components/widgets/TimeAgo.vue";
-import { date } from 'quasar'
 
 const props = defineProps({
   msg: {

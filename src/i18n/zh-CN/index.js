@@ -223,7 +223,7 @@ export default {
   view_now: '立即查看',
   load_more: '加载更多...',
 
-  all_members_group: '全员群',
+  all_members_group: '全部成员',
   you: '你',
   pinned: '已置顶',
   favorited: '已收藏',
