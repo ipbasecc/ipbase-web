@@ -64,7 +64,6 @@
           <q-scroll-area v-model="scrollModel"
                          class="q-space"
                          ref="scrollAreaRef"
-                         @scroll="scrollHandler"
           >
             <q-pull-to-refresh @refresh="refresh">
               <q-infinite-scroll v-if="uiMessages?.length > 0"
@@ -183,7 +182,6 @@
           <q-scroll-area v-model="scrollModel"
                          class="q-space"
                          ref="scrollAreaRef"
-                         @scroll="scrollHandler"
           >
             <q-pull-to-refresh @refresh="refresh">
               <q-infinite-scroll v-if="uiMessages?.length > 0"
@@ -313,44 +311,26 @@ const togglePowerpannel = (pannel) => {
 
 const scrollModel = ref(100);
 const scrollAreaRef = useTemplateRef('scrollAreaRef');
-const scrollContainer = ref();
 const scroll_bottom = async (_val) => {
   await nextTick();
-  scrollContainer.value &&
   scrollAreaRef.value.setScrollPercentage(
       "vertical",
       1, // 总出现不能滚动到底的情况，给个暴力值
       300
   );
 };
-const scrollPosition = ref()
-const keepPosition = ref(true);
-const to_bottom = ref();
-const scrollHandler = ({verticalSize,verticalPosition}) => {
-  scrollPosition.value = verticalPosition;
-  to_bottom.value = verticalSize - verticalPosition
-}
 async function onLoad (index, done)  {
-  if(uiMessages.value?.length < messages.value?.length){
+  if(!allCacheLoaded.value){
+    console.log('继续从本地数据加载');
     await uiLoadMore()
-    console.log('load from messages');
   } else {
+    console.log('本地数据加载完成，开始从后端获取');
     await fetchMore();
-    console.log('load from backend');
   }
   done();
 }
-async function refresh (done) {
-  try {
-    await fetchMore();
-    scrollAreaRef.value?.setScrollPosition("vertical", 500, 50)
-    done();
-  } catch (error) {
-    console.error('加载更多数据时出错:', error);
-    done();
-  }
-}
 const autoScrollBottom = ref(false);
+const scrollContainer = ref();
 const onResize = async (size) => {
   scrollContainer.value = size;
 };
@@ -370,6 +350,7 @@ const backList = async () => {
 
 const messages = ref([]);
 const uiMessages = ref([]);
+const cacheMessages = ref([]);
 const hasMsgInAfter = ref(false);
 const per_page = ref(60);
 const before = ref();
@@ -398,6 +379,7 @@ const getPosts = async () => {
   const res = await getPostsOfChannel(channel_id, options.value);
   fetchCount.value++
   if (res?.data) {
+    console.log('getPosts', res.data.order);
     fetching.value = false
     return res.data;
   }
@@ -410,20 +392,29 @@ const merageMsg = (newMessages = {}) => {
 
     const currentMessageIds = new Set(messages.value?.map(msg => msg.id));
     let newMessageEntries = order.reverse().map(postId => posts[postId]).filter(msg => !currentMessageIds.has(msg.id));
-    if(!newMessageEntries || newMessageEntries?.length === 0) {
-      keepPosition.value = true;
-    }
-    if((!messages.value || messages.value?.length === 0) && order.length > 0){
-      console.log('no cache');
-      
-      messages.value = newMessageEntries;
-      before.value = newMessageEntries[0].id;
+    console.log('newMessageEntries', newMessageEntries?.length);
+    
+    if((!newMessageEntries || newMessageEntries?.length === 0) && messages.value?.length > 0) {
+      before.value = cacheMessages.value[0]?.id;
+      console.log('经过筛选，获取到的消息在本地消息中全部存在，此时认为用户上次离开到现在，没有新消息，设置缓存消息第一条（时间上的最早）作为请求before参数：', before.value);
       hasMsgInAfter.value = false;
       return
     }
 
+    if((!messages.value || messages.value?.length === 0) && order.length > 0){
+      console.log('首次从后端获取消息后，messages长度为0,说明缓存中没有数据，直接设置message和uiMessages为获取到的数据');      
+      messages.value = newMessageEntries;
+      uiMessages.value = newMessageEntries;
+      before.value = order.reverse()[0];
+      console.log('设置before参数为获取到消息的最后一条的id', before.value);  
+      hasMsgInAfter.value = false;
+      allCacheLoaded.value = true;
+      console.log('设置所有缓存已读取完毕，后续进入无缓存逻辑', before.value);
+      return
+    }
+
     if(hasMsgInAfter.value && lastCacheID.value) {
-      console.log('has unread message between cache and new message');
+      console.log('本地有缓存，默认进入有非缓存内新消息逻辑');
       
       const lastCacheIndex = messages.value.findIndex(msg => msg.id === lastCacheID.value);
       const lastCacheIndex_byUI = uiMessages.value.findIndex(msg => msg.id === lastCacheID.value);
@@ -434,21 +425,22 @@ const merageMsg = (newMessages = {}) => {
         uiMessages.value.splice(lastCacheIndex + 1, 0, ...newMessageEntries);
       }
       hasMsgInAfter.value = !order.includes(lastCacheID.value);
+      console.log('新获取的数据是否包含缓存标记id，设置hasMsgInAfter为', hasMsgInAfter.value);
       if(!hasMsgInAfter.value){
+        console.log('包含缓存标记，说明缓存与新消息之间没有未读消息了');
         before.value = messages.value[0]?.id
+        console.log('设置messages第一个为before参数，之后上拉加载将从获取获取历史消息，新的before：', before.value);
         lastCacheID.value = null
-        if(!keepPosition.value){
-          fetchMore();
-          console.log('auto fetchMore')
-        }
+        console.log('清除缓存标记id');
       } else {
-        lastCacheID.value = order[0]
         before.value = order.reverse()[0];
+        console.log('不包含缓存标记，说明还有未读，设置before为本地后端数据第一条的id，下此后端数据获取该条之前的数据：', before.value);
       }
     } else {
-      console.log('all cache loaded and attach new message from backend');
-      messages.value.unshift(...newMessageEntries)
+      console.log('本地无缓存，后端数据格式化之后直接赋值给messages和uiMessages');
+      messages.value.unshift(...newMessageEntries);
       uiMessages.value = messages.value
+      console.log('设置最后一条消息的id，做为上拉加载获取历史消息的before标记：', before.value);
       before.value = messages.value[0]?.id
     }
     return
@@ -456,6 +448,7 @@ const merageMsg = (newMessages = {}) => {
 }
 
 const fetchMore = async () => {
+  console.log('before fetchMore', before.value);
   resMsgs.value = await getPosts();
   if (resMsgs.value) {
     merageMsg(resMsgs.value);
@@ -464,28 +457,19 @@ const fetchMore = async () => {
   return resMsgs.value
 };
 
+const allCacheLoaded = ref(false);
+const nextPageStartIndex = ref(0);
 async function uiLoadMore() {
-  const reverseMsg = messages.value;
-  const findIndex = () => {
-    if(uiMessages.value?.length === 0) {
-      return 0
-    } else {
-      return messages.value.findIndex(msg => msg.id === uiMessages.value[0].id)
-    }
-  }
-  const startIndex = findIndex();
-  let endIndex = startIndex + per_page.value;
-  if(endIndex > messages.value.length) {
-    endIndex = messages.value.length
-  }
+  const reverseMsg = cacheMessages.value.reverse();
+  const nextPage = reverseMsg.slice(nextPageStartIndex.value, nextPageStartIndex.value + 60).reverse();
+  uiMessages.value = [...nextPage, ...uiMessages.value];
+  nextPageStartIndex.value += 60;
 
-  const nextPage = reverseMsg.slice(startIndex, endIndex).reverse();
-  uiMessages.value = [...nextPage, ...uiMessages.value]
-
-  if (endIndex >= messages.value.length) {
+  if (nextPageStartIndex.value >= cacheMessages.value.length) {
     console.log('所有数据已加载完毕');
+    allCacheLoaded.value = true
   } else {
-    console.log(`已加载到第 ${endIndex} 条数据`);
+    console.log(`已加载到第 ${uiMessages.value.length} 条数据`);
   }
   return uiMessages.value
 }
@@ -499,24 +483,30 @@ const resMsgs = ref();
 const lastCacheID = ref();
 const fetchCount = ref(0);
 const initMsgs = async () => {
+  console.log('开始initMsgs');
   if(messages.value?.length > 0){
-    console.log('have cache set lastCacheID and hasMsgInAfter');
-    lastCacheID.value = messages.value[messages.value.length - 1].id;
+    console.log('messages数量大于0');
+    console.log('uiMessages数量是：', uiMessages.value?.length);
+    
+    console.log('将cacheMessages最后一条消息设置为 “lastCacheID“ -缓存标记位置，载入组件先从后端获取消息');
+    lastCacheID.value = cacheMessages.value[cacheMessages.value.length - 1].id;
     hasMsgInAfter.value = true
   }
   resMsgs.value = await getPosts();
   if (resMsgs.value) {
-    console.log('merage cache and backend data');
+    console.log('首次从后端获取到消息数据，开始合并');
     merageMsg(resMsgs.value)
   }
-  console.log('1st time load ui data');
+  console.log('开始UI数据加载逻辑');
   await uiLoadMore();
 }
 onMounted(async () => {
+  console.log('开始数据加载');
   uiStore.hide_footer = true
-  console.log('read cache');
+  cacheMessages.value = await initCache();
+  console.log('读取到本地缓存，赋值给cacheMessages');
   messages.value = await initCache();
-  console.log('1st time load from backend');
+  console.log('读取到本地缓存，赋值给messages');
   await initMsgs();
   
   // 如果通过连接直接访问到聊天界面，需要获取Strapi频道、Mattermost频道
@@ -538,8 +528,9 @@ const cleanCacheReInit = async () => {
 
 // 当组件卸载或不可见时更新缓存
 onUnmounted(() => {
-  updateCache();
   scrollContainer.value = null;
+  messages.value = []
+  uiMessages.value = []
 });
 
 const mm_me = computed(() => mmUser.me);
@@ -556,7 +547,7 @@ watch(
             messages.value.find(msg => msg.id === message.root_id).reply_count = message.reply_count;
           }
           messages.value.push(message);
-          uiMessages.value = messages.value;
+          uiMessages.value.push(message);
           updateCache();
 
           // 如果是自己发的消息，滚动到底部
