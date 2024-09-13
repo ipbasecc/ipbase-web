@@ -25,9 +25,6 @@
         <q-tooltip> {{ $t('clean_cache') }} </q-tooltip>
       </q-btn>
       <q-space />
-      {{ uiMessages.length }} / {{messages.length}} / {{ scrollContainer?.height * 2 }}
-      <q-space />
-      <q-btn color="primary" label="uiLoadMore" @click="uiLoadMore()" />
       <q-btn
           :dense="$q.screen.gt.sm"
           flat
@@ -335,12 +332,12 @@ const scrollHandler = ({verticalSize,verticalPosition}) => {
   to_bottom.value = verticalSize - verticalPosition
 }
 async function onLoad (index, done)  {
-  if(uiMessages.value?.length === messages.value?.length){
-    await fetchMore();
-    console.log('load from backend');
-  } else {
+  if(uiMessages.value?.length < messages.value?.length){
     await uiLoadMore()
     console.log('load from messages');
+  } else {
+    await fetchMore();
+    console.log('load from backend');
   }
   done();
 }
@@ -470,7 +467,6 @@ const fetchMore = async () => {
 
 async function uiLoadMore() {
   const reverseMsg = messages.value;
-  // 计算arrB当前的长度，确定下一次加载的起始位置
   const findIndex = () => {
     if(uiMessages.value?.length === 0) {
       return 0
@@ -479,15 +475,14 @@ async function uiLoadMore() {
     }
   }
   const startIndex = findIndex();
-  const endIndex = startIndex + per_page.value;
+  let endIndex = startIndex + per_page.value;
+  if(endIndex > messages.value.length) {
+    endIndex = messages.value.length
+  }
 
-  // 从arrA中截取指定数量的条目添加到arrB中
-  // uiMessages.value.unshift(...reverseMsg.slice(startIndex + 1, endIndex).reverse());
   const nextPage = reverseMsg.slice(startIndex, endIndex).reverse();
   uiMessages.value = [...nextPage, ...uiMessages.value]
 
-  // 如果arrA中的元素不足以填满一页，那么可能需要进行额外的处理
-  // 例如，可以通知用户没有更多数据，或者实现一个加载更多数据的逻辑
   if (endIndex >= messages.value.length) {
     console.log('所有数据已加载完毕');
   } else {

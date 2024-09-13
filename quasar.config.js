@@ -122,7 +122,7 @@ export default configure((ctx) => {
 
       extendViteConf(viteConf) {
         viteConf.esbuild = {
-          drop: ['console', 'debugger']
+          // drop: ['console', 'debugger']
         }
       },
       // viteVuePluginOptions: {},
