@@ -25,6 +25,9 @@
         <q-tooltip> {{ $t('clean_cache') }} </q-tooltip>
       </q-btn>
       <q-space />
+      {{ uiMessages.length }} / {{messages.length}} / {{ scrollContainer?.height * 2 }}
+      <q-space />
+      <q-btn color="primary" label="uiLoadMore" @click="uiLoadMore()" />
       <q-btn
           :dense="$q.screen.gt.sm"
           flat
@@ -67,22 +70,22 @@
                          @scroll="scrollHandler"
           >
             <q-pull-to-refresh @refresh="refresh">
-              <q-infinite-scroll v-if="messages?.length > 0"
+              <q-infinite-scroll v-if="uiMessages?.length > 0"
                                  reverse
                                  @load="onLoad"
                                  :disable="!hasMore || fetchCount === 0"
                                  :offset="scrollContainer?.height * 2"
-                                 :debounce="300"
+                                 :debounce="30"
                                  class="column justify-end"
                                  :style="`min-height: ${scrollContainer?.height}px`"
               >
                 <div class="column no-wrap relative-position article messages_list">
                   <ChannelHeader />
-                  <template v-for="(i, index) in messages" :key="i.id">
+                  <template v-for="(i, index) in uiMessages" :key="i.id">
                     <MessageItem
                         v-if="!i.root_id"
                         :msg="i"
-                        :prev="messages[index - 1]"
+                        :prev="uiMessages[index - 1]"
                         :index="index"
                         :inThread="false"
                         :MsgOnly="!$q.screen.gt.xs"
@@ -332,8 +335,13 @@ const scrollHandler = ({verticalSize,verticalPosition}) => {
   to_bottom.value = verticalSize - verticalPosition
 }
 async function onLoad (index, done)  {
-  await fetchMore();
-  await nextTick();
+  if(uiMessages.value?.length === messages.value?.length){
+    await fetchMore();
+    console.log('load from backend');
+  } else {
+    await uiLoadMore()
+    console.log('load from messages');
+  }
   done();
 }
 async function refresh (done) {
@@ -365,6 +373,7 @@ const backList = async () => {
 };
 
 const messages = ref([]);
+const uiMessages = ref([]);
 const hasMsgInAfter = ref(false);
 const per_page = ref(60);
 const before = ref();
@@ -409,15 +418,24 @@ const merageMsg = (newMessages = {}) => {
       keepPosition.value = true;
     }
     if((!messages.value || messages.value?.length === 0) && order.length > 0){
+      console.log('no cache');
+      
       messages.value = newMessageEntries;
-      before.value = newMessageEntries[0].id
+      before.value = newMessageEntries[0].id;
+      hasMsgInAfter.value = false;
       return
     }
 
     if(hasMsgInAfter.value && lastCacheID.value) {
+      console.log('has unread message between cache and new message');
+      
       const lastCacheIndex = messages.value.findIndex(msg => msg.id === lastCacheID.value);
+      const lastCacheIndex_byUI = uiMessages.value.findIndex(msg => msg.id === lastCacheID.value);
       if (lastCacheIndex !== -1) {
         messages.value.splice(lastCacheIndex + 1, 0, ...newMessageEntries);
+      }
+      if (lastCacheIndex_byUI !== -1) {
+        uiMessages.value.splice(lastCacheIndex + 1, 0, ...newMessageEntries);
       }
       hasMsgInAfter.value = !order.includes(lastCacheID.value);
       if(!hasMsgInAfter.value){
@@ -432,7 +450,9 @@ const merageMsg = (newMessages = {}) => {
         before.value = order.reverse()[0];
       }
     } else {
+      console.log('all cache loaded and attach new message from backend');
       messages.value.unshift(...newMessageEntries)
+      uiMessages.value = messages.value
       before.value = messages.value[0]?.id
     }
     return
@@ -448,6 +468,34 @@ const fetchMore = async () => {
   return resMsgs.value
 };
 
+async function uiLoadMore() {
+  const reverseMsg = messages.value;
+  // 计算arrB当前的长度，确定下一次加载的起始位置
+  const findIndex = () => {
+    if(uiMessages.value?.length === 0) {
+      return 0
+    } else {
+      return messages.value.findIndex(msg => msg.id === uiMessages.value[0].id)
+    }
+  }
+  const startIndex = findIndex();
+  const endIndex = startIndex + per_page.value;
+
+  // 从arrA中截取指定数量的条目添加到arrB中
+  // uiMessages.value.unshift(...reverseMsg.slice(startIndex + 1, endIndex).reverse());
+  const nextPage = reverseMsg.slice(startIndex, endIndex).reverse();
+  uiMessages.value = [...nextPage, ...uiMessages.value]
+
+  // 如果arrA中的元素不足以填满一页，那么可能需要进行额外的处理
+  // 例如，可以通知用户没有更多数据，或者实现一个加载更多数据的逻辑
+  if (endIndex >= messages.value.length) {
+    console.log('所有数据已加载完毕');
+  } else {
+    console.log(`已加载到第 ${endIndex} 条数据`);
+  }
+  return uiMessages.value
+}
+
 const updateCache = async () => {
   const serializedMessages = JSON.parse(JSON.stringify(messages.value));
   await db.channels.put({ id: channel_id, messages: serializedMessages });
@@ -458,17 +506,23 @@ const lastCacheID = ref();
 const fetchCount = ref(0);
 const initMsgs = async () => {
   if(messages.value?.length > 0){
+    console.log('have cache set lastCacheID and hasMsgInAfter');
     lastCacheID.value = messages.value[messages.value.length - 1].id;
     hasMsgInAfter.value = true
   }
   resMsgs.value = await getPosts();
   if (resMsgs.value) {
+    console.log('merage cache and backend data');
     merageMsg(resMsgs.value)
   }
+  console.log('1st time load ui data');
+  await uiLoadMore();
 }
 onMounted(async () => {
   uiStore.hide_footer = true
-  messages.value =  await initCache();
+  console.log('read cache');
+  messages.value = await initCache();
+  console.log('1st time load from backend');
   await initMsgs();
   
   // 如果通过连接直接访问到聊天界面，需要获取Strapi频道、Mattermost频道
