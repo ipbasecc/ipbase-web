@@ -147,15 +147,17 @@
                 <DocumentList
                   :documents="teamStore.card.card_documents"
                   :by_info="byInfo"
-                  @enterDocument="enterDocument"
+                  :sortAuth="useAuths('modify', ['card'])"
                 />
               </template>
 
               <template v-slot:after>
                 <q-scroll-area class="fit">
                   <DocumentBody
-                    v-if="document_id"
-                    :document_id="document_id.toString()"
+                    v-if="teamStore.active_document"
+                    :current_document="teamStore.active_document"
+                    :withSaveBtb="true"
+                    :withImageBtb="true"
                     :by_info="byInfo"
                   />
                 </q-scroll-area>
@@ -288,11 +290,6 @@ onMounted(() => {
     getCard(card.value.id);
   }
 })
-
-const document_id = ref();
-const enterDocument = (_document_id) => {
-  document_id.value = _document_id;
-};
 
 const classExtendIcon = () => {
   const _cur_extend = classExtends.value.find(

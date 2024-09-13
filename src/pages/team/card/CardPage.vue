@@ -341,7 +341,6 @@
                   :documents="teamStore.card.card_documents"
                   :by_info="byInfo"
                   :sortAuth="useAuths('modify', ['card'])"
-                  @enterDocument="enterDocument"
                 />
               </template>
 
@@ -453,15 +452,16 @@
         <q-tab-panel name="card_documents" class="no-padding">
           <template v-if="!teamStore.card.private || useAuths('read', ['card_document'])">
             <DocumentList
-                v-if="!document_id"
+                v-if="!teamStore.active_document"
                 :documents="teamStore.card.card_documents"
                 :by_info="byInfo"
                 :sortAuth="useAuths('modify', ['card'])"
-                @enterDocument="enterDocument"
             />
-            <q-scroll-area v-if="document_id" class="fit">
+            <q-scroll-area v-if="teamStore.active_document" class="fit">
               <DocumentBody
-                  :document_id="document_id.toString()"
+                  :current_document="teamStore.active_document"
+                  :withSaveBtb="true"
+                  :withImageBtb="true"
                   :by_info="byInfo"
               />
             </q-scroll-area>
@@ -553,7 +553,6 @@ const resetHeight = (offset, height) => {
 
 const route = useRoute();
 const loading = ref(false);
-const document_id = ref();
 
 const card_setting = ref(false);
 const splitterModel = ref(260);
@@ -616,7 +615,7 @@ watchEffect(async () => {
     }
   }
   if(uiStore.showMainContentList){
-    document_id.value = void 0
+    teamStore.active_document = void 0
   }
 });
 
@@ -624,10 +623,6 @@ const closeCard = (id, index) => {
   teamStore.card = teamStore.cards[index - 1];
   current_card_id.value = teamStore.cards[index - 1].id;
   teamStore.cards = teamStore.cards.filter((i) => i.id !== id);
-};
-
-const enterDocument = (_document_id) => {
-  document_id.value = _document_id;
 };
 
 const addCardMember = async (member) => {

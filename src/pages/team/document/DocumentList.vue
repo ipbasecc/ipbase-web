@@ -22,7 +22,7 @@
             <q-item-section side top>
               <q-icon :name="findIcon_byType(element.type)"> </q-icon>
             </q-item-section>
-            <q-item-section>{{
+            <q-item-section>{{unEnter}} - {{
               element.title
             }}</q-item-section>
             <q-item-section
@@ -211,6 +211,7 @@ const activeDocument = async (document_id) => {
     }
 }
 const enterDocument = async (element) => {
+  
   if (unEnter.value) return;
   /**
    * 如果卡片弹框开启状态，从文档列表中获取并激活
@@ -230,6 +231,7 @@ const enterDocument = async (element) => {
      */
     await activeDocument(element.id)
   }
+  console.log('teamStore.active_document', teamStore.active_document);
 };
 onMounted(async() => {
   await nextTick();
