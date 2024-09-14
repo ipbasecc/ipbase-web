@@ -1,5 +1,5 @@
 <template>
-  <q-list class="full-width q-pa-xs">
+  <q-list dense class="full-width q-pa-xs">
     <q-item
       v-if="teamMode === 'toMany'"
       clickable

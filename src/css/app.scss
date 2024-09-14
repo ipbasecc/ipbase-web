@@ -602,6 +602,12 @@ input:-internal-autofill-selected {
 .hovered-item:hover .hover-show {
   opacity: 1;
 }
+.hovered-item .hover-hide {
+  opacity: 1;
+}
+.hovered-item:hover .hover-hide {
+  opacity: 0;
+}
 .hovered-item .hover-display {
   display: none;
 }

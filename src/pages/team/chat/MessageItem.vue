@@ -6,9 +6,9 @@
     :class="`${is_sameUser ? '' : 'q-mt-sm'} ${
       curThreadId === msg.id ? 'active' : ''
     }
-    ${!msg?.root_id ? 'mm_message' : ''}`"
+    ${!msg?.root_id && !msg.props?.strapi ? 'mm_message' : 'unselected'}`"
   >
-    <template v-if="!is_sameUser || isFirstOne">
+    <template v-if="show_avatar">
       <template v-if="isExternal">
         <q-avatar
           v-if="!isMe"
@@ -28,18 +28,27 @@
         :class="!MsgOnly && $q.screen.gt.xs ? 'q-ml-xl' : ''"
       />
     </template>
-    <div v-else
-      class="hover-show transition"
-      :style="`min-width: ${avatar_size + (!MsgOnly ? 48 : 0)}px;`"
-    >
-      <TimeAgo v-if="!MsgOnly" :time="msg.create_at" class="op-3" />
+    <template v-else>
+      <div class="hover-show transition row items-center justify-end text-grey-6"
+        :style="`min-width: ${avatar_size + (!MsgOnly ? 48 : 0)}px;`"
+      >
+        <TimeAgo v-if="!MsgOnly" :time="msg.create_at" />
+      </div>
+      <div v-if="msg.props?.strapi" class="hover-hide transition absolute row items-center justify-end text-grey-6 hover-hide transition"
+        :style="`min-width: ${avatar_size + (!MsgOnly ? 48 : 0)}px;`">
+        <q-icon name="mdi-information-outline" />
+      </div>
+    </template>
+    <div v-if="msg.props?.strapi" class="text-grey-6">
+      {{ msg.message }}
     </div>
-    <div
+
+    <div v-else
       class="column no-wrap gap-xs justify-between q-space relative-position"
       @mouseover="wiget_show = true"
       @mouseleave="wiget_show = false"
     >
-      <span v-if="!is_sameUser || isFirstOne" class="op-5">
+      <span v-if="show_avatar" class="op-5">
         <template v-if="!isExternal"> {{ member?.username }} · </template>
         <TimeAgo v-if="!MsgOnly" :time="msg.create_at" />
       </span>
@@ -264,6 +273,9 @@ const is_sameUser = computed(
   () => prev.value && prev.value.user_id === msg.value?.user_id
 );
 const isMe = computed(() => msg.value?.user_id === mmUser.user_id);
+const show_avatar = computed(() => {
+  return !msg.value.props.strapi && (!is_sameUser.value || props.isFirstOne || prev.value?.props?.strapi);
+})
 
 const togglePowerpannel = (val) => {
   emit("togglePowerpannel", val);
