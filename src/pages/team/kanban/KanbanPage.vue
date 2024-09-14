@@ -196,7 +196,7 @@
 </template>
 
 <script setup>
-import {computed, watchEffect, ref, toRefs, onMounted, nextTick} from 'vue';
+import {computed, watchEffect, ref, toRefs, onMounted} from 'vue';
 import { useRouter, useRoute } from "vue-router";
 
 import KanbanModel from "./KanbanModel.vue";

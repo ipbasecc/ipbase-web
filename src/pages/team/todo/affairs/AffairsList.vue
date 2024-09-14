@@ -1,5 +1,5 @@
 <template>
-  <q-list v-if="userStore" dense class="full-width q-pa-sm column no-wrap gap-sm">
+  <q-list v-if="options" dense class="full-width q-pa-sm column no-wrap gap-sm">
     <q-item v-for="i in options" :key="i.id" tag="label" v-ripple class="radius-xs"
             :class="userStore.affairsFilterIDs?.includes(i.id) ? 'border' : 'border-placeholder'"
     >
@@ -15,11 +15,11 @@
 
 <script setup>
 import {ref, computed, onBeforeMount} from 'vue'
-import { userStore } from "src/hooks/global/useStore.js";
+import { userStore, teamStore } from "src/hooks/global/useStore.js";
 import localforage from 'localforage';
 
 const options = computed(() => {
-  return userStore.todogroups?.map((group) => {
+  return teamStore.init?.todogroups?.map((group) => {
     return {
       id: group.id,
       show: userStore.affairsFilterIDs?.includes(group.id) || true,

@@ -1,11 +1,10 @@
 <template>
-  <div
-    class="column no-wrap"
+  <div class="column no-wrap"
     :class="`
       ${!card ? $q.dark.mode ? 'fit bg-dark' : 'fit bg-grey-1' : ''}
     `"
     :style="isFeedback ? 'max-width: 36rem' : ''"
-  >
+  > 
     <template v-if="!card">
       <q-bar
         v-if="
@@ -723,9 +722,7 @@
             </div>
           </template>
         </VueDraggable>
-        <div
-          v-if="
-            createTodogroup_ing &&
+        <div v-if=" createTodogroup_ing &&
             layout === 'column' &&
             !uiStore.isShared &&
             !isFeedback
@@ -1472,7 +1469,7 @@ const getTodogroups = async () => {
     res = card.value.todogroups;
   } else if (kanban_id.value) {
     res = user_todogroups.value?.filter(
-      (i) => i.kanban?.id === kanban_id.value // 看板中，用户关联的私有todo
+      (i) => i.kanban && i.kanban?.id === kanban_id.value // 看板中，用户关联的私有todo
     );
   } else if (uiStore.isShared && teamStore.card && !assignData.value) {
     res = teamStore.card?.todogroups || []; // 共享页面中的待办面板todo
@@ -1489,18 +1486,21 @@ const getTodogroups = async () => {
   todogroups.value = res;
   loading.value = false;
 };
-const filterUserTodo = (_todogroups) => {
-  if(userStore.affairsFilterIDs?.length > 0){
-    return _todogroups.filter((i) => userStore.affairsFilterIDs.includes(i.id))
+const affairsFilterIDs = computed(() => userStore.affairsFilterIDs);
+const filterUserTodo = () => {
+  if(affairsFilterIDs.value?.length > 0){
+    todogroups.value = user_todogroups.value.filter((i) => affairsFilterIDs.value.includes(i.id))
   } else {
-    return _todogroups;
+    todogroups.value = user_todogroups.value;
   }
 }
-watchEffect(() => {
-  if (_for.value === "user_todos") {
-    todogroups.value = filterUserTodo(user_todogroups.value);
-  }
-})
+watch(affairsFilterIDs, async () => {
+    if (affairsFilterIDs.value && uiStore.app === "affairs") {
+      filterUserTodo();
+    }
+  },
+  { immediate: false, deep: true }
+);
 watch(
   [card, assignData],
   async () => {
@@ -1512,6 +1512,9 @@ watch(
 );
 onBeforeMount(async () => {
   await getTodogroups();
+  if (uiStore.app === "affairs") {
+    filterUserTodo();
+  }
 });
 const hidecompletedTodo = (i) => {
   const pfrs = uiOptions.value?.find((i) => i.val === "hidecompletedTodo");
@@ -1544,6 +1547,10 @@ const cancelUpdateGroupHandler = () => {
 };
 const createTodogroupFn = async () => {
   if (loading.value) return;
+
+  let scroolPosition = scrollAreaRef.value?.getScrollPosition();
+  let x = scroolPosition.left;
+
   loading.value = true;
   if (!params.value.data.name) {
     createTodogroup_ing.value = false;
@@ -1560,11 +1567,21 @@ const createTodogroupFn = async () => {
   // console.log("params.value", params.value);
   let res = await createTodogroup(params.value);
   if (res?.data) {
+    /**
+     * @description: 有card.value时，表明是卡片的待办
+     * _for.value === "card_todo"，表明是卡片详情弹框打开后，卡片的待办
+     * 否则，卡片是看板右抽屉中的个人待办
+     */
     if (card.value || _for.value === "card_todo") {
       // console.log('emit createTodogroup')
       emit("createTodogroup", res.data);
     } else {
-      todogroups.value.push(res.data);
+      // todogroups.value.push(res.data);
+      teamStore.init.todogroups.push(res.data);
+      getTodogroups();
+      setTimeout(() => {
+        scrollAreaRef.value?.setScrollPosition("horizontal", x, 0);
+      }, 10);
     }
     params.value.data.name = "";
     createTodogroup_ing.value = false;
@@ -1594,6 +1611,7 @@ const updateTodogroupFn = async (i) => {
       emit("todogroupUpdate", i, res.data);
     } else {
       Object.assign(i, res.data);
+      userStore.todogroups = userStore.todogroups.map((g) => g.id === res.data.id ? res.data : g);
     }
     updateTodogroup_target.value = null;
     params.value.data.name = "";
@@ -1681,6 +1699,11 @@ const deleteTodogroupFn = async (i) => {
       todogroups.value = todogroups.value.filter(
         (todogroup) => todogroup.id !== i.id
       );
+      teamStore.init.todogroups = teamStore.init.todogroups.filter(
+        (todogroup) => todogroup.id !== i.id
+      );
+      // userStore.affairsFilterIDs = userStore.affairsFilterIDs.filter(j => j !== i.id);
+      // userStore.todogroups = userStore.todogroups.filter(g => g.id !== i.id);
     }
   }
 };
@@ -1735,15 +1758,10 @@ const createTodoFn = async (i, todo) => {
 
   let res = await createTodo(create_params);
   todo_params.value.data.content = "";
-  if (res?.data) {
-    // console.log('createTodo',res?.data);
-
-    // const todoIndex = i.todos.findIndex(t => t.id === todo.id)
-    // if (todoIndex !== -1) {
-    //   i.todos.splice(todoIndex + 1, 0, res?.data);
-    // }
-    if(!card.value){
-      i.todos = [...i.todos, res.data];
+  if (res?.data) {  
+    if(i.kanban?.id){
+      // 此处不需要更新store了，js引用来自store，push之后会自动更新
+      i.todos.push(res.data);
     }
     cancelCreateTodo();
   }

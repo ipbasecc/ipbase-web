@@ -274,13 +274,7 @@ const togglePowerpannel = (pannel) => {
 
 const scrollAreaRef = useTemplateRef('scrollAreaRef');
 const scroll_bottom = (_val) => {
-  setTimeout(() => {
-    scrollAreaRef.value?.setScrollPercentage(
-        "vertical",
-        1, // 总出现不能滚动到底的情况，给个暴力值
-        300
-    );
-  }, 1);
+  scrollAreaRef.value?.setScrollPercentage("vertical",1,300);
 };
 async function onLoad (index, done)  {
   await fetchMore();  
@@ -372,8 +366,9 @@ onMounted(async () => {
   uiStore.hide_footer = true
   await initMsgs();
   await nextTick();
-  await scroll_bottom();
-  
+  setTimeout(() => {
+    scroll_bottom();
+  }, 100);  
   // 如果通过连接直接访问到聊天界面，需要获取Strapi频道、Mattermost频道
   if(!teamStore.mm_channel){
     const res = await getMmChannelByID(channel_id.value);
@@ -385,11 +380,6 @@ onMounted(async () => {
   await __viewChannel(channel_id);
 });
 
-// 当组件卸载或不可见时更新缓存
-onUnmounted(() => {
-  scrollContainer.value = null;
-  messages.value = []
-});
 
 const mm_me = computed(() => mmUser.me);
 watch(
@@ -479,6 +469,11 @@ onMounted(() => {
   }
 });
 onUnmounted(() => {
+  // 当组件卸载或不可见时更新缓存
+  scrollContainer.value = null;
+  messages.value = []
+
+  // 移除事件监听器
   const separatorElement = separatorRef.value?.$el.querySelector(
       ".q-splitter__separator"
   );
