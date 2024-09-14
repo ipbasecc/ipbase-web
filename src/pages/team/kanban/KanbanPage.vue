@@ -206,18 +206,14 @@ import BgBrand from "src/components/VIewComponents/BgBrand.vue";
 import localforage from "localforage";
 import ThreadContainer from "../chat/ThreadContainer.vue";
 import { teamStore, uiStore } from "src/hooks/global/useStore.js";
-import {
-  board_type,
-} from "./BoradsList.js";
+import { board_type } from "./BoradsList.js";
 import { ensureTrailingSlash } from 'src/hooks/utilits.js'
 import { getProjectNav } from "src/pages/team/components/SideNavigation.js";
 import { vElementSize } from '@vueuse/components'
 import { useQuasar } from 'quasar';
 import {VueDraggable} from "vue-draggable-plus";
 import { removeCard } from "src/hooks/team/useCard.js";
-import {
-  deleteTodogroup,
-} from "src/api/strapi/project.js";
+import { deleteTodogroup } from "src/api/strapi/project.js";
 
 const _dropItems = ref([]);
 const showDeleteTip = ref(false)

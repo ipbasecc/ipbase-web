@@ -1,5 +1,5 @@
 <template>
-  <q-list v-if="(teamStore.project && teamStore.board) || isEmpty || kanban" class="fit column no-wrap q-pa-xs">
+  <q-list v-if="(teamStore.project && teamStore.board) || isEmpty" class="fit column no-wrap q-pa-xs">
     <template v-if="useAuths('read', ['board'], 'boardList')">
       <div v-if="multiple_boards || isEmpty || teamStore.navigation === 'classroom'"
         class="row no-wrap"
@@ -206,6 +206,7 @@ import {
   createKanban,
   boards,
   board_type,
+  findBoardByKanban
 } from "./BoradsList.js";
 import { deleteKanbanCache } from "src/hooks/project/useProcess.js";
 
@@ -226,43 +227,6 @@ const multiple_boards = computed(
     )?.enable || false
 );
 
-const isEmpty = computed(() => boards.value?.length === 0);
-const navigation = computed(() => teamStore.navigation);
-const kanban = computed(() => teamStore.kanban);
-watch(
-  [navigation, boards, kanban],
-  async () => {
-    if (boards.value?.length > 0) {
-      if(teamStore.board?.type !== navigation.value || !teamStore.board) {
-        
-        if(kanban.value){
-          if(boards.value.length > 0) {
-            teamStore.board = boards.value
-              .find(i => i.groups
-              .map(j => j.kanbans
-              .map(k => k.id))
-              .flat(2)
-              .includes(kanban.value?.id));
-            if(!teamStore.board) {
-              teamStore.board = boards.value[0];
-            }
-          }
-        } else {
-          teamStore.board = boards.value[0];
-        }
-      }
-    } else {
-      teamStore.board = null;
-      getLastKanban(teamStore.project?.id, board_type.value).then((res) => {
-        if (res) {
-          removeLastKanban(teamStore.project?.id, board_type.value);
-        }
-      });
-      teamStore.kanban_id = null;
-      teamStore.kanban = null;
-    }
-  },{ immediate: true, deep: true }
-);
 onMounted(async() => {
   await nextTick();
   /**
@@ -428,6 +392,40 @@ const removeKanban = async (kanban_id) => {
     `/teams/projects/${teamStore.project?.id}/${board_type.value}`
   );
 };
+
+const isEmpty = computed(() => boards.value?.length === 0);
+const navigation = computed(() => teamStore.navigation);
+const kanban_id = computed(() => teamStore.kanban?.id);
+watch(
+  [navigation, boards, kanban_id],
+  async () => {
+    if (boards.value?.length > 0) {
+      if(teamStore.board?.type !== navigation.value || !teamStore.board) {
+        if(kanban_id.value){
+          if(boards.value.length > 0) {
+            await nextTick();
+            const _board = await findBoardByKanban(kanban_id.value, teamStore.project?.boards);
+            console.log('_board', _board);
+            if(_board){
+              teamStore.board = _board;
+            }
+          }
+        } else {
+          teamStore.board = boards.value[0];
+        }
+      }
+    } else {
+      teamStore.board = null;
+      getLastKanban(teamStore.project?.id, board_type.value).then((res) => {
+        if (res) {
+          removeLastKanban(teamStore.project?.id, board_type.value);
+        }
+      });
+      teamStore.kanban_id = null;
+      teamStore.kanban = null;
+    }
+  },{ immediate: true, deep: true }
+);
 
 watch(
   route,

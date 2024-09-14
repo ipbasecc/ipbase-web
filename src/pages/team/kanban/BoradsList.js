@@ -95,10 +95,21 @@ export const board_type = computed(() => {
 export const boards = ref([]);
 watchEffect(() => {
   boards.value = teamStore.project?.boards?.filter((i) => i.type === board_type.value)
-  console.log('boards', boards.value);
-  
 })
 
 const send_chat_Msg = async (MsgContent) => {
   await send_MattersMsg(MsgContent);
 };
+
+export const findBoardByKanban = (kanban_id, _boards) => {
+  let _board  
+  if (_boards?.length > 0) {
+    _board = _boards.find(i => i.groups.some(j => j.kanbans.some(k => k.id === Number(kanban_id))));
+    if(!_board) {
+      _board = _boards[0]
+    }
+    return _board;
+  } else {
+    return null;
+  }
+}
