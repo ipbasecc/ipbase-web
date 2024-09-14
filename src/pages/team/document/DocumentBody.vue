@@ -1,12 +1,11 @@
 <template>
   <DocumentTiptap v-if="teamStore.active_document" :key="teamStore.active_document.id"
-    :document="teamStore.active_document" :by_info :contentStyle
+    :document="teamStore.active_document" :by_info :contentStyle :showClose="true" @close="close"
   />
 </template>
 
 <script setup>
 import {computed, ref, toRefs, watch, watchEffect, onBeforeUnmount} from "vue";
-import {getDocument} from "src/api/strapi/project.js";
 import {mm_wsStore, teamStore, userStore} from "src/hooks/global/useStore.js";
 import DocumentTiptap from "./DocumentTiptap.vue";
 import {useQuasar} from 'quasar'
@@ -34,7 +33,7 @@ const props = defineProps({
 
 const { project_id, document_id, by_info } = toRefs(props);
 const contentStyle = computed(() => {
-  return $q.screen.gt.xs ? 'max-width: 100%;min-width: 64rem;' : 'max-width: 100%;'
+  return $q.screen.gt.xs && !teamStore.card ? 'max-width: 100%;min-width: 64rem;' : 'max-width: 100%;'
 })
 
 const document = ref();
@@ -47,8 +46,11 @@ watchEffect(async () => {
     by_info.value.user_id = userStore.userId;
   }
 });
-onBeforeUnmount(() => {
+const close = () => {
   teamStore.active_document = null;
+}
+onBeforeUnmount(() => {
+  close();
 });
 // watch([document_id, document], async () => {
 //   const fetchDoucment = async (_docid) => {

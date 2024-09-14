@@ -3,12 +3,13 @@
     <template v-if="isEditable">
       <div
         v-if="show_toolbar && isEditable"
-        class="full-width row no-wrap gap-xs items-center justify-start border q-py-xs q-px-sm"
+        class="full-width row no-wrap gap-xs items-center justify-start border-bottom q-py-xs q-px-sm"
         :class="`${square ? '' : 'radius-xs'}`"
         :style="`${
           toolbar_onBottom ? 'order: 9999' : ''
         } height: ${toolbarHeight}px`"
       >
+        <slot name="left-btn"></slot>
         <template v-for="(i, index) in menu" :key="index">
           <q-separator
             v-if="i.type === '|' && i.always_show"
@@ -98,7 +99,7 @@
       </div>
       <editor-content
         ref="dropZoneRef"
-        class="q-space scroll-y"
+        class="q-space scroll-y fit"
         :class="styleClass ? styleClass : 'q-pa-md'"
         :editor="editor"
         :style="contentStyle"

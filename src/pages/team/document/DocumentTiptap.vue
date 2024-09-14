@@ -17,6 +17,9 @@
     @tiptapUpdate="tiptapUpdate"
     @tiptapBlur="tiptapBlur"
   >
+    <template v-if="showClose" v-slot:left-btn>
+      <q-btn dense flat icon="mdi-chevron-left" @click="close" />
+    </template>
   </TipTap>
 </template>
 
@@ -43,8 +46,15 @@ const props = defineProps({
     type: String,
     default: 'max-height: unset;',
   },
+  showClose: {
+    type: Boolean,
+    default: false,
+  }
 });
-
+const emit = defineEmits(["close"]);
+const close = () => {
+  emit("close");
+}
 const { by_info } = toRefs(props);
 const document = ref(null);
 watchEffect(() => {

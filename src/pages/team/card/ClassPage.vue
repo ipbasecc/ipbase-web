@@ -63,7 +63,7 @@
         side="right"
         :overlay="drawerOverlay"
         :width="rightDrawerWidth"
-        class="border-left q-px-xs column no-wrap"
+        class="border-left column no-wrap"
         :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-1'"
       >
         <q-bar class="transparent border-bottom" style="height: 36px;">
@@ -134,36 +134,21 @@
             </div>
           </template>
           <template v-if="current_classExtend === 'class_documents'">
-            <q-splitter
-              v-if="
-                !teamStore.card.private ||
-                useAuths('read', ['card_document'])
-              "
-              v-model="splitterModel"
-              :limits
-              unit="px"
-              class="absolute-full"
-            >
-              <template v-slot:before>
-                <DocumentList
-                  :documents="teamStore.card.card_documents"
-                  :by_info="byInfo"
-                  :sortAuth="useAuths('modify', ['card'])"
-                />
-              </template>
-
-              <template v-slot:after>
-                <q-scroll-area class="fit">
-                  <DocumentBody
-                    v-if="teamStore.active_document"
-                    :current_document="teamStore.active_document"
-                    :withSaveBtb="true"
-                    :withImageBtb="true"
-                    :by_info="byInfo"
-                  />
-                </q-scroll-area>
-              </template>
-            </q-splitter>
+            <template v-if="!teamStore.card.private || useAuths('read', ['card_document'])">
+              <DocumentBody
+                v-if="teamStore.active_document"
+                :current_document="teamStore.active_document"
+                :withSaveBtb="true"
+                :withImageBtb="true"
+                :by_info="byInfo"
+              />
+              <DocumentList
+                v-else
+                :documents="teamStore.card.card_documents"
+                :by_info="byInfo"
+                :sortAuth="useAuths('modify', ['card'])"
+              />
+            </template>
             <div v-else class="absolute-full flex flex-center op-3">
               您无权查看此内容
             </div>

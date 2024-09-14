@@ -12,14 +12,14 @@
           <q-item
             clickable
             v-ripple
-            class="col radius-xs dragBar hovered-item overflow-hidden"
+            class="col radius-xs hovered-item overflow-hidden"
             :class="actived_id === element.id ? 'border' : 'border-placeholder op-7'"
             :active-class="`${$q.dark.mode ? 'text-grey-3' : 'text-grey-9'}`"
             :active="actived_id === element.id"
             style="min-height: 40px;"
             @click="enterDocument(element)"
           >
-            <q-item-section side top>
+            <q-item-section side top class="dragBar">
               <q-icon :name="findIcon_byType(element.type)"> </q-icon>
             </q-item-section>
             <q-item-section>{{unEnter}} - {{
@@ -82,55 +82,55 @@
             ></div>
           </q-item>
         </template>
-        <template v-if="!teamStore.shareInfo">
-          <q-item v-if="!creating"
-            clickable
-            v-ripple
-            class="radius-xs q-pa-sm"
-            :class="documents?.length === 0 ? 'active-sublistitem border-dashed border-op-xl border-xs' : 'hovered-item'"
-            style="min-height: 40px;"
-            @click="creating = true"
-          >
-            <q-item-section side class="q-pr-sm q-mr-xs">
-              <q-icon name="add" />
-            </q-item-section>
-            <q-item-section class="hover-show transition">
-              {{ $t('create_document') }}
-            </q-item-section>
-          </q-item>
-          <q-item v-else class="radius-xs border q-pa-xs"
-          >
-            <q-item-section>
-              <q-input
-                v-model="createDocument_title"
-                dense
-                square
-                autofocus
-                filled
-                type="text"
-                :placeholder="$t('create_title')"
-                @keydown.esc="cancelCreate()"
-                @keyup.enter="create()"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="article" size="sm" />
-                </template>
-                <template v-if="createDocument_title" v-slot:append>
-                  <q-btn
-                    flat
-                    round
-                    dense
-                    size="xs"
-                    icon="check"
-                    :disable="loading"
-                    @click="create()"
-                  />
-                </template>
-              </q-input>
-            </q-item-section>
-          </q-item>
-        </template>
       </VueDraggable>
+      <template v-if="!teamStore.shareInfo">
+        <q-item v-if="!creating"
+          clickable
+          v-ripple
+          class="radius-xs q-pa-sm"
+          :class="documents?.length === 0 ? 'active-sublistitem border-dashed border-op-xl border-xs' : 'hovered-item'"
+          style="min-height: 40px;"
+          @click="creating = true"
+        >
+          <q-item-section side class="q-pr-sm q-mr-xs">
+            <q-icon name="add" />
+          </q-item-section>
+          <q-item-section class="hover-show transition">
+            {{ $t('create_document') }}
+          </q-item-section>
+        </q-item>
+        <q-item v-else class="radius-xs border q-pa-xs"
+        >
+          <q-item-section>
+            <q-input
+              v-model="createDocument_title"
+              dense
+              square
+              autofocus
+              filled
+              type="text"
+              :placeholder="$t('create_title')"
+              @keydown.esc="cancelCreate()"
+              @keyup.enter="create()"
+            >
+              <template v-slot:prepend>
+                <q-icon name="article" size="sm" />
+              </template>
+              <template v-if="createDocument_title" v-slot:append>
+                <q-btn
+                  flat
+                  round
+                  dense
+                  size="xs"
+                  icon="check"
+                  :disable="loading"
+                  @click="create()"
+                />
+              </template>
+            </q-input>
+          </q-item-section>
+        </q-item>
+      </template>
     </q-list>
   </q-scroll-area>
 </template>
