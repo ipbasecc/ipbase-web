@@ -95,6 +95,8 @@ export const board_type = computed(() => {
 export const boards = ref([]);
 watchEffect(() => {
   boards.value = teamStore.project?.boards?.filter((i) => i.type === board_type.value)
+  console.log('boards', boards.value);
+  
 })
 
 const send_chat_Msg = async (MsgContent) => {

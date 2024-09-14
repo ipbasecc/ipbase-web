@@ -1,11 +1,11 @@
 <template>
   <q-scroll-area v-if="documents" class="fit">
-    <q-list dense>
+    <q-list dense class="q-pa-xs">
       <VueDraggable v-model="documents"
         :disabled="!sortAuth" :animation="300" :delay="1" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
         handle=".dragBar" group="groups"
         chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
-        class="radius-sm column no-wrap q-pa-xs"
+        class="radius-sm column no-wrap"
         @sort="orderDocuments"
       >
         <template v-for="element in documents" :key="element.id">
@@ -83,11 +83,11 @@
           </q-item>
         </template>
       </VueDraggable>
-      <template v-if="!teamStore.shareInfo">
+      <div class="radius-sm column no-wrap" v-if="!teamStore.shareInfo">
         <q-item v-if="!creating"
           clickable
           v-ripple
-          class="radius-xs q-pa-sm"
+          class="col radius-xs hovered-item overflow-hidden"
           :class="documents?.length === 0 ? 'active-sublistitem border-dashed border-op-xl border-xs' : 'hovered-item'"
           style="min-height: 40px;"
           @click="creating = true"
@@ -130,7 +130,7 @@
             </q-input>
           </q-item-section>
         </q-item>
-      </template>
+      </div>
     </q-list>
   </q-scroll-area>
 </template>

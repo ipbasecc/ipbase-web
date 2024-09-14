@@ -1,5 +1,5 @@
 <template>
-  <q-list v-if="(teamStore.project && teamStore.board) || isEmpty" class="fit column no-wrap q-pa-xs">
+  <q-list v-if="(teamStore.project && teamStore.board) || isEmpty || kanban" class="fit column no-wrap q-pa-xs">
     <template v-if="useAuths('read', ['board'], 'boardList')">
       <div v-if="multiple_boards || isEmpty || teamStore.navigation === 'classroom'"
         class="row no-wrap"
@@ -236,8 +236,6 @@ watch(
       if(teamStore.board?.type !== navigation.value || !teamStore.board) {
         
         if(kanban.value){
-          console.log(boards.value.find(i => i.groups.map(j => j.kanbans.map(k => k.id)).flat(2).includes(kanban.value?.id)), kanban.value?.id);
-          
           if(boards.value.length > 0) {
             teamStore.board = boards.value
               .find(i => i.groups
@@ -245,8 +243,9 @@ watch(
               .map(k => k.id))
               .flat(2)
               .includes(kanban.value?.id));
-            console.log(teamStore.board);
-              
+            if(!teamStore.board) {
+              teamStore.board = boards.value[0];
+            }
           }
         } else {
           teamStore.board = boards.value[0];

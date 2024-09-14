@@ -1,19 +1,19 @@
 <template>
   <q-scroll-area v-if="schedules" class="fit">
-    <q-list dense>
+    <q-list dense class="q-pa-xs">
       <VueDraggable v-model="schedules"
         :animation="300" :delay="1" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
         group="schedule"
         chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
         handle=".dragBar"
-        class="radius-sm column no-wrap q-pa-xs"
+        class="radius-sm column no-wrap"
         @sort="orderSchedule"
       >
       <template v-for="element in schedules" :key="element.id">
         <q-item
           clickable
           v-ripple
-          class="col radius-xs dragBar hovered-item overflow-hidden"
+          class="col radius-xs hovered-item overflow-hidden"
           :class="actived_id === element.id ? 'border active-sublistitem' : 'border-placeholder op-7'"
           :active-class="` ${
             findColor_byIcon(element.icon)
@@ -23,7 +23,7 @@
           :active="actived_id === element.id"
           style="min-height: 40px;"
         >
-          <q-item-section side @click="enterSchedule(element)">
+          <q-item-section side class="dragBar" @click="enterSchedule(element)">
             <q-icon
               :name="element.icon"
               :color="findColor_byIcon(element.icon)"
@@ -156,11 +156,13 @@
           ></div>
         </q-item>
       </template>
+    </VueDraggable>
+    <div class="radius-sm column no-wrap" v-if="!teamStore.shareInfo">
       <q-item
         v-if="!creating"
         clickable
         v-ripple
-        class="radius-xs q-pa-sm"
+        class="col radius-xs dragBar hovered-item overflow-hidden"
         :class="schedules?.length === 0 ? 'active-sublistitem border-dashed border-op-xl border-xs' : 'hovered-item'"
         style="min-height: 40px;"
         @click="creating = true"
@@ -207,7 +209,7 @@
           </q-input>
         </q-item-section>
       </q-item>
-    </VueDraggable>
+    </div>
     </q-list>
     <q-dialog v-model="shareDlg" persistent>
       <ShareSchedule

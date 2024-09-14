@@ -5,20 +5,20 @@
         :disabled="!sortAuth" :animation="300" :delay="1" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
         handle=".dragBar" group="groups"
         chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
-        class="radius-sm column no-wrap q-pa-xs"
+        class="radius-sm column no-wrap"
         @sort="orderStorages"
       >
         <template v-for="i in storages" :key="i.id">
           <q-item
             clickable
             v-ripple
-            class="col radius-xs dragBar hovered-item overflow-hidden"
+            class="col radius-xs hovered-item overflow-hidden"
             :class="activeStorage === i.id ? 'border active-sublistitem' : 'border-placeholder op-7'"
             :active-class="`${$q.dark.mode ? 'text-grey-3' : 'text-grey-9'}`"
             style="min-height: 40px;"
             @click="enterStorage(i.id)"
           >
-            <q-item-section side>
+            <q-item-section side class="dragBar">
               <AzureIcon v-if="i.type === 'azure_blob'" />
               <q-icon v-else name="mdi-server-network" />
             </q-item-section>
@@ -115,83 +115,85 @@
           </q-item>
         </template>
       </VueDraggable>
-      <q-item
-        v-if="!creating"
-        clickable
-        v-ripple
-        class="radius-xs q-pa-sm"
-        :class="storages?.length === 0 ? 'active-sublistitem border-dashed border-op-xl border-xs' : 'hovered-item'"
-        style="min-height: 40px;"
-      >
-        <q-item-section side class="q-pr-sm q-mr-xs">
-          <q-icon name="add" />
-        </q-item-section>
-        <q-item-section class="hover-show transition">
-          {{ $t('create_storage') }}
-        </q-item-section>
-        <q-menu class="radius-sm" anchor="bottom end" self="top end">
-          <q-list dense bordered class="radius-sm q-pa-xs">
-            <q-item
-              clickable
-              class="radius-xs"
-              v-close-popup
-              @click="createStorageFn('local')"
+      <div class="radius-sm column no-wrap" v-if="!teamStore.shareInfo">
+        <q-item
+          v-if="!creating"
+          clickable
+          v-ripple
+          class="col radius-xs hovered-item overflow-hidden"
+          :class="storages?.length === 0 ? 'active-sublistitem border-dashed border-op-xl border-xs' : 'hovered-item'"
+          style="min-height: 40px;"
+        >
+          <q-item-section side class="q-pr-sm q-mr-xs">
+            <q-icon name="add" />
+          </q-item-section>
+          <q-item-section class="hover-show transition">
+            {{ $t('create_storage') }}
+          </q-item-section>
+          <q-menu class="radius-sm" anchor="bottom end" self="top end">
+            <q-list dense bordered class="radius-sm q-pa-xs">
+              <q-item
+                clickable
+                class="radius-xs"
+                v-close-popup
+                @click="createStorageFn('local')"
+              >
+                <q-item-section side
+                  ><q-icon name="mdi-server-network" size="sm"
+                /></q-item-section>
+                <q-item-section class="text-no-wrap">{{ $t('default_storage') }}</q-item-section>
+              </q-item>
+              <q-separator spaced />
+              <q-item
+                clickable
+                class="radius-xs"
+                v-close-popup
+                @click="createStorageFn('azure_blob')"
+              >
+                <q-item-section side>
+                  <AzureIcon />
+                </q-item-section>
+                <q-item-section class="text-no-wrap">Azure Blob</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-item>
+        <q-item v-else class="radius-xs border q-pa-xs">
+          <q-item-section>
+            <q-input
+              v-model="create_parmas.data.name"
+              dense
+              flat
+              square
+              autofocus
+              class="full-width"
+              @keydown.esc="cancelCreate()"
+              @blur="cancelCreate()"
+              @keyup.enter.prevent="createFn()"
+              filled
+              type="text"
+              :placeholder="$t('storage_name')"
             >
-              <q-item-section side
-                ><q-icon name="mdi-server-network" size="sm"
-              /></q-item-section>
-              <q-item-section class="text-no-wrap">{{ $t('default_storage') }}</q-item-section>
-            </q-item>
-            <q-separator spaced />
-            <q-item
-              clickable
-              class="radius-xs"
-              v-close-popup
-              @click="createStorageFn('azure_blob')"
-            >
-              <q-item-section side>
-                <AzureIcon />
-              </q-item-section>
-              <q-item-section class="text-no-wrap">Azure Blob</q-item-section>
-            </q-item>
-          </q-list>
-        </q-menu>
-      </q-item>
-      <q-item v-else class="radius-xs border q-pa-xs">
-        <q-item-section>
-          <q-input
-            v-model="create_parmas.data.name"
-            dense
-            flat
-            square
-            autofocus
-            class="full-width"
-            @keydown.esc="cancelCreate()"
-            @blur="cancelCreate()"
-            @keyup.enter.prevent="createFn()"
-            filled
-            type="text"
-            :placeholder="$t('storage_name')"
-          >
-            <template v-slot:prepend>
-              <q-item-section side>
-                <q-icon name="mdi-server-network" />
-              </q-item-section>
-            </template>
-            <template v-if="create_parmas.data.name" v-slot:append>
-              <q-btn
-                flat
-                round
-                dense
-                size="xs"
-                icon="check"
-                :disable="loading"
-                @click="createFn()"
-              />
-            </template>
-          </q-input>
-        </q-item-section>
-      </q-item>
+              <template v-slot:prepend>
+                <q-item-section side>
+                  <q-icon name="mdi-server-network" />
+                </q-item-section>
+              </template>
+              <template v-if="create_parmas.data.name" v-slot:append>
+                <q-btn
+                  flat
+                  round
+                  dense
+                  size="xs"
+                  icon="check"
+                  :disable="loading"
+                  @click="createFn()"
+                />
+              </template>
+            </q-input>
+          </q-item-section>
+        </q-item>
+      </div>
     </q-list>
     <q-dialog v-model="azureCreating" persistent ref="azureCreatingRef">
       <q-card>
