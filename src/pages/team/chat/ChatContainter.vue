@@ -68,7 +68,7 @@
                     <q-spinner color="primary" name="dots" size="40px" />
                   </div>
                 </template>
-                <ChannelHeader v-if="!hasMore" />
+                <ChannelHeader :class="hasMore ? 'op-0' : 'op-none'" />
                 <template v-for="(i, index) in messages" :key="i.id">
                   <KeepAlive>
                     <MessageItem
@@ -173,7 +173,7 @@
                     <q-spinner color="primary" name="dots" size="40px" />
                   </div>
                 </template>
-                <ChannelHeader v-if="!hasMore" />
+                <ChannelHeader :class="hasMore ? 'op-0' : 'op-none'" />
                 <template v-for="(i, index) in messages" :key="i.id">
                   <KeepAlive>
                     <MessageItem
@@ -217,11 +217,12 @@ import PinnedsContainder from "pages/Chat/components/PinnedsContainder.vue";
 import {removeLastChannel} from "pages/team/chat/TeamChat";
 import {useQuasar} from "quasar";
 import {i18n} from 'src/boot/i18n.js';
-import {useRouter} from "vue-router";
+import {useRouter, useRoute} from "vue-router";
 import { __viewChannel } from "src/hooks/mattermost/useMattermost.js";
 import ChannelHeader from './components/ChannelHeader.vue'
 
 const router = useRouter();
+const route = useRoute();
 const $t = i18n.global.t;
 const $q = useQuasar();
 
@@ -273,7 +274,10 @@ const togglePowerpannel = (pannel) => {
 };
 
 const scrollAreaRef = useTemplateRef('scrollAreaRef');
-const scroll_bottom = (_val) => {
+const scroll_bottom = async (_val) => {
+  await nextTick();
+  console.log('scroll_bottom');
+  
   scrollAreaRef.value?.setScrollPercentage("vertical",1,300);
 };
 async function onLoad (index, done)  {
@@ -324,6 +328,8 @@ const getPosts = async () => {
   if(fetching.value) return
   fetching.value = true;
   const res = await getPostsOfChannel(channel_id, options.value);
+  console.log('getPosts');
+  
   if (res?.data) {
     fetchCount.value++;
     fetching.value = false
@@ -363,20 +369,27 @@ const initMsgs = async () => {
   }
 }
 onBeforeMount(async() => {
-  uiStore.hide_footer = true
   await initMsgs();
+  uiStore.hide_footer = true
 })
 onMounted(async () => {
-  scroll_bottom();
+  await scroll_bottom();
+  let _channel_id;
+  if(channel_id.value){
+    _channel_id = channel_id.value;
+  } else if(route.params.channel_id){
+    _channel_id = route.params.channel_id;
+  }
+  if(_channel_id){
+    await __viewChannel(_channel_id);
+  }
   // 如果通过连接直接访问到聊天界面，需要获取Strapi频道、Mattermost频道
-  if(!teamStore.mm_channel){
-    const res = await getMmChannelByID(channel_id.value);
+  if(!teamStore.mm_channel && _channel_id){
+    const res = await getMmChannelByID(_channel_id);
     if(res?.data){
       teamStore.mm_channel = res.data;
     }
   }
-
-  await __viewChannel(channel_id);
 });
 
 
