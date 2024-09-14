@@ -10,6 +10,9 @@ a {
   border-radius: 0.35rem;
   overflow: hidden;
 }
+.overflow-show {
+  overflow: visible !important;
+}
 .body--light.desktop.electron{
   background: #003569;
 }
@@ -1276,16 +1279,16 @@ body.body--dark .mm_message.active {
 }
 .chosenGroupClass {
   border: 1px solid rgb(76, 76, 76);
-  box-shadow: 0 0 #00000000 !important;
+  box-shadow: 0 0 50px #000000 !important;
   background: #ba0000 !important;
   opacity: 1 !important;
   overflow: visible;
   border-radius: 5px;
 }
 .body--light .chosenGroupClass {
-  border: 1px solid rgb(255, 255, 255);
+  border: 1px solid rgba(255, 255, 255, 0);
   border-radius: 5px;
-  box-shadow: 0 0 #00000000 !important;
+  box-shadow: 0 0 25px #0000002c !important;
   background: rgb(226, 226, 226) !important;
   opacity: 1 !important;
   overflow: visible;
@@ -1295,6 +1298,7 @@ body.body--dark .mm_message.active {
   border-radius: 5px;
   background: rgb(2, 34, 60) !important;
   opacity: 1 !important;
+  box-shadow: 0 0 #00000000 !important;
 }
 .body--light .ghostColumn {
   border: 1px dashed rgb(165, 165, 165);
