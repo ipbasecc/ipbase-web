@@ -395,20 +395,19 @@ const removeKanban = async (kanban_id) => {
 
 const isEmpty = computed(() => boards.value?.length === 0);
 const navigation = computed(() => teamStore.navigation);
-const kanban_id = computed(() => teamStore.kanban?.id);
+const kanban = computed(() => teamStore.kanban);
+const kanban_id_by_route = computed(() => route.params.kanban_id);
 watch(
-  [navigation, boards, kanban_id],
+  [navigation, boards, kanban, kanban_id_by_route],
   async () => {
+    await nextTick();
     if (boards.value?.length > 0) {
-      if(teamStore.board?.type !== navigation.value || !teamStore.board) {
-        if(kanban_id.value){
+      if(kanban_id_by_route.value){
+        teamStore.board = findBoardByKanban(kanban_id_by_route.value, teamStore.project?.boards);
+      } else if(teamStore.board?.type !== navigation.value || !teamStore.board) {
+        if(kanban.value){
           if(boards.value.length > 0) {
-            await nextTick();
-            const _board = await findBoardByKanban(kanban_id.value, teamStore.project?.boards);
-            console.log('_board', _board);
-            if(_board){
-              teamStore.board = _board;
-            }
+            teamStore.board = findBoardByKanban(kanban.value.id, teamStore.project?.boards);
           }
         } else {
           teamStore.board = boards.value[0];
@@ -542,7 +541,6 @@ watch(
         ) {
           let group_of_created = strapi.data.body;
           group_of_created.kanbans = [];
-          // console.log(group_of_created);
           teamStore.board.groups.push(group_of_created);
         }
         if (

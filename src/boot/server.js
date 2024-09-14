@@ -15,7 +15,7 @@ const fetchServerInfo = async (_url) => {
     }
     const {data} = await response.json();
     if (data?.attributes) {
-      console.log('fetch', data);
+      // console.log('fetch', data);
       const _attributes = JSON.parse(JSON.stringify(data.attributes))
       await localforage.setItem('serverInfo', _attributes);
       return data.attributes;
