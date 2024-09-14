@@ -202,7 +202,7 @@
   </div>
 </template>
 <script setup>
-import {computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch} from "vue";
+import {computed, nextTick, onBeforeMount, onMounted, onUnmounted, ref, useTemplateRef, watch} from "vue";
 import {getChannelByID as getMmChannelByID, getPostsOfChannel} from "src/api/mattermost.js";
 import {generateUrlParams} from 'src/hooks/utilits.js'
 import MessageItem from "pages/team/chat/MessageItem.vue";
@@ -362,13 +362,12 @@ const initMsgs = async () => {
     merageMsg(resMsgs.value)
   }
 }
-onMounted(async () => {
+onBeforeMount(async() => {
   uiStore.hide_footer = true
   await initMsgs();
-  await nextTick();
-  setTimeout(() => {
-    scroll_bottom();
-  }, 100);  
+})
+onMounted(async () => {
+  scroll_bottom();
   // 如果通过连接直接访问到聊天界面，需要获取Strapi频道、Mattermost频道
   if(!teamStore.mm_channel){
     const res = await getMmChannelByID(channel_id.value);
