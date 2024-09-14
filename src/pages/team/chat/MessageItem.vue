@@ -6,7 +6,7 @@
     :class="`${is_sameUser ? '' : 'q-mt-sm'} ${
       curThreadId === msg.id ? 'active' : ''
     }
-    ${!msg?.root_id && !msg.props?.strapi ? 'mm_message' : 'unselected'}`"
+    ${!msg?.root_id ? 'mm_message' : msg.props?.strapi ?'unselected' : ''}`"
   >
     <template v-if="show_avatar">
       <template v-if="isExternal">
