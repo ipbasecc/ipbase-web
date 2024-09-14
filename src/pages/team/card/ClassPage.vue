@@ -5,6 +5,7 @@
       view="lHh LpR lFf"
       container
       class="q-space"
+      @mousemove="handleMouseMove" @mouseup="handleMouseUp"
     >
       <q-header class="transparent">
         <q-bar
@@ -61,7 +62,7 @@
         v-model="rightDrawerOpen"
         side="right"
         :overlay="drawerOverlay"
-        :width="640"
+        :width="rightDrawerWidth"
         class="border-left q-px-xs column no-wrap"
         :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-1'"
       >
@@ -74,7 +75,7 @@
             stretch
           >
             <template v-for="i in classExtends" :key="i.id">
-              <q-tab :name="i.name" :label="$t(i.label)" />
+              <q-tab :name="i.name" :label="$t(i.label)" class="q-px-sm" />
             </template>
           </q-tabs>
           <q-space />
@@ -176,6 +177,21 @@
             <StoragePage :storage_id="teamStore.card.storage.id" by="card" />
           </template>
         </div>
+        <div v-if="$q.screen.gt.xs"
+          class="absolute-left full-height hover-col-resize flex flex-center toggle-container z-max"
+          :class="dragWidth ? 'bg-primary ' : ''"
+          :style="dragWidth ? 'width: 3px' : 'width: 10px'"
+          @mousedown="handleMouseDown"
+        >
+          <q-icon
+            :name="`mdi-chevron-${!rightDrawerOpen ? 'left' : 'right'}`"
+            color="primary"
+            size="sm"
+            @click="toggleRightDrawer"
+            class="cursor-pointer toggle-btn transition z-max"
+            :style="`transform: translateX(-16px)`"
+          />
+        </div>
       </q-drawer>
 
       <q-page-container>
@@ -194,7 +210,7 @@
 </template>
 
 <script setup>
-import { ref, toRefs, computed, watch, onMounted } from "vue";
+import { ref, toRefs, computed, watch, onMounted, reactive } from "vue";
 import { findCard } from "src/api/strapi/project.js";
 import OverView from "src/pages/team/components/OverView.vue";
 import TodoPage from "src/pages/team/todo/TodoPage.vue";
@@ -206,6 +222,7 @@ import ThreadContainer from "../chat/ThreadContainer.vue";
 import { teamStore, mm_wsStore, uiStore } from "src/hooks/global/useStore.js";
 import CoursesList from './components/CoursesList.vue'
 import VersionTogger from './components/VersionTogger.vue'
+import { useMouse } from '@vueuse/core'
 
 const props = defineProps({
   card: {
@@ -216,6 +233,52 @@ const props = defineProps({
 const { card } = toRefs(props);
 
 const emit = defineEmits(["closeCardList"]);
+
+const rightDrawerWidth = ref(640);
+const rightDrawerOpen = ref(false);
+const toggleRightDrawer = () => {
+  rightDrawerOpen.value = !rightDrawerOpen.value;
+};
+const leftDrawerOpen = ref(true);
+const toggleLeftDrawer = () => {
+  leftDrawerOpen.value = !leftDrawerOpen.value;
+};
+
+const { x } = useMouse({ touch: false })
+const leftDrawerWidth = ref(180);
+const leftDrawerMinWidth = ref(360);
+const leftDrawerMaxWidth = ref(1280);
+const _ori_width = ref()
+const dragWidth = ref(false)
+const position = reactive({
+  x: NaN,
+  y: NaN
+})
+const handleMouseDown = () => {
+  position.x = x.value;
+  dragWidth.value = true
+  _ori_width.value = rightDrawerWidth.value
+  uiStore.draging = true
+}
+const handleMouseUp = () => {
+  dragWidth.value = false
+  uiStore.draging = false
+}
+const handleMouseMove = () => {
+  if(!position.x || !dragWidth.value || !_ori_width.value) return
+
+  const deltaX = x.value - position.x;
+  if(_ori_width.value - deltaX >= leftDrawerMinWidth.value && _ori_width.value - deltaX <= leftDrawerMaxWidth.value){
+    rightDrawerWidth.value = _ori_width.value - deltaX
+  } else if(_ori_width.value - deltaX > leftDrawerMaxWidth.value) {
+    rightDrawerWidth.value = leftDrawerMaxWidth.value
+  } else if(_ori_width.value - deltaX === leftDrawerMaxWidth.value) {
+    rightDrawerWidth.value = leftDrawerMinWidth.value
+  } else if(_ori_width.value - deltaX < 50){
+    uiStore.projectLeftDrawer = false
+  }
+}
+
 const overviewRef = ref();
 const set_current_version = (id) => {
   overviewRef.value?.set_current_version(id);
@@ -296,14 +359,6 @@ const classExtendIcon = () => {
     (i) => i.name === current_classExtend.value
   );
   return _cur_extend.icon;
-};
-const rightDrawerOpen = ref(false);
-const toggleRightDrawer = () => {
-  rightDrawerOpen.value = !rightDrawerOpen.value;
-};
-const leftDrawerOpen = ref(true);
-const toggleLeftDrawer = () => {
-  leftDrawerOpen.value = !leftDrawerOpen.value;
 };
 
 const current_document = ref();

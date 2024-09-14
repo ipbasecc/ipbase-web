@@ -4,8 +4,10 @@ import { db } from "src/boot/dexie.js";
 import { uiStore } from "src/hooks/global/useStore.js";
 import { i18n } from 'src/boot/i18n.js';
 import {clearLocalDB} from "pages/team/hooks/useUser";
+import { useRouter } from "vue-router";
 
 const $t = i18n.global.t;
+const router = useRouter();
 
 let initCache; //缓存用户初始化数据
 // 获取用户初始化数据
@@ -25,8 +27,9 @@ export async function init_user() {
       }
     } catch (error) {
       console.log(error);
-      if(error?.response?.data?.error?.status === 401) {
+      if(error?.response?.data?.error?.status === 401 || error.status === 401) {
         await clearLocalDB('Strapi init_user');
+        await router.push('/login');
       } else {
         console.log(error?.response?.data?.error?.message);
       }
