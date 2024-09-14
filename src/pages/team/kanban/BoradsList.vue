@@ -11,7 +11,7 @@
       >
         <VueDraggable v-model="teamStore.board.groups"
           :disabled="!$q.screen.gt.xs" :animation="300" :delay="1" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
-          group="groups" handle=".dragBar"
+          group="groups" handle=".dragBar" filter=".undrag"
           chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
           class="radius-sm column gap-sm no-wrap"
           @sort="groupOrderFn()"
@@ -29,7 +29,7 @@
                 >
                   {{ element.name === 'Initial_Group' ? $t(element.name) : element.name }}
                 </span>
-                <div class="absolute-right z-fab q-mr-xs q-py-sm hover-show transition">
+                <div class="absolute-right z-fab q-mr-xs q-py-sm hover-show transition undrag">
                   <q-btn
                     v-if="
                       useAuths('name', ['group']) ||
