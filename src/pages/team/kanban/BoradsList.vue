@@ -1,5 +1,5 @@
 <template>
-  <q-list v-if="teamStore.project && boards" class="fit column no-wrap q-pa-xs">
+  <q-list v-if="(teamStore.project && teamStore.board) || isEmpty" class="fit column no-wrap q-pa-xs">
     <template v-if="useAuths('read', ['board'], 'boardList')">
       <div v-if="multiple_boards || isEmpty || teamStore.navigation === 'classroom'"
         class="row no-wrap"
@@ -228,13 +228,29 @@ const multiple_boards = computed(
 
 const isEmpty = computed(() => boards.value?.length === 0);
 const navigation = computed(() => teamStore.navigation);
+const kanban = computed(() => teamStore.kanban);
 watch(
-  [navigation, boards],
+  [navigation, boards, kanban],
   async () => {
     if (boards.value?.length > 0) {
-      if(teamStore.board?.type !== navigation.value) {
-        const _boards = teamStore.project?.boards?.filter(i => i.type === navigation.value) || []
-        teamStore.board = _boards[0];
+      if(teamStore.board?.type !== navigation.value || !teamStore.board) {
+        
+        if(kanban.value){
+          console.log(boards.value.find(i => i.groups.map(j => j.kanbans.map(k => k.id)).flat(2).includes(kanban.value?.id)), kanban.value?.id);
+          
+          if(boards.value.length > 0) {
+            teamStore.board = boards.value
+              .find(i => i.groups
+              .map(j => j.kanbans
+              .map(k => k.id))
+              .flat(2)
+              .includes(kanban.value?.id));
+            console.log(teamStore.board);
+              
+          }
+        } else {
+          teamStore.board = boards.value[0];
+        }
       }
     } else {
       teamStore.board = null;
