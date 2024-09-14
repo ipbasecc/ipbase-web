@@ -36,6 +36,7 @@ const tabs = ref();
 const navigation = computed(() => teamStore.navigation);
 const goto = async (i) => {
   teamStore.navigation = i.name;
+  teamStore.kanban = null;
   uiStore.showMainContentList = true
   await setProjectNav(teamStore.project?.id, i.name);
   await router.push(i.to);

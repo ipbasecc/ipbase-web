@@ -68,7 +68,7 @@
                     <q-spinner color="primary" name="dots" size="40px" />
                   </div>
                 </template>
-                <ChannelHeader />
+                <ChannelHeader v-if="!hasMore" />
                 <template v-for="(i, index) in messages" :key="i.id">
                   <KeepAlive>
                     <MessageItem
@@ -173,7 +173,7 @@
                     <q-spinner color="primary" name="dots" size="40px" />
                   </div>
                 </template>
-                <ChannelHeader />
+                <ChannelHeader v-if="!hasMore" />
                 <template v-for="(i, index) in messages" :key="i.id">
                   <KeepAlive>
                     <MessageItem
