@@ -112,13 +112,6 @@ const update_params = ref({
         name: null,
     }
 });
-const updateTodogroupFn = async () => {
-  if (!update_params.value.data.name) return;
-  let { data } = await updateTodogroup(group.value?.id, update_params.value);
-  if (data) {
-    Object.assign(group.value, data);
-  }
-};
 const cancelUpdate = () => {
     update_params.value = {
         data: {
@@ -137,11 +130,11 @@ const todoDeleted = (id) => {
 }
 
 const dragStart = () => {
-  
+    uiStore.dragKanbanScrollEnable = false;
 }
 
 const dragEnd = () => {
-
+    uiStore.dragKanbanScrollEnable = true;
 }
 </script>
 

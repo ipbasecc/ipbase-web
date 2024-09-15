@@ -81,22 +81,28 @@ const dragTodogroup_sort = async () => {
 }
 
 const dragStart = () => {
-  
+  uiStore.dragKanbanScrollEnable = false;
 }
 
 const dragEnd = () => {
-
+  uiStore.dragKanbanScrollEnable = true;
 }
 const todogroupCreated = (val) => {
   todogroups.value.push(val);
+  teamStore.init.todogroups.push(val);
+  if(userStore.affairsFilterIDs?.length > 0){
+    userStore.affairsFilterIDs.push(val.id);
+  }
 }
-const todogroupDeleted = (_id) => {
-  console.log('todogroupDeleted', _id);
-  
+const todogroupDeleted = (_id) => {  
   const index = todogroups.value.findIndex((i) => i.id === _id);
   console.log('todogroupDeleted index', index);
   if(index > -1){
     todogroups.value.splice(index, 1);
+  }
+  teamStore.init.todogroups = teamStore.init.todogroups.filter(i => i.id !== _id);
+  if(userStore.affairsFilterIDs?.length > 0){
+    userStore.affairsFilterIDs = userStore.affairsFilterIDs.filter(i => i !== _id);
   }
 }
 const dragscrollstart = () => {
