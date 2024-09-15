@@ -64,12 +64,9 @@
             @click="enterChannel(i)"
           >
             <q-item-section side class="q-pr-sm" @mouseenter="deEnter = false">
-              <q-btn
-                flat
-                dense
+              <q-icon :name="i.mm_channel?.type === 'O' ? 'mdi-pound' : 'mdi-pound-box'"
                 :size="$q.screen.gt.sm ? '' : 'md'"
                 :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`"
-                :icon="i.mm_channel?.type === 'O' ? 'mdi-pound' : 'mdi-pound-box'"
                 @mouseenter="deEnter = true"
                 @mouseleave="deEnter = false"
               >
@@ -99,7 +96,7 @@
                     </q-item>
                   </q-list>
                 </q-menu>
-              </q-btn>
+              </q-icon>
             </q-item-section>
             <q-item-section @mouseenter="deEnter = false" class="overflow-hidden">
               <div class="row no-wrap gap-xs q-pr-xs">

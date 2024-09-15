@@ -4,14 +4,35 @@
       <q-toolbar class="gap-sm">
         <q-toolbar-title> Title </q-toolbar-title>
         <q-space />
-        <q-btn color="primary" no-caps label="addMedia" @click="addMediaFn()" />
-        <q-btn color="primary" no-caps label="queryMedias" @click="fetchMedias()" />
+        <q-btn color="primary" no-caps label="Next"
+          @click="nextMorph"
+        />
       </q-toolbar>
     </q-header>
 
     <q-page-container>
       <q-page class="q-pa-md">
-        <q-color v-model="hex" class="my-picker" />
+        <q-card bordered class="bg-primary"
+          v-morph:card1:boxes:800.resize="morphGroupModel"
+        >
+          <q-card-section>
+            <div class="text-h6">A</div>
+          </q-card-section>
+        </q-card>
+        <q-card bordered class="bg-orange"
+          v-morph:card2:boxes:800.resize="morphGroupModel"
+        >
+          <q-card-section>
+            <div class="text-h6">B</div>
+          </q-card-section>
+        </q-card>
+        <q-card bordered class="bg-info"
+          v-morph:card3:boxes:800.resize="morphGroupModel"
+        >
+          <q-card-section>
+            <div class="text-h6">C</div>
+          </q-card-section>
+        </q-card>
       </q-page>
     </q-page-container>
   </q-layout>
@@ -23,36 +44,18 @@ import {addMedia, queryMedias} from 'src/api/strapi.js';
 import {uiStore} from "src/hooks/global/useStore.js";
 import EditableDiv from 'src/components/Utilits/InputDiv.vue';
 import { useQuasar } from 'quasar'
-
-
 const $q = useQuasar()
-const hex = ref('#FF00FF')
-const content = ref('');
 
-const medias = ref();
-const fetchMedias = async () => {
-  const params = {
-    data: {
-      overview_id: 410
-    },
-  }
-  const res = await queryMedias(params);
-  if(res?.data){
-    medias.value = res.data;
-  }
-};
+const morphGroupModel = ref('card1');
+const nextMorphStep = {
+  card1: 'card2',
+  card2: 'card3',
+  card3: 'card1',
+}
+const nextMorph = () => {
+  morphGroupModel.value = nextMorphStep[ morphGroupModel.value ]
+}
 
-const addMediaFn = async () => {
-  const params = {
-    data: {
-      overview_id: 410
-    },
-  }
-  const res = await addMedia(params);
-  if(res?.data){
-    medias.value = res.data;
-  }
-};
 onMounted(() => {
   uiStore.pageLoaded = true;
 });

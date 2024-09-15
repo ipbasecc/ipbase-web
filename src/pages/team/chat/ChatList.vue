@@ -162,7 +162,6 @@ watch(
  */
 onMounted(async() => {
   await nextTick();
-  console.log(teamStore.init);
   const _project_id = computed(() => route.params?.project_id || null);
   if(_project_id.value && !project.value && teamStore.init?.default_team?.projects?.length > 0) {
     teamStore.project = teamStore.init?.default_team?.projects.find(i => i.id == _project_id.value);

@@ -7,7 +7,18 @@ import {clearLocalDB} from "pages/team/hooks/useUser";
 import { useRouter } from "vue-router";
 
 const $t = i18n.global.t;
-const router = useRouter();
+
+/**
+ * router 需要在setup中
+ */
+export default {
+  setup() {
+    const router = useRouter();
+    return {
+      router
+    };
+  }
+}
 
 let initCache; //缓存用户初始化数据
 // 获取用户初始化数据

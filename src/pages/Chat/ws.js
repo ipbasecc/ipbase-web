@@ -8,28 +8,34 @@ const token = localStorage.getItem("mmtoken");
 let ws;
 let reConnectCount = 0;
 let mm_loged = void 0;
+let isReconnecting = false; // 添加重连锁
+
 export function _ws() {
-  // console.log("ws token",token);
   if (!token) return;
-  // 创建一个websocket客户端
   ws = new WebSocket(`wss://${process.env.MM_SITE}/api/v4/websocket`);
 
   function reConnect() {
+    if (isReconnecting) {
+      // 如果已经在重连中，则不执行任何操作
+      return;
+    }
     const _token = localStorage.getItem("mmtoken");
     if (_token) {
       reConnectCount++;
       if (reConnectCount < 10) {
+        isReconnecting = true; // 设置重连锁
         if (token) {
           ws = new WebSocket(`wss://${process.env.MM_SITE}/api/v4/websocket`);
           wsConnect();
         }
       } else {
         Notify.create({
-          mesage:
+          message:
             "WebSocket 无法连接，部分功能可能无法使用，如果发现功能没有正常执行，可以在操作后手动刷新页面",
           position: "top",
           color: "negative",
         });
+        isReconnecting = false; // 重连失败，释放重连锁
       }
     }
   }
@@ -76,47 +82,37 @@ export function _ws() {
         console.log(`WebSocke 离线，10秒后尝试重连...`);
         closeWs();
         reConnect();
-        wsConnect();
       }, 10000);
     });
 
     ws.addEventListener("disconnect", () => {
       console.log(`WebSocket已断开`);
       mm_wsStore.online = false;
-      // 重新连接
       setTimeout(() => {
         console.log(`WebSocke 离线，10秒后尝试重连...`);
         closeWs();
         reConnect();
-        wsConnect();
       }, 10000);
     });
 
     ws.addEventListener("close", (event) => {
       mm_wsStore.online = false;
       console.log("WebSocket closed:", event.code, event.reason);
-      // 重新连接
-      setTimeout(() => {
-        console.log(`WebSocke 离线，10秒后尝试重连...`);
-        closeWs();
-        reConnect();
-        wsConnect();
-      }, 10000);
+      if (!isReconnecting) {
+        setTimeout(() => {
+          console.log(`WebSocke 离线，10秒后尝试重连...`);
+          closeWs();
+          reConnect();
+        }, 10000);
+      }
     });
   }
   wsConnect();
 }
 
-// 定义一个closeWs函数，用来关闭ws连接
 export function closeWs() {
-  // 判断ws是否存在
   if (ws) {
-    // 调用ws.close方法，关闭ws连接
     ws.close();
     mm_wsStore.online = false;
-    // 打印日志
-    //   console.log("ws closed");
-    // 触发一些事件，比如通知其他组件
-    // ...
   }
 }

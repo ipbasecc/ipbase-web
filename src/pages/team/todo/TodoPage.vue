@@ -839,14 +839,17 @@
                 </q-popup-proxy>
               </div>
               <div class="row no-wrap gap-xs hover-show transition">
-
                 <q-btn-group flat class="border">
                   <q-btn flat
                          size="sm"
                          padding="xs"
                          icon="mdi-plus"
                          @click="createAddTodo(`group_${i.id}`)"
-                  />
+                  >
+                    <q-tooltip class="border font-medium shadow-12" :class="$q.dark.mode ? 'bg-black text-white' : 'bg-white text-black'">
+                      {{ $t('add_todo') }}
+                    </q-tooltip>
+                  </q-btn>
                   <q-btn
                       v-if="useAuths('delete', [authBase.collection]) || useAuths('create', [authBase.collection])"
                       flat
@@ -1119,27 +1122,20 @@
       </VueDraggable>
       <template v-if="useAuths('create', [authBase.collection])">
         <template v-if="todogroups?.length > 0">
-          <div v-if="!createTodogroup_ing" class="q-px-xs">
+          <div v-if="!createTodogroup_ing && useAuths('create', [authBase.collection])" class="q-px-xs"
+            @mouseenter="morphGroupModel = 'addbtn2'"
+            @mouseleave="morphGroupModel = 'addbtn1'"
+          >
             <q-btn
-              v-if="useAuths('create', [authBase.collection])"
               dense
               size="sm"
               flat
-              round
+              :round="morphGroupModel === 'addbtn1'"
+              :rounded="morphGroupModel === 'addbtn2'"
+              :class="morphGroupModel === 'addbtn2' ? 'q-pr-sm' : ''"
+              :label="morphGroupModel === 'addbtn2' ? $t('add_todogroup') : null"
               icon="add"
-              @click="createGroupHandler"
-            >
-              <q-tooltip
-                class="border"
-                :class="
-                  $q.dark.mode
-                    ? 'bg-grey-10 text-grey-1'
-                    : 'bg-grey-1 text-grey-10'
-                "
-              >
-                {{ $t('add_todogroup') }}
-              </q-tooltip>
-            </q-btn>
+            />
           </div>
         </template>
         <div
@@ -1947,6 +1943,7 @@ const hideAddTodo = () => {
 
 const route = useRoute();
 const router = useRouter();
+const morphGroupModel = ref('addbtn1');
 </script>
 
 <style lang="scss">

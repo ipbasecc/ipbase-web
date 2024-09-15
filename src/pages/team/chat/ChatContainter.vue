@@ -275,9 +275,7 @@ const togglePowerpannel = (pannel) => {
 
 const scrollAreaRef = useTemplateRef('scrollAreaRef');
 const scroll_bottom = async (_val) => {
-  await nextTick();
-  console.log('scroll_bottom');
-  
+  await nextTick();  
   scrollAreaRef.value?.setScrollPercentage("vertical",1,300);
 };
 async function onLoad (index, done)  {
@@ -327,9 +325,7 @@ const fetching = ref(false);
 const getPosts = async () => {
   if(fetching.value) return
   fetching.value = true;
-  const res = await getPostsOfChannel(channel_id, options.value);
-  console.log('getPosts');
-  
+  const res = await getPostsOfChannel(channel_id, options.value);  
   if (res?.data) {
     fetchCount.value++;
     fetching.value = false
