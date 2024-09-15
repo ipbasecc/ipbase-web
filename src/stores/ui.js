@@ -45,6 +45,16 @@ export default defineStore("ui", {
         enable: !Platform.is.mobile
       },
     ],
+    colorMarks: [
+      "primary",
+      "secondary",
+      "accent",
+      "positive",
+      "red",
+      "info",
+      "warning",
+      "clear",
+    ],
     app: void 0,
     axiosStauts: void 0,
     axiosStautsCode: void 0,
@@ -129,7 +139,8 @@ export default defineStore("ui", {
       "",
     ],
     chat_pannel: false,
-    topPannel: false,
+    topPannel: true,
+    columnWidth: 322,
   }),
   actions: {
     $reset() {

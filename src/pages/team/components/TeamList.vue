@@ -139,9 +139,6 @@ const toggleTeamFn = async (team) => {
   } else {
     const res = await toggleTeam(team);
     if (res?.data) {
-      teamStore.$reset_team;
-      teamStore.init.default_team = res.data;
-      teamStore.team = res.data;
       await localforage.setItem('default_team', res.data)
       await router.push("/teams");
     }

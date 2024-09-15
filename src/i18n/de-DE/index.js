@@ -680,5 +680,7 @@ export default {
   add_member_by_invite_link: 'Durch Einladungslink hinzufügen',
 
   version_updated_notify: 'Die Anwendung wurde aktualisiert. Bitte verwenden Sie "Shift + F5" oder "Strg + Umschalt + R" zum Neuladen der Anwendung.',
-  delete_card_warning: 'Löschen Sie den aktuellen Inhalt.'
+  delete_card_warning: 'Löschen Sie den aktuellen Inhalt.',
+
+  create_person_todogroup: 'Erstellen Sie die persönliche Angelegenheiten-Gruppierung'
 };

@@ -31,6 +31,7 @@ export async function toggleTeam(team) {
   if (res?.data) {
     teamStore.$reset_team();
     teamStore.team = res.data;
+    teamStore.init.default_team = res.data;
     teamStore.mm_team = res.data.mm_team;
     return res;
   }

@@ -1,0 +1,63 @@
+<template>
+    <div class="border-info border-solid border-xs undrag gap-xs items-start no-wrap q-px-xs radius-xs row"
+      :class="`
+          ${$q.dark.mode ? 'bg-grey-9' : 'bg-white'}
+          ${createtodo_params.data.status ? 'op-3' : ''}
+      `"
+    >
+      <q-checkbox v-model="createtodo_params.data.status" dense class="q-mt-xs" />
+      <InputDiv
+          v-model="createtodo_params.data.content"
+          :auth="uiStore.app === 'affairs'"
+          :baseClass="`q-space q-pa-xs`"
+          :autofocus="true"
+          :class="createtodo_params.data.status ? 'line-through' : ''"
+          @update="createTodoFn"
+          @ctrlEnter="createTodoFn"
+          @ESC="cancelCreateFn"
+      />
+    </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import InputDiv from 'src/components/Utilits/InputDiv.vue'
+import { uiStore } from 'src/hooks/global/useStore';
+import {
+  createTodo
+} from "src/api/strapi/project.js";
+
+const { group } = defineProps({
+    group: {
+        type: Object,
+        required: true
+    }
+});
+const emit = defineEmits(['created', 'cancelCreate']);
+const createtodo_params = ref({
+    todogroup_id: group.id,
+    data: {
+        status: false,
+        content: null
+    },
+})
+const loading = ref(false)
+const createTodoFn = async () => {
+    if(!createtodo_params.value.data.content || loading.value) return
+    loading.value = true
+    const { data } = await createTodo(createtodo_params.value);
+    if (data) {
+        loading.value = false
+        createtodo_params.value.data.content = null;
+        emit('created', data)
+    }
+}
+
+const cancelCreateFn = () => {
+    createtodo_params.value.data.content = '';
+    emit('cancelCreate')
+}
+</script>
+
+<style scoped>
+</style>

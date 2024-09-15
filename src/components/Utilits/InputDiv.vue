@@ -3,19 +3,23 @@
     ref="editableDiv"
     :contenteditable="auth"
     v-mutation="handler"
-    :class="`${baseClass} ${auth ? activeClass : ''}`"
+    :class="`
+      ${baseClass}
+      ${auth ? activeClass : ''}
+      cursor-text
+    `"
     @input="updateValue"
     @keydown.esc="ESC"
     @keydown.ctrl.enter.stop="emit('ctrlEnter')"
     @keydown.shift.enter.stop="emit('shiftEnter')"
     @paste="handlePaste"
-    @blur="emit('ctrlEnter')"
+    @blur="onBlur"
     @focus="handleFocus"
-  ></div>
+  />
 </template>
 
 <script setup>
-import {ref, onMounted, useTemplateRef} from 'vue';
+import {ref, onMounted, useTemplateRef, toRaw} from 'vue';
 import {removeHtmlTags} from "src/hooks/utilits.js";
 import { onKeyStroke } from "@vueuse/core";
 
@@ -40,25 +44,41 @@ const { baseClass, activeClass, auth, autofocus } = defineProps({
 const editableDiv = useTemplateRef('editableDiv')
 // 定义一个 v-model 绑定的变量
 const modelValue = defineModel();
-
+const oldVal = toRaw(modelValue.value);
 // 更新父组件的值
 const updateValue = (event) => {
   modelValue.value = event.target.innerText;
 };
 // 在组件挂载后聚焦
-onMounted(() => {
+onMounted(async() => {
   if(autofocus){
     editableDiv.value?.focus();
   }
+  editableDiv.value.innerText = modelValue.value
 });
 
-const emit = defineEmits(["ctrlEnter", "shiftEnter", "ESC", "onFocus"]);
+const isFocused = ref(false);
+// watchEffect(() => {
+//   if (editableDiv.value === document.activeElement) {
+//     isFocused.value = true;
+//   }
+// })
+
+const emit = defineEmits(["ctrlEnter", "shiftEnter", "ESC", "onFocus", "onBlur"]);
 const ESC = () => {
   modelValue.value = '';
   emit('ESC')
 };
 const handleFocus = () => {
+  isFocused.value = true;
   emit('onFocus');
+}
+const onBlur = () => {
+  isFocused.value = false;
+  if(oldVal !== modelValue.value){
+    emit('ctrlEnter')
+  }
+  emit('onBlur')
 }
 
 const handlePaste = async (event) => {

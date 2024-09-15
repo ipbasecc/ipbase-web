@@ -68,7 +68,6 @@ export default defineStore("team", {
   actions: {
     $reset() {
       this.teams = null;
-      this.init = null;
       this.team = null;
       this.channel = null;
       this.mm_team = null;

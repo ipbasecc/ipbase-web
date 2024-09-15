@@ -87,7 +87,7 @@
         ${uiStore.split_kanban_active === 'right' ? $q.dark.mode ? 'bg-black border-primary border' : 'bg-grey-1 border-primary border' : $q.dark.mode ? 'bg-darker' : 'bg-grey-3'}`
       "
       :width="rightDrawer_width"
-      class="q-pa-xs"
+      class="q-pa-xs border-left"
     >
       <TodoPage
         v-if="teamStore.kanban_rightDrawer === 'private_todos'"

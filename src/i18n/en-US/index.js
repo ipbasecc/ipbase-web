@@ -680,5 +680,7 @@ export default {
   add_member_by_invite_link: 'Add by invite link',
 
   version_updated_notify: 'The application has been updated. Please use "Shift + F5" or "Ctrl + Shift + R" to reload the application.',
-  delete_card_warning: 'Delete current content.'
+  delete_card_warning: 'Delete current content.',
+
+  create_person_todogroup: 'Create Personal Affairs Grouping'
 }

@@ -969,9 +969,7 @@ watch(
             });
 
             // 使用Promise.all等待所有异步操作完成
-            const cards = await Promise.allSettled(cardPromises);
-            console.log(cards);
-            
+            const cards = await Promise.allSettled(cardPromises);            
 
             // 更新卡片数组
             columnRef.value.cards = cards.map(i => i.status === "fulfilled" && i.value);

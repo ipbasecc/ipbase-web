@@ -12,6 +12,7 @@ import {
 import localforage from "localforage";
 import {mmstore, mmUser, uiStore} from "src/hooks/global/useStore.js";
 
+// 废弃方法，测试后删除
 export function mergePosts(post1, post2, post3) {
   const mergedPosts = {};
 
@@ -182,36 +183,5 @@ export async function __viewChannel(channel_id) {
       }, 50000);
     }
   }
-
-  // 添加点击事件监听器，但只添加一次
-  if (!clickListenerAdded) {
-    window.addEventListener("click", view, { passive: true });
-    clickListenerAdded = true;
-  }
-
-  // 添加visibilitychange事件监听器，但只添加一次
-  if (!visibilityListenerAdded) {
-    document.addEventListener("visibilitychange", view);
-    visibilityListenerAdded = true;
-  }
-
-  // 确保在组件卸载时移除事件监听器
-  onUnmounted(() => {
-    if (clickListenerAdded) {
-      window.removeEventListener("click", view);
-      clickListenerAdded = false;
-    }
-    if (visibilityListenerAdded) {
-      document.removeEventListener("visibilitychange", view);
-      visibilityListenerAdded = false;
-    }
-    if (timerId) {
-      clearTimeout(timerId);
-    }
-    if (autoView) {
-      clearTimeout(autoView);
-    }
-  });
-
   await view();
 }

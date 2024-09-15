@@ -180,6 +180,17 @@ export async function updateUser(user_id,params) {
     return error;
   }
 }
+//获取用户私有待办分组关联的看板的关联信息
+export async function findKanbanByTodogroupID(kanban_id) {
+  try {
+    const res = await api.get(`users-permissions/user/me/kanban/${kanban_id}`);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
 
 // 获取转码媒体
 export async function queryMedias(params) {
