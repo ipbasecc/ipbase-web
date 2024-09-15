@@ -85,16 +85,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router';
-import {
-  createTodo,
-  createTodogroup,
-  deleteTodogroup,
-  findCardFeedback,
-  findCardFeedbackByShare,
-  updateCard,
-  updateTodo,
-  updateTodogroup,
-} from "src/api/strapi/project.js";
+import { deleteTodogroup, updateTodogroup } from "src/api/strapi/project.js";
 
 import { findKanbanByTodogroupID } from 'src/api/strapi.js'
 import { toggleTeam } from 'src/pages/team/hooks/useTeam.js'

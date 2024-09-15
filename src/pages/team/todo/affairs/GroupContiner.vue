@@ -62,16 +62,7 @@ import {teamStore, uiStore} from 'src/hooks/global/useStore';
 import TodoItem from './TodoItem.vue'
 import {VueDraggable} from 'vue-draggable-plus'
 import CreateTodo from './CreateTodo.vue'
-import {
-  createTodo,
-  createTodogroup,
-  deleteTodogroup,
-  findCardFeedback,
-  findCardFeedbackByShare,
-  updateCard,
-  updateTodo,
-  updateTodogroup,
-} from "src/api/strapi/project.js";
+import { updateTodogroup } from "src/api/strapi/project.js";
 import GroupMenu from './GroupMenu.vue'
 
 const props = defineProps({
@@ -103,13 +94,9 @@ const todo_sort = async () => {
     },
   };
   let res = await updateTodogroup(group.value.id, params);
-  if (res?.data) {
-    console.log('set todo sort', res.data);
-    
+  if (res?.data) {    
     setTimeout(() => {
-        Object.assign(group.value, res.data);
-        console.log('group', group.value);
-        
+        Object.assign(group.value, res.data);        
     }, 500);
 
     // teamStore.init.todogroups.find(i => i.id === group.value.id).todos = res.data.todos;
@@ -150,16 +137,11 @@ const todoDeleted = (id) => {
 }
 
 const dragStart = () => {
-    uiStore.topPannel = false
-    uiStore.dropGroup = 'todo'
-    uiStore.dragKanbanScrollEnable = true
+  
 }
 
 const dragEnd = () => {
-    setTimeout(() => {
-        uiStore.topPannel = false
-    }, 300);
-    uiStore.dragKanbanScrollEnable = true
+
 }
 </script>
 

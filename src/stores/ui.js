@@ -139,7 +139,7 @@ export default defineStore("ui", {
       "",
     ],
     chat_pannel: false,
-    topPannel: true,
+    topPannel: false,
     columnWidth: 322,
   }),
   actions: {
