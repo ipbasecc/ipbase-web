@@ -4,20 +4,22 @@
             :class="userStore.affairsFilterIDs?.includes(i.id) ? 'border' : 'border-placeholder'"
     >
       <q-item-section side>
-        <q-checkbox dense v-model="userStore.affairsFilterIDs" :val="i.value" @update:model-value="syncCache" />
+        <q-checkbox dense v-model="filters" :val="i.value" @update:model-value="setAffairsFilterIDs" />
       </q-item-section>
       <q-item-section>
         <q-item-label>{{i.label}}</q-item-label>
       </q-item-section>
     </q-item>
+    {{filters}}
   </q-list>
 </template>
 
 <script setup>
-import {watch, computed, onBeforeMount} from 'vue'
+import {ref, watch, computed, onBeforeMount} from 'vue'
 import { userStore, teamStore } from "src/hooks/global/useStore.js";
 import localforage from 'localforage';
 
+const filters = ref(userStore.affairsFilterIDs);
 const options = computed(() => {
   return teamStore.init?.todogroups?.map((group) => {
     return {
@@ -28,18 +30,23 @@ const options = computed(() => {
     };
   });
 });
-const syncCache = async () => {
-  const cacheValue = JSON.parse(JSON.stringify(userStore.affairsFilterIDs));
-  await localforage.setItem('affairsFilterIDs', cacheValue);
-}
 onBeforeMount(async () => {
   const cache = await localforage.getItem('affairsFilterIDs');
   if(cache) {
     userStore.affairsFilterIDs = cache
+    filters.value = cache
   }
 })
+const setAffairsFilterIDs = async () => {
+  const _all_ids = teamStore.init?.todogroups?.map((group) => group.id);
+  userStore.affairsFilterIDs = _all_ids.filter((id) => filters.value.includes(id));
+}
+const syncCache = async () => {
+  const cacheValue = JSON.parse(JSON.stringify(userStore.affairsFilterIDs));
+  await localforage.setItem('affairsFilterIDs', cacheValue);
+}
 const affairsFilterIDs = computed(() => userStore.affairsFilterIDs);
-watch(affairsFilterIDs, async (val) => {
+watch(affairsFilterIDs, async () => {
   if(affairsFilterIDs.value?.length > 0){
     await syncCache();
   }

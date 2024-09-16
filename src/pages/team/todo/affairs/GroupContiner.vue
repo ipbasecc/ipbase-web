@@ -1,5 +1,7 @@
 <template>
-  <div class="column no-wrap gap-xs radius-xs" :style="`flex: 0 0 ${uiStore.columnWidth}px;width: ${uiStore.columnWidth}px`">
+  <div class="column no-wrap gap-xs radius-xs"
+    :style="columnStyle"
+  >
     <div data-no-dragscroll class="column-header row no-wrap items-center q-pt-xs q-px-sm">
         <span class="undrag">{{ group.name }}</span>
         <q-space class="full-height dragBar" />
@@ -57,14 +59,23 @@
 </template>
 
 <script setup>
-import { ref, toRefs, nextTick, useTemplateRef } from 'vue'
+import { ref, toRefs, nextTick, useTemplateRef, computed } from 'vue'
 import {teamStore, uiStore} from 'src/hooks/global/useStore';
 import TodoItem from './TodoItem.vue'
 import {VueDraggable} from 'vue-draggable-plus'
 import CreateTodo from './CreateTodo.vue'
 import { updateTodogroup } from "src/api/strapi/project.js";
 import GroupMenu from './GroupMenu.vue'
+import { useQuasar } from 'quasar';
 
+const $q = useQuasar();
+const columnStyle = computed(() => {
+  if($q.platform.is.mobile && !$q.screen.gt.xs) {
+    return `flex: 0 0 100%;width: 100%`
+  } else {
+    return `flex: 0 0 ${uiStore.columnWidth}px;width: ${uiStore.columnWidth}px`
+  }
+})
 const props = defineProps({
   group: {
     type: Object,

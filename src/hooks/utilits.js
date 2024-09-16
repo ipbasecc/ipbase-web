@@ -391,3 +391,41 @@ export function generateUrlParams(ops) {
     return `?`;
   }
 }
+
+/**
+ * 更新数组arrA以反映arrB中target对象的新排序位置
+ * 
+ * @param {Array<Object>} arrA - 原始数组，包含对象元素
+ * @param {Array<Object>} arrB - 包含目标对象的新排序的子集数组
+ * @param {Object} target - 位置变化的对象
+ * @param {number} newIndex - 目标对象在新排序中的索引位置
+ * @returns {Array<Object>} - 更新后的arrA数组
+ */
+export function reorderArrayABasedOnArrayB(arrA, arrB, target, newIndex ) {
+  // 在新的arrB中查找target的后一个元素
+  const after = arrB[newIndex + 1];
+  const before = arrB[newIndex - 1];
+
+  // 在arrA中找到target的索引
+  const targetIndex = arrA.findIndex(item => item.id === target.id);
+
+  // 从arrA中剔除target
+  const [removed] = arrA.splice(targetIndex, 1);
+
+  if (after) {
+    // 在arrA中找到after的索引
+    const afterIndex = arrA.findIndex(item => item.id === after.id);
+    // 将target插入到after在arrA中位置的前一个位置
+    arrA.splice(afterIndex, 0, removed);
+  } else if (before) {
+    // 在arrA中找到before的索引
+    const beforeIndex = arrA.findIndex(item => item.id === before.id);
+    // 将target插入到before在arrA中位置的后一个位置
+    arrA.splice(beforeIndex + 1, 0, removed);
+  } else {
+    // 如果after和before都不存在，直接将target插入到arrA的末尾
+    arrA.push(removed);
+  }
+
+  return arrA;
+}
