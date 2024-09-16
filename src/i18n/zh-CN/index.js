@@ -522,6 +522,8 @@ export default {
   enable_settings_storage_description: '内置的简易“网盘”，您可以使用我们内置的基于阿里云OSS的存储，也可以使用您自己的Azure',
   enable_settings_schedule_label: '规划',
   enable_settings_schedule_description: '简易日程管理工具，您可以创建多个规划日历，并设置其状态，或者共享给外部人员',
+  enable_settings_budget_label: '预算管理',
+  enable_settings_budget_description: '记录项目执行过程中的收支，方便进行项目成本核算',
 
   field_creator: '创建者',
   field_owner: '所有者',
@@ -686,5 +688,6 @@ export default {
   version_updated_notify: '应用已更新，请使用“Shift + F5”或“Ctrl + Shift + r”重载应用。',
   delete_card_warning: '删除当前内容',
 
-  create_person_todogroup: '创建个人事务分组'
+  create_person_todogroup: '创建个人事务分组',
+  budget: '预算'
 };

@@ -91,6 +91,12 @@ watchEffect(() => {
       to: `/teams/projects/${project.value.id}/schedule`,
       icon: "schedule",
     },
+    {
+      name: "budget",
+      label: "budget",
+      to: `/teams/projects/${project.value.id}/budget`,
+      icon: "mdi-cash",
+    },
   ];
   const inSettings = teamStore.project?.preferences?.enable_settings?.map(
     (i) => i.name

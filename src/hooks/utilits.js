@@ -429,3 +429,7 @@ export function reorderArrayABasedOnArrayB(arrA, arrB, target, newIndex ) {
 
   return arrA;
 }
+
+export const sumArr = ( arr ) => {
+  return arr.reduce((a, b) => a + b, 0);
+}

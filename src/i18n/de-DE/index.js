@@ -522,6 +522,8 @@ export default {
   enable_settings_storage_description: 'Ein eingebauter einfacher "Cloud-Speicher", Sie können unseren internen basierend auf Aliyun OSS oder Ihren eigenen Azure verwenden',
   enable_settings_schedule_label: 'Planung',
   enable_settings_schedule_description: 'Ein einfaches Werkzeug zur Terminverwaltung, Sie können mehrere Planungskalender erstellen, ihren Status festlegen oder sie für externe Personen freigeben',
+enable_settings_budget_label: 'Budgetverwaltung',
+enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben während der Projektumsetzung, um die Projektkostenbuchführung zu erleichtern.',
 
   field_creator: 'Ersteller',
   field_owner: 'Besitzer',
@@ -682,5 +684,6 @@ export default {
   version_updated_notify: 'Die Anwendung wurde aktualisiert. Bitte verwenden Sie "Shift + F5" oder "Strg + Umschalt + R" zum Neuladen der Anwendung.',
   delete_card_warning: 'Löschen Sie den aktuellen Inhalt.',
 
-  create_person_todogroup: 'Erstellen Sie die persönliche Angelegenheiten-Gruppierung'
+  create_person_todogroup: 'Erstellen Sie die persönliche Angelegenheiten-Gruppierung',
+  budget: 'Haushalt'
 };

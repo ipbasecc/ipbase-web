@@ -26,7 +26,13 @@
       @mousemove="handleMouseMove" @mouseup="handleMouseUp">
       <ProjectHeader v-if="teamStore?.project && !uiStore.activeReel && !uiStore.isFocusMode" />
       <q-drawer
-        v-if="$q.screen.gt.xs && uiStore.app === 'teams' && teamStore?.project_id && !uiStore.isFocusMode"
+        v-if="
+          $q.screen.gt.xs
+          && uiStore.app === 'teams'
+          && teamStore?.project_id
+          && !uiStore.isFocusMode
+          && teamStore.navigation !== 'budget'
+        "
         v-model="uiStore.projectLeftDrawer"
         side="left"
         class="column border-right"
@@ -48,6 +54,7 @@
           :documents="teamStore.project.project_documents"
           :by_info="byInfo"
         />
+        <BudgetList v-else-if="teamStore.navigation === 'budget'" />
         <div v-else class="absolute-full column flex-center">
           <div class="col-4 column flex-center">
             <span class="op-5">{{ $t('enter_functions') }}</span>
@@ -146,6 +153,7 @@ import { uiStore, teamStore } from "src/hooks/global/useStore.js";
 import { findRoles } from 'src/pages/team/hooks/useMember.js'
 import SideNavigation from "pages/team/components/SideNavigation.vue";
 import TeamList from "pages/team/components/TeamList.vue";
+import BudgetList from './budget/BudgetList.vue'
 
 const route = useRoute();
 const router = useRouter();

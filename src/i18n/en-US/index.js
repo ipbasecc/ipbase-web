@@ -522,6 +522,8 @@ export default {
   enable_settings_storage_description: 'The built-in simple cloud storage feature allows you to utilize our storage based on Alibaba Cloud OSS, or you can also use your own Azure storage service.',
   enable_settings_schedule_label: 'schedule',
   enable_settings_schedule_description: 'A simple schedule management tool that enables you to create multiple planning calendars, set their statuses, and even share them with external personnel.',
+enable_settings_budget_label: 'Budget Management',
+enable_settings_budget_description: 'Record income and expenditure during the project implementation process, facilitating project cost accounting.',
 
   field_creator: 'Creator',
   field_owner: 'Owner',
@@ -682,5 +684,6 @@ export default {
   version_updated_notify: 'The application has been updated. Please use "Shift + F5" or "Ctrl + Shift + R" to reload the application.',
   delete_card_warning: 'Delete current content.',
 
-  create_person_todogroup: 'Create Personal Affairs Grouping'
+  create_person_todogroup: 'Create Personal Affairs Grouping',
+  budget: 'budget'
 }

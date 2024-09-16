@@ -124,6 +124,12 @@ const routes = [
                     name: "team_segment_page",
                     props: true,
                   },
+                  {
+                    path: "/teams/projects/:project_id/budget",
+                    component: () => import("src/pages/team/budget/BudgetPage.vue"),
+                    name: "team_budget_homepage",
+                    props: true,
+                  },
                 ],
               },
             ],

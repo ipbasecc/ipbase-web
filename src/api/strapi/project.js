@@ -976,3 +976,63 @@ export async function deleteMemberRole(role_id) {
     return error;
   }
 }
+
+export async function findProjectBudget(_project_id) {
+  try {
+    const res = await api.get(`projects/${_project_id}/budget`);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create(error?.response?.data?.error?.message);
+    return error;
+  }
+}
+
+export async function addProjectLedger(_project_id, params) {
+  try {
+    const res = await api.post(`projects/${_project_id}/budget`, params);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create(error?.response?.data?.error?.message);
+    return error;
+  }
+}
+
+export async function removeProjectLedger(_project_id, _ledger_id) {
+  try {
+    const res = await api.delete(`projects/${_project_id}/budget/${_ledger_id}`);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create(error?.response?.data?.error?.message);
+    return error;
+  }
+}
+
+export async function updateProjectLedger(_project_id, _ledger_id, params) {
+  try {
+    const res = await api.put(`projects/${_project_id}/budget/${_ledger_id}`, params);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create(error?.response?.data?.error?.message);
+    return error;
+  }
+}
+
+export async function attachProjectBudget(_project_id, params) {
+  try {
+    const res = await api.post(`projects/${_project_id}/attach_budget`, params);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create(error?.response?.data?.error?.message);
+    return error;
+  }
+}
