@@ -6,7 +6,7 @@
         ${isFocused ? 'border-info border-solid border-xs' : ''}
     `"
   >
-    <q-checkbox v-model="todo.status" dense class="q-mt-xs undrag" />
+    <q-checkbox v-model="todo.status" dense class="q-mt-xs" />
     <div class="column no-wrap gap-xs q-space">
         <InputDiv
             v-model="todo.content"

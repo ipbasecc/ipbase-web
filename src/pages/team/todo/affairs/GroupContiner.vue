@@ -2,10 +2,11 @@
   <div class="column no-wrap gap-xs radius-xs"
     :style="columnStyle"
   >
-    <div data-no-dragscroll class="column-header row no-wrap items-center q-pt-xs q-px-sm">
-        <span class="undrag">{{ group.name }}</span>
-        <q-space class="full-height dragBar" />
-        <q-btn flat dense size="sm" round icon="mdi-dots-vertical" class="undrag">
+    <div data-no-dragscroll class="column-header row no-wrap items-center q-pt-xs q-px-sm"
+      :class="$q.screen.gt.sm ? 'undrag' : ''"
+    >
+        <span class="dragBar q-space">{{ group.name }}</span>
+        <q-btn flat dense size="sm" round icon="mdi-dots-vertical">
             <q-menu class="radius-sm shadow-24" ref="todogroupMenuRef">
                 <GroupMenu
                     :group
@@ -15,62 +16,33 @@
             </q-menu>
         </q-btn>
     </div>
-    <div data-no-dragscroll class="column-footer row no-wrap items-center q-px-xs undrag">
+    <div data-no-dragscroll class="column-footer row no-wrap items-center q-px-xs"
+      :class="$q.screen.gt.sm ? 'undrag' : ''"
+    >
         <q-btn dense flat icon="mdi-plus" size="sm" class="border full-width" @click="toggleCreatetodo()" />
     </div>
-    <q-scroll-area class="q-space q-px-xs scroll-container flex-content">
-      <VueDraggable v-model="group.todos"
-        data-no-dragscroll
-        :animation="300" :delay="50"
-        :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
-        handle=".dragBar" filter=".undrag" group="todo"
-        chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
-        class="column no-wrap gap-sm q-py-xs"
-        @start="dragStart" @sort="todo_sort" @end="dragEnd"
-        @mouseenter="uiStore.dragKanbanScrollEnable = false"
-        @mouseleave="uiStore.dragKanbanScrollEnable = true"
-      >
-        <template v-for="todo in group.todos" :key="todo.id">
-          <TodoItem
-            v-show="
-                (group.hideCompleted && !todo.status) || !group.hideCompleted
-            "
-            :todo="todo"
-            :group="group"
-            @todoDeleted="todoDeleted"
-          />
-        </template>
-        <CreateTodo v-if="openCreatetodo"
-            class="undrag"
-            :group="group"
-            @created="created"
-            @cancelCreate="cancelCreatetodo"
-        />
-      </VueDraggable>
-        <div v-if="!teamStore.cardDragging"
-          data-dragscroll
-          class="q-space op-0"
-          style="order: 9999;"
-          @mouseenter="uiStore.dragKanbanScrollEnable = true"
-        >
-        </div>
+    <q-scroll-area v-if="$q.screen.gt.sm" class="q-space q-px-xs scroll-container flex-content">
+      <GroupBody v-model="group" ref="todogroupBodyRef" />
     </q-scroll-area>
+    <div v-else class="q-space q-px-xs">
+      <GroupBody v-model="group"
+        ref="todogroupBodyRef"
+        class="q-space q-px-xs"
+      />
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, toRefs, nextTick, useTemplateRef, computed } from 'vue'
-import {teamStore, uiStore} from 'src/hooks/global/useStore';
-import TodoItem from './TodoItem.vue'
-import {VueDraggable} from 'vue-draggable-plus'
-import CreateTodo from './CreateTodo.vue'
-import { updateTodogroup } from "src/api/strapi/project.js";
+import { ref, toRefs, useTemplateRef, computed } from 'vue'
+import {uiStore} from 'src/hooks/global/useStore';
 import GroupMenu from './GroupMenu.vue'
 import { useQuasar } from 'quasar';
+import GroupBody from './GroupBody.vue'
 
 const $q = useQuasar();
 const columnStyle = computed(() => {
-  if($q.platform.is.mobile && !$q.screen.gt.xs) {
+  if($q.platform.is.mobile && !$q.screen.gt.sm) {
     return `flex: 0 0 100%;width: 100%`
   } else {
     return `flex: 0 0 ${uiStore.columnWidth}px;width: ${uiStore.columnWidth}px`
@@ -84,37 +56,12 @@ const props = defineProps({
 });
 const emit = defineEmits(['todogroupDeleted']);
 const { group } = toRefs(props);
-const openCreatetodo = ref(false);
+
+const todogroupBodyRef = useTemplateRef('todogroupBodyRef');
 const toggleCreatetodo = () => {
-    openCreatetodo.value = !openCreatetodo.value;
-}
-const cancelCreatetodo = () => {
-    openCreatetodo.value = false;
-}
-const created = (todo) => {
-    openCreatetodo.value = false;
-    group.value.todos.push(todo);
-}
-
-const todo_sort = async () => {
-  await nextTick();
-  let sort = group.value.todos.map((i) => i.id);
-  let params = {
-    data: {
-      todos: sort,
-    },
-  };
-  let res = await updateTodogroup(group.value.id, params);
-  if (res?.data) {    
-    setTimeout(() => {
-        Object.assign(group.value, res.data);        
-    }, 500);
-
-    // teamStore.init.todogroups.find(i => i.id === group.value.id).todos = res.data.todos;
-    // group.value.todos = res.data.todos;
-    // await nextTick();
-    // Object.assign(group.value, res.data);
-  }
+  console.log(todogroupBodyRef.value);
+  
+  todogroupBodyRef.value?.toggleCreatetodo();
 }
 
 const todogroupMenuRef = useTemplateRef('todogroupMenuRef');
@@ -134,18 +81,6 @@ const cancelUpdate = () => {
 const todogroupDeleted = async (_id) => {
     emit('todogroupDeleted', _id);
     cancelUpdate();
-}
-
-const todoDeleted = (id) => {
-    group.value.todos = group.value.todos.filter((i) => i.id !== id);
-}
-
-const dragStart = () => {
-    uiStore.dragKanbanScrollEnable = false;
-}
-
-const dragEnd = () => {
-    uiStore.dragKanbanScrollEnable = true;
 }
 </script>
 

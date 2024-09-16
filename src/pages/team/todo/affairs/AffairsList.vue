@@ -10,7 +10,6 @@
         <q-item-label>{{i.label}}</q-item-label>
       </q-item-section>
     </q-item>
-    {{filters}}
   </q-list>
 </template>
 
@@ -19,6 +18,7 @@ import {ref, watch, computed, onBeforeMount} from 'vue'
 import { userStore, teamStore } from "src/hooks/global/useStore.js";
 import localforage from 'localforage';
 
+//此字段的目的是为了在排序变化时，以此为据更新userStore.affairsFilterIDs
 const filters = ref(userStore.affairsFilterIDs);
 const options = computed(() => {
   return teamStore.init?.todogroups?.map((group) => {

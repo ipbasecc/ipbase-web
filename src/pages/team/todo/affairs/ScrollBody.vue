@@ -2,10 +2,10 @@
     <q-scroll-area
       v-dragscroll="{
         target: '.q-scrollarea__container',
-        active: uiStore.dragKanbanScrollEnable && !$q.platform.is.mobile
+        active: uiStore.dragKanbanScrollEnable && $q.screen.gt.sm
       }"
       v-dragscroll:nochilddrag
-      v-dragscroll.x="$q.screen.gt.xs"
+      v-dragscroll.x="$q.screen.gt.sm"
       v-dragscroll.y="false"
       v-on:dragscrollstart="dragscrollstart"
       v-on:dragscrollmove="draging"

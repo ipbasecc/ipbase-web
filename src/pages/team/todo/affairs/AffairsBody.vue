@@ -5,8 +5,8 @@
       handle=".dragBar" filter=".undrag" group="todogroup"
       chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
       class="gap-sm no-wrap q-pa-sm"
-      :class="$q.platform.is.mobile && !$q.screen.gt.xs ? 'column' : 'row'"
-      :style="`height: ${mainArea?.height}px;`"
+      :class="$q.platform.is.mobile && !$q.screen.gt.sm ? 'column' : 'row'"
+      :style="$q.screen.gt.sm ? `height: ${mainArea?.height}px;` : ''"
       @start="dragStart" @sort="dragTodogroup_sort" @end="dragEnd"
     >
       <template v-for="group in todogroups" :key="group.id">
