@@ -3,10 +3,10 @@
     :style="columnStyle"
   >
     <div data-no-dragscroll class="column-header row no-wrap items-center q-pt-xs q-px-sm"
-      :class="$q.screen.gt.sm ? 'undrag' : ''"
+      
     >
         <span class="dragBar q-space">{{ group.name }}</span>
-        <q-btn flat dense size="sm" round icon="mdi-dots-vertical">
+        <q-btn flat dense size="sm" round icon="mdi-dots-vertical" :class="$q.screen.gt.sm ? 'undrag' : ''">
             <q-menu class="radius-sm shadow-24" ref="todogroupMenuRef">
                 <GroupMenu
                     :group

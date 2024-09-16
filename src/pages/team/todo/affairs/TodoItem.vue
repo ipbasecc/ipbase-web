@@ -89,7 +89,7 @@
 import { ref, toRefs, toRaw } from 'vue'
 import InputDiv from 'src/components/Utilits/InputDiv.vue'
 import { uiStore } from 'src/hooks/global/useStore';
-import {createTodo, deleteTodo, updateTodo} from "src/api/strapi/project.js";
+import {deleteTodo, updateTodo} from "src/api/strapi/project.js";
 import TodoMenu from './TodoMenu.vue'
 import StrapiUpload from "src/components/Utilits/StrapiUpload.vue";
 import FileList from "src/components/Utilits/FileList.vue";
