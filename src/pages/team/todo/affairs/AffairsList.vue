@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import {ref, computed, onBeforeMount} from 'vue'
+import {watch, computed, onBeforeMount} from 'vue'
 import { userStore, teamStore } from "src/hooks/global/useStore.js";
 import localforage from 'localforage';
 
@@ -36,6 +36,12 @@ onBeforeMount(async () => {
   const cache = await localforage.getItem('affairsFilterIDs');
   if(cache) {
     userStore.affairsFilterIDs = cache
+  }
+})
+const affairsFilterIDs = computed(() => userStore.affairsFilterIDs);
+watch(affairsFilterIDs, async (val) => {
+  if(affairsFilterIDs.value?.length > 0){
+    await syncCache();
   }
 })
 

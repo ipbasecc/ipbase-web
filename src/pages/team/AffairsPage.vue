@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, watchEffect } from "vue";
+import { ref, nextTick, watchEffect } from "vue";
 import NavigatorContainer from './NavigatorContainer.vue'
 import {teamStore, uiStore, userStore} from 'src/hooks/global/useStore';
 import {VueDraggable} from 'vue-draggable-plus'
@@ -46,18 +46,18 @@ import {updateUserTodogroups} from "src/api/strapi.js";
 import CreateColumn from './todo/affairs/CreateColumn.vue'
 
 const todogroups = ref();
-onMounted(() => {
-  todogroups.value = teamStore?.init?.todogroups || [];
-})
 
 const mainArea = ref(null);
 const onResize = (size) => {
   mainArea.value = size;
 }
-
 watchEffect(() => {
   if(userStore.affairsFilterIDs?.length > 0){
-    todogroups.value = userStore.affairsFilterIDs.map(i => teamStore.init.todogroups.find(j => j.id === i))
+    const all_ids = teamStore.init.todogroups.map(i => i.id);
+    userStore.affairsFilterIDs = userStore.affairsFilterIDs.filter(i => all_ids.includes(i));
+    if(userStore.affairsFilterIDs.length > 0){
+      todogroups.value = userStore.affairsFilterIDs.map(i => teamStore.init.todogroups.find(j => j.id === i))
+    }
   } else {
     todogroups.value = teamStore.init.todogroups
   }
