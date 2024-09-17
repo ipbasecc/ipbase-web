@@ -10,20 +10,20 @@
               <div class="text-h4 q-ml-md text-white">{{ teamStore?.project?.budget.amount }}</div>
             </div>
           </th>
-          <th colspan="3" class="text-right">
+          <th colspan="3" class="text-left">
             <q-btn color="primary" icon="mdi-plus" label="新增" @click="toggleAddLedger" />
           </th>
           <th :style="$q.screen.gt.md ? 'width: 10%;' : ''"></th>
         </tr>
         <tr>
           <th :style="$q.screen.gt.md ? 'width: 10%;' : ''"></th>
-          <th class="text-right">创建时间</th>
+          <th class="text-left">创建时间</th>
           <th class="text-left">金额</th>
-          <th class="text-right">状态</th>
+          <th class="text-left">状态</th>
           <th class="text-left full-width">说明</th>
-          <th class="text-right">经办人</th>
-          <th class="text-right">授权人</th>
-          <th class="text-right">更多</th>
+          <th class="text-left">经办人</th>
+          <th class="text-left">授权人</th>
+          <th class="text-left">更多</th>
           <th :style="$q.screen.gt.md ? 'width: 10%;' : ''"></th>
         </tr>
       </thead>
@@ -44,7 +44,7 @@
       <tbody class="border-bottom">
         <tr v-for="i in teamStore?.project?.budget?.ledgers" :key="i.id" class="hovered-item">
           <td :style="$q.screen.gt.md ? 'width: 10%;' : ''"></td>
-          <td class="text-right">
+          <td class="text-left">
             <q-chip class="border" flat square icon="mdi-calendar-text" :label="date.formatDate(i.createdAt, 'YY / MM / DD')" />
           </td>
           <td class="text-left">
@@ -91,7 +91,7 @@
               </q-card>
             </q-popup-proxy>
           </td>
-          <td class="text-right">
+          <td class="text-left">
             <q-avatar size="2rem">
               <q-img
                 :src="i.handler?.profile?.avatar?.url"
@@ -101,7 +101,7 @@
               />
             </q-avatar>
           </td>
-          <td class="text-right">
+          <td class="text-left">
             <q-avatar size="2rem">
               <q-img
                 :src="i.authorizer?.profile?.avatar?.url"
@@ -111,16 +111,13 @@
               />
             </q-avatar>
           </td>
-          <td class="text-right">
+          <td class="text-left">
             <q-btn flat dense round size="sm" icon="mdi-dots-vertical" class="transition hover-show">
               <q-menu class="radius-sm">
-                <q-list bordered class="radius-sm" style="min-width: 8rem">
-                  <q-item clickable v-close-popup @click="removeLedger(i)">
-                    <q-item-section>删除该流水</q-item-section>
-                  </q-item>
-                  <q-separator />
-                  <q-item clickable v-close-popup>
-                    <q-item-section>New incognito tab</q-item-section>
+                <q-list dense bordered class="radius-sm q-pa-xs" style="min-width: 8rem">
+                  <q-item class="radius-xs" clickable v-close-popup @click="removeLedger(i)">
+                    <q-item-section side><q-icon name="delete" /></q-item-section>
+                    <q-item-section class="text-no-wrap">删除该流水</q-item-section>
                   </q-item>
                 </q-list>
               </q-menu>
@@ -130,7 +127,7 @@
         </tr>
       </tbody>
     </q-markup-table>
-    <q-btn v-else flat outline icon="mdi-plus" label="添加预算" @click="onClick">
+    <q-btn v-else flat outline icon="mdi-plus" label="添加预算">
       <q-popup-proxy cover class="shadow-24">
         <q-card bordered style="min-width: 22rem;">
           <q-card-section class="column no-wrap gap-sm">
@@ -146,19 +143,23 @@
     </q-btn>
     <q-dialog v-model="add_ledget" persistent>
       <q-card bordered style="min-width: 36rem;">
+        <q-card-section  class="row q-pa-sm gap-sm">
+            <q-radio v-model="add_type" val="outcome" label="支出" />
+            <q-radio v-model="add_type" val="income" label="收入" />
+            <q-space />
+            <div>
+              <q-btn flat dense size="sm" round icon="mdi-close" v-close-popup />
+            </div>
+        </q-card-section>
         <q-card-section>
           <q-form
             @submit="addLedger"
             @reset="onReset"
             class="q-gutter-md"
           >
-          
-          <div class="row no-wrap gap-md">
-            <q-radio v-model="add_type" val="outcome" label="支出" />
-            <q-radio v-model="add_type" val="income" label="收入" />
-          </div>
             <q-input
               filled
+              square
               v-model.number="create_params.data.amount"
               type="number"
               label="用款金额"
@@ -166,15 +167,17 @@
 
             <q-input
               filled
+              square
               type="textarea"
               v-model="create_params.data.purpose"
               label="说明款项用途"
             />
-            <div>
-              <q-btn label="Submit" type="submit" color="primary"/>
-              <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
-            </div>
           </q-form>
+        </q-card-section>
+        <q-card-section class="row q-pa-sm gap-sm border-top">
+          <q-btn label="重置" type="reset" color="primary" flat />
+          <q-space />
+          <q-btn label="确认" type="submit" color="primary"/>
         </q-card-section>
       </q-card>
     </q-dialog>
