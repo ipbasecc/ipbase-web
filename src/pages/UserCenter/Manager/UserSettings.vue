@@ -244,6 +244,7 @@ const navigation = ref();
 
 const submitDisable = ref(true);
 const UpdateChannelParams = ref({
+  updateChannelId: userStore.channelId,
   data: {
     title: "",
     slogan: "",
@@ -351,6 +352,7 @@ watch(
   userStore,
   () => {
     if (userStore.channelId) {
+      UpdateChannelParams.value.updateChannelId = userStore.channelId;
       queryChannelMatedata();
     }
   },

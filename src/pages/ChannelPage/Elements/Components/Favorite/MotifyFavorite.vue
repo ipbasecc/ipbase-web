@@ -107,6 +107,7 @@ const createFavoriteCollection = async () => {
     const CreateFavoriteParmas = ref({
         data: {
             name: newFavName.value,
+            owner: userStore && userStore.userId,
         }
     })
     const {

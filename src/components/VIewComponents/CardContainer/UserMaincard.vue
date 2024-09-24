@@ -185,6 +185,7 @@ watch(userStore, () => {
 
 
 const updateFollowsParams = ref({
+    updateUsersPermissionsUserId: userStore.userId,
     data: {
         new_follow: null,
         unfollow: null
@@ -197,6 +198,7 @@ const updateFollowsFn = async (_targetUser_id) => {
   } else {
     updateFollowsParams.value.data.new_follow = props.userId
   }
+  updateFollowsParams.value.updateUsersPermissionsUserId = userStore.userId;
 
   const res = await updateFollowed(updateFollowsParams.value);
   if(res?.data){

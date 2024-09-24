@@ -31,6 +31,7 @@ export async function init_mm(user_id, mm_profile) {
         // mattermost用户数据同步给strapi
         try {
           const updateUsersBasicinfoParams = ref({
+            updateUsersPermissionsUserId: user_id,
             data: {
               default_team: team.data?.id,
             },

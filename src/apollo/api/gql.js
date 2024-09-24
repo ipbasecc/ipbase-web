@@ -80,12 +80,16 @@ const gqlAggregate = {
   createPost: gql`
     mutation createPost(
       $title: String
+      $channel: ID
       $element: ID
+      $publishedAt: DateTime
     ) {
       createPost(
         data: {
           title: $title
+          channel: $channel
           element: $element
+          publishedAt: $publishedAt
         }
       ) {
         data {
@@ -154,8 +158,8 @@ const gqlAggregate = {
     }
   `,
   updateUsersPermissionsUser: gql`
-    mutation updateUsersPermissionsUser($role: ID) {
-      updateUsersPermissionsUser(data: { role: $role }) {
+    mutation updateUsersPermissionsUser($id: ID!, $role: ID) {
+      updateUsersPermissionsUser(id: $id, data: { role: $role }) {
         data {
           id
           attributes {
@@ -171,9 +175,11 @@ const gqlAggregate = {
   `,
   updateUsersDefaultBizcard: gql`
     mutation updateUsersDefaultBizcard(
+      $updateUsersPermissionsUserId: ID!
       $data: UsersPermissionsUserInput!
     ) {
       updateUsersPermissionsUser(
+        id: $updateUsersPermissionsUserId
         data: $data
       ) {
         data {
@@ -236,9 +242,11 @@ const gqlAggregate = {
 
   updateUsersBasicinfo: gql`
     mutation updateUsersBasicinfo(
+      $updateUsersPermissionsUserId: ID!
       $data: UsersPermissionsUserInput!
     ) {
       updateUsersPermissionsUser(
+        id: $updateUsersPermissionsUserId
         data: $data
       ) {
         data {
@@ -295,8 +303,8 @@ const gqlAggregate = {
   `,
 
   UpdateChannel: gql`
-    mutation UpdateChannel($data: ChannelInput!) {
-      updateChannel(data: $data) {
+    mutation UpdateChannel($updateChannelId: ID!, $data: ChannelInput!) {
+      updateChannel(id: $updateChannelId, data: $data) {
         data {
           id
         }
@@ -2382,8 +2390,8 @@ const gqlAggregate = {
     }
   `,
   updateWorkingday: gql`
-    mutation updateWorkingday($data: ChannelInput!) {
-      updateChannel(data: $data) {
+    mutation updateWorkingday($id: ID!, $data: ChannelInput!) {
+      updateChannel(id: $id, data: $data) {
         data {
           attributes {
             workingday {
