@@ -7,16 +7,14 @@ import {clearLocalDB} from "pages/team/hooks/useUser";
 import { useRouter } from "vue-router";
 
 const $t = i18n.global.t;
+let router
 
 /**
  * router 需要在setup中
  */
 export default {
   setup() {
-    const router = useRouter();
-    return {
-      router
-    };
+    router = useRouter();
   }
 }
 

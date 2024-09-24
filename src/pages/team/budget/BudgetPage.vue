@@ -153,8 +153,6 @@
         </q-card-section>
         <q-card-section>
           <q-form
-            @submit="addLedger"
-            @reset="onReset"
             class="q-gutter-md"
           >
             <q-input
@@ -175,9 +173,9 @@
           </q-form>
         </q-card-section>
         <q-card-section class="row q-pa-sm gap-sm border-top">
-          <q-btn label="重置" type="reset" color="primary" flat />
+          <q-btn label="重置" type="reset" color="primary" flat @click="onReset()" />
           <q-space />
-          <q-btn label="确认" type="submit" color="primary"/>
+          <q-btn label="确认" color="primary" @click="addLedger()" />
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -219,6 +217,8 @@ const onReset = () => {
   create_params.value.data.purpose = ''
 }
 const addLedger = async () => {
+  console.log('addLedger');
+  
   if(add_type.value === 'outcome') {
     create_params.value.data.amount = -create_params.value.data.amount;
   }
