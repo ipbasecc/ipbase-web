@@ -22,7 +22,7 @@
         @keyup.enter="updateNameFn"
       >
         <template v-slot:append>
-          <q-btn dense flat round icon="add" @click="updateNameFn" />
+          <q-btn dense flat round icon="check" @click="updateNameFn" />
         </template>
       </q-input>
     </div>

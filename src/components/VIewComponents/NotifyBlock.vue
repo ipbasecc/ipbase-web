@@ -16,7 +16,7 @@
             </q-card>
           </q-tooltip>
         </div>
-        <div class="row no-wrap flex-center gap-xs unselected q-pa-xxs">
+        <div v-if="false" class="row no-wrap flex-center gap-xs unselected q-pa-xxs">
           <span class="font-medium font-bold-600">@</span>
           <span>{{uiStore.unreads.team.mention_count}}</span>
           <q-tooltip class="transparent">
