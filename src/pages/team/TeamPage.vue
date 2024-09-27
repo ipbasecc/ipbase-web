@@ -101,7 +101,11 @@
               @click="toggleleftDrawer"
               class="cursor-pointer toggle-btn transition z-max"
               :style="`transform: translateX(${uiStore.projectLeftDrawer ? -16 : 12}px)`"
-            />
+            >
+              <q-tooltip class="border" :class="$q.dark.mode ? 'bg-darker text-white' : 'bg-grey-1 text-black'">
+                shift + {{ uiStore.projectLeftDrawer ? '<' : '>' }}
+              </q-tooltip>
+            </q-icon>
           </div>
           <div class="absolute-full">
             <router-view v-show="$q.screen.gt.xs || !uiStore.showMainContentList" />

@@ -5,9 +5,9 @@
     transition-hide="jump-up"
     fit
     :offset="offset"
-    class="bg-white z-max shadow-focus"
+    class="bg-white z-max shadow-focus radius-sm"
   >
-    <q-card bordered style="max-width: 24rem;">
+    <q-card bordered style="max-width: 24rem;" class="radius-sm">
       <q-card-section
         class="row no-wrap q-pa-xs q-pt-sm items-center justify-between border-bottom"
       >
@@ -77,14 +77,6 @@ const props = defineProps({
 const openBrand = ref(false);
 const apps = [
   {
-    val: "brand",
-    label: 'brand',
-    icon: "mdi-cards",
-    description: 'app_brand_purpose',
-    to: "brand",
-    enable: true,
-  },
-  {
     val: "teams",
     label: 'team',
     icon: "mark_chat_read",
@@ -98,6 +90,14 @@ const apps = [
     icon: "mdi-calendar-clock",
     description: 'app_affairs_purpose',
     to: "affairs",
+    enable: true,
+  },
+  {
+    val: "brand",
+    label: 'brand',
+    icon: "mdi-cards",
+    description: 'app_brand_purpose',
+    to: "brand",
     enable: true,
   },
 ];

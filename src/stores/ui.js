@@ -13,19 +13,19 @@ export default defineStore("ui", {
         enable: true,
       },
       {
+        val: "affairs",
+        label: 'affairs',
+        icon: "mdi-checkbox-marked-circle-outline",
+        description: 'app_affairs_purpose',
+        to: "affairs",
+        enable: true,
+      },
+      {
         val: "chats",
         label: 'chats',
         icon: "mark_chat_read",
         description: 'app_chat_purpose',
         to: "chats",
-        enable: true,
-      },
-      {
-        val: "affairs",
-        label: 'affairs',
-        icon: "mdi-check-all",
-        description: 'app_affairs_purpose',
-        to: "affairs",
         enable: true,
       },
       {

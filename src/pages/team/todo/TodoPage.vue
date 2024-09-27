@@ -23,7 +23,7 @@
       >
         <slot name="bar_left" />
         <q-toolbar-title>
-          {{ kanban_id ? $t('todo_attach_txt_private_kanban') + ' ' + $t(asTitle) : $t('todo_attach_txt_person') + ' ' + $t(asTitle) }}
+          {{ kanban_id ? $t('todo_attach_txt_private_kanban') + $t(asTitle) : $t('todo_attach_txt_person') + ' ' + $t(asTitle) }}
         </q-toolbar-title>
         <q-space />
         <PersonTip :kanban_id :card />

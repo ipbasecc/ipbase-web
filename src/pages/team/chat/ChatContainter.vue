@@ -49,12 +49,12 @@
                 ref="separatorRef"
     >
       <template v-slot:before>
-        <q-resize-observer @resize="onResize" />
         <div class="fit column">
           <q-scroll-area
             class="q-space"
             ref="scrollAreaRef"
           >
+          <q-resize-observer @resize="onResize" />
             <q-pull-to-refresh @refresh="refresh">
               <q-infinite-scroll v-if="messages?.length > 0"
                                  reverse
@@ -62,6 +62,7 @@
                                  :disable="!hasMore"
                                  :offset="700"
                                  class="column no-wrap justify-end article messages_list"
+                                 :style="scrollContainer ? `min-height: ${scrollContainer.height}px` : ''"
               >
                 <template v-slot:loading>
                   <div class="row justify-center q-my-md">
@@ -207,7 +208,7 @@ import {getChannelByID as getMmChannelByID, getPostsOfChannel} from "src/api/mat
 import {generateUrlParams} from 'src/hooks/utilits.js'
 import MessageItem from "pages/team/chat/MessageItem.vue";
 import {mm_wsStore, mmUser, teamStore, uiStore} from "src/hooks/global/useStore";
-import SendmsgBox from "pages/Chat/components/wigets/SendmsgBox.vue";
+import SendmsgBox from "./SendmsgBox.vue";
 import {getChannelByID} from "src/api/strapi/team";
 import {useFetchAvatar} from "pages/Chat/hooks/useFetchAvatar";
 import MemberManager from "pages/team/settings/MemberManager.vue";

@@ -24,8 +24,8 @@
               @click="sendMsg(msg)"
               class="border"
             >
-              <q-tooltip :class="$q.dark.mode ? 'bg-black' : 'bg-grey-1'">
-                <span class="op-5">CTRL + 回车发送</span>
+              <q-tooltip class="border text-no-wrap overflow-hidden" :class="$q.dark.mode ? 'bg-darker text-white' : 'bg-grey-1 text-black'">
+                CTRL + Enter
               </q-tooltip>
             </q-btn>
           </template>

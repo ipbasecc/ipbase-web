@@ -1,13 +1,11 @@
 <template>
-  <div class="fit column no-wrap q-space" ref="tiptap">
+  <div class="fit column no-wrap q-space" :class="toolbar_onBottom ? 'reverse' : ''" ref="tiptap">
     <template v-if="isEditable">
       <div
         v-if="show_toolbar && isEditable"
-        class="full-width row no-wrap gap-xs items-center justify-start border-bottom q-py-xs q-px-sm"
-        :class="`${square ? '' : 'radius-xs'}`"
-        :style="`${
-          toolbar_onBottom ? 'order: 9999' : ''
-        } height: ${toolbarHeight}px`"
+        class="full-width row no-wrap gap-xs items-center justify-start q-py-xs q-px-sm"
+        :class="`${square ? '' : 'radius-xs'}${toolbar_onBottom ? 'border-top' : 'border-bottom'}`"
+        :style="`height: ${toolbarHeight}px`"
       >
         <slot name="left-btn"></slot>
         <template v-for="(i, index) in menu" :key="index">

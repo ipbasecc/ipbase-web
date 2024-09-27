@@ -7,7 +7,7 @@
     <template v-else>
       <q-layout
         v-if="!needLogin"
-        view="lHr LpR lfr"
+        view="hHh LpR fFf"
         class="absolute-full border-negative radius-xs overflow-hidden"
       >
         <q-drawer

@@ -25,6 +25,9 @@
           </q-item>
         </q-list>
       </q-menu>
+      <q-tooltip class="border text-no-wrap" :class="$q.dark.mode ? 'bg-darker text-white' : 'bg-grey-1 text-black'">
+        使用手册、快捷键
+      </q-tooltip>
     </q-btn>
     <q-btn
       v-if="is_development"
@@ -41,7 +44,11 @@
       round
       icon="browser_updated"
       @click="showDownloadApp = true"
-    />
+    >
+      <q-tooltip class="border text-no-wrap" :class="$q.dark.mode ? 'bg-darker text-white' : 'bg-grey-1 text-black'">
+        下载桌面版
+      </q-tooltip>
+    </q-btn>
     <q-btn flat dense round icon="translate">
       <q-menu anchor="bottom right" self="bottom left" class="transparent">
         <q-list
@@ -67,6 +74,9 @@
           </q-item>
         </q-list>
       </q-menu>
+      <q-tooltip class="border text-no-wrap" :class="$q.dark.mode ? 'bg-darker text-white' : 'bg-grey-1 text-black'">
+        切换语言
+      </q-tooltip>
     </q-btn>
     <q-dialog v-model="infoDlg" full-height>
       <q-card bordered class="column" style="min-width: 60vw">

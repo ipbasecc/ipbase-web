@@ -4,8 +4,8 @@
 export default {
   App_Lang: 'zh-CN', //用于页面切换语言时，页面重新获取语言，不要直接翻译，应该直接设置对应语言代号
   Language: "语言",
-  app_loading: "应用加载中",
-  app_loading_tip: "谈正事 用易乎APP!",
+  app_loading: "IPBase",
+  app_loading_tip: "每个人都有自己的品牌",
   upload_file: "文件上传",
   upload: "上传",
   download: "下载",
@@ -106,8 +106,8 @@ export default {
   manual: '操作手册',
   shortcut: '快捷键',
 
-  ipbase_brand: '易乎APP',
-  ipbase_brand_purpose: '谈正事 用易乎APP',
+  ipbase_brand: 'IPBase',
+  ipbase_brand_purpose: '每个人都有自己的品牌',
 
   gohome: '回首页',
   go_teamhome_label: '团队协作',
@@ -473,7 +473,7 @@ export default {
   attach_file: '附加文件',
   join_talk: '留言讨论',
 
-  todo_attach_txt_private_kanban: '看板私密',
+  todo_attach_txt_private_kanban: '关联个人',
   todo_attach_txt_person: '个人',
 
   add_todogroup: '添加待办分组',

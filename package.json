@@ -1,8 +1,8 @@
 {
   "name": "ipbase",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "ipbase project",
-  "productName": "ipbase",
+  "productName": "IPBase",
   "author": "auxcc <jerr@foxmail.com>",
   "private": true,
   "homepage": "https://github.com/ipbasecc/ipbase-web",

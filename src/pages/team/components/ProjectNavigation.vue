@@ -4,12 +4,11 @@
       <q-tab
         :name="i.name"
         @click="goto(i)"
-        :class="`
-          ${$q.screen.gt.sm ? '' : 'q-px-xs'}
+        :class="`q-px-sm q-mx-xs
           ${tab === i.name ? '' : 'op-7'}
         `"
       >
-        <q-icon v-if="$q.screen.gt.sm" :name="i.icon" size="1.4rem" />
+        <q-icon v-if="$q.screen.gt.sm" :name="i.icon" size="1.2rem" />
         <span class="q-ml-sm">{{ $t(i.label) }}</span>
       </q-tab>
     </template>
