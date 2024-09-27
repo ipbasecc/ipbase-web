@@ -191,9 +191,13 @@ const toggleRightDrawer = (val) => {
 };
 
 const checkNotification = async () => {
+  if (!teamStore.team?.notification) {
+    uiStore.showTeamNotification = false;
+    return
+  }
   const _cacheKey = `${teamStore.team?.id}_showTeamNotification`;
   const notificationCache = await localforage.getItem(_cacheKey);
-  if(!notificationCache || notificationCache?.content !== teamStore.team?.notification){
+  if((!notificationCache && teamStore.team?.notification !== '') || notificationCache?.content !== teamStore.team?.notification){
     uiStore.showTeamNotification = true;
   }
 }
