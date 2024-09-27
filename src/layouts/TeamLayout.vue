@@ -126,10 +126,14 @@ watchEffect(() => {
   }
 });
 const checkNotification = async () => {
-  const _cacheKey = `showAppNotification`;
-  const notificationCache = await localforage.getItem(_cacheKey);
-  if(!notificationCache || notificationCache?.content !== serverInfo.value?.notification){
-    uiStore.showAppNotification = true;
+  if (!serverInfo.value?.notification || serverInfo.value?.notification === '') {
+    uiStore.showAppNotification = false;
+  } else {
+    const _cacheKey = `showAppNotification`;
+    const notificationCache = await localforage.getItem(_cacheKey);
+    if(!notificationCache || notificationCache?.content !== serverInfo.value?.notification){
+      uiStore.showAppNotification = true;
+    }
   }
 }
 onBeforeMount(async() => {

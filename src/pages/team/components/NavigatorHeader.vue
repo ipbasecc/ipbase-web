@@ -138,7 +138,7 @@
           />
         </div>
       </q-bar>
-      <TeamNotification v-if="uiStore.showTeamNotification" />
+      <TeamNotification v-if="uiStore.showTeamNotification && teamStore.team?.notification" />
     </q-header>
 </template>
 
@@ -191,14 +191,14 @@ const toggleRightDrawer = (val) => {
 };
 
 const checkNotification = async () => {
-  if (!teamStore.team?.notification) {
+  if (!teamStore.team?.notification || teamStore.team?.notification === '') {
     uiStore.showTeamNotification = false;
-    return
-  }
-  const _cacheKey = `${teamStore.team?.id}_showTeamNotification`;
-  const notificationCache = await localforage.getItem(_cacheKey);
-  if((!notificationCache && teamStore.team?.notification !== '') || notificationCache?.content !== teamStore.team?.notification){
-    uiStore.showTeamNotification = true;
+  } else {
+    const _cacheKey = `${teamStore.team?.id}_showTeamNotification`;
+    const notificationCache = await localforage.getItem(_cacheKey);
+    if((!notificationCache || teamStore.team?.notification !== notificationCache.content)){
+      uiStore.showTeamNotification = true;
+    }
   }
 }
 onBeforeMount(async () => {
