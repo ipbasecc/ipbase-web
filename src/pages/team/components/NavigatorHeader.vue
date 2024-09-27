@@ -138,6 +138,7 @@
           />
         </div>
       </q-bar>
+      <TeamNotification v-if="uiStore.showTeamNotification" />
     </q-header>
 </template>
 
@@ -152,6 +153,7 @@ import AccountMenu from "src/pages/team/components/AccountMenu.vue";
 import WindowToggle from "src/pages/team/components/widgets/icons/WindowToggle.vue";
 import FileTransfer from "pages/team/components/widgets/icons/FileTransfer.vue";
 import TeamList from "src/pages/team/components/TeamList.vue";
+import TeamNotification from './TeamNotification.vue'
 
 const $q = useQuasar();
 
@@ -191,6 +193,11 @@ const toggleRightDrawer = (val) => {
 onBeforeMount(async () => {
   const res = await localforage.getItem("isFocusMode");
   uiStore.isFocusMode = res || false;
+  const _cacheKey = `${teamStore.team?.id}_showTeamNotification`;
+  const notificationCache = await localforage.getItem(_cacheKey);
+  if(!notificationCache || notificationCache?.content !== teamStore.team?.notification){
+    uiStore.showTeamNotification = true;
+  }
 });
 
 watch(

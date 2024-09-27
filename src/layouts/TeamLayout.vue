@@ -7,9 +7,12 @@
     <template v-else>
       <q-layout
         v-if="!needLogin"
-        view="hHh LpR fFf"
+        view="hHh LpR lFr"
         class="absolute-full border-negative radius-xs overflow-hidden"
       >
+        <q-header v-if="uiStore.showAppNotification" class="transparent">
+          <AppNotification />
+        </q-header>
         <q-drawer
           v-if="$q.screen.gt.xs"
           side="left"
@@ -106,8 +109,10 @@ import InitializationUser from 'src/pages/team/settings/initialization/Initializ
 import {teamStore, uiStore, userStore} from "src/hooks/global/useStore";
 
 import {getUserData} from "src/hooks/global/useGetMyMatedata.js";
+import { serverInfo } from 'src/boot/server.js'
 import localforage from "localforage";
 import {toggleTeam} from "src/pages/team/hooks/useTeam.js";
+import AppNotification from 'src/pages/team/components/AppNotification.vue'
 
 getUserData();
 
@@ -131,6 +136,11 @@ onBeforeMount(async() => {
         await toggleTeam(cache)
       }
     }
+  }
+  const _cacheKey = `showAppNotification`;
+  const notificationCache = await localforage.getItem(_cacheKey);
+  if(!notificationCache || notificationCache?.content !== serverInfo.value?.notification){
+    uiStore.showAppNotification = true;
   }
 })
 

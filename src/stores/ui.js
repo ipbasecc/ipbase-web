@@ -141,6 +141,8 @@ export default defineStore("ui", {
     chat_pannel: false,
     topPannel: false,
     columnWidth: 322,
+    showTeamNotification: false,
+    showAppNotification: false,
   }),
   actions: {
     $reset() {

@@ -41,12 +41,14 @@
 </template>
 
 <script setup>
-import { computed, toRef } from "vue";
+import { computed, onBeforeMount } from "vue";
 import MembersIndicator from "src/pages/team/components/MembersIndicator.vue";
 import ProjectSetting from "src/pages/team/settings/ProjectSetting.vue";
 
 import ProjectNavigation from "./ProjectNavigation.vue";
 import { teamStore, uiStore } from "src/hooks/global/useStore.js";
+import localforage from "localforage";
+
 import { useRouter } from "vue-router";
 
 const emit = defineEmits(["toggleRightpannel", "toggleleftDrawer"]);
@@ -82,4 +84,12 @@ const router = useRouter()
 const backHome = () => {
   router.push('/teams')
 }
+
+onBeforeMount(async() => {
+  const _cacheKey = `${teamStore.team?.id}_showTeamNotification`;
+  const notificationCache = await localforage.getItem(_cacheKey);
+  if(!notificationCache || notificationCache?.content !== teamStore.team?.notification){
+    uiStore.showTeamNotification = true;
+  }
+})
 </script>

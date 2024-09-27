@@ -6,7 +6,7 @@ import { Platform } from 'quasar'
 
 const $t = i18n.global.t;
 
-const serverInfo = ref();
+export const serverInfo = ref();
 const fetchServerInfo = async (_url) => {
   try {
     const response = await fetch(_url + 'api/server');
