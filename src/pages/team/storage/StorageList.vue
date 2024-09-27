@@ -12,13 +12,13 @@
           <q-item
             clickable
             v-ripple
-            class="col radius-xs hovered-item overflow-hidden"
+            class="col radius-xs hovered-item overflow-hidden q-pa-sm"
             :class="activeStorage === i.id ? 'border active-sublistitem' : 'border-placeholder op-7'"
             :active-class="`${$q.dark.mode ? 'text-grey-3' : 'text-grey-9'}`"
             style="min-height: 40px;"
             @click="enterStorage(i.id)"
           >
-            <q-item-section side class="dragBar">
+            <q-item-section side class="dragBar q-pr-sm">
               <AzureIcon v-if="i.type === 'azure_blob'" />
               <q-icon v-else name="mdi-server-network" />
             </q-item-section>

@@ -13,7 +13,7 @@
         <q-item
           clickable
           v-ripple
-          class="col radius-xs hovered-item overflow-hidden"
+          class="col radius-xs hovered-item overflow-hidden q-pa-sm"
           :class="actived_id === element.id ? 'border active-sublistitem' : 'border-placeholder op-7'"
           :active-class="` ${
             findColor_byIcon(element.icon)
@@ -23,7 +23,7 @@
           :active="actived_id === element.id"
           style="min-height: 40px;"
         >
-          <q-item-section side class="dragBar" @click="enterSchedule(element)">
+          <q-item-section side class="dragBar q-pr-sm" @click="enterSchedule(element)">
             <q-icon
               :name="element.icon"
               :color="findColor_byIcon(element.icon)"
