@@ -143,7 +143,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, onBeforeMount, watch } from 'vue'
+import { ref, onMounted, computed, onBeforeMount, watch, nextTick } from 'vue'
 import {ossStore, teamStore, uiStore} from "src/hooks/global/useStore.js";
 import {isExternal,} from "src/pages/team/hooks/useConfig.js";
 import localforage from "localforage";

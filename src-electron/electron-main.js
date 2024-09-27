@@ -8,7 +8,7 @@ import {
   session,
   globalShortcut,
 } from "electron";
-import State from "electron-window-state";
+import windowStateKeeper from "electron-window-state";
 import path from "path";
 import os from "os";
 
@@ -79,10 +79,11 @@ function unregisterGlobalShortcuts() {
 }
 
 function createWindow() {
-  let mainWindowState = new State({
-    defaultWidth: 1280,
-    defaultHeight: 760,
+  let mainWindowState = windowStateKeeper({
+    defaultWidth: 1200,
+    defaultHeight: 800
   });
+  
   const csp = `
     default-src 'none';
     script-src 'self' 'unsafe-inline';
@@ -90,7 +91,7 @@ function createWindow() {
     img-src 'self' data:;
     connect-src 'self';
     font-src 'self';
-`;
+  `;
   /**
    * Initial window options
    */
@@ -104,7 +105,7 @@ function createWindow() {
     y: mainWindowState.y,
     width: mainWindowState.width,
     height: mainWindowState.height,
-    useContentSize: true,
+    useContentSize: false,
     frame: false,
     // transparent: true,
     webPreferences: {
@@ -163,6 +164,7 @@ function createWindow() {
     mainWindow = null;
   });
 
+  mainWindowState.manage(mainWindow);
   // Save window position and size when it is moved or resized.
   mainWindow.on("moved", () => mainWindowState.manage(mainWindow));
   mainWindow.on("resized", () => mainWindowState.manage(mainWindow));
