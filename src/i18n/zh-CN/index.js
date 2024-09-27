@@ -689,5 +689,8 @@ export default {
   delete_card_warning: '删除当前内容',
 
   create_person_todogroup: '创建个人事务分组',
-  budget: '预算'
+  budget: '预算',
+  set_team_notification_label: '设置团队通知',
+  confirm: '确认',
+  set_team_notification: '团队通知',
 };

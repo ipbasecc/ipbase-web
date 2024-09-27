@@ -94,7 +94,7 @@
 </template>
 
 <script setup>
-import {computed, onBeforeMount, onMounted, onUnmounted, ref, watchEffect} from "vue";
+import {watch, computed, onBeforeMount, onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {loginAndInit} from 'src/hooks/init.js'
 import {useRoute, useRouter} from "vue-router";
 import AccountMenu from "../pages/team/components/AccountMenu.vue";
@@ -125,6 +125,13 @@ watchEffect(() => {
     uiStore.appDrawer = false;
   }
 });
+const checkNotification = async () => {
+  const _cacheKey = `showAppNotification`;
+  const notificationCache = await localforage.getItem(_cacheKey);
+  if(!notificationCache || notificationCache?.content !== serverInfo.value?.notification){
+    uiStore.showAppNotification = true;
+  }
+}
 onBeforeMount(async() => {
   uiStore.pageLoaded = true;
   if(!teamStore.init){
@@ -137,11 +144,7 @@ onBeforeMount(async() => {
       }
     }
   }
-  const _cacheKey = `showAppNotification`;
-  const notificationCache = await localforage.getItem(_cacheKey);
-  if(!notificationCache || notificationCache?.content !== serverInfo.value?.notification){
-    uiStore.showAppNotification = true;
-  }
+  await checkNotification();
 })
 
 onMounted(async () => {
@@ -201,4 +204,5 @@ onMounted(() => {
 onUnmounted(() => {
   closeWs();
 });
+
 </script>

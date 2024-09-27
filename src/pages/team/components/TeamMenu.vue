@@ -43,6 +43,18 @@
         </q-item-section>
         <q-item-section>{{ $t('team_settings') }}</q-item-section>
       </q-item>
+      <q-item
+        v-if="useAuths('modify', ['team'])"
+        @click="setNotification = true"
+        clickable
+        v-close-popup
+        class="radius-xs"
+      >
+        <q-item-section side>
+          <q-icon name="mdi-bullhorn" />
+        </q-item-section>
+        <q-item-section>{{ $t('set_team_notification') }}</q-item-section>
+      </q-item>
       <q-separator
         v-if="
           useAuths('invite_uris', ['team']) ||
@@ -103,6 +115,9 @@
   <q-dialog v-model="invite" persistent>
     <TeamInvite :byInfo />
   </q-dialog>
+  <q-dialog v-model="setNotification" persistent>
+    <SetNotification />
+  </q-dialog>
   <q-dialog v-model="createing" persistent>
     <CreateTeam @cannelCreate="createing = false" />
   </q-dialog>
@@ -161,6 +176,7 @@ import { useQuasar } from "quasar";
 import { teamStore, uiStore, userStore } from "src/hooks/global/useStore.js";
 import { useRouter } from "vue-router";
 import AboutTeam from '../AboutTeam.vue'
+import SetNotification from './SetNotification.vue'
 
 const $q = useQuasar();
 const props = defineProps({
@@ -175,6 +191,7 @@ const { team } = toRefs(props);
 
 const menu = ref(null);
 const invite = ref(false);
+const setNotification = ref(false);
 const createing = ref(false);
 const memberManager = ref(false);
 const teamSettings = ref(false);

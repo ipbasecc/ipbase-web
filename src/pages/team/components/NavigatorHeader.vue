@@ -190,14 +190,17 @@ const toggleRightDrawer = (val) => {
   }
 };
 
-onBeforeMount(async () => {
-  const res = await localforage.getItem("isFocusMode");
-  uiStore.isFocusMode = res || false;
+const checkNotification = async () => {
   const _cacheKey = `${teamStore.team?.id}_showTeamNotification`;
   const notificationCache = await localforage.getItem(_cacheKey);
   if(!notificationCache || notificationCache?.content !== teamStore.team?.notification){
     uiStore.showTeamNotification = true;
   }
+}
+onBeforeMount(async () => {
+  const res = await localforage.getItem("isFocusMode");
+  uiStore.isFocusMode = res || false;
+  await checkNotification();
 });
 
 watch(
@@ -211,6 +214,16 @@ watch(
   },
   { immediate: true }
 );
+
+// 团队通知更新时，检查是否需要显示通知
+const notification = computed(() => {
+  return teamStore.team?.notification;
+})
+watch(notification, async () => {
+  if(notification.value){
+    await checkNotification();
+  }
+},{immediate: false, deep: false})
 
 const isElectron = computed(() => $q.platform.is.electron);
 const isMax = ref(false);
