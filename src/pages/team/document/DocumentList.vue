@@ -22,9 +22,9 @@
             <q-item-section side top class="dragBar">
               <q-icon :name="findIcon_byType(element.type)"> </q-icon>
             </q-item-section>
-            <q-item-section>{{unEnter}} - {{
-              element.title
-            }}</q-item-section>
+            <q-item-section>
+              {{ element.title }}
+            </q-item-section>
             <q-item-section
               v-if="!teamStore.shareInfo"
               side top
