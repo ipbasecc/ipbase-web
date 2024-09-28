@@ -64,6 +64,13 @@ export default defineStore("team", {
     status: void 0,
     documents: [],
     active_document: null,
+    adding_news: {
+      title: void 0,
+      cover: void 0,
+      jsonContent: void 0,
+    },
+    news: [],
+    active_news: null,
   }),
   actions: {
     $reset() {

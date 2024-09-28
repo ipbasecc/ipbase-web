@@ -686,5 +686,10 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   delete_card_warning: 'Delete current content.',
 
   create_person_todogroup: 'Create Personal Affairs Grouping',
-  budget: 'budget'
+  budget: 'budget',
+  set_team_notification_label: 'Set Team Notification',
+  confirm: 'Confirm',
+  set_team_notification: 'Team Notification',
+  add_team_news: 'Add Team News',
+  add_team_news_title: 'News Title',
 }

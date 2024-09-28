@@ -686,5 +686,10 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   delete_card_warning: 'Löschen Sie den aktuellen Inhalt.',
 
   create_person_todogroup: 'Erstellen Sie die persönliche Angelegenheiten-Gruppierung',
-  budget: 'Haushalt'
+  budget: 'Haushalt',
+  set_team_notification_label: 'Team-Benachrichtigung einstellen',
+  confirm: 'Bestätigen',
+  set_team_notification: 'Team-Benachrichtigung',
+  add_team_news: 'Team-Nachrichten hinzufügen',
+  add_team_news_title: 'Titel der Nachricht',
 };

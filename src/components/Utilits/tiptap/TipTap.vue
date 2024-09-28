@@ -1,5 +1,6 @@
 <template>
-  <div class="fit column no-wrap q-space" :class="toolbar_onBottom ? 'reverse' : ''" ref="tiptap">
+  <div class="fit column no-wrap q-space items-center" :class="toolbar_onBottom ? 'reverse' : ''" ref="tiptap">
+    <!-- {{ tiptapContent }} -->
     <template v-if="isEditable">
       <div
         v-if="show_toolbar && isEditable"
@@ -157,8 +158,6 @@ import { Paragraph,  } from '@tiptap/extension-paragraph'
 import { Strike,  } from '@tiptap/extension-strike'
 import { Text } from '@tiptap/extension-text'
 
-
-
 import "prismjs";
 import "prismjs/themes/prism.css";
 import { uiStore, userStore } from "src/hooks/global/useStore";
@@ -246,6 +245,10 @@ const props = defineProps({
     },
   },
   hideScroll: {
+    type: Boolean,
+    default: false,
+  },
+  isRender: {
     type: Boolean,
     default: false,
   },
@@ -410,7 +413,7 @@ watch(
     if (jsonContentRef.value || contentRef.value) {
       editor.value && editor.value.destroy();
       tiptapContent.value =
-        props.need === "json" ? jsonContentRef.value : contentRef.value;
+        props.need === "json" || props.isRender ? jsonContentRef.value : contentRef.value;
       init();
     }
   },
