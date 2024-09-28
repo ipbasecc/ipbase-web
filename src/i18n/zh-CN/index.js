@@ -695,6 +695,6 @@ export default {
   confirm: '确认',
   set_team_notification: '团队通知',
   add_team_news: '新增资讯',
-  add_team_news_title: '资讯标题',
+  team_news_title: '资讯标题',
   add_team_news_confirm: '确认新增资讯',
 };

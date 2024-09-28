@@ -127,6 +127,7 @@ import {
   toRefs,
   watch,
   computed,
+  nextTick
 } from "vue";
 
 import { Editor, EditorContent } from "@tiptap/vue-3";
@@ -341,8 +342,15 @@ const init = () => {
       tiptapUpdate();
       emit("tiptapChanged");
     },
-    onBlur({ editor, event }) {
-      tiptapBlur();
+    async onBlur({ editor, event }) {
+      await nextTick();
+      const editorVal = JSON.stringify(editor.getJSON());
+      const sourceVal = JSON.stringify(sourceContent.value);
+      console.log(editorVal, sourceVal);
+      
+      if(editorVal !== sourceVal){
+        tiptapBlur();
+      }
       uiStore.disable_shortcut = false;
     },
     onFocus({ editor, event }) {

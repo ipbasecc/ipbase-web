@@ -15,17 +15,19 @@
             />
             <q-card-section>
                 <q-input v-model.lazy="teamStore.adding_news.title"
-                    type="text" :label="$t('add_team_news_title')"
+                    type="text" :label="$t('team_news_title')"
                 />
             </q-card-section>
         </q-card>
-        <q-btn v-if="teamStore.adding_news?.title" color="primary" :label="$t('add_team_news_confirm')" @click="addNews()" />
+        <q-btn v-if="teamStore.adding_news?.title" color="primary"
+            :label="$t('add_team_news_confirm')" @click="addNews()"
+        />
     </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import {uiStore, teamStore} from "src/hooks/global/useStore.js";
+import {teamStore} from "src/hooks/global/useStore.js";
 import { createDocument } from 'src/api/strapi/project.js'
 import StrapiUpload from 'src/components/Utilits/StrapiUpload.vue'
 

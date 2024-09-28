@@ -691,5 +691,6 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   confirm: 'Bestätigen',
   set_team_notification: 'Team-Benachrichtigung',
   add_team_news: 'Team-Nachrichten hinzufügen',
-  add_team_news_title: 'Titel der Nachricht',
+  team_news_title: 'Titel der Nachricht',
+  add_team_news_confirm: 'Bestätigen',
 };

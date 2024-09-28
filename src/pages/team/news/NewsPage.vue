@@ -11,9 +11,12 @@
                 <AddingNewsCard v-if="createNews"
                     @newsCreated="newsCreated"
                 />
+                <EdittingNewsCard v-else-if="teamStore.edit_news"
+                    @newsUpdated="newsUpdated"
+                />
                 <NewsList v-else />
             </q-scroll-area>
-            <q-btn @click="toggleAddnews()"
+            <q-btn v-if="!teamStore.edit_news" @click="toggleAddnews()"
                 :icon="!createNews ? 'mdi-plus' : 'mdi-close'" flat class="border"
                 :label="!createNews ? $t('add_team_news') : $t('cancel')"
             />
@@ -51,6 +54,15 @@
                         @tiptapBlur="syncContent"
                     />
                 </template>
+                <template v-else-if="teamStore.edit_news">
+                    <TipTap
+                        :editable="useAuths('modify', ['news'])"
+                        :jsonContent="teamStore.edit_news?.jsonContent"
+                        :withSaveBtb="true"
+                        need="json"
+                        @tiptapBlur="updateNews"
+                    />
+                </template>
                 <router-view v-else />
             </q-page>
         </q-page-container>
@@ -59,13 +71,17 @@
 
 <script setup>
 import { ref, reactive, computed, watch } from 'vue'
+import { updateDocument } from 'src/api/strapi/project.js'
+import { useNews } from './useNews.js'
 import {useMouse} from "@vueuse/core";
 import {uiStore, teamStore} from "src/hooks/global/useStore.js";
 import NewsList from './NewsList.vue'
 import TipTap from 'src/components/Utilits/tiptap/TipTap.vue'
 import localforage from 'localforage';
 import AddingNewsCard from './AddingNewsCard.vue'
+import EdittingNewsCard from './EdittingNewsCard.vue'
 
+const { openNews } = useNews();
 const createNews = ref(false);
 const disableDragWidth = ref(false);
 const cacheListWidth = ref();
@@ -119,6 +135,36 @@ const newsCreated = (val) => {
     teamStore.news.push(val);
     closeCreate();
     toggleAddnews();
+}
+
+const updateNews = async (jsonVal) => {
+    if(!jsonVal || jsonVal === teamStore.edit_news.jsonContent) return;
+    teamStore.edit_news.jsonContent = jsonVal;
+    const params = {
+        team_id: teamStore.team?.id,
+        data: {
+            jsonContent: teamStore.edit_news.jsonContent
+        }
+    }
+    const news_id = teamStore.edit_news.id;
+    const { data } = await updateDocument(news_id, params);
+    if(data){
+        teamStore.news.find(i => i.id === data.id).jsonContent = data.jsonContent;
+    }
+}
+// const newsUpdated = (val) => {
+//     let _news = teamStore.news.find(i => i.id === val.id);
+//     _news = val;
+//     openNews(_news)
+// }
+const newsUpdated = (val) => {
+    const index = teamStore.news.findIndex(i => i.id === val.id);
+    if (index !== -1) {
+        // 使用索引来更新数组中的元素
+        teamStore.news[index] = val;
+        teamStore.edit_news = null;
+        openNews(val); // 调用 openNews 函数
+    }
 }
 
 const toggleLeftDrawer = () => {

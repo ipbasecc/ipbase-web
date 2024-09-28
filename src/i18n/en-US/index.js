@@ -691,5 +691,6 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   confirm: 'Confirm',
   set_team_notification: 'Team Notification',
   add_team_news: 'Add Team News',
-  add_team_news_title: 'News Title',
+  team_news_title: 'News Title',
+  add_team_news_confirm: 'Confirm Add',
 }

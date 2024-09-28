@@ -1,8 +1,8 @@
 <template>
   <q-card v-for="i in teamStore.news" :key="i.id"
     flat bordered
-    class="cursor-pointer q-mb-sm"
-    @click="openNews(i)"
+    class="q-mb-sm"
+    :class="teamStore.active_news?.id === i.id ? 'bg-primary transition shadow-24' : ''"
   >
     <q-img
       v-if="i.cover?.url"
@@ -10,9 +10,37 @@
       :ratio="20/9"
       spinner-color="primary"
       spinner-size="2rem"
-    />
-    <q-card-section>
-      <div class="text-h6">{{ i.title }}</div>
+    >
+    </q-img>
+    <q-card-section class="row no-wrap gap-sm">
+      <div class="text-h6 cursor-pointer q-space" @click="openNews(i)">{{ i.title }}</div>
+      <div v-if="useAuths('modify', ['news']) || useAuths('remove', ['news'])">
+        <q-btn flat dense round size="sm" icon="more_vert">
+          <q-menu class="radius-sm shadow-24">
+            <q-list bordered dense class="q-pa-xs radius-sm">
+              <q-item v-if="useAuths('modify', ['news'])"
+                class="radius-xs" clickable v-close-popup
+                @click="editNews(i)"
+              >
+                <q-item-section side>
+                  <q-icon name="mdi-pencil" size="sm" />
+                </q-item-section>
+                <q-item-section>{{ $t('edit') }}</q-item-section>
+              </q-item>
+              <q-separator spaced />
+              <q-item v-if="useAuths('delete', ['news'])"
+                class="radius-xs" clickable v-close-popup
+                @click="deleteNews(i)"
+              >
+                <q-item-section side>
+                  <q-icon name="mdi-delete" size="sm" />
+                </q-item-section>
+                <q-item-section>{{ $t('delete') }}</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
+      </div>
     </q-card-section>
   </q-card>
 </template>
@@ -22,7 +50,9 @@ import { ref,watch, computed, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router';
 import { getTeamDocuments } from 'src/api/strapi/team.js'
 import {teamStore} from "src/hooks/global/useStore.js";
+import { useNews } from './useNews.js'
 
+const { openNews } = useNews();
 const router = useRouter();
 const team_id = computed(() => teamStore.team?.id);
 const page = ref(1);
@@ -36,10 +66,8 @@ watch(team_id, async () => {
   }
 },{immediate:true, deep:false});
 
-const openNews = (news) => {
-  if(teamStore.active_news?.id === news.id) return;
-  teamStore.active_news = news;
-  router.push(`/teams/${teamStore.team?.id}/news/${news.id}`)
+const editNews = (news) => {
+  teamStore.edit_news = news;
 }
 </script>
 
