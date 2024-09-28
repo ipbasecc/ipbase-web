@@ -693,4 +693,6 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   add_team_news: 'Add Team News',
   team_news_title: 'News Title',
   add_team_news_confirm: 'Confirm Add',
+  public_channel: 'Public Channel',
+  private_channel: 'Private Channel',
 }

@@ -693,4 +693,6 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   add_team_news: 'Team-Nachrichten hinzufügen',
   team_news_title: 'Titel der Nachricht',
   add_team_news_confirm: 'Bestätigen',
+  public_channel: 'Öffentlicher Kanal',
+  private_channel: 'Privater Kanal'
 };

@@ -697,4 +697,6 @@ export default {
   add_team_news: '新增资讯',
   team_news_title: '资讯标题',
   add_team_news_confirm: '确认新增资讯',
+  public_channel: '公开频道',
+  private_channel: '私有频道',
 };

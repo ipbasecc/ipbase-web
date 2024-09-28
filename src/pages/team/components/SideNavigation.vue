@@ -119,6 +119,9 @@
                     </q-item>
                   </q-list>
                 </q-menu>
+                <q-tooltip :class="`border ${$q.dark.mode ? 'bg-black' : 'bg-white'}`">
+                  {{ i.mm_channel?.type === 'O' ? $t('public_channel') : $t('private_channel') }}
+                </q-tooltip>
               </q-icon>
             </q-item-section>
             <q-item-section @mouseenter="deEnter = false" class="overflow-hidden">
