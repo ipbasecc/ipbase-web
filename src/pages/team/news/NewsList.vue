@@ -12,8 +12,8 @@
       spinner-size="2rem"
     >
     </q-img>
-    <q-card-section class="row no-wrap gap-sm">
-      <div class="text-h6 cursor-pointer q-space" @click="openNews(i)">{{ i.title }}</div>
+    <q-card-section class="row no-wrap gap-sm q-pa-sm">
+      <div class="font-larger font-bold-600 cursor-pointer q-space" @click="openNews(i)">{{ i.title }}</div>
       <div v-if="useAuths('modify', ['news']) || useAuths('remove', ['news'])">
         <q-btn flat dense round size="sm" icon="more_vert">
           <q-menu class="radius-sm shadow-24">

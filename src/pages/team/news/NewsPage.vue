@@ -170,7 +170,7 @@ const newsUpdated = (val) => {
 const toggleLeftDrawer = () => {
     uiStore.newsLeftDrawer = !uiStore.newsLeftDrawer
 }
-const navDrawerWidth = ref(420);
+const navDrawerWidth = ref(320);
 const { x } = useMouse({ touch: false });
 const navDrawerMinWidth = ref(280);
 const navDrawerMaxWidth = ref(640);
