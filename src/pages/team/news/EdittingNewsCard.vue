@@ -14,7 +14,7 @@
                 spinner-size="82px"
             >
                 <div class="absolute-full flex flex-center">
-                    <q-btn color="primary" rounede label="OK" @click="changeCover = true" />
+                    <q-btn color="primary" rounede :label="$t('update')" @click="changeCover = true" />
                 </div>
             </q-img>
             <q-card-section>

@@ -25,17 +25,17 @@
                 <q-item-section side>
                   <q-icon name="mdi-pencil" size="sm" />
                 </q-item-section>
-                <q-item-section>{{ $t('edit') }}</q-item-section>
+                <q-item-section class="q-pr-md">{{ $t('edit') }}</q-item-section>
               </q-item>
               <q-separator spaced />
               <q-item v-if="useAuths('delete', ['news'])"
-                class="radius-xs" clickable v-close-popup
+                class="radius-xs bg-negative" clickable v-close-popup
                 @click="deleteNews(i)"
               >
                 <q-item-section side>
                   <q-icon name="mdi-delete" size="sm" />
                 </q-item-section>
-                <q-item-section>{{ $t('delete') }}</q-item-section>
+                <q-item-section class="q-pr-md">{{ $t('delete') }}</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
@@ -46,9 +46,10 @@
 </template>
 
 <script setup>
-import { ref,watch, computed, onBeforeMount } from 'vue'
+import { ref,watch, computed } from 'vue'
 import { useRouter } from 'vue-router';
 import { getTeamDocuments } from 'src/api/strapi/team.js'
+import { deleteDocument } from 'src/api/strapi/project.js'
 import {teamStore} from "src/hooks/global/useStore.js";
 import { useNews } from './useNews.js'
 
@@ -68,6 +69,12 @@ watch(team_id, async () => {
 
 const editNews = (news) => {
   teamStore.edit_news = news;
+}
+const deleteNews = async (news) => {
+  const {data} = await deleteDocument(news.id);
+  if(data){
+    teamStore.news = teamStore.news.filter(i => i.id !== data.removed)
+  }
 }
 </script>
 
