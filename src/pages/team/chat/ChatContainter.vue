@@ -242,12 +242,17 @@ const chatInfo = computed(() => ({
 
 const thread = ref();
 const splitterModel = ref(100);
+const lastSplitterModel = ref();
+const cacheSplitter = () => {
+  lastSplitterModel.value = splitterModel.value;
+}
 const limits = ref([100, 100]);
 const open_powerPannel = () => {
-  splitterModel.value = 61;
+  splitterModel.value = lastSplitterModel.value || 61;
   limits.value = [39, 81];
 };
 const close_powerPannel = () => {
+  cacheSplitter();
   splitterModel.value = 100;
   limits.value = [100, 100];
 };
@@ -265,6 +270,9 @@ const closeThread = () => {
 const togglePowerpannel = (pannel) => {
   if (thread.value) {
     thread.value = void 0;
+  }
+  if(splitterModel.value !== 100){
+    cacheSplitter();
   }
   uiStore.chat_pannel = uiStore.chat_pannel !== pannel ? pannel : "";
   if (uiStore.chat_pannel) {
