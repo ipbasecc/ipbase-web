@@ -146,6 +146,20 @@ const routes = [
             name: "team_projects_focus_page",
             props: true,
           },
+          {
+            path: "/teams/:team_id/news",
+            component: () => import("src/pages/team/news/NewsPage.vue"),
+            name: "team_news_page",
+            props: true,
+            children: [
+              {
+                path: "/teams/:team_id/news/:news_id",
+                component: () => import("src/pages/team/news/NewsDetailPage.vue"),
+                name: "team_news_detail_page",
+                props: true,
+              }
+            ]
+          },
         ],
         meta: {
           requireAuth: true,

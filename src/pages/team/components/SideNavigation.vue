@@ -12,7 +12,7 @@
           class="overflow-hidden radius-xs q-pa-xs hovered-item full-width"
           clickable
           v-ripple
-          @click="enterThreads()"
+          @click="enterSubApp('threads')"
         >
           <q-item-section side class="q-pr-sm">
             <q-icon name="speaker_notes" :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`" />
@@ -27,7 +27,7 @@
         <!-- 事务沙盘-->
         <q-item v-if="enalbe_dashboard"
           :class="`${
-            teamStore?.mm_channel?.id === 'intro' || !teamStore?.mm_channel
+            teamStore?.mm_channel?.id === 'teams' || !teamStore?.mm_channel
               ? 'border active-listitem'
               : 'border-placeholder op-7'
           }
@@ -35,14 +35,37 @@
           class="overflow-hidden radius-xs q-pa-xs hovered-item full-width"
           clickable
           v-ripple
-          @click="enterIntro('intro')"
+          @click="enterSubApp('teams')"
         >
           <q-item-section side class="q-pr-sm">
             <q-icon name="mdi-chart-bubble" :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`" />
           </q-item-section>
           <q-item-section class="overflow-hidden"> {{ $t('navigation_Quadrant') }} </q-item-section>
           <div
-            v-if="teamStore?.mm_channel?.id === 'intro'"
+            v-if="teamStore?.mm_channel?.id === 'teams'"
+            class="bg-primary absolute-left"
+            style="width: 3px"
+          ></div>
+        </q-item>
+        <!-- 团队资讯 -->
+        <q-item
+          :class="`${
+            teamStore?.mm_channel?.id === 'news'
+              ? 'border active-listitem'
+              : 'border-placeholder op-7'
+          }
+                `"
+          class="overflow-hidden radius-xs q-pa-xs hovered-item full-width"
+          clickable
+          v-ripple
+          @click="enterSubApp('news')"
+        >
+          <q-item-section side class="q-pr-sm">
+            <q-icon name="mdi-newspaper" :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`" />
+          </q-item-section>
+          <q-item-section class="overflow-hidden"> {{ $t('navigation_News') }} </q-item-section>
+          <div
+            v-if="teamStore?.mm_channel?.id === 'teams'"
             class="bg-primary absolute-left"
             style="width: 3px"
           ></div>
@@ -591,21 +614,22 @@ const inviteFn = (channel) => {
   };
 };
 
-const enterThreads = () => {
+const emptyProject = () => {
   teamStore.project = void 0;
   teamStore.project_id = void 0;
-  router.push(`/threads`);
-  teamStore.mm_channel = {
-    id: "threads",
-  };
-};
-const enterIntro = (val) => {
-  router.push(`/teams`);
+}
+const enterSubApp = (val) => {
+  if(val === 'news'){
+    router.push(`/teams/${teamStore.team.id}/news`);
+  } else {
+    router.push(`/${val}`);
+  }
   teamStore.mm_channel = {
     id: val,
   };
-  teamStore.project = null;
-  teamStore.project_id = null;
+  if(teamStore.project){
+    emptyProject();
+  }
 };
 const openCreateProject = ref(false);
 const createProject = () => {

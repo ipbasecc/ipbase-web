@@ -31,6 +31,7 @@ export default {
   overview: "Overview",
   navigation_threads: 'Threads',
   navigation_Quadrant: 'Quadrant Dashboard',
+  navigation_News: "Team Information",
   channel: 'channel',
   project: 'project',
   video: "Video",

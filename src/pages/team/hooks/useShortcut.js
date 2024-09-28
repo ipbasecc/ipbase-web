@@ -10,6 +10,8 @@ export default function shortcut() {
       uiStore.navigatorDrawer = false;
     } else if (uiStore.projectLeftDrawer && teamStore.project) {
       uiStore.projectLeftDrawer = false;
+    } else if (uiStore.newsLeftDrawer) {
+      uiStore.newsLeftDrawer = false;
     } else {
       uiStore.appDrawer = false;
     }
@@ -19,9 +21,11 @@ export default function shortcut() {
     e.preventDefault();
     if (!uiStore.isFocusMode && !uiStore.projectLeftDrawer && teamStore.project) {
       uiStore.projectLeftDrawer = true;
-    } else if (!uiStore.navigatorDrawer && teamStore.team) {
+    } else if (!uiStore.newsLeftDrawer) {
+      uiStore.newsLeftDrawer = true;
+    }  else if (!uiStore.navigatorDrawer && teamStore.team) {
       uiStore.navigatorDrawer = true;
-    } else {
+    }else {
       uiStore.appDrawer = true;
     }
   });

@@ -143,6 +143,7 @@ export default defineStore("ui", {
     columnWidth: 322,
     showTeamNotification: false,
     showAppNotification: false,
+    newsLeftDrawer: true,
   }),
   actions: {
     $reset() {

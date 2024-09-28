@@ -31,6 +31,7 @@ export default {
   overview: "概览",
   navigation_threads: "讨论主题",
   navigation_Quadrant: "事务沙盘",
+  navigation_News: "团队资讯",
   channel: "频道",
   project: "项目",
   video: "视频",

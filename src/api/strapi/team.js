@@ -94,6 +94,37 @@ export async function setDefaultTeam(params) {
     }
   }
 }
+// 设置默认团队
+/**
+ * 
+ * @param {Number | String} team_id 
+ * @param {Number} page 
+ * @param {Number} per_page 
+ * @returns 
+ */
+export async function getTeamDocuments(team_id, page, per_page) {
+  if(!team_id){
+    throw new Error("team_id is required")
+  }
+  if(!page){
+    throw new Error("page is required")
+  }
+  if(!per_page){
+    throw new Error("per_page is required")
+  }
+  try {
+    const res = await api.get(`teams/${team_id}/documents?page=${page}&per_page=${per_page}`);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return res;
+    } else {
+      console.log(error);
+    }
+  }
+}
 // 创建团队邀请链接
 // params: {
 //     "max_total": 10,
