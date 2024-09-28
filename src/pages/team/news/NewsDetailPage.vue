@@ -8,7 +8,7 @@
 </template>
 
 <script setup>
-import { ref, onBeforeUnmount } from 'vue'
+import { onBeforeUnmount } from 'vue'
 import {teamStore} from "src/hooks/global/useStore.js";
 import TipTap from 'src/components/Utilits/tiptap/TipTap.vue'
 
