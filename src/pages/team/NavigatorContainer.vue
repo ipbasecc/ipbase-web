@@ -50,7 +50,7 @@
                       padding="xs sm"
                       :label="team.display_name"
                       icon-right="mdi-chevron-down"
-                      class="no-wrap"
+                      class="no-wrap font-bold-600"
                     >
                       <TeamMenu v-if="!userStatus_byTeam" :team />
                     </q-btn>
@@ -96,7 +96,6 @@
               :separator="true"
               assignStyle="transparent"
               :forceDard="true"
-              @createTeam="createing = true"
             />
           </div>
           <ChatNavigation v-if="uiStore.app === 'chats'" />
@@ -159,8 +158,8 @@
             <BgBrand v-else />
           </div>
         </q-page>
-        <q-dialog v-model="createing" persistent>
-          <CreateTeam @cannelCreate="createing = false" />
+        <q-dialog v-model="uiStore.createTeam" persistent>
+          <CreateTeam @cannelCreate="uiStore.createTeam = false" />
         </q-dialog>
       </q-page-container>
     </template>
@@ -218,8 +217,6 @@ const haveSubNav = computed(() => {
   const enabelSubNavApps = ["teams", "chats", 'affairs', 'brand'];
   return enabelSubNavApps.includes(uiStore.app) && $q.screen.gt.xs;
 });
-
-const createing = ref(false);
 
 const toggleNavDrawer = () => {
   uiStore.navigatorDrawer = !uiStore.navigatorDrawer;

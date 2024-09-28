@@ -19,7 +19,7 @@
               :bordered="true"
               :separator="true"
               :spaced="true"
-              @createTeam="createing = true"
+              @createTeam="createTeam"
             />
           </q-menu>
           <q-spinner-orbit
@@ -156,6 +156,10 @@ import TeamList from "src/pages/team/components/TeamList.vue";
 import TeamNotification from './TeamNotification.vue'
 
 const $q = useQuasar();
+const emit = defineEmits(['createTeam']);
+const createTeam = () => {
+  emit('createTeam');
+}
 
 const toggleFocusMode = async () => {
   uiStore.isFocusMode = !uiStore.isFocusMode;

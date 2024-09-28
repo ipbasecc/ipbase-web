@@ -392,7 +392,7 @@ export async function todoItemUpdate(card, group_id, todo) {
   let chat_Msg = {
     body: `${userStore.me?.username}更新了卡片 - ${useCardname(
       card
-    )} 的待办事项： ${todo.name}`,
+    )} 的待办事项： ${todo.content}`,
     props: {
       strapi: {
         data: {

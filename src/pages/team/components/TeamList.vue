@@ -123,9 +123,8 @@ const teams = computed(() => teamStore.teams);
 onMounted(async () => {
   await getTeams();
 });
-const emit = defineEmits(["createTeam"]);
 const createTeam = () => {
-  emit("createTeam");
+  uiStore.createTeam = true;
 };
 const disabled = (team) => {
   const isDisabled = ["unconfirmed", "blocked"];

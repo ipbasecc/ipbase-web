@@ -144,6 +144,7 @@ export default defineStore("ui", {
     showTeamNotification: false,
     showAppNotification: false,
     newsLeftDrawer: true,
+    createTeam: false,
   }),
   actions: {
     $reset() {
