@@ -8,12 +8,13 @@
       :class="$q.dark.mode ? 'bg-grey-10' : 'bg-white'"
     >
       <q-btn
-          flat
-          dense
-          size="sm"
-          icon="mdi-chevron-left"
-          :color="$q.dark.mode ? 'white' : 'black'"
-          @click="closePinned()"
+        v-if="showClose"
+        flat
+        dense
+        size="sm"
+        icon="mdi-chevron-left"
+        :color="$q.dark.mode ? 'white' : 'black'"
+        @click="closePinned()"
       />
       <span class="font-large unselected q-ml-sm">置顶的消息：</span>
     </q-toolbar>
@@ -45,21 +46,15 @@ import MessageItem from "src/pages/team/chat/MessageItem.vue";
 import useMmUserStore from "src/stores/mmuser.js";
 import useMmws from "src/stores/mmws.js";
 
-const props = defineProps({
-  channel_id: {
-    type: String,
-    default: "",
-  },
-});
+const { showClose, channel_id } = defineProps(["showClose", "channel_id"]);
 const emit = defineEmits(['closePinned'])
-const channel_idRef = toRef(props, "channel_id");
 
 const mm_wsStore = useMmws();
 const mmUserStore = useMmUserStore();
 
 const pinneds = ref();
 const getPinnedsFn = async () => {
-  let res = await getPinneds(channel_idRef.value);
+  let res = await getPinneds(channel_id);
 
   const motify_pinneds = async (res) => {
     console.log("motify_pinneds");

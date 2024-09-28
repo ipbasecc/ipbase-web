@@ -110,6 +110,7 @@
           <PinnedsContainder
               v-if="uiStore.chat_pannel === 'pinneds'"
               :channel_id="channel_id"
+              :showClose="false"
               :key="channel_id"
           />
           <MemberManager
