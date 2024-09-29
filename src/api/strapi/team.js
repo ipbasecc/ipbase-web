@@ -277,6 +277,12 @@ export async function createChannel(params) {
   }
 }
 // 更新频道
+/**
+ * 
+ * @param {Number | String} channel_id - 描述channel_id参数
+ * @param {Object} [params.data] - 更新数据需要使用data对象
+ * @returns {Object} 返回数据不包含关联数据，需要根据更新字段更新对应本地数据，正确的返回数据在data对象中
+ */
 export async function updateChannel(channel_id, params) {
   try {
     const res = await api.put(`team-channels/${channel_id}`, params);

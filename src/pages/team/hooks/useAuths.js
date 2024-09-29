@@ -3,13 +3,15 @@ import { computed } from "vue";
 
 const teamMembers = computed(() => teamStore.team?.members || []);
 const projectMembers = computed(() => teamStore.project?.project_members || []);
+const channelMembers = computed(() => teamStore.channel?.members || []);
 const cardMembers = computed(() => teamStore.team?.card_members || []);
 const teamMemberRoles = computed(() => teamStore.team?.member_roles || []);
 const projectMemberRoles = computed(() => teamStore.project?.member_roles || []);
+const channelMemberRoles = computed(() => teamStore.channel?.member_roles || []);
 const cardMemberRoles = computed(() => teamStore.team?.member_roles || []);
 
-const _members = computed(() => [...teamMembers.value, ...projectMembers.value, ...cardMembers.value]);
-const _roles = computed(() => [...teamMemberRoles.value, ...projectMemberRoles.value, ...cardMemberRoles.value]);
+const _members = computed(() => [...teamMembers.value, ...channelMembers.value, ...projectMembers.value, ...cardMembers.value]);
+const _roles = computed(() => [...teamMemberRoles.value, ...channelMemberRoles.value, ...projectMemberRoles.value, ...cardMemberRoles.value]);
 
 // 缓存Map
 const authsCache = new Map();
@@ -28,7 +30,7 @@ function getCacheKey(field, collections, members, roles) {
 
 // 优化前的useAuths hook
 export function useAuths(field, collections, from) {
-  if(from === 'news'){
+  if(from === 'channel_info'){
     console.log('useAuths', field, collections, _members.value, _roles.value);
   }
   // 生成缓存键

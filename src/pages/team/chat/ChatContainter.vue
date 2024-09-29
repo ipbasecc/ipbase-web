@@ -16,6 +16,14 @@
       />
       <q-space />
       <q-btn
+          v-if="strapi_channel_id"
+          :dense="$q.screen.gt.sm"
+          flat
+          :color="uiStore.chat_pannel === 'ChannelInfo' ? 'green' : ''"
+          icon="info"
+          @click="togglePowerpannel('ChannelInfo')"
+      />
+      <q-btn
           :dense="$q.screen.gt.sm"
           flat
           :color="uiStore.chat_pannel === 'pinneds' ? 'green' : ''"
@@ -24,16 +32,14 @@
       >
         <q-tooltip> {{ $t('pinned_messages') }} </q-tooltip>
       </q-btn>
-      <q-btn
-          v-if="strapi_channel_id && useAuths('manageMember', ['channel'])"
+      <q-btn v-if="strapi_channel_id && useAuths('manageMember', ['channel'])"
           :dense="$q.screen.gt.sm"
           flat
           :color="uiStore.chat_pannel === 'MemberManager' ? 'green' : ''"
           icon="manage_accounts"
           @click="togglePowerpannel('MemberManager')"
       />
-      <q-btn
-          v-if="teamStore?.direct_user"
+      <q-btn v-if="teamStore?.direct_user"
           :dense="$q.screen.gt.sm"
           flat
           :color="uiStore.chat_pannel === 'MemberManager' ? 'green' : ''"
@@ -121,6 +127,7 @@
           <DirectMemberInfo v-if="teamStore?.direct_user && uiStore.chat_pannel === 'directMemberInfo'"
                             :directMember="teamStore.direct_user"
           />
+          <ChannelInfo v-if="teamStore.channel && uiStore.chat_pannel === 'ChannelInfo'" />
         </div>
       </template>
     </q-splitter>
@@ -222,6 +229,7 @@ import {i18n} from 'src/boot/i18n.js';
 import {useRouter, useRoute} from "vue-router";
 import { __viewChannel } from "src/hooks/mattermost/useMattermost.js";
 import ChannelHeader from './components/ChannelHeader.vue'
+import ChannelInfo from './components/ChannelInfo.vue'
 
 const router = useRouter();
 const route = useRoute();
