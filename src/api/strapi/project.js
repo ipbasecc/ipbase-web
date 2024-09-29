@@ -975,7 +975,7 @@ export async function deleteMemberRole(role_id) {
   }
 }
 
-export async function findProjectBudget(_project_id) {
+export async function findProjectBudgets(_project_id) {
   try {
     const res = await api.get(`projects/${_project_id}/budget`);
     if (res) {
@@ -987,9 +987,21 @@ export async function findProjectBudget(_project_id) {
   }
 }
 
+export async function deleteProjectBudget(_project_id, budget_id ) {
+  try {
+    const res = await api.delete(`projects/${_project_id}/budget/${budget_id}`);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create(error?.response?.data?.error?.message);
+    return error;
+  }
+}
+
 export async function addProjectLedger(_project_id, params) {
   try {
-    const res = await api.post(`projects/${_project_id}/budget`, params);
+    const res = await api.post(`projects/${_project_id}/ledger`, params);
     if (res) {
       return res;
     }
@@ -1001,7 +1013,7 @@ export async function addProjectLedger(_project_id, params) {
 
 export async function removeProjectLedger(_project_id, _ledger_id) {
   try {
-    const res = await api.delete(`projects/${_project_id}/budget/${_ledger_id}`);
+    const res = await api.delete(`projects/${_project_id}/ledger/${_ledger_id}`);
     if (res) {
       return res;
     }
@@ -1013,7 +1025,7 @@ export async function removeProjectLedger(_project_id, _ledger_id) {
 
 export async function updateProjectLedger(_project_id, _ledger_id, params) {
   try {
-    const res = await api.put(`projects/${_project_id}/budget/${_ledger_id}`, params);
+    const res = await api.put(`projects/${_project_id}/ledger/${_ledger_id}`, params);
     if (res) {
       return res;
     }

@@ -31,7 +31,6 @@
           && uiStore.app === 'teams'
           && teamStore?.project_id
           && !uiStore.isFocusMode
-          && teamStore.navigation !== 'budget'
         "
         v-model="uiStore.projectLeftDrawer"
         side="left"
