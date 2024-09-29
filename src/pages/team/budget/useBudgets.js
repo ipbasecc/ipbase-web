@@ -6,9 +6,14 @@ export const budgets = computed(() => teamStore.project?.budgets);
 export const budget = ref();
 
 export const fetchBudgets = async (project_id) => {
+    let lastBudget_id = budget.value?.id;
+    budget.value = null;
     const { data } = await findProjectBudgets(project_id);
     if(data) {
         teamStore.project.budgets = data.budgets;
+        if(lastBudget_id) {
+            toggleBudget(lastBudget_id);
+        }
     }
 }
 
