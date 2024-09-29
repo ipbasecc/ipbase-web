@@ -1,5 +1,5 @@
 <template>
-  <!-- <span class="z-max">{{ typeof chartRef }}</span> -->
+  <!-- <span class="z-max">{{ axisDataRef }}</span> -->
   <div v-if="axisDataRef" id="main" class="fit chart" ref="chartRef" />
   <q-dialog
     v-model="show_cardDetial"
@@ -68,8 +68,13 @@ const props = defineProps({
       return {};
     },
   },
+  by: {
+    type: String,
+    default: "card",
+  },
 });
 const { auth } = toRefs(props)
+const emit = defineEmits(["QuadrantChange", "itemChanged"]);
 
 const idRef = toRef(props, "id");
 const axisDataRef = toRef(props, "axisData");
@@ -143,8 +148,13 @@ const initECharts = () => {
           {
             id: idRef.value,
             data: axisDataRef.value,
+            /**
+             * arg[5]是卡片分值
+             * 如果是卡片 arg[5] * 1.5 + 30 作为元素的大小
+             * 如果是todo，直接给 20
+             */
             symbolSize: function (arg) {
-              return arg[5] * 1.5 + 30; // 使用卡片分值 + 30 作为元素的大小
+              return arg[5] ? arg[5] * 1.5 + 30 : 20;
             },
             itemStyle: {
               color: function (arg) {
@@ -206,6 +216,8 @@ const initECharts = () => {
       graphic: echarts.util.map(
         axisDataRef.value,
         function (dataItem, dataIndex) {
+          const dragAuth = props.by === 'card' ? !teamStore.shareInfo && auth.value?.modify : auth.value?.modify;
+          
           return {
             // 'circle' 表示这个 graphic element 的类型是圆点。
             type: "circle",
@@ -223,7 +235,7 @@ const initECharts = () => {
             // 这个属性让圆点不可见（但是不影响他响应鼠标事件）。
             invisible: true,
             // 这个属性让圆点可以被拖拽。
-            draggable: !teamStore.shareInfo && auth.value?.modify,
+            draggable: dragAuth,
             ondragend: function (event) {
               // 此时dataItem数值还是旧数据，因此从根数据中取
               let last_data = axisDataRef.value[dataIndex];
@@ -233,7 +245,11 @@ const initECharts = () => {
                   importance: +last_data[1]?.toFixed(2),
                 },
               };
-              updateCardFn(dataItem[3], params);
+              if(props.by === 'card'){
+                updateCardFn(dataItem[3], params);
+              } else {
+                emit('itemChanged', dataItem[3], params)
+              }
             },
             // 把 z 值设得比较大，表示这个圆点在最上方，能覆盖住已有的折线图的圆点。
             z: 1000,
@@ -282,7 +298,11 @@ const initECharts = () => {
           // onmousemove: echarts.util.curry(setid, dataIndex),
           onmousemove: echarts.util.curry(showTooltip, dataIndex),
           onmouseout: echarts.util.curry(hideTooltip, dataIndex),
-          ondblclick: echarts.util.curry(enterCard, dataIndex),
+          ondblclick: () => {            
+            if(props.by === 'card'){
+              echarts.util.curry(enterCard, dataIndex)
+            }
+          },
           // ondblclick: function (dataItem) {
           //   CardId.value = dataItem;
           //   showTaskDetial.value = true;
@@ -327,6 +347,7 @@ const initECharts = () => {
       this.x,
       this.y,
     ]);
+    
     // 需要补充完整的数据内容，否则元素名称在拖拽时显示位置数字
     axisDataRef.value[dataIndex].push(..._attach);
   }
@@ -379,7 +400,6 @@ onBeforeUnmount(() => {
     chart = void 0;
   }
 });
-const emit = defineEmits(["QuadrantChange"]);
 const updateCardFn = async (id, params) => {
   let res = await updateCard(id, params);
   if (res) {

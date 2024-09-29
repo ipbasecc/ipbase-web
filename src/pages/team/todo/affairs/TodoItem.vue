@@ -65,6 +65,12 @@
             </q-menu>
         </q-btn>
     </div>
+    <!-- 重要度、紧急度 左边框颜色标记 -->
+    <div
+        class="absolute-left full-height z-fab"
+        :class="`${highlight ? 'highlight transition' : ''}`"
+        :style="`${style}`"
+    ></div>
     <q-dialog v-model="add_attachment_dialog" persistent>
         <q-card bordered style="min-width: 360px">
             <q-card-section class="q-pa-xs">
@@ -93,6 +99,8 @@ import {deleteTodo, updateTodo} from "src/api/strapi/project.js";
 import TodoMenu from './TodoMenu.vue'
 import StrapiUpload from "src/components/Utilits/StrapiUpload.vue";
 import FileList from "src/components/Utilits/FileList.vue";
+import { clac_cardEdgeStyle } from "src/hooks/team/useCard.js";
+
 const props = defineProps({
     group: {
         type: Object,
@@ -106,6 +114,8 @@ const props = defineProps({
 const emit = defineEmits(['todoDeleted']);
 const { group, todo } = toRefs(props);
 const _todo = toRaw(todo.value);
+
+const { style, highlight } = clac_cardEdgeStyle(todo.value);
 
 const cancelUpdateTodo = () => {
     todo.value.content = _todo.content;
@@ -194,5 +204,11 @@ const deleteTodoFn = async () => {
 }
 .todo-item:hover {
     border: 1px solid rgb(201, 201, 201);
+}
+.highlight {
+  width: 5px;
+}
+.todo-item:hover .highlight {
+  width: 2px;
 }
 </style>

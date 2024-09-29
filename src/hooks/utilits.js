@@ -433,3 +433,15 @@ export function reorderArrayABasedOnArrayB(arrA, arrB, target, newIndex ) {
 export const sumArr = ( arr ) => {
   return arr.reduce((a, b) => a + b, 0);
 }
+
+/**
+ * 
+ * @param {Number} min 最小值
+ * @param {Number} max 最大值
+ * @returns min max 之间的随机整数
+ */
+export function getRandomInt(min, max) {
+  min = Math.ceil(min); // 向上取整
+  max = Math.floor(max); // 向下取整
+  return Math.floor(Math.random() * (max - min + 1)) + min; // 加1是因为不包括最大值
+}
