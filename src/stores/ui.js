@@ -145,6 +145,7 @@ export default defineStore("ui", {
     showAppNotification: false,
     newsLeftDrawer: true,
     createTeam: false,
+    edittingDocument: void 0,
   }),
   actions: {
     $reset() {

@@ -114,6 +114,7 @@ const updateChatMsg = ref({});
 const jsonContent = ref({});
 const updateDocumentFn = async () => {
   if (!jsonContent.value) return;
+  uiStore.edittingDocument = document.value.id;
   const isChanged = !isEqual(document.value.jsonContent, jsonContent.value);
   // console.log("isChanged", isChanged);
   if (!isChanged) return;
@@ -135,7 +136,6 @@ const updateDocumentFn = async () => {
 
   let res = await updateDocument(document.value.id, params);
   if (res) {
-    teamStore.active_document.jsonContent = res.data.jsonContent;
     updateChatMsg.value = {
       props: {
         strapi: {
