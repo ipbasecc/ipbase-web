@@ -2,10 +2,9 @@
   <TipTap
     v-if="by_info && document"
     :key="document.id"
-    ref="tiptapRef"
     :jsonContent="document.jsonContent"
     :editable="
-      !teamStore.shareInfo &&
+      !teamStore.shareInfo && !readOnly &&
       (by_info.user_id ||
         useAuths('jsonContent', ['card', 'card_document']))
     "
@@ -14,24 +13,34 @@
     :withSaveBtb="true"
     :withImageBtb="true"
     :contentStyle="contentStyle"
+    :autofocus="!islocked"
     class="items-center"
     @tiptapUpdate="tiptapUpdate"
     @tiptapBlur="tiptapBlur"
+    @tiptapReady="tiptapReady()"
+    @tiptapDestroy="tiptapDestroy()"
   >
     <template v-if="showClose" v-slot:left-btn>
       <q-btn dense flat icon="mdi-chevron-left" @click="close" />
+    </template>
+    <template v-if="islocked && !readOnly" v-slot:locker>
+      <div class="absolute-full bg-black op-5" />
+      <div class="absolute-full column gap-sm flex-center text-white">
+        {{ $t('document_locked_tip') }}
+        <q-btn dense color="primary" label="toggleReadOnly" @click="toggleReadOnly" />
+      </div>
     </template>
   </TipTap>
 </template>
 
 <script setup>
-import {computed, ref, toRefs, watch, watchEffect, onBeforeUnmount, useTemplateRef} from "vue";
+import {computed, ref, toRefs, watch, watchEffect, onBeforeUnmount} from "vue";
 import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
 
 import {updateDocument} from "src/api/strapi/project.js";
 import {send_MattersMsg} from "src/pages/team/hooks/useSendmsg.js";
 import localforage from "localforage";
-import {mm_wsStore, teamStore, userStore} from "src/hooks/global/useStore.js";
+import {mm_wsStore, teamStore, uiStore, userStore} from "src/hooks/global/useStore.js";
 import {isEqual} from "lodash-es";
 import {i18n} from 'src/boot/i18n.js';
 
@@ -61,6 +70,11 @@ const document = ref(null);
 watchEffect(() => {
   document.value = teamStore.active_document;
 })
+const readOnly = ref(false);
+const toggleReadOnly = () => {
+  readOnly.value = !readOnly.value;
+};
+const islocked = computed(() => document.value?.is_locked);
 
 const updateChatMsg = ref({});
 const jsonContent = ref({});
@@ -111,6 +125,7 @@ const updateDocumentFn = async () => {
     if (by_info.value.user_id) {
       process_documentContent_change(res.data);
     }
+    await send_chat_Msg(updateChatMsg.value);
     setTimeout(() => {
       localforage.removeItem(`__document_${document.value.id}`);
     }, 3000);
@@ -135,17 +150,31 @@ const tiptapUpdate = async (val) => {
   startCountdown();
 };
 const tiptapBlur = async (val) => {
+  console.log("tiptapBlur", val);
   jsonContent.value = val;
   await updateDocumentFn();
 };
-const tiptapRef = ref()
-onBeforeUnmount(async() => {
-  // console.log("tiptapRef", tiptapRef.value);
-  tiptapRef.value?.tiptapBlur();
-  if(updateChatMsg.value){
-    await send_chat_Msg(updateChatMsg.value);
-  }
-});
+const setDocumentLockedStatus = async (status) => {
+  let params = {
+    document_id: document.value.id,
+    data: {
+      is_locked: status
+    },
+  };
+  await updateDocument(document.value.id, params);
+}
+const tiptapIsReady = ref(false);
+const tiptapReady = async () => {
+  if(islocked.value || tiptapIsReady.value) return;
+  tiptapIsReady.value = true;
+  await setDocumentLockedStatus(true);
+}
+const tiptapIsDestroy = ref(false);
+const tiptapDestroy = async () => {
+  if(islocked.value || tiptapIsDestroy.value) return;
+  tiptapIsDestroy.value = true;
+  await setDocumentLockedStatus(false);
+}
 const send_chat_Msg = async (MsgContent) => {
   await send_MattersMsg(MsgContent);
   updateChatMsg.value = null;

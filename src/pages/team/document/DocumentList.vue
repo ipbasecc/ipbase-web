@@ -199,44 +199,40 @@ const findIcon_byType = (type) => {
 };
 
 const unEnter = ref(false);
-const activeDocument = async (document_id) => {
+const fetchDocument = async (document_id) => {
     const {data} = await getDocument(document_id);
     if(data) {
       if(teamStore.card) {
-        teamStore.card.card_documents = [data];
+        teamStore.card.card_documents = teamStore.card.card_documents.map(i => {
+          if(i.id === document_id) {
+            return data
+          }
+          return i
+        });;
       } else if (teamStore.project) {
-        teamStore.project.project_documents = [data];
+        teamStore.project.project_documents = teamStore.project.project_documents.map(i => {
+          if(i.id === document_id) {
+            return data
+          }
+          return i
+        });
       }
-      await enterDocument(data);
     }
+    return data
 }
 const enterDocument = async (element) => {
-  
   if (unEnter.value) return;
-  /**
-   * 如果卡片弹框开启状态，从文档列表中获取并激活
-   * 否则，从项目文档列表中获取并激活
-   */
-  if(teamStore.card?.card_documents?.length > 0){    
-    teamStore.active_document = teamStore.card.card_documents.find((i) => i.id === element.id);
-  } else if(teamStore.project?.project_documents?.length > 0) {
-    teamStore.active_document = teamStore.project?.project_documents?.find((i) => i.id === element.id);
-    router.push(
-      `/teams/projects/${teamStore.project?.id}/document/${element.id}`
-    );
+  const res = await fetchDocument(element.id);
+  teamStore.active_document = res;
+  if(!teamStore.card) {
+    router.push(`/teams/projects/${teamStore.project?.id}/document/${element.id}`);
     uiStore.showMainContentList = false;
-  } else {
-    /**
-     * 此种情况应该不会出现，除非用户端非预料问题，直接获取并激活
-     */
-    await activeDocument(element.id)
   }
-  // console.log('teamStore.active_document', teamStore.active_document);
 };
 onMounted(async() => {
   await nextTick();
   if(route.params.document_id && !teamStore.active_document) {
-    await activeDocument(route.params.document_id)
+    // await fetchDocument(route.params.document_id)
   }
 })
 

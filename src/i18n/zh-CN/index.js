@@ -719,5 +719,7 @@ export default {
   ledger_purpose: '说明款项用途',
   ledger_update_amount: '调整金额',
   ledger_delete: '删除该流水',
-  ledger_affect_budget: '调整预算'
+  ledger_affect_budget: '调整预算',
+
+  document_locked_tip: '其它用户正在编辑该文档',
 };

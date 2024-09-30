@@ -718,4 +718,6 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   ledger_update_amount: 'Update Amount',
   ledger_delete: 'Delete Transaction',
   ledger_affect_budget: 'Adjust Budget',
+
+  document_locked_tip: 'Another user is editing the document.',
 }

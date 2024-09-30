@@ -353,7 +353,10 @@ const getPosts = async () => {
 
 const merageMsg = async (newMessages = {}) => {
   if (newMessages) {
-    const {order, posts} = newMessages;
+    let {order, posts} = newMessages;
+    if(posts?.length > 0){
+      posts = posts?.filter(msg => Boolean(msg.message));
+    }
     if(order.length === 0){
       hasMore.value = false;
       return

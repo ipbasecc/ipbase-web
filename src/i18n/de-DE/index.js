@@ -718,4 +718,6 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   ledger_update_amount: 'Betrag anpassen',
   ledger_delete: 'Transaktion löschen',
   ledger_affect_budget: 'Budget anpassen',
+
+  document_locked_tip: 'Ein anderer Benutzer bearbeitet das Dokument.',
 };

@@ -215,7 +215,7 @@ watch(
           strapi.data.action === "DocumentContentUpdate" &&
           teamStore.project?.project_documents?.map(i => i.id).includes(strapi.data.document_id)
         ) {
-          console.log("strapi.data.document_id", strapi.data.document_id);
+          // console.log("strapi.data.document_id", strapi.data.document_id);
           const _index = teamStore.project.project_documents.findIndex(i => i.id === strapi.data.document_id);
           teamStore.project.project_documents.splice(_index, 1, strapi.data.body);
         }

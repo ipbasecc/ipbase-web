@@ -114,6 +114,7 @@
       v-html="html"
     ></div>
     <slot name="attachments"></slot>
+    <slot name="locker"></slot>
   </div>
 </template>
 
@@ -129,6 +130,7 @@ import {
   computed,
   nextTick
 } from "vue";
+import { debounce } from 'quasar'
 
 import { Editor, EditorContent } from "@tiptap/vue-3";
 import TaskItem from "@tiptap/extension-task-item";
@@ -267,6 +269,8 @@ const isEditable = toRef(props, "editable");
 const needRef = toRef(props, "need");
 const { hideScroll } = toRefs(props);
 const emit = defineEmits([
+  "tiptapReady",
+  "tiptapDestroy",
   "tiptapBlur",
   "tiptapSave",
   "tiptapClose",
@@ -284,6 +288,7 @@ const tiptapContent = ref();
 const cleanHtmlHandler = (val) => {
   return val.replace(/<[^>]*>?/gm, "");
 };
+const tiptapReadyCount = ref(0);
 const init = () => {
   const _HardBreak = props.for !== 'chat' ? HardBreak.extend({
     addKeyboardShortcuts() {
@@ -341,6 +346,12 @@ const init = () => {
       Strike,
       Text
     ],
+    onCreate({ editor }) {
+      tiptapReadyCount.value++;
+      if(tiptapReadyCount.value === 1){
+        emit("tiptapReady");
+      }
+    },
     // triggered on every change
     onUpdate: () => {
       tiptapUpdate();
@@ -488,6 +499,8 @@ watch(
 );
 
 onBeforeUnmount(() => {
+  emit("tiptapDestroy");
+  tiptapUpdate();
   editor.value && editor.value.destroy();
 });
 
