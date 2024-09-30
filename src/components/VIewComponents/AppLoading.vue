@@ -30,7 +30,7 @@
   }
 
   100% {
-    transform: rotate(360deg);
+    transform: rotate(-360deg);
   }
 }
 @keyframes rotation {
@@ -39,7 +39,7 @@
   }
 
   100% {
-    transform: rotate(360deg);
+    transform: rotate(-360deg);
   }
 }
 .rotate {

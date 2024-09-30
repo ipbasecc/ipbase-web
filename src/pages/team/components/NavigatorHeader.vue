@@ -22,11 +22,6 @@
               @createTeam="createTeam"
             />
           </q-menu>
-          <q-spinner-orbit
-            v-if="uiStore.axiosStauts === 'pending'"
-            color="green-10"
-            size="1em"
-          />
         </div>
 
         <div v-if="uiStore.app === 'affairs'"

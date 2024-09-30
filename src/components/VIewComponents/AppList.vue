@@ -17,6 +17,8 @@
         fit="contain"
         spinner-color="primary"
         spinner-size="22px"
+        class="loader"
+        :class="{ 'loading': uiStore.axiosStauts === 'pending' }"
       />
       <span class="radius-xs bg-black border absolute-top-right" style="font-size: 0.6rem">Beta</span>
       <BrandMenu :offset="[0, -24]" />
@@ -134,4 +136,23 @@ watch(topLeave_byRoute, () => {
   box-shadow: 0 0 20px 1px #ffbb763f;
   border: 1px solid rgba(255, 255, 255, 0.454) !important;
 }
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.loader {
+  animation: spin 5s linear;
+  animation-play-state: paused;
+}
+
+.loader.loading {
+  animation-play-state: running;
+}
+
 </style>
