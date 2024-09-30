@@ -25,9 +25,17 @@
     </template>
     <template v-if="islocked && !readOnly" v-slot:locker>
       <div class="absolute-full bg-black op-5" />
-      <div class="absolute-full column gap-sm flex-center text-white">
-        {{ $t('document_locked_tip') }}
-        <q-btn dense color="primary" label="toggleReadOnly" @click="toggleReadOnly" />
+      <div class="absolute-full q-pa-md">
+        <q-toolbar class="transparent radius-sm blur-xs border-dashed border-op-sm">
+          <q-toolbar-title>
+            <span>{{ $t('document_locked_tip') }}</span>
+          </q-toolbar-title>
+        <q-btn dense color="primary" padding="xs md"
+          :label="$t('read_only_mode')"
+          @click="toggleReadOnly"
+        />
+        </q-toolbar>
+        
       </div>
     </template>
   </TipTap>

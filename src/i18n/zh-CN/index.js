@@ -722,4 +722,5 @@ export default {
   ledger_affect_budget: '调整预算',
 
   document_locked_tip: '其它用户正在编辑该文档',
+  read_only_mode: '只读查看',
 };

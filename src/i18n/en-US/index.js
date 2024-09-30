@@ -720,4 +720,5 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   ledger_affect_budget: 'Adjust Budget',
 
   document_locked_tip: 'Another user is editing the document.',
+  read_only_mode: 'Read-Only Mode',
 }

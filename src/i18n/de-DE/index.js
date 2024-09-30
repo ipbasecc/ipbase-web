@@ -720,4 +720,5 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   ledger_affect_budget: 'Budget anpassen',
 
   document_locked_tip: 'Ein anderer Benutzer bearbeitet das Dokument.',
+  read_only_mode: 'Nur-Lesen-Modus',
 };
