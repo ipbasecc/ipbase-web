@@ -369,20 +369,16 @@ const update = async (document) => {
 
 const process_removedData = (val) => {
   if (by_info.value.project_id) {
-    teamStore.project = {
-      ...teamStore.project,
-      project_documents: teamStore.project.project_documents.filter(
-        (i) => i.id !== val.removed
-      ),
-    };
+    teamStore.project.project_documents = teamStore.project.project_documents.filter(
+      (i) => i.id !== val.removed
+    )
+    documents.value = teamStore.project.project_documents;
   }
   if (by_info.value.card_id) {
-    teamStore.card = {
-      ...teamStore.card,
-      card_documents: teamStore.card.card_documents.filter(
-        (i) => i.id !== val.removed
-      ),
-    };
+    teamStore.card.card_documents = teamStore.card.card_documents.filter(
+      (i) => i.id !== val.removed
+    )
+    documents.value = teamStore.card.card_documents
   }
   if (by_info.value.user_id) {
   }
@@ -522,7 +518,7 @@ watch(
           (strapi.data?.project_id === teamStore.project?.id ||
             strapi.data?.card_id === teamStore.card?.id) &&
           strapi.data.action === "document_removed"
-        ) {
+        ) {          
           process_removedData(strapi.data.body);
         }
         if (
