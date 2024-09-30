@@ -30,12 +30,38 @@
           <q-toolbar-title>
             <span>{{ $t('document_locked_tip') }}</span>
           </q-toolbar-title>
-        <q-btn dense color="primary" padding="xs md"
-          :label="$t('read_only_mode')"
-          @click="toggleReadOnly"
-        />
+          <q-btn dense flat color="primary" padding="xs md"
+            :label="$t('document_unlock')" class="q-mr-sm"
+            @click="showUnlock = true"
+          />
+          <q-btn dense color="primary" padding="xs md"
+            :label="$t('read_only_mode')"
+            @click="toggleReadOnly"
+          />
         </q-toolbar>
-        
+        <q-dialog v-model="showUnlock">
+          <q-card bordered>
+            <q-item class="q-pa-md q-my-lg">
+              <q-item-section top side>
+                <q-avatar size="4rem" icon="mdi-information-outline" class="text-deep-orange" />
+              </q-item-section>
+              <q-item-section class="font-medium" style="line-height: 1.5;">
+                {{ $t('document_unlock_tip') }}
+              </q-item-section>
+            </q-item>
+            <q-card-actions align="right">
+              <q-btn padding="xs md" flat :label="$t('cancel')" color="primary" v-close-popup />
+              <q-space />
+              <q-btn-group class="border">
+                <q-btn :label="$t('confirm')" color="brown" v-close-popup @click="unlock" />
+                <q-btn dense color="primary" padding="xs md"
+                  :label="$t('read_only_mode')"
+                  @click="toggleReadOnly"
+                />
+              </q-btn-group>
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
       </div>
     </template>
   </TipTap>
@@ -177,11 +203,16 @@ const tiptapReady = async () => {
   tiptapIsReady.value = true;
   await setDocumentLockedStatus(true);
 }
+const showUnlock = ref(false);
+const unlock = async () => {
+  await setDocumentLockedStatus(false);
+  document.value.is_locked = false;
+}
 const tiptapIsDestroy = ref(false);
 const tiptapDestroy = async () => {
   if(islocked.value || tiptapIsDestroy.value) return;
   tiptapIsDestroy.value = true;
-  await setDocumentLockedStatus(false);
+  await unlock();
 }
 const send_chat_Msg = async (MsgContent) => {
   await send_MattersMsg(MsgContent);

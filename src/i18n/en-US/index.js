@@ -721,4 +721,6 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
 
   document_locked_tip: 'Another user is editing the document.',
   read_only_mode: 'Read-Only Mode',
+  document_unlock: 'Unlock',
+  document_unlock_tip: 'Please make sure: The document lock is due to an unexpected reason, otherwise modifying the content may cause other people\'s edits to be lost.',
 }
