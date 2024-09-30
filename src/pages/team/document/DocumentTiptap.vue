@@ -2,6 +2,7 @@
   <TipTap
     v-if="by_info && document"
     :key="document.id"
+    ref="tiptapRef"
     :jsonContent="document.jsonContent"
     :editable="
       !teamStore.shareInfo &&
@@ -24,7 +25,7 @@
 </template>
 
 <script setup>
-import {computed, ref, toRefs, watch, watchEffect, onBeforeUnmount} from "vue";
+import {computed, ref, toRefs, watch, watchEffect, onBeforeUnmount, useTemplateRef} from "vue";
 import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
 
 import {updateDocument} from "src/api/strapi/project.js";
@@ -103,7 +104,6 @@ const updateDocumentFn = async () => {
 
     if (by_info.value.project_id) {
       updateChatMsg.value.body = `${userStore.me.username} ${$t('changed_project_props')}'${teamStore.project.name}' ${$t('inner_document')}'${document.value.title}' ${$t('of_content')}`;
-      await send_chat_Msg(updateChatMsg.value);
     }
     if (by_info.value.card_id) {
       updateChatMsg.value.body = `${userStore.me.username} ${$t('changed_card_props')}'${teamStore.card.name}' ${$t('inner_document')}'${document.value.title}'${document.value.title}' ${$t('of_content')}`;
@@ -136,9 +136,12 @@ const tiptapUpdate = async (val) => {
 };
 const tiptapBlur = async (val) => {
   jsonContent.value = val;
-  await updateDocumentFn(val);
+  await updateDocumentFn();
 };
+const tiptapRef = ref()
 onBeforeUnmount(async() => {
+  // console.log("tiptapRef", tiptapRef.value);
+  tiptapRef.value?.tiptapBlur();
   if(updateChatMsg.value){
     await send_chat_Msg(updateChatMsg.value);
   }

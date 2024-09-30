@@ -231,7 +231,7 @@ const enterDocument = async (element) => {
      */
     await activeDocument(element.id)
   }
-  console.log('teamStore.active_document', teamStore.active_document);
+  // console.log('teamStore.active_document', teamStore.active_document);
 };
 onMounted(async() => {
   await nextTick();

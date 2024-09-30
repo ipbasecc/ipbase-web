@@ -4,9 +4,7 @@
       <q-toolbar class="gap-sm">
         <q-toolbar-title> Title </q-toolbar-title>
         <q-space />
-        <q-btn color="primary" no-caps label="Find"
-          @click="find"
-        />
+        <q-btn color="primary" no-caps label="Find" />
       </q-toolbar>
     </q-header>
 
@@ -22,15 +20,9 @@
 import {onMounted, ref, watch, computed, watchEffect} from 'vue';
 
 import {uiStore} from "src/hooks/global/useStore.js";
-import { findProjectBudget } from "src/api/strapi/project.js";
 
 import { useQuasar } from 'quasar'
 const $q = useQuasar()
-const budget = ref()
-const find = async () => {
-  const { data } = await findProjectBudget(1);
-  budget.value = data;
-}
 
 onMounted(() => {
   uiStore.pageLoaded = true;

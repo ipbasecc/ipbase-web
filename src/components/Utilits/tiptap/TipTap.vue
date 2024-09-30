@@ -253,6 +253,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  for: {
+    type: String,
+    default: "document",
+  }
 });
 
 const contentRef = toRef(props, "content");
@@ -281,7 +285,7 @@ const cleanHtmlHandler = (val) => {
   return val.replace(/<[^>]*>?/gm, "");
 };
 const init = () => {
-  const _HardBreak = HardBreak.extend({
+  const _HardBreak = props.for !== 'chat' ? HardBreak.extend({
     addKeyboardShortcuts() {
       return {
         // ↓ 禁用Ctrl + Enter,改为发送消息
@@ -291,7 +295,7 @@ const init = () => {
         },
       }
     },
-  })
+  }) : HardBreak;
 
   editor.value = new Editor({
     content: tiptapContent.value,
@@ -346,9 +350,9 @@ const init = () => {
       await nextTick();
       const editorVal = JSON.stringify(editor.getJSON());
       const sourceVal = JSON.stringify(sourceContent.value);
-      console.log(editorVal, sourceVal);
+      // console.log(editorVal, sourceVal);
       
-      if(editorVal !== sourceVal){
+      if(editorVal !== sourceVal){        
         tiptapBlur();
       }
       uiStore.disable_shortcut = false;
@@ -413,8 +417,6 @@ const clear = () => {
   editor.value.commands.clearContent();
 };
 
-defineExpose({ clear });
-
 watch(
   [jsonContentRef, contentRef],
   () => {
@@ -449,10 +451,10 @@ const tiptapBlur = () => {
   }
 };
 
-// onKeyStroke(["ctrlKey", "s"], (e) => {
-//   e.preventDefault();
-//   tiptapBlur();
-// });
+defineExpose({
+  tiptapBlur,
+  clear
+})
 
 const tiptapUpdate = () => {
   if (needRef.value === "html") {

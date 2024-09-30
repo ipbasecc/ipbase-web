@@ -7,6 +7,7 @@
           :disable_btn="disable_btn"
           need="md"
           ref="tiptapRef"
+          for="chat"
           @tiptapUpdate="tiptapUpdate"
           @keyup.ctrl.enter="sendMsg(msg)"
         >
