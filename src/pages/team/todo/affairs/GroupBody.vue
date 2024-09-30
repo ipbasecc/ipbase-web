@@ -84,7 +84,7 @@ const cancelCreatetodo = () => {
 }
 const created = (todo) => {
     openCreatetodo.value = false;
-    group.value.todos.push(todo);
+    modelValue.value.todos.push(todo);
 }
 const todoDeleted = (id) => {
     modelValue.value.todos = modelValue.value.todos.filter((i) => i.id !== id);

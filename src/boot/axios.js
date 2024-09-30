@@ -1,6 +1,6 @@
 import { boot } from "quasar/wrappers";
 import axios from "axios";
-import { uiStore } from "src/hooks/global/useStore";
+import { uiStore, teamStore } from "src/hooks/global/useStore";
 import { $server } from 'src/boot/server.js'
 
 // Be careful when using SSR for cross-request state pollution
@@ -116,6 +116,9 @@ export default boot(async ({ app }) => {
     async (config) => {
       uiStore.axiosStauts = 'pending';
       config.headers['X-Fingerprint'] = window.fingerprint;
+      if(teamStore?.team?.id){
+        config.headers['X-Teamid'] = teamStore?.team?.id;
+      }
       const token = JSON.parse(localStorage.getItem("jwt"));
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;

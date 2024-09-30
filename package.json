@@ -115,6 +115,7 @@
     "quasar": "^2.16.11",
     "register-service-worker": "^1.7.2",
     "remixicon": "^3.7.0",
+    "socket.io-client": "^4.8.0",
     "sql.js": "^1.11.0",
     "tao": "^0.0.4",
     "timeago.js": "^4.0.2",

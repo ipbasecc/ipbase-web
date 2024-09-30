@@ -113,8 +113,10 @@ import { serverInfo } from 'src/boot/server.js'
 import localforage from "localforage";
 import {toggleTeam} from "src/pages/team/hooks/useTeam.js";
 import AppNotification from 'src/pages/team/components/AppNotification.vue'
+import { useSocket } from 'src/pages/team/hooks/useSocket.js'
 
 getUserData();
+useSocket();
 
 const $q = useQuasar();
 
