@@ -179,7 +179,7 @@ onMounted(() => {
 
 const { by_info, sortAuth } = toRefs(props);
 const documents = ref([]);
-onBeforeMount(() => {
+const setDocuments = (data) => {
   if(by_info.value?.project_id) {
     documents.value = teamStore.project?.project_documents || [];
   } else if(by_info.value?.card_id) {
@@ -187,6 +187,9 @@ onBeforeMount(() => {
   } else if(by_info.value?.by === "user") {
     documents.value = teamStore.init?.user_documents
   }
+}
+onBeforeMount(() => {
+  setDocuments();
 });
 const types = ref([
   { type: "document", tip: "document", icon: "article" },
@@ -262,6 +265,7 @@ const process_createdData = (val) => {
   }
   if (by_info.value.user_id) {
   }
+  setDocuments();
 };
 const cancelCreate = () => {
   creating.value = false;
@@ -292,6 +296,7 @@ const create = async () => {
     }
     creating.value = false;
     loading.value = false;
+    createDocument_title.value = null;
   }
 };
 
@@ -318,6 +323,7 @@ const process_updatedData = (val) => {
   }
   if (by_info.value.user_id) {
   }
+  setDocuments();
 };
 const update = async (document) => {
   loading.value = true;
@@ -382,6 +388,7 @@ const process_removedData = (val) => {
   }
   if (by_info.value.user_id) {
   }
+  setDocuments();
 };
 const remove = async (i) => {
   let res = await deleteDocument(i.id);
@@ -418,6 +425,12 @@ const process_orderData = (val) => {
   documents.value = val.map((i) =>
     documents.value.find((j) => j.id === i)
   );
+  if (by_info.value.project_id) {
+    teamStore.project.project_documents = documents.value
+  }
+  if (by_info.value.card_id) {
+    teamStore.card.card_documents = documents.value
+  }
 };
 
 const orderDocuments = async () => {
