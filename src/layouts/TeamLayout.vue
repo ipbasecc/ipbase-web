@@ -54,6 +54,11 @@
         >
           <AppList />
         </q-footer>
+        <q-footer
+          class="transparent border-top q-pb-lg"
+        >
+        income: {{ income?.data?.id }}
+        </q-footer>
       </q-layout>
       <div v-else class="absolute-full column flex-center">
         <q-card bordered class="focus-form" style="min-width: 16rem">
@@ -116,7 +121,6 @@ import AppNotification from 'src/pages/team/components/AppNotification.vue'
 import { useSocket } from 'src/pages/team/hooks/useSocket.js'
 
 getUserData();
-useSocket();
 
 const $q = useQuasar();
 
@@ -200,6 +204,50 @@ const pullDownRefresh = (done) => {
   done();
   pageRefresh();
 }
+
+const { income } = useSocket();
+const refetchTeam = async () => {
+    if (!teamStore.team) return;
+    const team = await getTeamByID(teamStore.team?.id);
+    if (team?.data) {
+      teamStore.team = team.data;
+      if (teamStore.channel) {
+        const _channel = await getChannelByID(teamStore.channel.id);
+        teamStore.channel = _channel?.data;
+      }
+    }
+  };
+watch(income, async (val) => {
+  const { team_id, data } = val.data;
+  // console.log(typeof teamStore.team?.id, typeof team_id, teamStore.team?.id === Number(team_id));
+  if(teamStore.team?.id === Number(team_id)){
+    if(val?.event === 'team:update'){
+      teamStore.team = data;
+    }
+    if(val?.event === 'team:delete' || val?.event === 'team:leave'){
+      teamStore.$reset();
+    }
+    if(val?.event === 'team:join'){
+      teamStore.team.members.push(data);
+    }
+    if(val?.event === 'team:member_updated'){
+      // await refetchTeam();
+      console.log('team:member_updated', data);
+      
+      const index = teamStore.team.members.findIndex(item => item.id === data.id);
+      if(index > -1){
+        teamStore.team.members.splice(index, 1, data);
+      }
+    }
+    if(val?.event === 'team:member_leaved'){
+      const curUserMember = teamStore.team.members.find(item => item.by_user.id === teamStore.init?.id);
+      if(curUserMember.by_user.id === data.removed_user_id){
+        teamStore.$reset();
+      }
+      teamStore.team.members = teamStore.team.members.filter(item => item.id !== data.removed_user_id);
+    }
+  }
+})
 
 onMounted(() => {
   shortcut();

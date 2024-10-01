@@ -24,23 +24,7 @@ export async function setTeamRoleFn(team_id, member_id, new_roles_IDs) {
   };
   const res = await setTeamRole(team_id, params);
   if (res?.data) {
-    teamStore.team.members = teamStore.team.members.map((i) =>
-      i.id === res.data.id ? res.data : i
-    );
-    let chat_Msg = {
-      body: `团队成员被更新`,
-      props: {
-        strapi: {
-          data: {
-            is: "team",
-            by_user: userStore.userId,
-            action: "team_member_updated",
-            team_id: team_id,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
+    // return
     return res?.data;
   }
 }

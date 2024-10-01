@@ -1,13 +1,16 @@
-// useSocket.js
+import { ref, reactive } from "vue";
 import { io, Socket } from "socket.io-client";
 import { onMounted, onUnmounted } from 'vue';
+import team from './useSocket/team.js'
 
 export function useSocket() {
+  const income = ref();
   const jwt = JSON.parse(localStorage.getItem("jwt"));
-  const SERVER_URL = import.meta.env.VITE_BACKEND_URI || "http://api.yihu.team";
+  const SERVER_URL = import.meta.env.VITE_BACKEND_URI || "http://api.yihu.team";  
   const JWT_TOKEN = jwt;
 
   let socket = null;
+  const events = reactive(new Set());
 
   onMounted(() => {
     if (JWT_TOKEN) {
@@ -17,28 +20,35 @@ export function useSocket() {
           token: JWT_TOKEN,
         },
       });
-
+      const processEvent = (props) => {
+        const { event, data } = props;
+        events.add(event);
+        income.value = {
+          event: event,
+          data: data,
+        };
+      }
+      
       socket.on("connect", () => {
         console.log("Socket connected!");
-        socket.on("todo:create", (data) => {
-          console.log("todo created!", data);
+        socket.on("room:join", (data) => {
+            processEvent({
+              event: "room:join",
+              data: data
+            });
         });
-        socket.on("todo:update", (data) => {
-          console.log("todo updated!", data);
-        });
-        socket.on("todo:delete", (data) => {
-          console.log("todo deleted!", data);
-        });
+        team(socket, processEvent);
       });
     }
   });
 
   onUnmounted(() => {
     if (socket) {
-      socket.off("todo:create");
-      socket.off("todo:update");
-      socket.off("todo:delete");
+      for (const event of events) {
+        socket.off(event);
+      }
       socket.disconnect();
     }
   });
+  return { income };
 }

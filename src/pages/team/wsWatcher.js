@@ -24,7 +24,6 @@ export default function useWatcher() {
         "leave_team",
         "user_added",
         "user_removed",
-        "team_member_updated",
       ];
       const mm_event = mm_wsStore.event?.event;
       // console.log("mm_event", mm_event);

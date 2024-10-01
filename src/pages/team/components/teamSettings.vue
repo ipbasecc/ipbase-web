@@ -186,7 +186,7 @@ const fileUploaded = (id, obj) => {
 const update = async () => {
   const res = await updateTeam(team.value?.id, params.value);
   if (res?.data) {
-    teamStore.team = res.data;
+    // teamStore.team = res.data;
   }
 };
 </script>
