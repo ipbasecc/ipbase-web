@@ -745,6 +745,7 @@ watchEffect(() => {
         teamStore.team.team_channels[index].members = teamStore.team.team_channels[index].members.filter(i => i.id !== Number(data.leaved_member_id));
         if(teamStore?.mm_channel?.id === teamStore.team.team_channels[index].mm_channel?.id){
           teamStore.mm_channel = void 0;
+          router.push('/teams');
         }
       }
       const curUserMember = teamStore.team?.members?.find(i => i.by_user.id === teamStore.init?.id);
@@ -753,20 +754,19 @@ watchEffect(() => {
       }
     }
     if(val?.event === 'channel:member_updated'){
-      const _inChannel = teamStore.team?.team_channels?.map(i => i.id)?.includes(Number(data.id));
-      if(_inChannel){
-        const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.id));
-        if(index > -1){
-          teamStore.team.team_channels[index].members = data.members;
-          teamStore.team.team_channels[index].member_roles = data.member_roles;
-          teamStore.channel = teamStore.team.team_channels[index];
-        }
+      
+      console.log('member_updated', data);
+      const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.id));
+      if(index > -1){
+        teamStore.team.team_channels[index] = data;
+        teamStore.channel = data;
       } else {
+        console.log('!!!!_inChannel', data);
         teamStore.team.team_channels.push(data);
       }
     }
     if(val?.event === 'channel:member_join'){
-      teamStore.channel.members.push(data.joined_member);      
+      // teamStore.channel.members.push(data.joined_member);      
       const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.channel_id));
       if(index > -1){
         teamStore.team.team_channels[index].members.push(data.joined_member);
