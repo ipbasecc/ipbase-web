@@ -219,8 +219,9 @@ watch(income, async (val) => {
     if(val?.event === 'team:join'){
       teamStore.team.members.push(data);
     }
-    if(val?.event === 'team:member_updated'){      
-      if(teamStore.team?.status === 'unconfirmed'){
+    if(val?.event === 'team:member_updated'){
+      const noAuth = ['unconfirmed', 'blocked'].includes(teamStore.team?.status);
+      if(noAuth){
         await toggleTeam(teamStore.team)
       }
       const index = teamStore.team.members.findIndex(item => item.id === data.id);
