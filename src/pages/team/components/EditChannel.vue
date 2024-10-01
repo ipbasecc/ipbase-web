@@ -55,7 +55,6 @@
 
 <script setup>
 import { ref, toRefs } from 'vue'
-import { teamStore } from "src/hooks/global/useStore.js";
 import { updateChannel } from "src/api/strapi/team.js";
 
 const props = defineProps({
@@ -87,9 +86,6 @@ const updateChannelFn = async () => {
   delete params.value.id;
   const res = await updateChannel(channel.value.id, params.value);
   if (res?.data) {
-    teamStore.team.team_channels = teamStore.team.team_channels.map(
-      (i) => (i.id === channel.value.id && res.data) || i
-    );
     params.value = {};
     loading.value = false;
   }

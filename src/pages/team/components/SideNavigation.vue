@@ -721,15 +721,21 @@ watchEffect(() => {
   
   if(teamStore.team?.id === Number(team_id)){
     if(val?.event === 'channel:channel_created'){
-      if(team.value.team_channels?.length > 0){
-        team.value.team_channels.push(data);
+      if(teamStore.team?.team_channels?.length > 0){
+        teamStore.team.team_channels.push(data);
       } else {
-        team.value.team_channels = [data];
+        teamStore.team.team_channels = [data];
       }
     }
     if(val?.event === 'channel:channel_deleted'){
-      if(team.value.team_channels?.length > 0){
-        team.value.team_channels = team.value.team_channels.filter(i => i.id !== Number(data.channel_id));
+      if(teamStore.team?.team_channels?.length > 0){
+        teamStore.team.team_channels = teamStore.team?.team_channels?.filter(i => i.id !== Number(data.channel_id));
+      }
+    }
+    if(val?.event === 'channel:channel_updated'){
+      const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.id));
+      if(index > -1){
+        teamStore.team.team_channels[index] = data;
       }
     }
   }
