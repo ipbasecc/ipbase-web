@@ -27,7 +27,7 @@
         <!-- 事务沙盘-->
         <q-item v-if="enalbe_dashboard"
           :class="`${
-            teamStore?.mm_channel?.id === 'teams' || !teamStore?.mm_channel
+            teamStore?.mm_channel?.id === 'teams' || route.name === 'teams'
               ? 'border active-listitem'
               : 'border-placeholder op-7'
           }
