@@ -171,21 +171,21 @@ watch(
           );
           teamStore.project.project_members = [...__, updatedMember];
         }
-        if (
-          strapi.data?.is === "project" &&
-          strapi.data?.project_id === teamStore.project?.id &&
-          strapi.data.action === "member_removed"
-        ) {
-          teamStore.project.project_members =
-            teamStore.project.project_members.filter(
-              (i) => i.id !== strapi.data?.removedMember_id
-            );
-          if (strapi.data.removeUser_id === userStore?.userId) {
-            teamStore.need_refecth_projects = true;
-            await localforage.removeItem("last_project_id");
-            await router.push("/teams");
-          }
-        }
+        // if (
+        //   strapi.data?.is === "project" &&
+        //   strapi.data?.project_id === teamStore.project?.id &&
+        //   strapi.data.action === "member_removed"
+        // ) {
+        //   teamStore.project.project_members =
+        //     teamStore.project.project_members.filter(
+        //       (i) => i.id !== strapi.data?.removedMember_id
+        //     );
+        //   if (strapi.data.removeUser_id === userStore?.userId) {
+        //     teamStore.need_refecth_projects = true;
+        //     await localforage.removeItem("last_project_id");
+        //     await router.push("/teams");
+        //   }
+        // }
         if (
           strapi.data?.is === "project" &&
           strapi.data.action === "role_updated" &&

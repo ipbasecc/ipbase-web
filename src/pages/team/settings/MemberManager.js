@@ -123,6 +123,7 @@ const removeTeamMember = async (team_id, member) => {
   };
   const res = await removeTeamUser(team_id, params);
   if (res) {
+    return
     let chat_Msg = {
       body: `${userStore.me?.username}移除了团队成员${member.by_user.username}`,
       props: {

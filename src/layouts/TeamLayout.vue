@@ -206,17 +206,6 @@ const pullDownRefresh = (done) => {
 }
 
 const { income } = useSocket();
-const refetchTeam = async () => {
-    if (!teamStore.team) return;
-    const team = await getTeamByID(teamStore.team?.id);
-    if (team?.data) {
-      teamStore.team = team.data;
-      if (teamStore.channel) {
-        const _channel = await getChannelByID(teamStore.channel.id);
-        teamStore.channel = _channel?.data;
-      }
-    }
-  };
 watch(income, async (val) => {
   const { team_id, data } = val.data;
   // console.log(typeof teamStore.team?.id, typeof team_id, teamStore.team?.id === Number(team_id));
@@ -224,27 +213,33 @@ watch(income, async (val) => {
     if(val?.event === 'team:update'){
       teamStore.team = data;
     }
-    if(val?.event === 'team:delete' || val?.event === 'team:leave'){
+    if(val?.event === 'team:delete'){
       teamStore.$reset();
     }
     if(val?.event === 'team:join'){
       teamStore.team.members.push(data);
     }
-    if(val?.event === 'team:member_updated'){
-      // await refetchTeam();
-      console.log('team:member_updated', data);
-      
+    if(val?.event === 'team:member_updated'){      
       const index = teamStore.team.members.findIndex(item => item.id === data.id);
       if(index > -1){
         teamStore.team.members.splice(index, 1, data);
       }
     }
     if(val?.event === 'team:member_leaved'){
+      console.log('team:member_leaved', data);
+      
       const curUserMember = teamStore.team.members.find(item => item.by_user.id === teamStore.init?.id);
-      if(curUserMember.by_user.id === data.removed_user_id){
+      if(curUserMember.id === Number(data.removed_member_id)){
         teamStore.$reset();
       }
-      teamStore.team.members = teamStore.team.members.filter(item => item.id !== data.removed_user_id);
+      teamStore.team.members = teamStore.team.members.filter(item => item.id !== Number(data.removed_member_id));
+    }
+    if(val?.event === 'team:leave'){
+      if(Number(data.removed_member_id) === teamStore.init?.id){
+        teamStore.$reset();
+      } else {
+        teamStore.team.members = teamStore.team.members.filter(item => item.id !== Number(data.removed_member_id));
+      }
     }
   }
 })
