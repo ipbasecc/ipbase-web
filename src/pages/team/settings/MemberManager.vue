@@ -13,7 +13,7 @@
               {{ $t('add_member_by_invite_link') }}
             </q-tooltip>
           </q-btn>
-          <q-btn v-if="byInfo.by !== 'team'" split color="blue" icon="mdi-account-plus" @click="toggleAddFromeTeam()">
+          <q-btn v-if="byInfo.by !== 'team' && (byInfo?.by !== 'channel' || teamStore.mm_channel?.type !== 'O')" split color="blue" icon="mdi-account-plus" @click="toggleAddFromeTeam()">
             <q-tooltip class="font-medius border" :class="$q.dark.mode ? 'bg-black' : 'bg-white'">
               {{ $t('add_member_from_team') }}
             </q-tooltip>
@@ -92,15 +92,17 @@
                             {{ translate(role.subject) }}</q-item-section
                           >
                         </q-item>
-                        <q-separator class="op-3 q-my-xs" />
-                        <q-item
-                          clickable
-                          v-close-popup
-                          class="radius-xs text-no-wrap"
-                          @click="removeUserFn(i)"
-                        >
-                          <q-item-section>{{ $t('remove_member') }}</q-item-section>
-                        </q-item>
+                        <template v-if="byInfo?.by !== 'channel' || (teamStore.mm_channel?.type !== 'O' && g.group !== 'admin')">
+                          <q-separator class="op-3 q-my-xs" />
+                          <q-item
+                            clickable
+                            v-close-popup
+                            class="radius-xs text-no-wrap"
+                            @click="removeUserFn(i)"
+                          >
+                            <q-item-section>{{ $t('remove_member') }}</q-item-section>
+                          </q-item>
+                        </template>
                       </q-list>
                     </q-menu>
                   </q-btn>

@@ -17,4 +17,10 @@ export default function (socket, processEvent) {
             ...data
         });
     });
+    socket.on("channel:member_leaved", (data) => {
+        processEvent({
+            event: "channel:member_leaved",
+            ...data
+        });
+    });
   }

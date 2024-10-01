@@ -738,8 +738,31 @@ watchEffect(() => {
         teamStore.team.team_channels[index] = data;
       }
     }
+    if(val?.event === 'channel:member_leaved'){
+      const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.channel_id));
+      if(index > -1){
+        teamStore.team.team_channels[index].members = teamStore.team.team_channels[index].members.filter(i => i.id !== Number(data.leaved_member_id));
+        if(teamStore?.mm_channel?.id === teamStore.team.team_channels[index].mm_channel?.id){
+          teamStore.mm_channel = void 0;
+        }
+      }
+      const curUserMember = teamStore.team?.members?.find(i => i.by_user.id === teamStore.init?.id);
+      if(curUserMember?.id === Number(data.leaved_member_id)){
+        teamStore.team.team_channels = teamStore.team.team_channels.filter(i => i.id !== Number(data.channel_id));
+      }
+    }
+    if(val?.event === 'channel:member_updated'){
+      const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.id));
+      if(index > -1){
+        teamStore.team.team_channels[index].members = data.members;
+        teamStore.team.team_channels[index].member_roles = data.member_roles;
+
+        const _inChannel = teamStore.team.team_channels.map(i => i.id)?.includes(Number(data.id));
+        if(!_inChannel){
+          teamStore.team.team_channels.push(data);
+        }
+      }
+    }
   }
 })
 </script>
-
-<style lang="scss" scoped></style>
