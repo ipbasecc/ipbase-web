@@ -220,6 +220,9 @@ watch(income, async (val) => {
       teamStore.team.members.push(data);
     }
     if(val?.event === 'team:member_updated'){      
+      if(teamStore.team?.status === 'unconfirmed'){
+        await toggleTeam(teamStore.team)
+      }
       const index = teamStore.team.members.findIndex(item => item.id === data.id);
       if(index > -1){
         teamStore.team.members.splice(index, 1, data);
