@@ -96,21 +96,6 @@ export async function setChannelRoleFn(channel_id, member_id, new_roles_IDs) {
   };
   const res = await setChannelRole(channel_id, params);
   if (res?.data) {
-    let chat_Msg = {
-      body: `频道成员被更新`,
-      props: {
-        strapi: {
-          data: {
-            is: "card",
-            by_user: userStore.userId,
-            action: "channel_member_updated",
-            team_id: teamStore.team?.id,
-            channel_id: channel_id,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
     return res?.data;
   }
 }

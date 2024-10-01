@@ -739,6 +739,7 @@ watchEffect(() => {
       }
     }
     if(val?.event === 'channel:member_leaved'){
+      console.log('channel:member_leaved', data);
       const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.channel_id));
       if(index > -1){
         teamStore.team.team_channels[index].members = teamStore.team.team_channels[index].members.filter(i => i.id !== Number(data.leaved_member_id));
@@ -752,16 +753,19 @@ watchEffect(() => {
       }
     }
     if(val?.event === 'channel:member_updated'){
-      const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.id));
-      if(index > -1){
-        teamStore.team.team_channels[index].members = data.members;
-        teamStore.team.team_channels[index].member_roles = data.member_roles;
-
-        const _inChannel = teamStore.team.team_channels.map(i => i.id)?.includes(Number(data.id));
-        if(!_inChannel){
-          teamStore.team.team_channels.push(data);
+      console.log('channel:member_updated', data);
+      const _inChannel = teamStore.team?.team_channels?.map(i => i.id)?.includes(Number(data.id));
+      if(_inChannel){
+        const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.id));
+        if(index > -1){
+          teamStore.team.team_channels[index].members = data.members;
+          teamStore.team.team_channels[index].member_roles = data.member_roles;
+          teamStore.channel = teamStore.team.team_channels[index];
         }
+      } else {
+        teamStore.team.team_channels.push(data);
       }
+      
     }
   }
 })

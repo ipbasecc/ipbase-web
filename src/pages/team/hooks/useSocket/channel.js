@@ -11,9 +11,9 @@ export default function (socket, processEvent) {
             ...data
         });
     });
-    socket.on("channel:channel_updated", (data) => {
+    socket.on("channel:member_updated", (data) => {
         processEvent({
-            event: "channel:channel_updated",
+            event: "channel:member_updated",
             ...data
         });
     });

@@ -458,12 +458,6 @@ watch(
           }
         }
       }
-      if (mm_wsStore?.event?.event === "channel_member_updated") {
-        const res = await getChannelByID(teamStore.channel?.id);
-        if (res?.data) {
-          teamStore.channel = res.data;
-        }
-      }
     },
     { immediate: true, deep: true }
 );
