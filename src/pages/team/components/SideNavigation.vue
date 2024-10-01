@@ -80,8 +80,9 @@
             :key="i.id" clickable v-ripple
             :class="`${teamStore?.mm_channel?.id === i.mm_channel?.id
               ? 'border active-listitem'
-              : 'border-placeholder op-7'}
+              : 'op-7'}
               ${i.auth && !i.auth?.read ? 'op-4' : ''}
+              ${heiglight === i.id ? 'border' : 'border-placeholder'}
             `"
             class="radius-xs q-pa-xs hovered-item overflow-hidden full-width"
             @click="enterChannel(i)"
@@ -148,7 +149,7 @@
               @mouseleave="deEnter = false"
             >
               <q-btn flat round dense size="sm" icon="more_vert">
-                <q-menu class="radius-sm">
+                <q-menu class="radius-sm" @show="heiglight = i.id" @hide="heiglight = void 0">
                   <q-list
                     dense
                     bordered
@@ -377,6 +378,7 @@ const $t = i18n.global.t;
 const $q = useQuasar();
 const router = useRouter();
 const route = useRoute();
+const heiglight = ref();
 
 const byInfo = ref();
 const initedChannelByMM = ['town-square', 'off-topic']
@@ -652,64 +654,86 @@ const callbackChannelRefreshEvents = [
   'channel_updated',
   'channel_converted',
 ]
-watch(
-  mm_wsStore,
-  async () => {    
-    // 判断消息类型
-    if (mm_wsStore?.event?.event === "posted") {
-      let post =
-        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
-      if (!post) return;
-      let strapi = post?.props?.strapi;
-      if (
-        strapi?.data?.action === "change_project_name" &&
-        strapi?.data?.project_id
-      ) {
-        const _pid = strapi.data.project_id;
-        // teamStore.team.projects.find((i) => i.id === _pid).name = strapi.data?.body;
-        const project = teamStore.team.projects.find((i) => i.id === _pid);
-        console.log('project', project);
-        if (project) {
-          project.name = strapi.data?.body;
-        }
-      }
-      if (
-        strapi?.data?.action === "overview_mediaChanged" &&
-        strapi?.data?.project_id
-      ) {
-        const _pid = strapi.data.project_id;
-        const _version = strapi.data.version;
-        const _newUrl = strapi.data?.media?.url;
-        teamStore.team.projects.map((i) => i.id === _pid ? {
-          ...i,
-          overviews: i.overviews.map((j) => ({
-            ...j,
-            url: j.id === _version ? _newUrl : j.url,
-          })),
-        } : i);
-      }
-    } else if(callbackChannelRefreshEvents.includes(mm_wsStore?.event?.event)){
+// watch(
+//   mm_wsStore,
+//   async () => {    
+//     // 判断消息类型
+//     return;
+//     if (mm_wsStore?.event?.event === "posted") {
+//       let post =
+//         mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
+//       if (!post) return;
+//       let strapi = post?.props?.strapi;
+//       if (
+//         strapi?.data?.action === "change_project_name" &&
+//         strapi?.data?.project_id
+//       ) {
+//         const _pid = strapi.data.project_id;
+//         // teamStore.team.projects.find((i) => i.id === _pid).name = strapi.data?.body;
+//         const project = teamStore.team.projects.find((i) => i.id === _pid);
+//         console.log('project', project);
+//         if (project) {
+//           project.name = strapi.data?.body;
+//         }
+//       }
+//       if (
+//         strapi?.data?.action === "overview_mediaChanged" &&
+//         strapi?.data?.project_id
+//       ) {
+//         const _pid = strapi.data.project_id;
+//         const _version = strapi.data.version;
+//         const _newUrl = strapi.data?.media?.url;
+//         teamStore.team.projects.map((i) => i.id === _pid ? {
+//           ...i,
+//           overviews: i.overviews.map((j) => ({
+//             ...j,
+//             url: j.id === _version ? _newUrl : j.url,
+//           })),
+//         } : i);
+//       }
+//     } else if(callbackChannelRefreshEvents.includes(mm_wsStore?.event?.event)){
       
-      const reGetTeam = async () => {
-        // console.log('callbackChannelRefreshEvents');
-        const res = await getTeamByID(teamStore.team.id);
-        if (res?.data) {
-          teamStore.team = res.data;
-        } else {
-          $q.notify({
-            type: "negative",
-            message: "获取团队信息失败,请刷新页面重试",
-          })
-        }
+//       const reGetTeam = async () => {
+//         // console.log('callbackChannelRefreshEvents');
+//         const res = await getTeamByID(teamStore.team.id);
+//         if (res?.data) {
+//           teamStore.team = res.data;
+//         } else {
+//           $q.notify({
+//             type: "negative",
+//             message: "获取团队信息失败,请刷新页面重试",
+//           })
+//         }
+//       }
+//       debounce(reGetTeam(),1000)
+//     } else if(mm_wsStore?.event?.event === 'delete_team'){
+//       teamStore.status = 'deleted'
+//       teamStore.teams = teamStore.teams.filter(i => i.id !== teamStore.team.id)
+//     }
+//   },
+//   { immediate: true, deep: true }
+// );
+
+watchEffect(() => {
+  const val = teamStore.income;
+  if(!val) return;
+  const { team_id, data } = val.data;
+  
+  if(teamStore.team?.id === Number(team_id)){
+    if(val?.event === 'channel:channel_created'){
+      if(team.value.team_channels?.length > 0){
+        team.value.team_channels.push(data);
+      } else {
+        team.value.team_channels = [data];
       }
-      debounce(reGetTeam(),1000)
-    } else if(mm_wsStore?.event?.event === 'delete_team'){
-      teamStore.status = 'deleted'
-      teamStore.teams = teamStore.teams.filter(i => i.id !== teamStore.team.id)
     }
-  },
-  { immediate: true, deep: true }
-);
+    if(val?.event === 'channel:channel_deleted'){
+      if(team.value.team_channels?.length > 0){
+        team.value.team_channels = team.value.team_channels.filter(i => i.id !== Number(data.channel_id));
+      }
+    }
+  }
+})
 </script>
 
 <style lang="scss" scoped></style>

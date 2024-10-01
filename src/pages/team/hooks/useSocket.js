@@ -2,9 +2,10 @@ import { ref, reactive } from "vue";
 import { io, Socket } from "socket.io-client";
 import { onMounted, onUnmounted } from 'vue';
 import team from './useSocket/team.js'
+import channel from './useSocket/channel.js'
+import { teamStore } from 'src/hooks/global/useStore.js';
 
 export function useSocket() {
-  const income = ref();
   const jwt = JSON.parse(localStorage.getItem("jwt"));
   const SERVER_URL = import.meta.env.VITE_BACKEND_URI || "http://api.yihu.team";  
   const JWT_TOKEN = jwt;
@@ -22,8 +23,9 @@ export function useSocket() {
       });
       const processEvent = (props) => {
         const { event, data } = props;
+        
         events.add(event);
-        income.value = {
+        teamStore.income = {
           event: event,
           data: data,
         };
@@ -38,6 +40,7 @@ export function useSocket() {
             });
         });
         team(socket, processEvent);
+        channel(socket, processEvent);
       });
     }
   });
@@ -50,5 +53,4 @@ export function useSocket() {
       socket.disconnect();
     }
   });
-  return { income };
 }

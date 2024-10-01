@@ -20,7 +20,7 @@ export async function createChannel(params) {
     params.data.mm_channel = mm_channel.data;
     const res = await createStrapiChannel(params);
     if (res?.data) {
-      teamStore.team?.team_channels?.push(res.data);
+      // teamStore.team?.team_channels?.push(res.data);
       return res.data;
     }
   }

@@ -121,9 +121,9 @@ import AppNotification from 'src/pages/team/components/AppNotification.vue'
 import { useSocket } from 'src/pages/team/hooks/useSocket.js'
 
 getUserData();
+useSocket();
 
 const $q = useQuasar();
-
 const appListWidth = ref(64);
 
 watchEffect(() => {
@@ -205,10 +205,11 @@ const pullDownRefresh = (done) => {
   pageRefresh();
 }
 
-const { income } = useSocket();
-watch(income, async (val) => {
+watchEffect(async() => {
+  const val = teamStore.income;
+  if(!val) return;
   const { team_id, data } = val.data;
-  // console.log(typeof teamStore.team?.id, typeof team_id, teamStore.team?.id === Number(team_id));
+  
   if(teamStore.team?.id === Number(team_id)){
     if(val?.event === 'team:update'){
       teamStore.team = data;

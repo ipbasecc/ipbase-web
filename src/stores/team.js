@@ -72,6 +72,7 @@ export default defineStore("team", {
     news: [],
     active_news: null,
     edit_news: null,
+    income: null,
   }),
   actions: {
     $reset() {

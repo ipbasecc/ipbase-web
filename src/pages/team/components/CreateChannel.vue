@@ -75,7 +75,7 @@ const $q = useQuasar()
 const emit = defineEmits(['closePopup', 'created'])
 const loading = ref(false);
 const createChannelparams = ref({
-  team_id: computed(() => teamStore.team?.id),
+  team_id: void 0,
   data: {
     name: "",
     type: "P",
@@ -89,30 +89,16 @@ const CHANNEL_TYPES = [
 const findIconByType = (type) => {
     return CHANNEL_TYPES.find(item => item.val === type)?.icon || 'public'
 }
-let lossTeamID_count = 0
+
 const createChannelFn = async () => {
-  if(!createChannelparams.value.team_id) {
-    lossTeamID_count++
-    if(lossTeamID_count > 3) {
-      lossTeamID_count = 0;
-      $q.notify({
-        message: $t('team_id_cant_lose'),
-        color: 'negative',
-        position: 'top',
-        timeout: 2000,
-      })
-    }
-    return
-  };
+  if(loading.value) return;
   loading.value = true;
+  createChannelparams.value.team_id = teamStore.team?.id;
 
   const res = await createChannel(createChannelparams.value);
-
   createChannelparams.value.data.name = "";
   createChannelparams.value.data.purpose = "";
   loading.value = false;
-
-  console.log('res', res);
   
   if(res){
     emit('created', res)
