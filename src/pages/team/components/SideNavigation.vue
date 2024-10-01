@@ -651,7 +651,6 @@ const callbackChannelRefreshEvents = [
   'channel_deleted',
   'channel_updated',
   'channel_converted',
-  'update_team',
   'added_to_team'
 ]
 watch(

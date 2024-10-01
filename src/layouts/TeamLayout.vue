@@ -225,14 +225,13 @@ watch(income, async (val) => {
         teamStore.team.members.splice(index, 1, data);
       }
     }
-    if(val?.event === 'team:member_leaved'){
-      console.log('team:member_leaved', data);
-      
+    if(val?.event === 'team:member_leaved'){     
       const curUserMember = teamStore.team.members.find(item => item.by_user.id === teamStore.init?.id);
-      if(curUserMember.id === Number(data.removed_member_id)){
+      if(curUserMember.id === Number(data.leaved_member_id)){
         teamStore.$reset();
+      } else {
+        teamStore.team.members = teamStore.team.members.filter(item => item.id !== Number(data.leaved_member_id));
       }
-      teamStore.team.members = teamStore.team.members.filter(item => item.id !== Number(data.removed_member_id));
     }
     if(val?.event === 'team:leave'){
       if(Number(data.removed_member_id) === teamStore.init?.id){
