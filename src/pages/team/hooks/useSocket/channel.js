@@ -5,6 +5,12 @@ export default function (socket, processEvent) {
             ...data
         });
     });
+    socket.on("channel:channel_updated", (data) => {
+        processEvent({
+            event: "channel:channel_updated",
+            ...data
+        });
+    });
     socket.on("channel:channel_deleted", (data) => {
         processEvent({
             event: "channel:channel_deleted",

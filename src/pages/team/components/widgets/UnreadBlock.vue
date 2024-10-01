@@ -1,5 +1,5 @@
 <template>
-  <q-badge v-if="unreadCount > 0" :color="color" :align="align">
+  <q-badge v-if="unreadCount > 0" :color="color" rounded floating >
     {{unreadCount}}
   </q-badge>
 </template>

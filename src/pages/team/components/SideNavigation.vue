@@ -1,6 +1,6 @@
 <template>
-  <q-scroll-area class="q-px-sm">
-    <q-list :dense="$q.screen.gt.sm" class="column gap-xs" :style="`width: ${width - 16}px;`">
+  <q-scroll-area>
+    <q-list :dense="$q.screen.gt.sm" class="column gap-xs q-px-sm">
       <template v-if="$q.screen.gt.xs">
         <!-- 讨论主题-->
         <q-item v-if="enable_threads"
@@ -84,7 +84,7 @@
               ${i.auth && !i.auth?.read ? 'op-4' : ''}
               ${heiglight === i.id ? 'border' : 'border-placeholder'}
             `"
-            class="radius-xs q-pa-xs hovered-item overflow-hidden full-width"
+            class="radius-xs q-pa-xs hovered-item full-width"
             @click="enterChannel(i)"
           >
             <q-item-section side class="q-pr-sm" @mouseenter="deEnter = false">
@@ -129,7 +129,6 @@
               <div class="row no-wrap gap-xs q-pr-xs">
                 <span class="row flex-center">{{ initedChannelByMM.includes(i.name) ? $t(i.name) : i.name }}</span>
                 <q-space />
-                <UnreadBlock :mm_channel_id="i.mm_channel?.id" />
               </div>
               <q-tooltip class="transparent radius-sm">
                 <q-card bordered :class="$q.dark.mode ? 'text-grey-1' : 'text-grey-10'">
@@ -205,6 +204,7 @@
               class="bg-primary absolute-left"
               style="width: 3px"
             ></div>
+            <UnreadBlock :mm_channel_id="i.mm_channel?.id" />
           </q-item>
         </template>
         <q-item
@@ -716,6 +716,7 @@ const callbackChannelRefreshEvents = [
 
 watchEffect(() => {
   const val = teamStore.income;
+  console.log('channel:channel_updated', val);
   if(!val) return;
   const { team_id, data } = val.data;
   
@@ -733,6 +734,8 @@ watchEffect(() => {
       }
     }
     if(val?.event === 'channel:channel_updated'){
+      console.log('channel:channel_updated', data);
+      
       const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.id));
       if(index > -1){
         teamStore.team.team_channels[index] = data;
