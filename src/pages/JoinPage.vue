@@ -79,17 +79,11 @@
 
 <script setup>
 import { useRoute, useRouter } from "vue-router";
-import { visitInvite, acceptInvite } from "src/api/strapi/project.js";
-import {
-  visitTeamInvite,
-  acceptTeamInvite,
-  visitChannelInvite,
-  acceptChannelInvite,
-} from "src/api/strapi/team.js";
-import { ref, watch } from "vue";
+import { ref, watch, onBeforeMount } from "vue";
 import localforage from "localforage";
 import { computed } from "vue";
 import { join, get_inviteInfo } from 'src/pages/team/hooks/useInvite.js'
+import { uiStore } from 'src/hooks/global/useStore.js';
 
 const route = useRoute();
 const router = useRouter();
@@ -110,10 +104,8 @@ const get_inviteInfoFn = async () => {
     return;
   }
   let { errMsg, info } = await get_inviteInfo(team_id, channel_id, project_id, invite_code, target.value);
-  if(info){
-    errorMsg.value = errMsg;
-    inviteInfo.value = info;
-  }
+  errorMsg.value = errMsg;
+  inviteInfo.value = info;
 };
 watch(
   jwt,
@@ -133,6 +125,9 @@ const getMe = async () => {
   }
 };
 getMe();
+onBeforeMount(() => {
+  uiStore.pageLoaded = true
+})
 
 const joinInfo = ref();
 const joinFn = async () => {

@@ -651,7 +651,6 @@ const callbackChannelRefreshEvents = [
   'channel_deleted',
   'channel_updated',
   'channel_converted',
-  'added_to_team'
 ]
 watch(
   mm_wsStore,

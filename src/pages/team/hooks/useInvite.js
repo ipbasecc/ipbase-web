@@ -47,7 +47,6 @@ export async function get_inviteInfo (team_id, channel_id, project_id, invite_co
         res = await visitInvite(project_id, invite_code);
       }
       if (res) {
-        console.log("res.data?.props", res.data?.props);
         if (res.data?.props === "isCreator") {
           errMsg = res.data?.message;
         } else if (res.data?.error) {
@@ -60,6 +59,7 @@ export async function get_inviteInfo (team_id, channel_id, project_id, invite_co
         } else {
           info = res.data;
         }
+        
         return { errMsg, info };
       }
     } catch (error) {

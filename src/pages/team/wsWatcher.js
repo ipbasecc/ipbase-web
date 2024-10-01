@@ -21,7 +21,7 @@ export default function useWatcher() {
       // todo 此处需要防抖，这里监听的是加入频道事件，当有新用户加入团队后，会自动加入所有开放团队，因此会多次触发此事件
       // 这里只需要请求一次即可
       const needRefetchTeam = [
-        "user_added",
+        
       ];
       const mm_event = mm_wsStore.event?.event;
       // console.log("mm_event", mm_event);
