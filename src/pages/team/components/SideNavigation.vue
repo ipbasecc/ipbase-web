@@ -753,7 +753,6 @@ watchEffect(() => {
       }
     }
     if(val?.event === 'channel:member_updated'){
-      console.log('channel:member_updated', data);
       const _inChannel = teamStore.team?.team_channels?.map(i => i.id)?.includes(Number(data.id));
       if(_inChannel){
         const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.id));
@@ -765,7 +764,20 @@ watchEffect(() => {
       } else {
         teamStore.team.team_channels.push(data);
       }
-      
+    }
+    if(val?.event === 'channel:member_join'){
+      teamStore.channel.members.push(data.joined_member);      
+      const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.channel_id));
+      if(index > -1){
+        teamStore.team.team_channels[index].members.push(data.joined_member);
+      }
+
+      const _teamMemberIndex = teamStore.team?.members?.findIndex(i => i.id === Number(data.joined_member?.id));
+      if(_teamMemberIndex > -1){
+        teamStore.team.members[_teamMemberIndex] = data.joined_member;
+      } else {
+        teamStore.team.members.push(data.joined_member);
+      }
     }
   }
 })

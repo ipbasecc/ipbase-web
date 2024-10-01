@@ -23,4 +23,10 @@ export default function (socket, processEvent) {
             ...data
         });
     });
+    socket.on("channel:member_join", (data) => {
+        processEvent({
+            event: "channel:member_join",
+            ...data
+        });
+    });
   }

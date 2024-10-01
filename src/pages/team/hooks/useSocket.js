@@ -28,7 +28,7 @@ export function useSocket() {
         teamStore.income = {
           event: event,
           data: data,
-        };
+        };        
       }
       
       socket.on("connect", () => {

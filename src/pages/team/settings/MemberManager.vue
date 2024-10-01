@@ -524,4 +524,5 @@ const translate = (i) => {
 const removeUserFn = async (member) => {
   await removeMember(byInfo.value, member);
 };
+
 </script>
