@@ -23,4 +23,22 @@ export default function (socket, processEvent) {
             ...data
         });
     });
+    socket.on("project:join", (data) => {
+        processEvent({
+            event: "project:join",
+            ...data
+        });
+    });
+    socket.on("project:leave", (data) => {
+        processEvent({
+            event: "project:leave",
+            ...data
+        });
+    });
+    socket.on("project:member_updated", (data) => {
+        processEvent({
+            event: "project:member_updated",
+            ...data
+        });
+    });
   }

@@ -35,28 +35,9 @@ export async function setProjectRoleFn(project_id, member_id, new_roles_IDs) {
       new_roles: new_roles_IDs,
     },
   };
-  const res = await setRole(project_id, params);
-  if (res?.data) {
-    teamStore.project = res.data;
-    let chat_Msg = {
-      body: `项目成员被更新`,
-      props: {
-        strapi: {
-          data: {
-            is: "project",
-            by_user: userStore.userId,
-            action: "project_member_updated",
-            team_id: teamStore.team?.id,
-            project_id: project_id,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
-    const member_updated = res?.data.project_members.find(
-      (i) => i.id === member_id
-    );
-    return member_updated;
+  const {data} = await setRole(project_id, params);
+  if (data) {
+    return data;
   }
 }
 export async function setCardRoleFn(card_id, member_id, new_roles_IDs) {
@@ -134,22 +115,6 @@ const removeProjectMember = async (project_id, member) => {
   };
   const res = await removeProjectUser(project_id, params);
   if (res) {
-    let chat_Msg = {
-      body: `${userStore.me?.username}移除了项目成员${member.by_user.username}`,
-      props: {
-        strapi: {
-          data: {
-            is: "project",
-            by_user: userStore.userId,
-            project_id: project_id,
-            action: "member_removed",
-            removedMember_id: member.id,
-            removeUser_id: member.by_user.id,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
   }
 };
 const removeChannelMember = async (channel_id, member) => {

@@ -2,6 +2,8 @@ import { computed, watch } from "vue";
 import { teamStore } from "src/hooks/global/useStore.js";
 import { mergeObjects } from 'src/hooks/utilits.js'
 import { useRouter } from "vue-router";
+import { useAuths } from 'src/pages/team/hooks/useAuths.js'
+import { fetchProject } from "src/hooks/project/useProcess.js";
 
 export default function useWatcher() {
   const router = useRouter();
@@ -140,6 +142,75 @@ export default function useWatcher() {
         if(teamStore.project?.id === Number(data.project_id)){
           teamStore.$reset_project();
           router.push("/teams");
+        }
+      }
+      if(val.value.event === 'project:join'){        
+        teamStore.project.project_members = teamStore.project?.project_members || [];
+        const index = teamStore.team.projects.findIndex(i => i.id === Number(project_id));
+        if(teamStore.project.id === Number(project_id)){
+          teamStore.project.project_members.push(data.member);
+          teamStore.team.projects[index].project_members = teamStore.project.project_members;
+        } else {
+          teamStore.team.projects[index].project_members.push(data.member);
+        }
+
+        const _teamMemberIndex = teamStore.team?.members?.findIndex(i => i.id === Number(data.member?.id));
+        if(_teamMemberIndex > -1){
+          teamStore.team.members[_teamMemberIndex] = data.member;
+        } else {
+          teamStore.team.members.push(data.member);
+        }
+      }
+      if(val.value.event === 'project:leave'){
+        const curUserMember = teamStore.team.members.find(i => i.by_user.id === teamStore.init?.id);
+        console.log('curUserMember', curUserMember);
+        const index = teamStore.team.projects.findIndex(i => i.id === Number(project_id));
+        teamStore.team.projects[index].project_members = teamStore.team.projects[index].project_members.filter(i => i.id !== Number(data.removeMember_id));
+        const membersIDs_by_leave = teamStore.team.projects[index].project_members.map(i => i.id);
+        console.log(membersIDs_by_leave, curUserMember.id, typeof membersIDs_by_leave, typeof curUserMember.id);
+        if(!membersIDs_by_leave.includes(curUserMember.id)){
+          let _i = teamStore.team.projects[index]
+          teamStore.team.projects[index] = {
+            id: _i.id,
+            name: _i.name,
+            overviews: _i.overviews,
+            auth: {
+              read: false
+            }
+          }
+          if(teamStore.project.id === Number(project_id)){
+            teamStore.$reset_project();
+            router.push("/teams");
+          }
+        } else if(teamStore.project.id === Number(project_id)) {
+          teamStore.project.project_members = teamStore.team.projects[index].project_members
+        }
+
+        const _teamMemberIndex = teamStore.team?.members?.findIndex(i => i.id === Number(data.member?.id));
+        if(_teamMemberIndex > -1){
+          teamStore.team.members[_teamMemberIndex] = data.member;
+        }
+      }
+      if(val.value.event === 'project:member_updated'){
+        const pindex = teamStore.team.projects.findIndex(i => i.id === Number(project_id));
+        if(!teamStore.team.projects[pindex].auth?.read){
+          console.log('fetchProject');
+          
+          const fetch = await fetchProject(project_id);
+          if (fetch) {
+            teamStore.team.projects[pindex] = fetch;
+          }
+        } else {
+          const mindex = teamStore.team.projects[pindex].project_members.findIndex(i => i.id === Number(data.member?.id));
+          teamStore.team.projects[pindex].project_members[mindex] = data.member;
+          if(teamStore.project?.id === Number(project_id)){
+            teamStore.project.project_members[mindex] = data.member;
+          }
+        }
+
+        const _teamMemberIndex = teamStore.team?.members?.findIndex(i => i.id === Number(data.member?.id));
+        if(_teamMemberIndex > -1){
+          teamStore.team.members[_teamMemberIndex] = data.member;
         }
       }
     }

@@ -291,7 +291,7 @@ const togglePowerpannel = (pannel) => {
   }
 };
 
-const scrollAreaRef = useTemplateRef('scrollAreaRef');
+const scrollAreaRef = ref();
 const scroll_bottom = async (_val) => {
   await nextTick();  
   scrollAreaRef.value?.setScrollPercentage("vertical",1,300);

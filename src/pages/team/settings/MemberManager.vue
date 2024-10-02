@@ -347,7 +347,7 @@ watchEffect(
 
     const isProtected = (_userId) => {
       const userMember = __members.value?.find((i) => i.by_user.id === _userId);
-      const allRoles_of_member = member_roles.value.filter((i) =>
+      const allRoles_of_member = member_roles.value?.filter((i) =>
         userMember.member_roles.map((j) => j.id)?.includes(i.id)
       );
 
@@ -456,7 +456,7 @@ const setRoleFn = async (member, role, prop) => {
       cur = [process_id];
     } else {
       // 已经是该角色 则减 否则 加
-      cur = (cur.includes(process_id) && cur.filter((i) => i !== process_id)) || [
+      cur = cur.includes(process_id) ? cur.filter((i) => i !== process_id) : [
         ...cur,
         process_id,
       ];
@@ -466,23 +466,25 @@ const setRoleFn = async (member, role, prop) => {
       }
     }
   }
-  console.log("cur", cur);
+  // console.log("cur", cur);
   new_roles_IDs.value = cur;
 
   // console.log("member", member.id);
   if (new_roles_IDs.value.length > 0) {
     let _;
     if (byInfo.value.project_id) {
+      const _member_roles_ids = member_roles.value.map((i) => i.id);
+      const _ids = new_roles_IDs.value.filter((i) => _member_roles_ids.includes(i));
+      
       const res = await setProjectRoleFn(
         byInfo.value.project_id,
         member.id,
-        new_roles_IDs.value
+        _ids
       );
       if (res) {
         _ = res;
       }
-    }
-    if (byInfo.value?.card_id) {
+    }else if (byInfo.value?.card_id) {
       const res = await setCardRoleFn(
         byInfo.value.card_id,
         member.id,
@@ -491,8 +493,7 @@ const setRoleFn = async (member, role, prop) => {
       if (res) {
         _ = res;
       }
-    }
-    if (byInfo.value?.team_id) {
+    }else if (byInfo.value?.team_id) {
       const res = await setTeamRoleFn(
         byInfo.value.team_id,
         member.id,
@@ -501,8 +502,7 @@ const setRoleFn = async (member, role, prop) => {
       if (res) {
         _ = res;
       }
-    }
-    if (byInfo.value?.channel_id) {
+    }else if (byInfo.value?.channel_id) {
       const res = await setChannelRoleFn(
         byInfo.value.channel_id,
         member.id,
