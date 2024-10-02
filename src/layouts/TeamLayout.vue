@@ -54,11 +54,6 @@
         >
           <AppList />
         </q-footer>
-        <q-footer
-          class="transparent border-top q-pb-lg"
-        >
-        income: {{ income?.data?.id }}
-        </q-footer>
       </q-layout>
       <div v-else class="absolute-full column flex-center">
         <q-card bordered class="focus-form" style="min-width: 16rem">

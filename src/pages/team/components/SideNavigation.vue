@@ -270,7 +270,7 @@
                   ? 'border active-listitem'
                   : 'border-placeholder op-7'
               } ${project.auth && !project.auth?.read ? 'op-5' : ''}`"
-              class="overflow-hidden radius-xs q-pa-xs full-width"
+              class="radius-xs q-pa-xs full-width"
               @click="enterProject(project)"
             >
               <q-item-section side style="width: 44px" class="q-pr-sm">
@@ -283,12 +283,11 @@
                   class="radius-xs"
                 />
               </q-item-section>
-              <q-item-section class="overflow-hidden">
+              <q-item-section>
                 <q-item-label>
                   <div class="row no-wrap gap-xs">
                     <span>{{ project.name }}</span>
                     <q-space />
-                    <UnreadBlock v-if="project.auth?.read" :mm_channel_id="project.mm_channel?.id" />
                   </div>
                 </q-item-label>
                 <q-item-label
@@ -300,6 +299,7 @@
                   {{ project.description }}
                 </q-item-label>
               </q-item-section>
+              <UnreadBlock v-if="project.auth?.read" :mm_channel_id="project.mm_channel?.id" />
               <div
                 v-if="teamStore?.project?.id === project.id"
                 class="bg-primary absolute-left"
@@ -716,7 +716,6 @@ const callbackChannelRefreshEvents = [
 
 watchEffect(() => {
   const val = teamStore.income;
-  console.log('channel:channel_updated', val);
   if(!val) return;
   const { team_id, data } = val.data;
   
@@ -733,16 +732,13 @@ watchEffect(() => {
         teamStore.team.team_channels = teamStore.team?.team_channels?.filter(i => i.id !== Number(data.channel_id));
       }
     }
-    if(val?.event === 'channel:channel_updated'){
-      console.log('channel:channel_updated', data);
-      
+    if(val?.event === 'channel:channel_updated'){      
       const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.id));
       if(index > -1){
         teamStore.team.team_channels[index] = data;
       }
     }
     if(val?.event === 'channel:member_leaved'){
-      console.log('channel:member_leaved', data);
       const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.channel_id));
       if(index > -1){
         teamStore.team.team_channels[index].members = teamStore.team.team_channels[index].members.filter(i => i.id !== Number(data.leaved_member_id));
@@ -757,8 +753,6 @@ watchEffect(() => {
       }
     }
     if(val?.event === 'channel:member_updated'){
-      
-      console.log('member_updated', data);
       const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.id));
       if(index > -1){
         teamStore.team.team_channels[index] = data;
@@ -768,8 +762,7 @@ watchEffect(() => {
         teamStore.team.team_channels.push(data);
       }
     }
-    if(val?.event === 'channel:member_join'){
-      // teamStore.channel.members.push(data.joined_member);      
+    if(val?.event === 'channel:member_join'){    
       const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.channel_id));
       if(index > -1){
         teamStore.team.team_channels[index].members.push(data.joined_member);

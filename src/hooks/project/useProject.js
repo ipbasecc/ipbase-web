@@ -11,7 +11,7 @@ export default function useProject(_Object) {
     } else if(!_Object.default_version && _Object.overviews?.length > 0){
         thumbnail = _Object.overviews[0].media?.url
     }
-
+    thumbnail = thumbnail + process.env.THUMBNAIL_RESIZE    
     return {
         overview,
         thumbnail
