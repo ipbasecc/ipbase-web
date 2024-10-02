@@ -289,7 +289,7 @@
 </template>
 
 <script setup>
-import { ref, toRefs, watch, computed, nextTick, onBeforeMount } from "vue";
+import { ref, toRefs, watch, computed, nextTick, onBeforeMount, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { fetch_MmMe } from "src/hooks/global/useFetchme.js";
@@ -348,7 +348,7 @@ const create_parmas = ref({
     type: "local",
   },
 });
-onBeforeMount(() => {
+watchEffect(() => {
   switch (by_info.value?.by) {
     case "project":
       storages.value = teamStore.project?.storages || [];
@@ -567,7 +567,9 @@ const orderStorages = async () => {
   if (by_info.value?.by === "project") {
     const project_id = teamStore.project?.id;
     let params = {
-      storages: _storages_ids,
+      data: {
+        storages: _storages_ids,
+      }
     };
     res = await updateProject(project_id, params);
     Msg_body = res?.data.storages.map((i) => i.id);
@@ -597,7 +599,7 @@ const orderStorages = async () => {
     if (by_info.value?.by === "user") {
       process_orderData(Msg_body);
     } else {
-      await send_chat_Msg(chat_Msg);
+      // await send_chat_Msg(chat_Msg);
     }
   }
 };

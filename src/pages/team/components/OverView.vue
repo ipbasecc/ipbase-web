@@ -473,7 +473,9 @@ const set_defaultVersion = async (overview_id) => {
   let res;
   if (wasAttached_toRef.value === "project") {
     let params = {
-      default_version: overview_id,
+      data: {
+        default_version: overview_id,
+      }
     };
     res = await updateProject(overView_attachedTo.value.id, params);
   }
@@ -505,7 +507,7 @@ const set_defaultVersion = async (overview_id) => {
         },
       },
     };
-    await send_chat_Msg(chat_Msg);
+    // await send_chat_Msg(chat_Msg);
   }
 };
 

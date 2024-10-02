@@ -330,25 +330,13 @@ const dragBoard_sort = async () => {
     return allSort_after;
   }
   let params = {
-    boards: rebuildallSort(),
+    data: {
+      boards: rebuildallSort(),
+    }
   };
   let res = await updateProject(teamStore.project.id, params);
   if (res) {
-    let chat_Msg = {
-      body: `${userStore.me.username}修改了项目"${teamStore.project.name}"${params.name}的排序`,
-      props: {
-        strapi: {
-          data: {
-            is: "board",
-            by_user: userStore.userId,
-            project_id: res.data.id,
-            action: "sortBoard",
-            order: res.data.boards.map((i) => i.id),
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
+    
   }
 };
 

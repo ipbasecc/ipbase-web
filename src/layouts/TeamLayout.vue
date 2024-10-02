@@ -200,49 +200,6 @@ const pullDownRefresh = (done) => {
   pageRefresh();
 }
 
-watchEffect(async() => {
-  const val = teamStore.income;
-  if(!val) return;
-  const { team_id, data } = val.data;
-  
-  if(teamStore.team?.id === Number(team_id)){
-    if(val?.event === 'team:update'){
-      teamStore.team = data;
-    }
-    if(val?.event === 'team:delete'){
-      teamStore.$reset();
-    }
-    if(val?.event === 'team:join'){
-      teamStore.team.members.push(data);
-    }
-    if(val?.event === 'team:member_updated'){
-      const noAuth = ['unconfirmed', 'blocked'].includes(teamStore.team?.status);
-      if(noAuth){
-        await toggleTeam(teamStore.team)
-      }
-      const index = teamStore.team.members.findIndex(item => item.id === data.id);
-      if(index > -1){
-        teamStore.team.members.splice(index, 1, data);
-      }
-    }
-    if(val?.event === 'team:member_leaved'){     
-      const curUserMember = teamStore.team.members.find(item => item.by_user.id === teamStore.init?.id);
-      if(curUserMember.id === Number(data.leaved_member_id)){
-        teamStore.$reset();
-      } else {
-        teamStore.team.members = teamStore.team.members.filter(item => item.id !== Number(data.leaved_member_id));
-      }
-    }
-    if(val?.event === 'team:leave'){
-      if(Number(data.removed_member_id) === teamStore.init?.id){
-        teamStore.$reset();
-      } else {
-        teamStore.team.members = teamStore.team.members.filter(item => item.id !== Number(data.removed_member_id));
-      }
-    }
-  }
-})
-
 onMounted(() => {
   shortcut();
   _ws();

@@ -29,19 +29,25 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, watchEffect } from "vue";
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import { updateProject } from "src/api/strapi/project.js";
 import { userStore, teamStore } from "src/hooks/global/useStore.js";
 
-const preferences = ref(teamStore.project?.preferences);
-const card_settings = ref(teamStore.project?.preferences?.card_settings);
+const preferences = ref([]);
+const card_settings = ref([]);
+watchEffect(() => {
+  preferences.value = teamStore.project?.preferences;
+  card_settings.value = teamStore.project?.preferences?.card_settings;
+})
 
 const loading = ref(false);
 const updatePreferences = async () => {
   preferences.value.card_settings = card_settings.value;
   let params = {
-    preferences: preferences.value,
+    data: {
+      preferences: preferences.value,
+    }
   };
   try {
     let res = await updateProject(teamStore.project?.id, params);

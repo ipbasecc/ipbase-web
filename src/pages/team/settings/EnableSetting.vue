@@ -33,14 +33,19 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import { updateProject } from "src/api/strapi/project.js";
 import { useProjectCanEnableItems } from "src/hooks/project/useSettingTemplate.js";
 import { userStore, teamStore } from "src/hooks/global/useStore.js";
 
-const preferences = ref(teamStore.project?.preferences);
-const enable_settings = ref(teamStore.project?.preferences?.enable_settings);
+const preferences = ref([]);
+const enable_settings = ref([]);
+
+watchEffect(() => {
+  preferences.value = teamStore.project?.preferences;
+  enable_settings.value = teamStore.project?.preferences?.enable_settings;
+})
 
 const calc_lock = (i) => {
   if (i.name === "multiple_boards") {
@@ -64,28 +69,15 @@ const updatePreferences = async () => {
   loading.value = true;
   preferences.value.enable_settings = enable_settings.value;
   let params = {
-    preferences: preferences.value,
+    data: {
+      preferences: preferences.value,
+    }
   };
   try {
     let res = await updateProject(teamStore.project?.id, params);
     loading.value = false;
     if (res?.data) {
-      preferences.value = res.data.preferences;
-      let chat_Msg = {
-        body: `${userStore.me?.username}修改了项目：${teamStore.project?.name}`,
-        props: {
-          strapi: {
-            data: {
-              is: "project",
-              by_user: userStore.userId,
-              project_id: teamStore.project?.id,
-              action: "projece_preference_Updated",
-              preferences: preferences.value,
-            },
-          },
-        },
-      };
-      send_chat_Msg(chat_Msg);
+      
     }
   } catch (error) {
     console.log(error);

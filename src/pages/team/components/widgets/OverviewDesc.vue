@@ -79,30 +79,16 @@ const updateProjectFn = async () => {
     return;
   }
   params.value = {
-    description: _input_text.value,
+    data: {
+      description: _input_text.value,
+    }
   };
 
   let res;
   if (wasAttached_toRef.value === "project") {
     res = await updateProject(belonged.value.id, params.value);
     if (res) {
-      belonged.value.description = res.data.description;
-      change_ing.value = false;
-      let chat_Msg = {
-        body: `${userStore.me.username} ${$t('chang_project_desc_to')} ${res.data.description}`,
-        props: {
-          strapi: {
-            data: {
-              is: "project",
-              by_user: userStore.userId,
-              project_id: belonged.value.id,
-              action: "change_project_description",
-              body: res.data.description,
-            },
-          },
-        },
-      };
-      await send_chat_Msg(chat_Msg);
+      
     }
   }
   if (wasAttached_toRef.value === "card") {

@@ -89,34 +89,21 @@ const updateNameFn = async () => {
     wasAttached_toRef.value === "project"
       ? belonged.value?.name
       : teamStore.card?.name;
-  if (_input_text.value === _ || _input_text.value === "") {
+  if (_input_text.value === _ || !_input_text.value) {
     change_ing.value = false;
     return;
   }
   params.value = {
-    name: _input_text.value,
+    data: {
+      name: _input_text.value,
+    }
   };
   let res;
   if (wasAttached_toRef.value === "project") {
     try {
       res = await updateProject(belonged.value.id, params.value);
       if (res?.data) {
-        teamStore.project.name = _input_text.value
-        let chat_Msg = {
-          body: `${userStore.me.username} ${$t('chang_project_title_to')} ${res.data.name}`,
-          props: {
-            strapi: {
-              data: {
-                is: "project",
-                by_user: userStore.userId,
-                project_id: belonged.value.id,
-                action: "change_project_name",
-                body: res.data.name,
-              },
-            },
-          },
-        };
-        await send_chat_Msg(chat_Msg);
+        // teamStore.project.name = _input_text.value
       }
     } catch (error) {
       console.log(error);

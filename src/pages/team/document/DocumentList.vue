@@ -136,7 +136,7 @@
 </template>
 
 <script setup>
-import {ref, toRefs, computed, watch, onBeforeMount, onMounted, nextTick} from 'vue';
+import {ref, toRefs, computed, watch, onBeforeMount, onMounted, nextTick, watchEffect} from 'vue';
 import { useRouter, useRoute } from "vue-router";
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import { VueDraggable } from 'vue-draggable-plus'
@@ -179,7 +179,7 @@ onMounted(() => {
 
 const { by_info, sortAuth } = toRefs(props);
 const documents = ref([]);
-const setDocuments = (data) => {
+watchEffect(() => {
   if(by_info.value?.project_id) {
     documents.value = teamStore.project?.project_documents || [];
   } else if(by_info.value?.card_id) {
@@ -187,9 +187,6 @@ const setDocuments = (data) => {
   } else if(by_info.value?.by === "user") {
     documents.value = teamStore.init?.user_documents
   }
-}
-onBeforeMount(() => {
-  setDocuments();
 });
 const types = ref([
   { type: "document", tip: "document", icon: "article" },
@@ -265,7 +262,6 @@ const process_createdData = (val) => {
   }
   if (by_info.value.user_id) {
   }
-  setDocuments();
 };
 const cancelCreate = () => {
   creating.value = false;
@@ -323,7 +319,6 @@ const process_updatedData = (val) => {
   }
   if (by_info.value.user_id) {
   }
-  setDocuments();
 };
 const update = async (document) => {
   loading.value = true;
@@ -388,7 +383,6 @@ const process_removedData = (val) => {
   }
   if (by_info.value.user_id) {
   }
-  setDocuments();
 };
 const remove = async (i) => {
   let res = await deleteDocument(i.id);
@@ -443,7 +437,9 @@ const orderDocuments = async () => {
   if (by_info.value?.by === "project") {
     const project_id = teamStore.project?.id;
     let params = {
-      project_documents: _documents_ids,
+      data: {
+        project_documents: _documents_ids,
+      }
     };
     res = await updateProject(project_id, params);
     Msg_body = res?.data.project_documents.map((i) => i.id);
@@ -489,7 +485,7 @@ const orderDocuments = async () => {
     if (by_info.value?.by === "user") {
       process_orderData(Msg_body);
     } else {
-      await send_chat_Msg(chat_Msg);
+      // await send_chat_Msg(chat_Msg);
     }
   }
 };

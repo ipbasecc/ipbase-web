@@ -56,10 +56,6 @@ const createProject = async () => {
   openCreateProject.value = true;
 };
 const projectCreated = (val) => {
-  teamStore.team.projects =
-    teamStore.team.projects?.length > 0
-      ? [...teamStore.team.projects, val]
-      : [val];
   openCreateProject.value = false;
 };
 

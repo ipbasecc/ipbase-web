@@ -2,7 +2,7 @@
   <div class="q-pa-md">
     <q-list class="q-pa-sm">
       <q-item
-        v-if="useAuths('delete', ['project'])"
+        v-if="useAuths('archive', ['project'])"
         clickable
         v-ripple
         v-close-popup
@@ -31,23 +31,14 @@
 </template>
 
 <script setup>
-import { useRouter } from "vue-router";
 import { deleteProject } from "src/api/strapi/project.js";
-
-import { deleteProjectCache } from "src/hooks/project/useProcess.js";
 import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 
 const emit = defineEmits(["projectDeleted"]);
-const router = useRouter();
 const deleteProjectFn = async (option) => {
-  await deleteProjectCache(teamStore.project.id);
-
   let res = await deleteProject(teamStore.project.id, option);
   if (res?.data) {
     uiStore.project_settings = false;
-    teamStore.team.projects = teamStore.team.projects.filter(i => i.id !== teamStore.project.id);
-    teamStore.project.$reset_project;
-    await router.push("/teams");
   }
 };
 </script>

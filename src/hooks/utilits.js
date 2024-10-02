@@ -445,3 +445,15 @@ export function getRandomInt(min, max) {
   max = Math.floor(max); // 向下取整
   return Math.floor(Math.random() * (max - min + 1)) + min; // 加1是因为不包括最大值
 }
+
+export function mergeObjects(target, source) {
+  // 遍历对象b的每个属性
+  for (let key in source) {
+      if (source.hasOwnProperty(key)) {
+          // 如果对象a也有这个属性，则使用b中的值替换a中的值
+          target[key] = source[key];
+      }
+  }
+  // 返回修改后的对象a
+  return target;
+}

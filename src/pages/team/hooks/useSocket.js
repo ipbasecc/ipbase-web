@@ -1,9 +1,10 @@
 import { ref, reactive } from "vue";
 import { io, Socket } from "socket.io-client";
 import { onMounted, onUnmounted } from 'vue';
+import { teamStore } from 'src/hooks/global/useStore.js';
 import team from './useSocket/team.js'
 import channel from './useSocket/channel.js'
-import { teamStore } from 'src/hooks/global/useStore.js';
+import project from './useSocket/project.js'
 
 export function useSocket() {
   const jwt = JSON.parse(localStorage.getItem("jwt"));
@@ -28,7 +29,7 @@ export function useSocket() {
         teamStore.income = {
           event: event,
           data: data,
-        };        
+        };
       }
       
       socket.on("connect", () => {
@@ -41,6 +42,7 @@ export function useSocket() {
         });
         team(socket, processEvent);
         channel(socket, processEvent);
+        project(socket, processEvent);
       });
     }
   });

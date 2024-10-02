@@ -109,7 +109,9 @@ const update_jsonContent = async (val) => {
   let res;
   if (wasAttached_toRef.value === "project") {
     let params = {
-      jsonContent: val,
+      data: {
+        jsonContent: val,
+      }
     };
     res = await updateProject(teamStore.project.id, params);
     if (res) {
@@ -129,7 +131,7 @@ const update_jsonContent = async (val) => {
           },
         },
       };
-      await send_chat_Msg(chat_Msg);
+      // await send_chat_Msg(chat_Msg);
     }
   }
   if (wasAttached_toRef.value === "card") {

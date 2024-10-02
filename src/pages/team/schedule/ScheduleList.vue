@@ -222,7 +222,7 @@
 </template>
 
 <script setup>
-import { ref, toRefs, computed, watch, nextTick, onBeforeMount } from "vue";
+import { ref, toRefs, computed, watch, nextTick, onBeforeMount, watchEffect } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import { VueDraggable } from 'vue-draggable-plus'
@@ -253,7 +253,7 @@ const props = defineProps({
 
 const { by_info } = toRefs(props);
 const schedules = ref([]);
-onBeforeMount(() => {
+watchEffect(() => {
   if(by_info.value?.project_id) {
     schedules.value = teamStore.project?.schedules || [];
   } else if(by_info.value?.by === "user") {
@@ -460,7 +460,9 @@ const orderSchedule = async () => {
     const project_id = by_info.value.project_id;
     const project_schedules_ids_withOrder = schedules.value.map((i) => i.id);
     let params = {
-      schedules: project_schedules_ids_withOrder,
+      data: {
+        schedules: project_schedules_ids_withOrder,
+      }
     };
 
     let res;
@@ -495,7 +497,7 @@ const orderSchedule = async () => {
       if (by_info.value?.by === "user") {
         process_orderData(Msg_body);
       } else {
-        await send_chat_Msg(chat_Msg);
+        // await send_chat_Msg(chat_Msg);
       }
     }
   }

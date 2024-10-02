@@ -285,10 +285,7 @@
               </q-item-section>
               <q-item-section>
                 <q-item-label>
-                  <div class="row no-wrap gap-xs">
-                    <span>{{ project.name }}</span>
-                    <q-space />
-                  </div>
+                  {{ project.name }}
                 </q-item-label>
                 <q-item-label
                   v-if="project.description"
@@ -641,10 +638,6 @@ const createProject = () => {
   openCreateProject.value = true;
 };
 const projectCreated = (val) => {
-  teamStore.team.projects =
-    teamStore.team.projects?.length > 0
-      ? [...teamStore.team.projects, val]
-      : [val];
   openCreateProject.value = false;
 };
 
@@ -714,67 +707,4 @@ const callbackChannelRefreshEvents = [
 //   { immediate: true, deep: true }
 // );
 
-watchEffect(() => {
-  const val = teamStore.income;
-  if(!val) return;
-  const { team_id, data } = val.data;
-  
-  if(teamStore.team?.id === Number(team_id)){
-    if(val?.event === 'channel:channel_created'){
-      if(teamStore.team?.team_channels?.length > 0){
-        teamStore.team.team_channels.push(data);
-      } else {
-        teamStore.team.team_channels = [data];
-      }
-    }
-    if(val?.event === 'channel:channel_deleted'){
-      if(teamStore.team?.team_channels?.length > 0){
-        teamStore.team.team_channels = teamStore.team?.team_channels?.filter(i => i.id !== Number(data.channel_id));
-      }
-    }
-    if(val?.event === 'channel:channel_updated'){      
-      const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.id));
-      if(index > -1){
-        teamStore.team.team_channels[index] = data;
-      }
-    }
-    if(val?.event === 'channel:member_leaved'){
-      const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.channel_id));
-      if(index > -1){
-        teamStore.team.team_channels[index].members = teamStore.team.team_channels[index].members.filter(i => i.id !== Number(data.leaved_member_id));
-        if(teamStore?.mm_channel?.id === teamStore.team.team_channels[index].mm_channel?.id){
-          teamStore.mm_channel = void 0;
-          router.push('/teams');
-        }
-      }
-      const curUserMember = teamStore.team?.members?.find(i => i.by_user.id === teamStore.init?.id);
-      if(curUserMember?.id === Number(data.leaved_member_id)){
-        teamStore.team.team_channels = teamStore.team.team_channels.filter(i => i.id !== Number(data.channel_id));
-      }
-    }
-    if(val?.event === 'channel:member_updated'){
-      const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.id));
-      if(index > -1){
-        teamStore.team.team_channels[index] = data;
-        teamStore.channel = data;
-      } else {
-        console.log('!!!!_inChannel', data);
-        teamStore.team.team_channels.push(data);
-      }
-    }
-    if(val?.event === 'channel:member_join'){    
-      const index = teamStore.team.team_channels.findIndex(i => i.id === Number(data.channel_id));
-      if(index > -1){
-        teamStore.team.team_channels[index].members.push(data.joined_member);
-      }
-
-      const _teamMemberIndex = teamStore.team?.members?.findIndex(i => i.id === Number(data.joined_member?.id));
-      if(_teamMemberIndex > -1){
-        teamStore.team.members[_teamMemberIndex] = data.joined_member;
-      } else {
-        teamStore.team.members.push(data.joined_member);
-      }
-    }
-  }
-})
 </script>
