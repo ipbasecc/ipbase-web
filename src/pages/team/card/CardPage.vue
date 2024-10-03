@@ -305,11 +305,7 @@
       </q-drawer>
 
       <q-page-container>
-        <q-page :style-fn="resetHeight">
-          <ul>
-            <li>isCreator: {{ isCreator }}</li>
-          </ul>
-          
+        <q-page :style-fn="resetHeight">          
           <template v-if="current_model === 'card_kanban'">
             <!-- 权限判断：每个card只有一个看板，因此这里后端判断权限采用的判断目标是看板的分栏 -->
             <KanbanContainer v-if="!teamStore.card?.private || useAuths('read', ['column'])"

@@ -262,62 +262,24 @@ const createBoardFn = async () => {
   };
   let res = await createBoard(params);
   if (res) {
-    let chat_Msg = {
-      body: `${userStore.me.username}在项目"${teamStore.project.name}"内新建了"${space_name.value}": ${res.data.name}`,
-      props: {
-        strapi: {
-          data: {
-            is: "board",
-            by_user: userStore.userId,
-            project_id: teamStore.project.id,
-            action: "board_created",
-            body: res.data,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
     create_board_ing.value = false;
     teamStore.board = res.data;
+    create_name.value = null;
   }
 };
 const confirmRemove = ref(false);
-const removeBoard = (board_id) => {
+const removeBoard = async (board_id) => {
   if(!confirmRemove.value){
     confirmRemove.value = true;
   } else {
-    deleteBoardFn(board_id)
+    await deleteBoardFn(board_id)
+    confirmRemove.value = false;
   }
 }
 const deleteBoardFn = async (board_id) => {
   let res = await deleteBoard(teamStore.project.id, board_id);
   if (res) {
-    let chat_Msg = {
-      body: `${userStore.me.username}删除了项目"${teamStore.project.name}"内ID为${board_id}的${space_name.value}`,
-      props: {
-        strapi: {
-          data: {
-            is: "board",
-            by_user: userStore.userId,
-            project_id: teamStore.project.id,
-            action: "board_deleted",
-            body: res.data,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
-    // 定义一个条件函数，判断元素的id是否与obj的id相同
-    function isSameId(element) {
-      return element.id === board_id;
-    }
-    // 使用findIndex()方法找到arr中满足条件的元素的索引
-    const index = teamStore.project.boards.findIndex(isSameId);
-    // 如果找到了，就使用splice()方法替换该元素
-    if (index !== -1) {
-      teamStore.project.boards.splice(index, 1);
-    }
-    teamStore.board = teamStore.project.boards[0];
+    return;
   }
 };
 const dragBoard_sort = async () => {

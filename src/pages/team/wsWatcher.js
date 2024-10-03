@@ -45,6 +45,19 @@ export default function useWatcher() {
           teamStore.team.members = teamStore.team.members.filter(item => item.id !== Number(data.removed_member_id));
         }
       }
+      if(val.value.event === 'board:deleted'){
+        if(teamStore.project?.id === Number(project_id)){
+          teamStore.project.boards = teamStore.project.boards.filter(item => item.id !== Number(data.removed_board));
+        }
+        if(teamStore.board?.id === Number(data.removed_board)){
+          teamStore.board = void 0;
+        }
+      }
+      if(val.value.event === 'board:created'){
+        if(teamStore.project?.id === Number(project_id)){
+          teamStore.project.boards.push(data);
+        }
+      }
 
       if(val.value.event === 'channel:channel_created'){
         if(teamStore.team?.team_channels?.length > 0){
