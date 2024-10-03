@@ -18,7 +18,7 @@
           @start="kanbanDraging = true"
           @end="kanbanDraging = false"
         >
-          <template  v-for="element in teamStore.board.groups" :key="element.id">
+          <template  v-for="element in teamStore.board?.groups" :key="element.id">
             <div class="column no-wrap">
               <div class="row no-wrap items-center hovered-item relative-position">
                 <q-icon size="xs" name="mdi-pound"
@@ -123,7 +123,7 @@
                   <KanbanListitem :kanban="kanban" @enterKanban="enterKanban" @removeKanban="removeKanban" />
                 </template>
                 <template v-if="useAuths('create', ['kanban']) && addKanban_targetId === element.id">
-                  <div class="row no-wrap items-center border radius-xs q-pa-xs">
+                  <div class="row no-wrap items-center border radius-xs q-pa-xs undrag">
                     <q-input v-model="createKanba_title"
                       square filled dense autofocus type="text"
                       :placeholder="$t('kanban_name')"
@@ -248,21 +248,7 @@ const groupOrderFn = async () => {
   };
   let res = await groupOrder(teamStore.project.id, teamStore.board.id, params);
   if (res) {
-    let chat_Msg = {
-      body: `${userStore.me.username}${$t('sort_kanban')}`,
-      props: {
-        strapi: {
-          data: {
-            is: "kanban_group",
-            action: "sort_kanban_group",
-            by_user: userStore.userId,
-            board_id: teamStore.board.id,
-            order: res.data,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
+    return res;
   }
 };
 const updateGroupFn = async (group_id, element, action) => {

@@ -490,7 +490,7 @@ watch(val, async(newVal, oldVal) => {
       }
     }
   }
-  teamStore.income = null;
+  // teamStore.income = null;
 },{immediate: true, deep: true})
 
 // -----------------------------------------

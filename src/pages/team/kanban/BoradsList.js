@@ -48,21 +48,6 @@ export async function createKanban(group_id, title, type) {
   }
   let res = await kanbanCreate(params);
   if (res) {
-    let chat_Msg = {
-      body: `${userStore.me.username}在项目"${teamStore.project.name}"内新建了看板：${res.data.title}`,
-      props: {
-        strapi: {
-          data: {
-            is: "kanban",
-            by_user: userStore.userId,
-            group_id: group_id,
-            action: "kanbanCreated",
-            body: res.data,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
     return res;
   }
 }
@@ -82,14 +67,10 @@ watchEffect(() => {
   boards.value = teamStore.project?.boards?.filter((i) => i.type === board_type.value)
 })
 
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
-};
-
 export const findBoardByKanban = (kanban_id, _boards) => {
   let _board  
   if (_boards?.length > 0) {
-    _board = _boards.find(i => i.groups.some(j => j.kanbans.some(k => k.id === Number(kanban_id))));
+    _board = _boards?.find(i => i.groups?.some(j => j.kanbans?.some(k => k.id === Number(kanban_id))));
     if(!_board) {
       _board = _boards[0]
     }

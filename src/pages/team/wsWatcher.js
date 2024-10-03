@@ -1,5 +1,6 @@
-import { computed, watch } from "vue";
-import { teamStore } from "src/hooks/global/useStore.js";
+ 
+import { computed, watch, nextTick } from "vue";
+import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 import { mergeObjects } from 'src/hooks/utilits.js'
 import { useRouter } from "vue-router";
 import { fetchProject } from "src/hooks/project/useProcess.js";
@@ -8,8 +9,8 @@ export default function useWatcher() {
   const router = useRouter();
   const val = computed(() => teamStore.income);
   watch(val, async(newVal, oldVal) => {
-    if(!newVal || newVal === oldVal) return;
-    const { team_id, project_id, board_id, data } = val.value.data;
+    if(!newVal) return;
+    const { team_id, project_id, board_id, group_id, data } = val.value?.data;
     if(teamStore.team?.id === Number(team_id)){
       if(val.value.event === 'team:update'){
         teamStore.team = data;
@@ -61,7 +62,9 @@ export default function useWatcher() {
       if(val.value.event === 'board:updated'){
         if(teamStore.project?.id === Number(project_id)){
           const index = teamStore.project.boards.findIndex(item => item.id === Number(data.id));
-          teamStore.project.boards[index] = data;
+          if(index > -1){
+            teamStore.project.boards[index] = data;
+          }
         }
         if(teamStore.board?.id === Number(data.id)){
           teamStore.board = data;
@@ -90,17 +93,102 @@ export default function useWatcher() {
         if(teamStore.kanban){
           const index = teamStore.board?.groups?.findIndex(item => item.id === Number(data.removed_group));
           if(index > -1){
-            teamStore.kanban = void 0;
-            router.push(`/team/${teamStore.team?.id}/board/${teamStore.board?.id}`);
+            const kanbanIn = teamStore.board.groups[index].kanbans?.find(item => item.id === teamStore.kanban.id);
+            if(kanbanIn){
+              teamStore.kanban = void 0;
+              router.push(`/teams/projects/${teamStore.project?.id}/${teamStore.navigation}`);
+            }
           }
-        } else {
+        }
+        if(teamStore.board){
           teamStore.board.groups = teamStore.board.groups.filter(item => item.id !== Number(data.removed_group));
         }
+        teamStore.project.boards = teamStore.project.boards.map(board => {
+          return {
+            ...board,
+            groups: board.groups.filter(item => item.id !== Number(data.removed_group))
+          }
+        })
       }
-      if(val.value.event === 'group:order' && teamStore.board?.id === Number(board_id)){
-        teamStore.board.groups = data.order.map(item => {
-          teamStore.board.groups.find(i => i.id === Number(item));
+      if(val.value.event === 'group:order'){
+        const index = teamStore.project.boards?.findIndex(item => item.id === Number(board_id));
+        if(index > -1){
+          teamStore.project.boards[index].groups = data.group_order.map(item => {
+            return teamStore.project.boards[index].groups.find(i => i.id === Number(item));
+          });
+          if(teamStore.board?.id === Number(board_id)){
+            teamStore.board.groups = data.group_order.map(i => teamStore.board.groups.find(item => item.id === Number(i)));
+          }
+        }
+      }
+      if(val.value.event === 'kanban:created'){
+        teamStore.project.boards = teamStore.project.boards.map((board) => {
+          let cur_board_id;
+          const _board =  {
+            ...board,
+            groups: board.groups.map(group => {
+              if(group.id === Number(group_id)){
+                cur_board_id = board.id;
+                return {
+                  ...group,
+                  kanbans: group.kanbans?.length > 0 ? [...group.kanbans, data] : [data]
+                }
+              }
+              return group;
+            })
+          }
+          console.log('_board', _board);
+          if(teamStore.board?.id === cur_board_id){
+            teamStore.board = _board;
+          }
+          return _board;
+        })
+      }
+      if(val.value.event === 'kanban:updated') {
+        teamStore.project.boards = teamStore.project.boards?.map(board => {
+          let cur_board_id;
+          const _board = {
+            ...board,
+            groups: board.groups?.map(group => {
+              return {
+                ...group,
+                kanbans: group.kanbans?.map(kanban => {
+                  if (kanban.id === Number(data.id)) {
+                    cur_board_id = board.id;
+                    return data;
+                  } else {
+                    return kanban;
+                  }
+                })
+              };
+            })
+          };
+          if (teamStore.board && teamStore.board.id === cur_board_id) {
+            teamStore.board = _board;
+          }
+          return _board;
         });
+      }
+      if(val.value.event === 'kanban:deleted') {
+        teamStore.project.boards = teamStore.project.boards?.map(board => {
+          return{
+            ...board,
+            groups: board.groups?.map(group => {
+              return {
+                ...group,
+                kanbans: group.kanbans.filter(i => i.id !== Number(data.removed_kanban))
+              };
+            })
+          };
+        });
+        if(teamStore.board?.groups){
+          teamStore.board.groups = teamStore.board.groups.map(group => {
+            return {
+              ...group,
+              kanbans: group.kanbans.filter(i => i.id !== Number(data.removed_kanban))
+            };
+          });
+        }
       }
 
       if(val.value.event === 'channel:channel_created'){

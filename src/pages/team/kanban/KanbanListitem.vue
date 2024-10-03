@@ -150,48 +150,17 @@ const toggleEmoji = (i) => {
 const updateKanbanFn = async (kanban_id) => {
   let res = await kanbanUpdate(kanban_id, params.value);
   if (res?.data) {
-    let chat_Msg = {
-      body: `${userStore.me?.username}将ID为：${kanban_id}的看板 - 改名为：${params.value?.data?.title}`,
-      props: {
-        strapi: {
-          data: {
-            is: "kanban",
-            by_user: userStore.userId,
-            kanban_id: kanbanRef.value.id,
-            action: "kanbanUpdate",
-            body: res.data,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
+    
   }
 };
 
 const deleteKanbanFn = async (kanban_id) => {
   let res = await kanbanDelete(teamStore.project?.id, kanban_id);
   if (res) {
-    let chat_Msg = {
-      body: `${userStore.me.username}删除了ID为：${kanban_id}的看板: ${kanbanRef.value?.title}`,
-      props: {
-        strapi: {
-          data: {
-            is: "kanban",
-            by_user: userStore.userId,
-            kanban_id: kanbanRef.value.id,
-            action: "kanbanDeleted",
-          },
-        },
-      },
-    };
-    emit('removeKanban', kanban_id)
-    await send_chat_Msg(chat_Msg);
+    
   }
 };
 
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
-};
 </script>
 
 <style lang="scss" scoped>
