@@ -1,6 +1,7 @@
 <template>
   <q-card
     v-if="$q.screen.gt.sm"
+    v-bind="$attrs"
     :bordered="inDilg"
     :square="!inDilg"
     class="fit q-space no-wrap relative-position"
@@ -138,10 +139,10 @@
             :class="rightDrawerOpen && rightDrawer === 'member_setting' ? '' : 'op-5'"
             :color="rightDrawerOpen && rightDrawer === 'member_setting' ? 'positive' : $q.dark.mode ? 'grey-1' : 'grey-10'"
           >
-            <q-menu v-if="project_members">
+            <q-menu v-if="members_forAdd">
               <q-list bordered dense class="radius-sm q-pa-xs">
                 <q-item
-                  v-for="i in project_members"
+                  v-for="i in members_forAdd"
                   :key="i.id"
                   clickable
                   v-close-popup
@@ -253,6 +254,7 @@
         <MemberManager
           v-if="rightDrawer === 'member_setting'"
           :byInfo
+          :auth
         >
           <template #tip>
             <div class="column no-wrap fit">
@@ -304,6 +306,10 @@
 
       <q-page-container>
         <q-page :style-fn="resetHeight">
+          <ul>
+            <li>isCreator: {{ isCreator }}</li>
+          </ul>
+          
           <template v-if="current_model === 'card_kanban'">
             <!-- 权限判断：每个card只有一个看板，因此这里后端判断权限采用的判断目标是看板的分栏 -->
             <KanbanContainer v-if="!teamStore.card?.private || useAuths('read', ['column'])"
@@ -319,11 +325,6 @@
             _for="card_todo"
             layout="row"
             class="absolute-full"
-            @todogroupSort="_todogroupSort"
-            @todogroupUpdate="_todogroupUpdate"
-            @deleteTodogroup="deleteTodogroup"
-            @createTodogroup="_createTodogroup"
-            @todoSort="_todoSort"
           />
           <template v-if="current_model === 'card_documents'">
             <q-splitter
@@ -442,11 +443,6 @@
               _for="card_todo"
               layout="column"
               class="absolute-full"
-              @todogroupSort="todogroupSort"
-              @todogroupUpdate="todogroupUpdate"
-              @deleteTodogroup="deleteTodogroup"
-              @createTodogroup="createTodogroup"
-              @todoSort="todoSort"
           />
         </q-tab-panel>
         <q-tab-panel name="card_documents" class="no-padding">
@@ -500,7 +496,6 @@ import {
 } from "vue";
 import { useRoute } from "vue-router";
 import { findCard, findCardByShare, findCardFeedback, updateCard, getOneProject } from "src/api/strapi/project.js";
-import {_deleteTodogroup, createTodogroup, todogroupSort, todogroupUpdate, todoSort} from "src/hooks/team/useCard";
 
 import OverView from "src/pages/team/components/OverView.vue";
 import TodoPage from "src/pages/team/todo/TodoPage.vue";
@@ -538,13 +533,20 @@ const props = defineProps({
 });
 const { isExternal, shareInfo } = toRefs(props);
 provide("isExternal", isExternal.value);
+
+const isCreator = computed(() => {
+  const _member = teamStore.card?.card_members.find(i => i.by_user.id === teamStore.init?.id);
+  const _member_roles_ids = _member.member_roles.map(i => i.id)
+  const _role = teamStore.card?.member_roles.find(i => i.subject === 'creator')
+  return _member_roles_ids.includes(_role.id);
+});
+
 const inDilg = ref(true);
 watchEffect(() => {
   inDilg.value = !isExternal.value && !uiStore.isFocusMode;
 })
 const emit = defineEmits([
-  "closeCardList","todogroupSort","todogroupUpdate",
-  "deleteTodogroup","createTodogroup","todoSort",
+  "closeCardList",
 ]);
 
 const resetHeight = (offset, height) => {
@@ -563,6 +565,12 @@ const byInfo = computed(() => ({
   by: "card",
   card_id: current_card_id.value,
 }));
+const auth = computed(() => {
+  return {
+    members: teamStore.card?.card_members,
+    roles: teamStore.card?.member_roles,
+  }
+});
 const chatInfo = computed(() => ({
   mm_channel_id: teamStore.project?.mm_channel?.id,
   post_id: teamStore.card?.mm_thread?.id,
@@ -573,7 +581,8 @@ const send_chat_Msg = async (MsgContent) => {
 };
 
 const project_members = computed(() => teamStore.project?.project_members);
-const card_members = ref();
+const members_forAdd = computed(() => project_members.value.filter((i) => !card_members.value?.map(j => j.id).includes(i.id)))
+const card_members = ref([]);
 const getCard = async (card_id) => {
   if(loading.value) return
   loading.value = true
@@ -634,23 +643,7 @@ const addCardMember = async (member) => {
   };
   const res = await updateCard(current_card_id.value, params);
   if (res?.data) {
-    // teamStore.card = res.data;
-    let chat_Msg = {
-      body: `${userStore.me?.username}向卡片：${useCardname(
-        teamStore.card
-      )}新增了成员：${member.by_user?.username}`,
-      props: {
-        strapi: {
-          data: {
-            is: "card",
-            by_user: userStore.userId,
-            card_id: teamStore.card?.id,
-            action: "card_member_updated",
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
+    return res.data;
   }
 };
 
@@ -779,25 +772,6 @@ onBeforeUnmount(() => {
 
 const toggleCardList = () => {
   uiStore.externalCardsDrawer = !uiStore.externalCardsDrawer;
-};
-
-const _todogroupSort = async (sort) => {
-  console.log('top _todogroupSort', sort)
-  await todogroupSort(teamStore.card, sort);
-};
-const _todogroupUpdate = async (old_group, group) => {
-  await todogroupUpdate(teamStore.card, old_group, group);
-};
-const deleteTodogroup = async (group) => {
-  await _deleteTodogroup(teamStore.card, group);
-};
-const _createTodogroup = async (group) => {
-  // console.log('get emit createTodogroup cardItem')
-  await createTodogroup(teamStore.card, group);
-};
-const _todoSort = async (group, sort) => {
-  // console.log('_todoSort carditem')
-  await todoSort(teamStore.card, group, sort);
 };
 
 const syncCardInList = () => {
@@ -1005,7 +979,6 @@ watch(
           strapi.data.card_id === teamStore.card?.id &&
           strapi.data.action === "card_todogroup_update"
         ) {
-          // console.log("todogroupUpdate");
           const isSameId = (element) => {
             return element.id === strapi.data.body.id;
           };

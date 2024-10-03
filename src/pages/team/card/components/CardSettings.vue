@@ -130,29 +130,10 @@ const updateCardFn = async () => {
   }
   // console.log(setPrivate);
   params.data.private = setPrivate;
-  let res = await updateCard(teamStore.card?.id, params);
-  if (res) {
-    let chat_Msg = {
-      body: `${userStore.me.username}将卡片${teamStore.card.name}修改为：${
-        isPrivate.value === "public" ? "公开" : "私有"
-      }`,
-      props: {
-        strapi: {
-          data: {
-            is: "card",
-            by_user: userStore.userId,
-            card_id: teamStore.card.id,
-            action: "card_privateChanged",
-            private: setPrivate,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
+  let {data} = await updateCard(teamStore.card?.id, params);
+  if (data) {
+    return data
   }
-};
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
 };
 watch(
   mm_wsStore,

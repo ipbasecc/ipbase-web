@@ -4,7 +4,7 @@
       <div v-if="byInfo.by !== 'card'" class="q-pa-md">
         <q-btn-group dense unelevated class="full-width">
           <q-btn color="primary" class="q-space"
-            :disable="!useAuths('invite_uris', [authBase.collection])"
+            :disable="!useAuths('invite_uris', [authBase.collection], auth?.members, auth?.roles)"
             @click="inviteFn(teamStore.project)"
           >
             <q-icon name="group_add" size="xs" />
@@ -23,7 +23,7 @@
           <TeamInvite :byInfo />
         </q-dialog>
         <q-tooltip
-          v-if="!useAuths('invite_uris', [authBase.collection])"
+          v-if="!useAuths('invite_uris', [authBase.collection], auth?.members, auth?.roles)"
           class="bg-black font-smaller"
         >
           {{ $t('no_premission_to_invite') }}
@@ -49,7 +49,7 @@
                 </q-item-section>
                 <q-item-section
                   v-if="
-                    useAuths('manageMember', [authBase.collection]) && !protectedRoles.includes(g.group)
+                    useAuths('manageMember', [authBase.collection], auth?.members, auth?.roles) && !protectedRoles.includes(g.group)
                   "
                   side
                 >
@@ -150,13 +150,15 @@
 </template>
 
 <script setup>
-import { computed, ref, watchEffect } from "vue";
+import { computed, ref, watchEffect, watch } from "vue";
 import {
   setTeamRoleFn,
   setChannelRoleFn,
   setProjectRoleFn,
   setCardRoleFn,
   removeMember,
+  new_roles_IDs,
+  set_new_roles_IDs
 } from "./MemberManager.js";
 
 import { __dict } from "src/hooks/dict.js";
@@ -164,7 +166,7 @@ import UserAvatar from "src/pages/team/components/user/UserAvatar.vue";
 import { toRefs } from "vue";
 import TeamInvite from "../components/widgets/TeamInvite.vue";
 import {useAuths} from "src/pages/team/hooks/useAuths.js";
-import { teamStore } from "src/hooks/global/useStore.js";
+import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 
 const props = defineProps({
   byInfo: {
@@ -173,8 +175,14 @@ const props = defineProps({
       return null;
     },
   },
+  auth: {
+    type: Object,
+    default() {
+      return null;
+    },
+  },
 });
-const { byInfo } = toRefs(props);
+const { byInfo, auth } = toRefs(props);
 const userId = computed(() => teamStore.init?.id);
 
 const open_invite = ref(false);
@@ -383,7 +391,7 @@ watchEffect(
       },
     ];
     if (
-      useAuths('manageMember', [authBase.value.collection])
+      useAuths('manageMember', [authBase.value.collection], auth.value?.members, auth.value?.roles)
     ) {
       members.value.push({
         group: "blocked",
@@ -405,18 +413,11 @@ const member_roles_forChange = computed(() => {
     hideRoles = [...hideRoles, "external"];
   }
   // 如果拥有管理成员权限，那么角色设置下拉菜单中，应该包含 block 分组
-  if (useAuths('manageMember', [authBase.value.collection])) {
+  if (useAuths('manageMember', [authBase.value.collection], auth.value?.members, auth.value?.roles)) {
     hideRoles = hideRoles.filter((i) => i !== "blocked");
   }
   return member_roles.value?.filter((i) => !hideRoles.includes(i.subject));
 });
-
-const new_roles_IDs = ref();
-const set_new_roles_IDs = (member) => {
-  // console.log("member", member);
-  if (!member) return [];
-  new_roles_IDs.value = member.member_roles?.map((i) => i.id);
-};
 
 const unconfirmed_role_id = computed(
   () => member_roles.value?.find((i) => i.subject === "unconfirmed")?.id
@@ -524,5 +525,4 @@ const translate = (i) => {
 const removeUserFn = async (member) => {
   await removeMember(byInfo.value, member);
 };
-
 </script>

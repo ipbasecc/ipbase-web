@@ -94,28 +94,8 @@ const updateProjectFn = async () => {
   if (wasAttached_toRef.value === "card") {
     res = await updateCard(belonged.value.id, params.value);
     if (res) {
-      teamStore.card.description = res.data.description;
-      change_ing.value = false;
-      let chat_Msg = {
-        body: `${userStore.me.username} ${$t('chang_card_desc_to')} ${res.data.description}`,
-        props: {
-          strapi: {
-            data: {
-              is: "card",
-              by_user: userStore.userId,
-              card_id: belonged.value.id,
-              action: "change_card_description",
-              body: res.data.description,
-            },
-          },
-        },
-      };
-      await send_chat_Msg(chat_Msg);
+      return res?.data
     }
   }
-};
-
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
 };
 </script>

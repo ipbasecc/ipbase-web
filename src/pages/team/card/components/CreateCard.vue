@@ -210,7 +210,6 @@ const createCardFn = async () => {
   let res = await createCard(params.value);
   if (res?.data) {
     closeCreate(); // 父组件关闭创建窗口
-    emit('created', res.data)
   } else {
     console.log(res);
   }

@@ -2,14 +2,13 @@ import { computed, watch } from "vue";
 import { teamStore } from "src/hooks/global/useStore.js";
 import { mergeObjects } from 'src/hooks/utilits.js'
 import { useRouter } from "vue-router";
-import { useAuths } from 'src/pages/team/hooks/useAuths.js'
 import { fetchProject } from "src/hooks/project/useProcess.js";
 
 export default function useWatcher() {
   const router = useRouter();
   const val = computed(() => teamStore.income);
-  watch(async() => {
-    if(!val.value) return;
+  watch(val, async(newVal, oldVal) => {
+    if(!newVal || newVal === oldVal) return;
     const { team_id, project_id, data } = val.value.data;
     if(teamStore.team?.id === Number(team_id)){
       if(val.value.event === 'team:update'){
@@ -193,18 +192,21 @@ export default function useWatcher() {
       }
       if(val.value.event === 'project:member_updated'){
         const pindex = teamStore.team.projects.findIndex(i => i.id === Number(project_id));
-        if(!teamStore.team.projects[pindex].auth?.read){
-          console.log('fetchProject');
-          
+        if(!teamStore.team.projects[pindex].auth?.read){          
           const fetch = await fetchProject(project_id);
           if (fetch) {
             teamStore.team.projects[pindex] = fetch;
           }
         } else {
           const mindex = teamStore.team.projects[pindex].project_members.findIndex(i => i.id === Number(data.member?.id));
-          teamStore.team.projects[pindex].project_members[mindex] = data.member;
-          if(teamStore.project?.id === Number(project_id)){
-            teamStore.project.project_members[mindex] = data.member;
+          if(mindex > -1){
+            teamStore.team.projects[pindex].project_members[mindex] = data.member;
+            if(teamStore.project?.id === Number(project_id)){
+              teamStore.project.project_members[mindex] = data.member;
+            }
+          } else {
+            teamStore.team.projects[pindex].project_members.push(data.member);
+            teamStore.project.project_members = teamStore.team.projects[pindex].project_members;
           }
         }
 
@@ -214,6 +216,5 @@ export default function useWatcher() {
         }
       }
     }
-    teamStore.income = void 0;
   },{ immediate: true, deep: true });
 }

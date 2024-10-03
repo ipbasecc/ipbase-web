@@ -452,11 +452,53 @@ const syncStoreByKanban = async () => {
   await putKanbanCache(kanban.value);
 }
 
+const val = computed(() => teamStore.income);
+watch(val, async(newVal, oldVal) => {
+  if(!newVal || newVal === oldVal) return;
+  const { team_id, column_id, card_id, data } = val.value.data;
+  if(teamStore.team?.id === Number(team_id)){
+    if(val.value.event === 'card:created'){
+      const column = kanban.value.columns.find(i => i.id === column_id);
+      if(column) {
+        if(column.cards?.length > 0){
+          if(kanban.value.type === 'kanban' || kanban.value.type === 'classroom'){
+            column.cards.unshift(data);
+          } else {
+            column.cards.push(data);
+          }
+        } else {
+          column.cards = [data];
+        }
+      }
+    }
+    if(val.value.event === 'card:deleted'){
+      const column = kanban.value.columns.find(i => i.cards?.map(j => j.id).includes(Number(card_id)));
+      if(column) {
+        const isInColumn = column.cards.find(i => i.id === Number(card_id));
+        if(isInColumn){
+          kanban.value.columns.find(i => i.id === column.id).cards = column.cards.filter(i => i.id !== Number(card_id));
+        }
+      }
+    }
+    if(val.value.event === 'card:updated'){
+      const column = kanban.value.columns.find(i => i.cards?.map(j => j.id).includes(Number(card_id)));
+      if(column) {
+        column.cards = column.cards.map(i => i.id === Number(card_id) ? data : i);
+      }
+      if(teamStore.card?.id === Number(card_id)){
+        teamStore.card = data;
+      }
+    }
+  }
+  teamStore.income = null;
+},{immediate: true, deep: true})
+
 // -----------------------------------------
 // ws data update line
 watch(
   mm_wsStore,
   async () => {
+    return
     if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
       let post =
         mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);

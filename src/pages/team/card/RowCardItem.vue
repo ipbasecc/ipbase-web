@@ -105,11 +105,6 @@
                 :isCreator="isCreator"
                 :isPrivate="cardRef.private"
                 :uiOptions="uiOptions"
-                @todogroupSort="_todogroupSort"
-                @todogroupUpdate="_todogroupUpdate"
-                @deleteTodogroup="deleteTodogroup"
-                @createTodogroup="_createTodogroup"
-                @todoSort="_todoSort"
                 @disableAction="disableAction"
               />
             </q-card-section>
@@ -411,27 +406,19 @@ import { useRoute } from "vue-router";
 import { useQuasar } from "quasar";
 import {
   attachExecutor,
-  unfollowCard,
-  followCard,
   clac_cardEdgeStyle,
-  clac_todoData,
-  updateCardName,
-  setCardType,
-  setCardColor,
-  todogroupSort,
-  todogroupUpdate,
-  _deleteTodogroup,
-  createTodogroup,
-  todoSort,
-  todoItemUpdate,
-  todoCreated,
-  todoDeleted,
-  setScore,
-  updateJsonContent,
-  removeCard,
   enterCard,
+  followCard,
   leaveCard,
+  removeCard,
+  setCardColor,
+  setCardType,
+  setScore,
   setStatus,
+  unfollowCard,
+  updateCardName,
+  updateJsonContent,
+  clac_todoData,
 } from "src/hooks/team/useCard.js";
 import { isEqual } from "lodash-es";
 import { useProjectCardPreference } from "src/pages/team/hooks/useSettingTemplate.js";
@@ -573,31 +560,6 @@ const _updateCardName = async (card, name) => {
 };
 const updateContent = (event) => {
   updateParmars.data.name = event.target.innerHTML;
-};
-
-const _todogroupSort = async (val) => {
-  await todogroupSort(cardRef.value, val);
-};
-const _todogroupUpdate = async (groups, group) => {
-  await todogroupUpdate(cardRef.value, groups, group);
-};
-const deleteTodogroup = async (groups, group) => {
-  await _deleteTodogroup(cardRef.value, groups, group);
-};
-const _createTodogroup = async (group) => {
-  await createTodogroup(cardRef.value, group);
-};
-const _todoSort = async (group, sort) => {
-  await todoSort(cardRef.value, group, sort);
-};
-const _todoItemUpdate = async (group_id, todo) => {
-  await todoItemUpdate(cardRef.value, group_id, todo);
-};
-const _todoCreated = async (group_id, todo) => {
-  await todoCreated(cardRef.value, group_id, todo);
-};
-const _todoDeleted = async (group_id, todo_id) => {
-  await todoDeleted(cardRef.value, group_id, todo_id);
 };
 
 const attachExecutorFn = (member) => {
@@ -772,7 +734,6 @@ watch(
           strapi.data.card_id === cardRef.value.id &&
           strapi.data.action === "card_todogroup_update"
         ) {
-          // console.log("todogroupUpdate");
           const isSameId = (element) => {
             return element.id === strapi.data.body.id;
           };

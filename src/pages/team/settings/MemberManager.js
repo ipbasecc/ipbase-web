@@ -1,3 +1,4 @@
+import { computed, ref, watchEffect, watch } from "vue";
 import {
   removeUser as removeProjectUser,
   setRole,
@@ -49,21 +50,6 @@ export async function setCardRoleFn(card_id, member_id, new_roles_IDs) {
   };
   const res = await updateCardRole(card_id, params);
   if (res?.data) {
-    let chat_Msg = {
-      body: `卡片成员被更新`,
-      props: {
-        strapi: {
-          data: {
-            is: "card",
-            by_user: userStore.userId,
-            action: "card_member_updated",
-            team_id: teamStore.team?.id,
-            card_id: card_id,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
     const member_updated = res?.data.card_members.find((i) => i.id === card_id);
     return member_updated;
   }
@@ -90,21 +76,6 @@ const removeTeamMember = async (team_id, member) => {
   const res = await removeTeamUser(team_id, params);
   if (res) {
     return
-    let chat_Msg = {
-      body: `${userStore.me?.username}移除了团队成员${member.by_user.username}`,
-      props: {
-        strapi: {
-          data: {
-            is: "team",
-            by_user: userStore.userId,
-            action: "member_removed",
-            removedMember_id: member.id,
-            removeUser_id: member.by_user.id,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
   }
 };
 const removeProjectMember = async (project_id, member) => {
@@ -125,22 +96,6 @@ const removeChannelMember = async (channel_id, member) => {
   };
   const res = await removeChannelUser(channel_id, params);
   if (res) {
-    // teamStore.card = res.data;
-    let chat_Msg = {
-      body: `${userStore.me?.username}移除了频道成员${member.by_user.username}`,
-      props: {
-        strapi: {
-          data: {
-            is: "channel",
-            by_user: userStore.userId,
-            channel_id: channel_id,
-            removeMember_id: member.id,
-            action: "member_removed",
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
   }
 };
 const removeCardMember = async (card_id, member) => {
@@ -149,24 +104,7 @@ const removeCardMember = async (card_id, member) => {
   };
   const res = await updateCard(card_id, params);
   if (res?.data) {
-    // teamStore.card = res.data;
-    let chat_Msg = {
-      body: `${userStore.me?.username}已除了卡片：${useCardname(
-        teamStore.card
-      )}成员：${member.nickname || member.by_user.username}`,
-      props: {
-        strapi: {
-          data: {
-            is: "card",
-            by_user: userStore.userId,
-            card_id: card_id,
-            member_id: member.id,
-            action: "card_member_removed",
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
+    return res?.data;
   }
 };
 
@@ -187,4 +125,10 @@ export async function removeMember(byInfo, member) {
 
 const send_chat_Msg = async (MsgContent) => {
   await send_MattersMsg(MsgContent);
+};
+
+export const new_roles_IDs = ref();
+export const set_new_roles_IDs = (member) => {
+  if (!member) return [];
+  new_roles_IDs.value = member?.member_roles?.map((i) => i.id);
 };

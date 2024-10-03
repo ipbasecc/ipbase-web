@@ -489,25 +489,7 @@ const set_defaultVersion = async (overview_id) => {
     res = await updateCard(overView_attachedTo.value.id, params);
   }
   if (res) {
-    // _.default_version = res.data.default_version;
-    // overView_attachedTo = _;
-    let chat_Msg = {
-      body: `${userStore.me.username}将'${
-        wasAttached_toRef.value === "project" ? "项目" : "卡片"
-      }'默认版本修改为：${res.data.default_version}`,
-      props: {
-        strapi: {
-          data: {
-            is: "overview",
-            by_user: userStore.userId,
-            attachedTo_id: overView_attachedTo.value.id,
-            action: "set_default_version",
-            default_version: res.data.default_version,
-          },
-        },
-      },
-    };
-    // await send_chat_Msg(chat_Msg);
+    return res.data;
   }
 };
 

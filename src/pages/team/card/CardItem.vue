@@ -205,11 +205,6 @@
           :isCreator="isCreator"
           :isPrivate="cardRef.private"
           :uiOptions="uiOptions"
-          @todogroupSort="_todogroupSort"
-          @todogroupUpdate="_todogroupUpdate"
-          @deleteTodogroup="deleteTodogroup"
-          @createTodogroup="_createTodogroup"
-          @todoSort="_todoSort"
         />
       </q-card-section>
       <!-- 卡片底部 -->
@@ -552,11 +547,6 @@
     </template>
       <CardPage
         v-else
-        @todogroupSort="_todogroupSort"
-        @todogroupUpdate="_todogroupUpdate"
-        @deleteTodogroup="deleteTodogroup"
-        @createTodogroup="_createTodogroup"
-        @todoSort="_todoSort"
       />
     </q-dialog>
     <q-dialog v-model="shareDlg" persistent>
@@ -584,11 +574,9 @@ import CardExecutor from "src/pages/team/card/components/CardExecutor.vue";
 import {useRoute} from "vue-router";
 import {useQuasar} from "quasar";
 import {
-  _deleteTodogroup,
   attachExecutor,
   cacheExpand,
   clac_cardEdgeStyle,
-  createTodogroup,
   enterCard,
   followCard,
   leaveCard,
@@ -598,9 +586,6 @@ import {
   setCardType,
   setScore,
   setStatus,
-  todogroupSort,
-  todogroupUpdate,
-  todoSort,
   unfollowCard,
   updateCardName,
   updateCardThread,
@@ -808,24 +793,6 @@ const updateContent = (event) => {
   updateParmars.data.name = event.target.innerHTML;
 };
 
-const _todogroupSort = async (sort) => {
-  await todogroupSort(cardRef.value, sort);
-};
-const _todogroupUpdate = async (old_group, group) => {
-  await todogroupUpdate(cardRef.value, old_group, group);
-};
-const deleteTodogroup = async (group) => {
-  await _deleteTodogroup(cardRef.value, group);
-};
-const _createTodogroup = async (group) => {
-  // console.log('get emit createTodogroup cardItem')
-  await createTodogroup(cardRef.value, group);
-};
-const _todoSort = async (group, sort) => {
-  // console.log('_todoSort carditem')
-  await todoSort(cardRef.value, group, sort);
-};
-
 const attachExecutorFn = (member) => {
   attachExecutor(cardRef.value, member);
 };
@@ -992,6 +959,7 @@ const threads_needUpdate_date = ref([]);
 watch(
   mm_wsStore,
   async () => {
+    return;
     if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
       let post
       if(mm_wsStore.event?.data?.post){

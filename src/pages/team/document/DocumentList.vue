@@ -431,7 +431,7 @@ const orderDocuments = async () => {
   // console.log(event);
   await nextTick();
   let res;
-  let Msg_body;
+  let sort;
 
   const _documents_ids = documents.value.map((i) => i.id);
   if (by_info.value?.by === "project") {
@@ -442,7 +442,6 @@ const orderDocuments = async () => {
       }
     };
     res = await updateProject(project_id, params);
-    Msg_body = res?.data.project_documents.map((i) => i.id);
   }
   if (by_info.value?.by === "card") {
     let params = {
@@ -451,42 +450,13 @@ const orderDocuments = async () => {
       }
     };
     res = await updateCard(teamStore.card?.id, params);
-    console.log(res);
-    
-    Msg_body = res?.data.card_documents.map((i) => i.id);
   }
   if (by_info.value?.by === "user") {
-    Msg_body = res.data.user_documents.map((i) => i.id);
+    sort = res.data.user_documents.map((i) => i.id);
   }
 
-  if (res) {
-    let chat_Msg = {
-      props: {
-        strapi: {
-          data: {
-            is: by_info.value?.by,
-            by_user: userStore.userId,
-            action: "document_ordered",
-            body: Msg_body,
-          },
-        },
-      },
-    };
-    
-    if (by_info.value?.by === "project") {
-      chat_Msg.body = `${userStore.me.username}：${$t('sorted_project_document')}`;
-      chat_Msg.props.strapi.data.project_id = teamStore.project?.id;
-    }
-    if (by_info.value?.by === "card") {
-      chat_Msg.body = `${userStore.me.username}：${$t('sorted_task_document')}`;
-      chat_Msg.props.strapi.data.card_id = teamStore.card?.id;
-    }
-
-    if (by_info.value?.by === "user") {
-      process_orderData(Msg_body);
-    } else {
-      // await send_chat_Msg(chat_Msg);
-    }
+  if (res && by_info.value?.by === "user") {
+    process_orderData(sort);
   }
 };
 

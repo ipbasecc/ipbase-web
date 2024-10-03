@@ -112,47 +112,14 @@ export async function updateCardName(card, name) {
 
   let res = await updateCardFn(card.id);
   if (res) {
-    let chat_Msg = {
-      body: `${userStore.me?.username}修改了卡片 - ${useCardname(card)} 的名称`,
-      props: {
-        strapi: {
-          data: {
-            is: "card",
-            by_user: userStore.userId,
-            card_id: card.id,
-            action: "update_card_name",
-            card_name: updateParmars.data.name,
-          },
-        },
-      },
-    };
-    const send = await send_chat_Msg(chat_Msg);
-    if (send) {
-      return send;
-    }
-    delete updateParmars.data.name;
+    return res;
   }
 }
 export async function setCardType(card, val) {
   updateParmars.data.type = val;
   let res = await updateCardFn(card.id);
   if (res) {
-    delete updateParmars.data.type;
-    let chat_Msg = {
-      body: `${userStore.me?.username}修改了卡片 - ${useCardname(card)} 的类型`,
-      props: {
-        strapi: {
-          data: {
-            is: "card",
-            by_user: userStore.userId,
-            card_id: card.id,
-            action: "update_card_type",
-            card_type: val,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
+    return res;
   }
 }
 export async function setCardColor(card, color) {
@@ -160,23 +127,7 @@ export async function setCardColor(card, color) {
 
   let res = await updateCardFn(card.id);
   if (res) {
-    let chat_Msg = {
-      body: `${userStore.me?.username}修改了卡片 - ${useCardname(
-        card
-      )} 的颜色标记`,
-      props: {
-        strapi: {
-          data: {
-            is: "card",
-            by_user: userStore.userId,
-            card_id: card.id,
-            action: "update_card_color",
-            card_color: color,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
+    return res;
   }
 }
 
@@ -196,24 +147,7 @@ export async function unfollowCard(card) {
   };
   let res = await updateCardFn(card.id);
   if (res) {
-    delete updateParmars.data.remove_follow_user_id;
-    let message = `${userStore.me?.username}取消了卡片 - ${useCardname(
-      card
-    )} 的关注`;
-    let chat_Msg = {
-      body: message,
-      props: {
-        strapi: {
-          data: {
-            is: "card",
-            action: "remove_card_followed",
-            card_id: card.id,
-            remove_followed: userStore.userId,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
+    return res;
   }
 }
 
@@ -224,24 +158,7 @@ export async function followCard(card, _user) {
   };
   let res = await updateCardFn(card.id);
   if (res) {
-    delete updateParmars.data.new_follow_user_id;
-    let message = `${
-      _user ? _user.username : userStore.me?.username
-    }关注了卡片 - ${useCardname(card)}`;
-    let chat_Msg = {
-      body: message,
-      props: {
-        strapi: {
-          data: {
-            is: "card",
-            action: "new_card_followed",
-            card_id: card.id,
-            new_followed: _user?.id || userStore.userId,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
+    return res;
   }
 }
 
@@ -250,144 +167,14 @@ export async function attachExecutor(card, member) {
   updateParmars.executor = member?.id || NaN;
   let res = await updateCardFn(card.id);
   if (res) {
-    let message;
-    if (member === null) {
-      message = `${userStore.me?.username}移除了卡片 - ${useCardname(
-        card
-      )} 的负责人`;
-    } else {
-      message = `${userStore.me?.username}指定了卡片 - ${useCardname(
-        card
-      )} 的负责人为：${member.by_user?.username}`;
-    }
-    let body = Object.assign(res);
-    delete body.member_roles;
-    let chat_Msg = {
-      body: message,
-      props: {
-        strapi: {
-          data: {
-            is: "card",
-            by_user: userStore.userId,
-            card_id: card.id,
-            action: "update_card_executor",
-            executor: member?.id || NaN,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
-
-    if (
-      !card.followed_bies?.map((i) => i.id).includes(Number(userStore.userId))
-    ) {
+    if (!card.followed_bies?.map((i) => i.id).includes(Number(userStore.userId))) {
       const _user = member?.by_user;
-      console.log("触发follow", _user);
       await followCard(card, _user);
     }
+    return res;
   }
 }
 
-export async function todogroupSort(card, sort) {
-  let chat_Msg = {
-    body: `${userStore.me?.username}修改了卡片 - ${useCardname(
-      card
-    )} 的待办事项的分组排序`,
-    props: {
-      strapi: {
-        data: {
-          is: "card",
-          by_user: userStore.userId,
-          card_id: card.id,
-          action: "card_todogroup_order",
-          order: sort,
-        },
-      },
-    },
-  };
-  await send_chat_Msg(chat_Msg);
-}
-
-export async function todogroupUpdate(card, old_group, group) {
-  let chat_Msg = {
-    body: `${userStore.me?.username}将卡片: "${useCardname(
-      card
-    )}" 的待办事项分组： "${old_group.name}"改名为："${group.name}"`,
-    props: {
-      strapi: {
-        data: {
-          is: "card",
-          by_user: userStore.userId,
-          card_id: card.id,
-          action: "card_todogroup_update",
-          body: group,
-        },
-      },
-    },
-  };
-  await send_chat_Msg(chat_Msg);
-}
-
-export async function createTodogroup(card, group) {
-  let chat_Msg = {
-    body: `${userStore.me?.username}在卡片 - ${useCardname(
-      card
-    )} 内新建了待办事项分组 - ${group.name}`,
-    props: {
-      strapi: {
-        data: {
-          is: "card",
-          by_user: userStore.userId,
-          card_id: card.id,
-          action: "card_todogroup_created",
-          body: group,
-        },
-      },
-    },
-  };
-  await send_chat_Msg(chat_Msg);
-}
-
-export async function _deleteTodogroup(card, group) {
-  let chat_Msg = {
-    body: `${userStore.me?.username}删除了卡片 - ${useCardname(
-      card
-    )} 的待办事项分组 - ${group.name}`,
-    props: {
-      strapi: {
-        data: {
-          is: "card",
-          by_user: userStore.userId,
-          card_id: card.id,
-          action: "card_todogroup_deleted",
-          id: group.id,
-        },
-      },
-    },
-  };
-  await send_chat_Msg(chat_Msg);
-}
-export async function todoSort(card, group, sort) {
-
-  let chat_Msg = {
-    body: `${userStore.me?.username}对卡片 - ${useCardname(
-      card
-    )} 的待办事项进行了排序`,
-    props: {
-      strapi: {
-        data: {
-          is: "todogroup",
-          by_user: userStore.userId,
-          card_id: card.id,
-          group_id: group.id,
-          action: "card_todo_sort",
-          sort: sort
-        },
-      },
-    },
-  };
-  await send_chat_Msg(chat_Msg);
-}
 export async function todoItemUpdate(card, group_id, todo) {
   let chat_Msg = {
     body: `${userStore.me?.username}更新了卡片 - ${useCardname(
@@ -453,26 +240,9 @@ export async function todoDeleted(card, group_id, todo_id) {
 
 export async function setScore(card, val) {
   updateParmars.data.score = val;
-  console.log("updateParmars", updateParmars);
   let res = await updateCardFn(card.id);
   if (res) {
-    delete updateParmars.data.score;
-    card.score = val;
-    let chat_Msg = {
-      body: `${userStore.me?.username}修改了卡片 - ${useCardname(card)} 的分值`,
-      props: {
-        strapi: {
-          data: {
-            is: "card",
-            by_user: userStore.userId,
-            card_id: card.id,
-            action: "update_card_score",
-            card_score: val,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
+    return res;
   }
 }
 export async function setStatus(card, val) {
@@ -480,24 +250,7 @@ export async function setStatus(card, val) {
   updateParmars.data.status = val;
   let res = await updateCardFn(card.id);
   if (res) {
-    let chat_Msg = {
-      body: `${userStore.me?.username}将卡片 - ${useCardname(
-        card
-      )} 状态修改为：${val}`,
-      props: {
-        strapi: {
-          data: {
-            is: "card",
-            by_user: userStore.userId,
-            card_id: card.id,
-            action: "update_card_status",
-            card_status: val,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
-    delete updateParmars.data.status;
+    return res;
   }
 }
 
@@ -505,22 +258,6 @@ export async function updateJsonContent(card, val) {
   updateParmars.data.jsonContent = val;
   let res = await updateCard(card.id, updateParmars);
   if (res) {
-    let chat_Msg = {
-      body: `${userStore.me?.username}修改了卡片 - ${useCardname(card)} 的内容`,
-      props: {
-        strapi: {
-          data: {
-            is: "card",
-            by_user: userStore.userId,
-            card_id: card.id,
-            action: "update_card_jsonContent",
-            jsonContent: res.data.jsonContent,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
-    delete updateParmars.data.jsonContent;
     return res;
   }
 }
@@ -542,21 +279,6 @@ export async function removeCard(card, belong_card) {
   }
 
   if (res) {
-    let chat_Msg = {
-      body: `${userStore.me?.username}删除了卡片 - ${useCardname(card)}`,
-      props: {
-        strapi: {
-          data: {
-            is: "card",
-            by_user: userStore.userId,
-            action: "delete",
-            body: res.data,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
-    Notify.create("卡片已删除");
     return card.id;
   }
 }

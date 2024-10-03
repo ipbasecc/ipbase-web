@@ -144,27 +144,8 @@ const update_jsonContent = async (val) => {
     // console.log(update_params);
     res = await updateCard(teamStore.card.id, update_params);
     if (res) {
-      // teamStore.card.jsonContent = res.data.jsonContent;
-      change_ing.value = false;
-      let chat_Msg = {
-        body: `${userStore.me.username}修改了卡片内容`,
-        props: {
-          strapi: {
-            data: {
-              is: "card",
-              by_user: userStore.userId,
-              card_id: belonged.value.id,
-              action: "change_card_content",
-              body: res.data.jsonContent,
-            },
-          },
-        },
-      };
-      await send_chat_Msg(chat_Msg);
+      return res?.data
     }
   }
-};
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
 };
 </script>

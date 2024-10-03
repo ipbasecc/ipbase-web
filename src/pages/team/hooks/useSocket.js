@@ -5,6 +5,7 @@ import { teamStore } from 'src/hooks/global/useStore.js';
 import team from './useSocket/team.js'
 import channel from './useSocket/channel.js'
 import project from './useSocket/project.js'
+import card from './useSocket/card.js'
 
 export function useSocket() {
   const jwt = JSON.parse(localStorage.getItem("jwt"));
@@ -43,6 +44,7 @@ export function useSocket() {
         team(socket, processEvent);
         channel(socket, processEvent);
         project(socket, processEvent);
+        card(socket, processEvent);
       });
     }
   });
