@@ -7,6 +7,7 @@ import channel from './useSocket/channel.js'
 import project from './useSocket/project.js'
 import card from './useSocket/card.js'
 import board from './useSocket/board.js'
+import group from './useSocket/group.js'
 
 export function useSocket() {
   const jwt = JSON.parse(localStorage.getItem("jwt"));
@@ -47,6 +48,7 @@ export function useSocket() {
         project(socket, processEvent);
         card(socket, processEvent);
         board(socket, processEvent);
+        group(socket, processEvent);
       });
     }
   });

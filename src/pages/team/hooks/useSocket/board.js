@@ -11,4 +11,10 @@ export default function (socket, processEvent) {
             ...data
         });
     });
+    socket.on("board:updated", (data) => {
+        processEvent({
+            event: "board:updated",
+            ...data
+        });
+    });
 }

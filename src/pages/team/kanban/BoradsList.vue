@@ -271,48 +271,9 @@ const updateGroupFn = async (group_id, element, action) => {
     name: element.name,
     kanbans: element.kanbans.map((i) => i.id),
   };
-  let res = await groupUpdate(
-    teamStore.project.id,
-    teamStore.board.id,
-    group_id,
-    params
-  );
+  let res = await groupUpdate(group_id,params);
   if (res?.data) {
-    if (action === "rename") {
-      let chat_Msg = {
-        body: `${userStore.me.username}将项目"${teamStore.project.name}"内ID为${element.id}的看板分组名称修改为：${res.data.name}`,
-        props: {
-          strapi: {
-            data: {
-              is: "kanban_group",
-              by_user: userStore.userId,
-              board_id: teamStore.board.id,
-              group_id: group_id,
-              action: "update_kanban_group",
-              body: res.data,
-            },
-          },
-        },
-      };
-      await send_chat_Msg(chat_Msg);
-    } else {
-      let chat_Msg = {
-        body: `${userStore.me.username}调整了项目"${teamStore.project.name}"内看板分组:${element.name}的看板排序`,
-        props: {
-          strapi: {
-            data: {
-              is: "kanban_group",
-              by_user: userStore.userId,
-              board_id: teamStore.board.id,
-              group_id: group_id,
-              action: "sort_kanban",
-              order: res.data.kanbans.map((i) => i.id),
-            },
-          },
-        },
-      };
-      await send_chat_Msg(chat_Msg);
-    }
+    return res.data;
   }
 };
 const groupDeleteFn = async (element) => {
@@ -320,29 +281,9 @@ const groupDeleteFn = async (element) => {
     $q.notify($t('cant_delete_include_kanban'));
     return;
   }
-  let res = await groupDelete(
-    teamStore.project.id,
-    teamStore.board.id,
-    element.id
-  );
+  let res = await groupDelete(element.id);
   if (res) {
-    let chat_Msg = {
-      body: `${userStore.me.username}删除了项目"${teamStore.project.name}"内看板分组${element.name}`,
-      props: {
-        strapi: {
-          data: {
-            is: "kanban_group",
-            by_user: userStore.userId,
-            board_id: teamStore.board.id,
-            action: "delete_kanban_group",
-            body: res.data,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
-  } else {
-    $q.notify(res.error.message);
+    return
   }
 };
 const createGroup_ing = ref(false);

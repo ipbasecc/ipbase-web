@@ -32,21 +32,6 @@ export async function createGroup(groupname) {
   };
   let res = await groupCreate(params);
   if (res) {
-    let chat_Msg = {
-      body: `${userStore.me.username}在项目"${teamStore.project.name}"内新建了看板分组：${res.data.name}`,
-      props: {
-        strapi: {
-          data: {
-            is: "kanban_group",
-            by_user: userStore.userId,
-            board_id: teamStore.board.id,
-            action: "kanban_group_created",
-            body: res.data,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
     return res;
   }
 }

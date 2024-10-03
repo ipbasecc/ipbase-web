@@ -314,29 +314,10 @@ const updateBoardFn = async (board_id) => {
   let params = {
     name: rename_text.value,
   };
-  let res = await updateBoard(teamStore.project.id, board_id, params);
+  let res = await updateBoard(board_id, params);
   if (res) {
-    let chat_Msg = {
-      body: `${userStore.me.username}将项目"${teamStore.project.name}"内ID为${board_id}的${params.name}的名称修改为：${params.name}`,
-      props: {
-        strapi: {
-          data: {
-            is: "board",
-            by_user: userStore.userId,
-            project_id: teamStore.project.id,
-            board_id: res.data.id,
-            action: "update_borad",
-            body: res.data,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
+    rename_text.value = null;
   }
-};
-
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
 };
 
 watch(

@@ -192,10 +192,10 @@ export async function createBoard(params) {
   }
 }
 //更新项目Board
-export async function updateBoard(project_id, board_id, params) {
+export async function updateBoard(board_id, params) {
   try {
     const res = await api.put(
-      `boards/${board_id}?project_id=${project_id}`,
+      `boards/${board_id}`,
       params
     );
     if (res) {
@@ -231,12 +231,9 @@ export async function groupCreate(params) {
   }
 }
 //修改项目Board下的Group
-export async function groupUpdate(project_id, board_id, group_id, params) {
+export async function groupUpdate(group_id, params) {
   try {
-    const res = await api.put(
-      `groups/${group_id}?project_id=${project_id}&board_id=${board_id}`,
-      params
-    );
+    const res = await api.put(`groups/${group_id}`,params);
     if (res) {
       return res;
     }
@@ -246,11 +243,9 @@ export async function groupUpdate(project_id, board_id, group_id, params) {
   }
 }
 //删除项目Board下的Group
-export async function groupDelete(project_id, board_id, group_id) {
+export async function groupDelete(group_id) {
   try {
-    const res = await api.delete(
-      `groups/${group_id}?project_id=${project_id}&board_id=${board_id}`
-    );
+    const res = await api.delete(`groups/${group_id}`);
     if (res) {
       return res;
     }

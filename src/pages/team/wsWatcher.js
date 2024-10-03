@@ -9,7 +9,7 @@ export default function useWatcher() {
   const val = computed(() => teamStore.income);
   watch(val, async(newVal, oldVal) => {
     if(!newVal || newVal === oldVal) return;
-    const { team_id, project_id, data } = val.value.data;
+    const { team_id, project_id, board_id, data } = val.value.data;
     if(teamStore.team?.id === Number(team_id)){
       if(val.value.event === 'team:update'){
         teamStore.team = data;
@@ -57,6 +57,50 @@ export default function useWatcher() {
         if(teamStore.project?.id === Number(project_id)){
           teamStore.project.boards.push(data);
         }
+      }
+      if(val.value.event === 'board:updated'){
+        if(teamStore.project?.id === Number(project_id)){
+          const index = teamStore.project.boards.findIndex(item => item.id === Number(data.id));
+          teamStore.project.boards[index] = data;
+        }
+        if(teamStore.board?.id === Number(data.id)){
+          teamStore.board = data;
+        }
+      }
+      if(val.value.event === 'group:created'){
+        if(teamStore.board?.id === Number(board_id)){
+          teamStore.board.groups.push(data);
+          const index = teamStore.project.boards.findIndex(item => item.id === Number(board_id));
+          if(index > -1){
+            teamStore.project.boards[index] = teamStore.board;
+          }
+        }
+      }
+      if(val.value.event === 'group:updated'){
+        const groupIndex = teamStore.board?.groups?.findIndex(item => item.id === Number(data.id));
+        if(groupIndex > -1){
+          teamStore.board.groups[groupIndex] = data;
+        }
+        const index = teamStore.project.boards?.findIndex(item => item.id === Number(board_id));
+        if(index > -1){
+          teamStore.project.boards[index] = teamStore.board;
+        }
+      }
+      if(val.value.event === 'group:deleted'){
+        if(teamStore.kanban){
+          const index = teamStore.board?.groups?.findIndex(item => item.id === Number(data.removed_group));
+          if(index > -1){
+            teamStore.kanban = void 0;
+            router.push(`/team/${teamStore.team?.id}/board/${teamStore.board?.id}`);
+          }
+        } else {
+          teamStore.board.groups = teamStore.board.groups.filter(item => item.id !== Number(data.removed_group));
+        }
+      }
+      if(val.value.event === 'group:order' && teamStore.board?.id === Number(board_id)){
+        teamStore.board.groups = data.order.map(item => {
+          teamStore.board.groups.find(i => i.id === Number(item));
+        });
       }
 
       if(val.value.event === 'channel:channel_created'){
