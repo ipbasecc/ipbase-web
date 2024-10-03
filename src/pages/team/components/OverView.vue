@@ -372,7 +372,7 @@ const removeVersion = async (id) => {
         },
       },
     };
-    await send_chat_Msg(chat_Msg);
+    // await send_chat_Msg(chat_Msg);
   }
 };
 const _input_text = ref('');
@@ -411,7 +411,7 @@ const newVersion = async () => {
         },
       },
     };
-    await send_chat_Msg(chat_Msg);
+    // await send_chat_Msg(chat_Msg);
     // set_current_version(res.data.id);
     _input_text.value = null;
   }
@@ -459,7 +459,7 @@ const updateVersionFn = async () => {
         },
       },
     };
-    await send_chat_Msg(chat_Msg);
+    // await send_chat_Msg(chat_Msg);
   }
 };
 const updateVersionBlur = (newVal, oldVal) => {
@@ -615,6 +615,11 @@ watchEffect(() => {
     newVersion();
   }
 });
+const val = computed(() => teamStore.income);
+watch(val, async(newVal, oldVal) => {
+  if(!newVal) return;
+  const { team_id, project_id, card_id, data } = val.value?.data;
+},{ immediate: true, deep: true });
 
 watch(
   mm_wsStore,

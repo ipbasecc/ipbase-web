@@ -9,6 +9,7 @@ import card from './useSocket/card.js'
 import board from './useSocket/board.js'
 import group from './useSocket/group.js'
 import kanban from './useSocket/kanban.js'
+import overview from './useSocket/overview.js'
 
 export function useSocket() {
   const jwt = JSON.parse(localStorage.getItem("jwt"));
@@ -51,6 +52,7 @@ export function useSocket() {
         board(socket, processEvent);
         group(socket, processEvent);
         kanban(socket, processEvent);
+        overview(socket, processEvent);
       });
     }
   });

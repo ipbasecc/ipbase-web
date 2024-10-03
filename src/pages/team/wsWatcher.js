@@ -10,7 +10,7 @@ export default function useWatcher() {
   const val = computed(() => teamStore.income);
   watch(val, async(newVal, oldVal) => {
     if(!newVal) return;
-    const { team_id, project_id, board_id, group_id, data } = val.value?.data;
+    const { team_id, project_id, board_id, group_id, card_id, data } = val.value?.data;
     if(teamStore.team?.id === Number(team_id)){
       if(val.value.event === 'team:update'){
         teamStore.team = data;
@@ -359,6 +359,207 @@ export default function useWatcher() {
         if(_teamMemberIndex > -1){
           teamStore.team.members[_teamMemberIndex] = data.member;
         }
+      }
+      if(val.value.event === 'overview:created'){
+        
+        if (project_id) {
+          if(project_id === teamStore.project?.id){
+            if (teamStore.project?.overviews?.length > 0) {
+              teamStore.project.overviews.push(data);
+            } else {
+              teamStore.project.overviews = [data];
+            }
+          }
+          teamStore.init.default_team?.projects?.forEach(i => {
+            if(i.id === Number(project_id)){
+              if(i.overviews?.length > 0){
+                i.overviews.push(data);
+              } else {
+                i.overviews = [data];
+              }
+            }
+          })
+        }
+        if(card_id) {
+          if (card_id === teamStore.card?.id) {
+            if (teamStore.card?.overviews?.length > 0) {
+              teamStore.card.overviews.push(data);
+            } else {
+              teamStore.card.overviews = [data];
+            }
+          }
+          // 定义 process_overview 函数
+          const process_overview = (columns) => {
+            return columns.map(i => {
+              i.cards = i.cards.map(j => {
+                if(j.id === card_id){
+                  if(j.overviews?.length > 0){
+                    j.overviews.push(data);
+                  } else {
+                    j.overviews = [data];
+                  }
+                }
+                return j;
+              })
+              return i;
+            })
+          }
+
+          // 定义 hasCard 函数
+          const hasCard = (columns) => {
+            if(!columns || columns.length === 0) return false;
+            return columns?.map(i => i.cards)?.flat(2)?.map(j => j.id)?.includes(card_id)
+          }
+          // 使用 forEach 来遍历数组并使用索引更新原数组
+          [teamStore.kanban?.columns, teamStore.cardKanban?.columns, teamStore.dropKanban?.columns].forEach((columns, index) =>{
+            if(hasCard(columns)){
+              const updatedColumns = process_overview(columns);
+              // 使用索引来更新原数组
+              [teamStore.kanban?.columns, teamStore.cardKanban?.columns, teamStore.dropKanban?.columns][index] = updatedColumns;
+            }
+          });
+        }
+      }
+      if(val.value.event === 'overview:deleted'){
+        const isIn = (overviews) => {
+          if (!overviews || overviews.length === 0) return false;
+          return overviews.map(i => i.id).includes(Number(data.removed_overview));
+        };
+        
+        const remove_overview = (overviews) => {
+          return overviews.filter(i => i.id !== Number(data.removed_overview));
+        };
+        
+        // 使用 nullish coalescing 操作符确保 overviews 不为 undefined
+        const overviewsArray = [teamStore.project?.overviews, teamStore.card?.overviews];
+        overviewsArray.forEach((overviews, index) => {
+          if (overviews && isIn(overviews)) {        
+            const _updatedOverviews = remove_overview(overviews);
+            // 使用索引来更新原数组
+            if (index === 0) {
+              teamStore.project.overviews = _updatedOverviews;
+            } else if (index === 1) {
+              teamStore.card.overviews = _updatedOverviews;
+            }
+          }
+        });
+
+        const isTargetCard = (columns) => {
+          if(!columns || columns.length === 0) return false
+          const cards = columns.map(i => i.cards).flat(2);
+          if(!cards || cards.length === 0) return false
+          const overviews = cards.map(i => i.overviews).flat(2);
+          if(!overviews || overviews.length === 0) return false
+
+          return columns
+            .map(i => i.cards?.map(j => j.overviews?.map(k => k.id)))
+            .flat(3)
+            .map(j => j.id)
+            .includes(Number(data.removed_overview))
+        }
+        // 定义 process_overview 函数
+        const process_overview = (columns) => {
+          return columns.map(i => {
+            return {
+              ...i,
+              cards: i.cards.map(j => {
+                return {
+                  ...j,
+                  overviews: j.overviews?.filter(k => k.id !== Number(data.removed_overview))
+                }
+              })
+            }
+          })
+        }
+        // 使用 forEach 来遍历数组并使用索引更新原数组
+        [teamStore.kanban?.columns, teamStore.cardKanban?.columns, teamStore.dropKanban?.columns].forEach((columns, index) =>{
+          if(isTargetCard(columns)){
+            const updatedColumns = process_overview(columns);
+            // 使用索引来更新原数组
+            [teamStore.kanban.columns, teamStore.cardKanban.columns, teamStore.dropKanban.columns][index] = updatedColumns;
+          }
+        });
+      }
+      if(val.value.event === 'overview:updated'){
+        const isIn = (overviews) => {
+          if (!overviews || overviews.length === 0) return false;
+          return overviews.map(i => i.id).includes(Number(data.id));
+        };
+        
+        const update_overview = (overviews, index) => {
+          return overviews.map(i => {
+            if(i.id === Number(data.id)){
+              if(index === 0){
+                teamStore.project.activeVersion = data;
+              } else if(index === 1){
+                teamStore.card.activeVersion = data;
+              }
+              return data
+            } else {
+              return i
+            }
+          })
+        };
+        
+        // 使用 nullish coalescing 操作符确保 overviews 不为 undefined
+        const overviewsArray = [teamStore.project?.overviews, teamStore.card?.overviews];
+        overviewsArray.forEach((overviews, index) => {
+          if (overviews && isIn(overviews)) { 
+            console.log('forEach',overviews);
+                   
+            const _updatedOverviews = update_overview(overviews, index);
+            // 使用索引来更新原数组
+            if (index === 0) {
+              teamStore.project.overviews = _updatedOverviews;
+              console.log('project',_updatedOverviews);
+            } else if (index === 1) {
+              teamStore.card.overviews = _updatedOverviews;
+              console.log('card',_updatedOverviews);
+            }
+          }
+        });
+
+        const isTargetCard = (columns) => {
+          if(!columns || columns.length === 0) return false
+          const cards = columns.map(i => i.cards).flat(2);
+          if(!cards || cards.length === 0) return false
+          const overviews = cards.map(i => i.overviews).flat(2);
+          if(!overviews || overviews.length === 0) return false
+
+          return columns
+            .map(i => i.cards?.map(j => j.overviews?.map(k => k.id)))
+            .flat(3)
+            .map(j => j.id)
+            .includes(Number(data.id))
+        }
+        // 定义 process_overview 函数
+        const process_overview = (columns) => {
+          return columns.map(i => {
+            return {
+              ...i,
+              cards: i.cards.map(j => {
+                return {
+                  ...j,
+                  overviews: j.overviews?.map(k => {
+                    if(k.id === Number(data.id)){
+                      return data
+                    } else {
+                      return k
+                    }
+                  })
+                }
+              })
+            }
+          })
+        }
+        // 使用 forEach 来遍历数组并使用索引更新原数组
+        [teamStore.kanban?.columns, teamStore.cardKanban?.columns, teamStore.dropKanban?.columns].forEach((columns, index) =>{
+          if(isTargetCard(columns)){
+            const updatedColumns = process_overview(columns);
+            // 使用索引来更新原数组
+            [teamStore.kanban.columns, teamStore.cardKanban.columns, teamStore.dropKanban.columns][index] = updatedColumns;
+          }
+        });
       }
     }
   },{ immediate: true, deep: true });
