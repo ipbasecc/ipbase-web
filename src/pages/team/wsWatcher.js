@@ -631,20 +631,18 @@ export default function useWatcher() {
           teamStore.active_document = null;
         }
       }
-      if(val.value.event === 'schedule:updated'){
-        if(teamStore.active_storage_id === Number(data.id)){
-          teamStore.active_storage = data;
-        }
+      if(val.value.event === 'storage:created'){
         if(teamStore.project?.id === Number(project_id)){
           const index = teamStore.project.storages.findIndex(i => i.id === Number(data.id));
           if(index !== -1){
-            teamStore.project.storages[index] = data;
+            teamStore.project.storages[index].sub_folders.push(data);
           }
         }
         if(teamStore.card?.id === Number(card_id)){
-          teamStore.card.storage = data;
+          teamStore.card.storage.sub_folders.push(data);
         }
       }
+
       if(val.value.event === 'schedule:created'){
         if(teamStore.project?.id === Number(project_id)){
           teamStore.project.schedules.push(data);

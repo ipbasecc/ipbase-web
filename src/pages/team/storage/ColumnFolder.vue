@@ -126,11 +126,9 @@ import FolderContainer from "./FolderContainer.vue";
 import ColumnFolder from "./ColumnFolder.vue";
 import { createStorage } from "src/api/strapi/project.js";
 import { useFetchStorage } from "src/hooks/project/useFetchStorage.js";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import FileViewer from "../../../components/VIewComponents/FileViewer.vue";
 import {
   userStore,
-  mm_wsStore,
   teamStore,
   uiStore,
 } from "src/hooks/global/useStore.js";
@@ -280,42 +278,6 @@ const createStorageFn = async () => {
     teamStore.create_folder_ing = false;
     params.value.data.name = "";
     loading.value = false;
-
-    let chat_Msg;
-    if (teamStore.card) {
-      chat_Msg = {
-        body: `${userStore.me.username}在卡片：${teamStore.card.name}下 ID为：${storage_idRef.value}的文件夹内新建了文件夹：${res.data.name}`,
-        props: {
-          strapi: {
-            data: {
-              is: "storage",
-              by_user: userStore.userId,
-              card_id: teamStore.card.id,
-              storage_id: storage_idRef.value,
-              action: "create_storage",
-              storage: res.data,
-            },
-          },
-        },
-      };
-    } else {
-      chat_Msg = {
-        body: `${userStore.me.username}在“项目文件内”，ID为：${storage_idRef.value}的文件夹内新建了文件夹：${res.data.name}`,
-        props: {
-          strapi: {
-            data: {
-              is: "storage",
-              by_user: userStore.userId,
-              project_id: teamStore.project.id,
-              storage_id: storage_idRef.value,
-              action: "create_storage",
-              storage: res.data,
-            },
-          },
-        },
-      };
-    }
-    // await send_chat_Msg(chat_Msg);
   }
 };
 const closeSubFolder = () => {
@@ -326,15 +288,6 @@ const removeItemId = ref()
 const removeItem = (i) => {
   removeItemId.value = i.file?.id
 };
-
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
-};
-
-// watch(folder, (newVal) => {
-//   teamStore.active_storage = newVal;
-//   teamStore.active_storage_id = newVal?.id;
-// });
 
 const restore = splitterModel.value;
 const _projectLeftDrawer = uiStore.projectLeftDrawer;
@@ -348,113 +301,54 @@ const fullscreenWeb = (state) => {
 const val = computed(() => teamStore.income);
 watch(val, async(newVal) => {
   if(!newVal) return;
-  const { team_id, storage_id, data } = val.value?.data;
+  const { team_id, parent_storage_id, data } = val.value?.data;
   if(teamStore.team?.id === Number(team_id)){
-
-    if(val.value.event === 'storage:updated' && subsRef.value.id === Number(data.id)){
-      subsRef.value = data;
+    const _sub_folders_ids = subsRef.value.sub_folders.map(i => i.id);
+    if(val.value.event === 'storage:updated'){
+      if(_sub_folders_ids.includes(Number(data.id))){
+        subsRef.value.sub_folders = subsRef.value.sub_folders.map(i => {
+          if(i.id === Number(data.id)){
+            return data;
+          }
+          return i;
+        });
+      }
     }
-    if(val.value.event === 'storage:created' && subsRef.value.id === Number(storage_id)){
+    if(val.value.event === 'storage:created' && storage_idRef.value === Number(parent_storage_id)){
       subsRef.value.sub_folders = [
         ...subsRef.value.sub_folders,
         data,
       ];
     }
-    if(val.value.event === 'storage:removed' && subsRef.value.id === Number(data.removed_storage_id)){
-      subsRef.value.sub_folders = subsRef.value.sub_folders.filter(
-        (i) => i.id !== Number(data.removed_storage_id)
-      );
-      if (folder.value?.id === Number(data.removed_storage_id)) {
+    if(val.value.event === 'storage:removed'){
+      if(_sub_folders_ids.includes(Number(data.removed_storage_id))){
+        subsRef.value.sub_folders = subsRef.value.sub_folders.filter(
+          (i) => i.id !== Number(data.removed_storage_id)
+        );
+      }
+      if (storage_idRef.value === Number(data.removed_storage_id)) {
         folder.value = null;
       }
     }
     if(val.value.event === 'file:removed'){
-      subsRef.value.storage_files = subsRef.value.storage_files.filter(
-        (i) => i.id !== Number(data.removed_file_id)
-      );
+      const _sub_files_ids = subsRef.value.storage_files.map(i => i.id);
+      if(_sub_files_ids.includes(Number(data.removed_file_id))){
+        subsRef.value.storage_files = subsRef.value.storage_files.filter(
+          (i) => i.id !== Number(data.removed_file_id)
+        );
+      }
+    }
+    if(val.value.event === 'file:batchCreated'){
+      if(!data || data?.length === 0) return;
+      data.map(i => {
+        if(i.storage_id === storage_idRef.value){
+          subsRef.value.storage_files.push(i);
+        }
+      })
     }
   }
 });
 
-watch(mm_wsStore, async () => {
-  if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
-    let post =
-      mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
-    if (!post) return;
-    const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
-    if (isCurClint) return;
-    let strapi = post?.props?.strapi;
-    if (strapi) {
-      if (
-        strapi.data?.is === "storage" &&
-        strapi.data.storage_id === storage_idRef.value &&
-        strapi.data.action === "create_storage"
-      ) {
-        // console.log("create_storage");
-        // subsRef.value.sub_folders.push(strapi.data.storage);
-        subsRef.value.sub_folders = [
-          ...subsRef.value.sub_folders,
-          strapi.data.storage,
-        ];
-      }
-      if (
-        strapi.data?.is === "storage" &&
-        strapi.data.storage_id === storage_idRef.value &&
-        strapi.data.action === "storage_remove"
-      ) {
-        // console.log("storage_remove", strapi.data.folder_id);
-        subsRef.value.sub_folders = subsRef.value.sub_folders.filter(
-          (i) => i.id !== strapi.data.folder_id
-        );
-        if (folder.value?.id === strapi.data.folder_id) {
-          folder.value = null;
-        }
-      }
-      if (
-        strapi.data?.is === "storage" &&
-        strapi.data.storage_id === storage_idRef.value &&
-        strapi.data.action === "fileChange_storage"
-      ) {
-        // console.log("fileChange_storage", strapi.data.changed_data);
-        subsRef.value.storage_files = strapi.data.changed_data.files;
-        subsRef.value.sub_folders = strapi.data.changed_data.sub_folders;
-      }
-      if (
-        strapi.data?.is === "storage" &&
-        strapi.data.storage_id === storage_idRef.value &&
-        strapi.data.action === "fileUploaded_storage"
-      ) {
-        // console.log("fileUploaded_storage", strapi.data.changed_data);
-        const sub_files = subsRef.value?.storage_files;
-        if (sub_files) {
-          subsRef.value.storage_files = [
-            ...subsRef.value?.storage_files,
-            ...strapi.data.changed_data.files,
-          ];
-        } else {
-          subsRef.value.storage_files = strapi.data.changed_data.files;
-        }
-      }
-      if (
-        strapi.data?.is === "storage" &&
-        strapi.data.storage_id === storage_idRef.value &&
-        strapi.data.action === "fileRemoved_storage"
-      ) {
-        // console.log("fileRemoved_storage", strapi.data.changed_data);
-        subsRef.value.storage_files = subsRef.value.storage_files.filter(
-          (i) => i.id !== strapi.data.fileRemoved_fileID
-        );
-      }
-      if (
-        strapi.data?.is === "storage" &&
-        strapi.data.storage_id === storage_idRef.value &&
-        strapi.data.action === "subfloder_created"
-      ) {
-        subsRef.value.sub_folders.push(strapi.data.subfloder);
-      }
-    }
-  }
-});
 watch(
   storage_idRef,
   () => {

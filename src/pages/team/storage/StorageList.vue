@@ -289,22 +289,13 @@
 </template>
 
 <script setup>
-import { ref, toRefs, watch, computed, nextTick, onBeforeMount, watchEffect } from "vue";
+import { ref, toRefs, watch, computed, nextTick, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
-
 import { fetch_MmMe } from "src/hooks/global/useFetchme.js";
-
-import {
-  createStorage,
-  updateStorage,
-  deleteStorage,
-  updateProject,
-} from "src/api/strapi/project.js";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
-import { useCardname } from "src/hooks/project/useCardname.js";
+import {  createStorage,  updateStorage,  deleteStorage,  updateProject,} from "src/api/strapi/project.js";
 import { VueDraggable } from 'vue-draggable-plus'
 import AzureIcon from "../components/widgets/icons/AzureIcon.vue";
-import {userStore, mm_wsStore, teamStore, uiStore} from 'src/hooks/global/useStore.js';
+import {userStore, teamStore, uiStore} from 'src/hooks/global/useStore.js';
 
 import { i18n } from 'src/boot/i18n.js';
 const $t = i18n.global.t;
@@ -432,30 +423,6 @@ const createFn = async (azureInfo) => {
     create_parmas.value.data.name = "";
     if (by_info.value?.by === "user") {
       userStore.storages.push(res.data);
-    } else {
-      let chat_Msg = {
-        props: {
-          strapi: {
-            data: {
-              is: "storage",
-              by_user: userStore.userId,
-              action: "storage_created",
-              storage: res.data,
-            },
-          },
-        },
-      };
-      if (by_info.value?.by === "project") {
-        chat_Msg.body = `${userStore.me?.username}在“项目文件”中新建了存储: ${res.data?.name}`;
-        chat_Msg.props.strapi.data.project_id = teamStore.project.id;
-      }
-      if (by_info.value?.by === "card") {
-        chat_Msg.body = `${userStore.me?.username}为卡片:${useCardname(
-          card.value
-        )}新建了存储: ${res.data?.name}`;
-        chat_Msg.props.strapi.data.card_id = card.value.id;
-      }
-      // await send_chat_Msg(chat_Msg);
     }
     loading.value = false;
   }
@@ -479,30 +446,6 @@ const deleteFn = async (i) => {
   await deleteStorage(i.id);
   if (belonged.value === "user") {
     userStore.storages = userStore.storages.filter((j) => j.id !== i.id);
-  } else {
-    let chat_Msg = {
-      props: {
-        strapi: {
-          data: {
-            is: "storage",
-            by_user: userStore.userId,
-            action: "storage_ordered",
-            storage_id: i.id,
-          },
-        },
-      },
-    };
-    if (belonged.value === "project") {
-      chat_Msg.body = `${userStore.me?.username}在“项目文件”中删除了存储: ${i.name}`;
-      chat_Msg.props.strapi.data.project_id = teamStore.project.id;
-    }
-    if (belonged.value === "card") {
-      chat_Msg.body = `${userStore.me?.username}为删除了卡片:${useCardname(
-        card.value
-      )}的存储: ${i.name}`;
-      chat_Msg.props.strapi.data.card_id = card.value.id;
-    }
-    // await send_chat_Msg(chat_Msg);
   }
 };
 const changeName = (i) => {
@@ -523,30 +466,6 @@ const updateFn = async (i) => {
       if (index !== -1) {
         userStore.storages[index] = res.data;
       }
-    } else {
-      let chat_Msg = {
-        props: {
-          strapi: {
-            data: {
-              is: "storage",
-              by_user: userStore.userId,
-              action: "storage_updated",
-              storage: res.data,
-            },
-          },
-        },
-      };
-      if (belonged.value === "project") {
-        chat_Msg.body = `${userStore.me?.username}将“项目文件”中存储: ${i.name}改名为： ${res.data?.name}`;
-        chat_Msg.props.strapi.data.project_id = teamStore.project.id;
-      }
-      if (belonged.value === "card") {
-        chat_Msg.body = `${userStore.me?.username}将卡片：${useCardname(
-          card.value
-        )} 的存储: ${i.name} 改名为: ${res.data?.name}`;
-        chat_Msg.props.strapi.data.card_id = card.value.id;
-      }
-      // await send_chat_Msg(chat_Msg);
     }
   }
 };
@@ -579,108 +498,11 @@ const orderStorages = async () => {
   }
 
   if (res) {
-    let chat_Msg = {
-      props: {
-        strapi: {
-          data: {
-            is: by_info.value?.by,
-            by_user: userStore.userId,
-            action: "storage_ordered",
-            body: Msg_body,
-          },
-        },
-      },
-    };
-    
-    if (by_info.value?.by === "project") {
-      chat_Msg.body = `${userStore.me.username}：${$t('sorted_project_document')}`;
-      chat_Msg.props.strapi.data.project_id = teamStore.project?.id;
-    }
     if (by_info.value?.by === "user") {
       process_orderData(Msg_body);
-    } else {
-      // await send_chat_Msg(chat_Msg);
     }
   }
 };
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
-};
-
-watch(
-  mm_wsStore,
-  async () => {
-    // console.log(mm_wsStore.event);
-    if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
-      let post =
-        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
-      if (!post) return;
-      const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
-      if (isCurClint) return;
-      let strapi = post?.props?.strapi;
-      if (strapi) {
-        if (
-          strapi.data.is === "storage" &&
-          strapi.data.project_id === teamStore.project.id &&
-          strapi.data.action === "storage_created"
-        ) {
-          teamStore.project.storages.push(strapi.data.storage);
-        }
-        if (
-          strapi.data.is === "storage" &&
-          strapi.data.card_id === card.value.id &&
-          strapi.data.action === "storage_created"
-        ) {
-          card.value.storage = strapi.data.storage;
-        }
-        if (
-          strapi.data.is === "storage" &&
-          strapi.data.project_id === teamStore.project.id &&
-          strapi.data.action === "storage_deleted"
-        ) {
-          teamStore.project.storages = teamStore.project.storages.filter(
-            (i) => i.id !== strapi.data.storage_id
-          );
-        }
-        if (
-          strapi.data.is === "storage" &&
-          strapi.data.card_id === card.value.id &&
-          strapi.data.action === "storage_deleted"
-        ) {
-          card.value.storage = null;
-        }
-        if (
-          strapi.data.is === "storage" &&
-          strapi.data.project_id === teamStore.project.id &&
-          strapi.data.action === "storage_updated"
-        ) {
-          let index = teamStore.project.storages.findIndex(
-            (j) => j.id === strapi.data.storage.id
-          );
-          if (index !== -1) {
-            teamStore.project.storages[index] = strapi.data.storage;
-          }
-        }
-        if (
-          strapi.data.is === "storage" &&
-          strapi.data.card_id === card.value.id &&
-          strapi.data.action === "storage_updated"
-        ) {
-          card.value.storage = strapi.data.storage;
-        }
-        if (
-          strapi.data?.is === by_info.value?.by &&
-          (strapi.data?.project_id === teamStore.project?.id) &&
-          strapi.data.action === "storage_ordered"
-        ) {
-          console.log('storage_ordered', strapi);
-          process_orderData(strapi.data.body);
-        }
-      }
-    }
-  },
-  { immediate: true, deep: true }
-);
 </script>
 
 <style lang="scss" scoped></style>

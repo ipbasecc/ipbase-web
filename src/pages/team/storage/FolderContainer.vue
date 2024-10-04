@@ -219,12 +219,11 @@ import {
   createStorageFile_batch,
   deleteStorageFile,
 } from "src/api/strapi/project.js";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import { downloadFile } from "src/hooks/utilits.js";
 import { useQuasar } from "quasar";
 
 import { onClickOutside } from "@vueuse/core";
-import { userStore, mm_wsStore, teamStore, uiStore } from "src/hooks/global/useStore.js";
+import { userStore, teamStore, uiStore } from "src/hooks/global/useStore.js";
 
 const emit = defineEmits([
   "enterFolder",
@@ -371,7 +370,6 @@ const checkSupport = (file) => {
 const files = ref([]);
 // 定义上传文件的方法
 const onDrop = async (e, storage_id) => {
-  console.log('onDrop',e);
   if(teamStore.shareInfo) return
   uiStore.unsupportFiles = e.filter(i => !checkSupport(i));
   if(uiStore.unsupportFiles?.length > 0){
@@ -381,8 +379,6 @@ const onDrop = async (e, storage_id) => {
 
   files.value = e.filter(i => checkSupport(i));
   if(files.value?.length === 0 || !files.value) return
-  // console.log('files.value onDrop',files.value);
-
   try {
     // 等待confirmUpload函数的结果
     let res = await confirmUpload(files.value, me);
@@ -393,50 +389,13 @@ const onDrop = async (e, storage_id) => {
         name: i.attributes.name,
       }));
       // console.log('create_storageFile_params',create_storageFile_params);
-      const batchCreated = await createStorageFile_batch(
+      const { data } = await createStorageFile_batch(
         create_storageFile_params
       );
-      if (batchCreated?.data) {
-        $q.notify("文件已上传");
-        let chat_Msg = {};
-        chat_Msg.props = {
-          strapi: {
-            data: {
-              is: "storage",
-              by_user: userStore.userId,
-              storage_id: storage_id || storage_idRef.value,
-              action: "fileUploaded_storage",
-              changed_data: {
-                files: batchCreated.data,
-              },
-            },
-          },
-        };
-        if (!storage_id) {
-          if (belonged.value === "card") {
-            // todo 需要补充card名称
-            chat_Msg.body = `${userStore.me?.username}向卡片${teamStore.card.id}上传了文件`;
-            chat_Msg.props.strapi.data.card_id = teamStore.card.id;
-          } else if (belonged.value === "project") {
-            chat_Msg.body = `${userStore.me?.username}向“项目文件”上传了文件`;
-            chat_Msg.props.strapi.data.project_id = teamStore.project.id;
-          }
-        } else {
-          // todo 需要补充文件夹名称
-          chat_Msg.body = `${userStore.me?.username}向文件夹${storage_idRef.value}上传了文件`;
-        }
-        // await send_chat_Msg(chat_Msg);
-        // emit('storageUpdate',res_upload.data)
-        return batchCreated.data;
+      if (data) {
+        // $q.notify("文件已上传");
+        return data;
       }
-      // let files_ids = res.map(i => Number(i.id));
-      // updateStorage_params.value.data = {
-      //     new_storageFiles: files_ids
-      // }
-      // let res_upload = await updateStorage(storage_id || storage_idRef.value,updateStorage_params.value)
-      // if(res_upload) {
-      // }
-      return res;
     }
   } catch (e) {
     // 处理错误
@@ -467,32 +426,6 @@ const createStorageFn = async (folder, storage_id) => {
 
   let res = await createStorage(params.value);
   if (res) {
-    let chat_Msg = {};
-    chat_Msg.props = {
-      strapi: {
-        data: {
-          is: "storage",
-          by_user: userStore.userId,
-          storage_id: storage_id,
-          action: "subfloder_created",
-          subfloder: res.data,
-        },
-      },
-    };
-    if (belonged.value === "card") {
-      // todo 需要补充文件夹名称
-      chat_Msg.body = `${userStore.me?.username}在卡片 - ${teamStore.card.name} 内新建了文件夹：`;
-      chat_Msg.props.strapi.data.card_id = teamStore.card.id;
-    } else if (belonged.value === "project") {
-      // todo 需要补充文件夹名称
-      chat_Msg.body = `${userStore.me?.username}在“项目文件”内新建了文件夹：`;
-      chat_Msg.props.strapi.data.project_id = teamStore.project.id;
-    } else {
-      // todo 需要补充文件夹、新建的文件夹名称
-      chat_Msg.body = `${userStore.me?.username}在文件夹${storage_idRef.value}内新建了文件夹：`;
-    }
-    // await send_chat_Msg(chat_Msg);
-
     params.value.data.name = "";
     loading.value = false;
     return res.data;
@@ -543,63 +476,12 @@ const removeItem = (i) => {
 const removeFile = async (file) => {
   let remove = await deleteStorageFile(file.id);
   if (remove) {
-    let chat_Msg = {};
-    if (belonged.value === "card") {
-      chat_Msg.body = `${userStore.me?.username}删除了卡片 - ${teamStore.card.name} 内的文件 ${file.name}`;
-    } else if (belonged.value === "project") {
-      chat_Msg.body = `${userStore.me?.username}删除了“项目文件”内的文件 ${file.name}`;
-    } else {
-      chat_Msg.body = `${userStore.me?.username}删除了文件夹${storage_idRef.value}内的文件 ${file.name}`;
-    }
-    chat_Msg.props = {
-      strapi: {
-        data: {
-          is: "storage",
-          by_user: userStore.userId,
-          storage_id: storage_idRef.value,
-          action: "fileRemoved_storage",
-          fileRemoved_fileID: file.id,
-        },
-      },
-    };
-    if (belonged.value === "card") {
-      chat_Msg.props.strapi.data.card_id = teamStore.card.id;
-    } else if (belonged.value === "project") {
-      chat_Msg.props.strapi.data.project_id = teamStore.project.id;
-    }
-    // emit('storageUpdate',res_update.data)
-    // await send_chat_Msg(chat_Msg);
   }
 };
 const removeFolder = async (folder) => {
   // console.log('removeFolder');
   let res_remove = await deleteStorage(folder.id);
   if (res_remove) {
-    // console.log('res_remove',res_remove);
-    // emit('folderRemove',folder.id);
-    let chat_Msg = {};
-    chat_Msg.props = {
-      strapi: {
-        data: {
-          is: "storage",
-          by_user: userStore.userId,
-          storage_id: storage_idRef.value,
-          folder_id: folder.id,
-          action: "storage_remove",
-        },
-      },
-    };
-    if (belonged.value === "card") {
-      chat_Msg.body = `${userStore.me?.username}删除了卡片 - ${teamStore.card.name} 内的文件夹 ${folder.name}`;
-      chat_Msg.props.strapi.data.card_id = teamStore.card.id;
-    } else if (belonged.value === "project") {
-      chat_Msg.body = `${userStore.me?.username}删除了“项目文件”内的文件夹 ${folder.name}`;
-      chat_Msg.props.strapi.data.project_id = teamStore.project.id;
-    } else {
-      // todo 需要补充文件夹名称
-      chat_Msg.body = `${userStore.me?.username}删除了文件夹${storage_idRef.value}内的文件夹 ${folder.name}`;
-    }
-    // await send_chat_Msg(chat_Msg);
   }
 };
 
@@ -631,83 +513,8 @@ const setCardColor = async (i, color) => {
 
   let res = await updateStorage(i.id, updateStorage_params.value);
   if (res) {
-    // masterList.list = masterList?.list.map((j) => ({
-    //     ...j,
-    //     color_marker: j.id === i.id && color || j.color_marker
-    // }))
-    let chat_Msg = {
-      body: `${userStore.me?.username}修改了文件夹 - ${i.name} 的颜色标记`,
-      props: {
-        strapi: {
-          data: {
-            is: "folder",
-            by_user: userStore.userId,
-            folder_id: i.id,
-            action: "update_folder_color",
-            color: i.color_marker,
-          },
-        },
-      },
-    };
-    // await send_chat_Msg(chat_Msg);
   }
 };
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
-};
-
-
-const val = computed(() => teamStore.income);
-watch(val, async(newVal) => {
-  if(!newVal) return;
-  const { team_id, storage_id, data } = val.value?.data;
-  if(teamStore.team?.id === Number(team_id)){
-    if(val.value.event === 'storage:updated' && sub_foldersRef.value.id === Number(data.id)){
-      masterList.list = masterList?.list.map((i) => ({
-        ...i,
-        color_marker: i.id === Number(data.id) ? data?.color :i.color_marker,
-      }));
-    }
-  }
-});
-
-watch(
-  mm_wsStore,
-  () => {
-    // console.log(mm_wsStore.event);
-    if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
-      let post =
-        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
-      if (!post) return;
-      const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
-      if (isCurClint) return;
-      let strapi = post?.props?.strapi;
-      if (strapi) {
-        const getCard_actions = [
-          "update_folder_color",
-          "fileChange_card_storage",
-        ];
-        const all_folders = masterList?.list
-          ?.filter((i) => !i.file)
-          .map((j) => j.id);
-
-        const isFolder = strapi.data?.is === "folder";
-        const folder_matched = all_folders?.includes(strapi.data?.folder_id);
-        const action_matched = getCard_actions.includes(strapi.data?.action);
-
-        if (isFolder && folder_matched && action_matched) {
-          masterList.list = masterList?.list.map((i) => ({
-            ...i,
-            color_marker:
-              (i.id === strapi.data?.folder_id && strapi.data?.color) ||
-              i.color_marker,
-          }));
-        }
-      }
-    }
-  },
-  { immediate: true, deep: true }
-);
 
 // 定义一个响应式的引用，指向div元素
 const dropZone = ref(null);

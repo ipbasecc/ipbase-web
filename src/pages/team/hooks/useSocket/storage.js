@@ -23,4 +23,10 @@ export default function (socket, processEvent) {
             ...data
         });
     });
+    socket.on("file:batchCreated", (data) => {
+        processEvent({
+            event: "file:batchCreated",
+            ...data
+        });
+    });
 }
