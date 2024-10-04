@@ -63,7 +63,7 @@ const updateDocumentFn = async (val) => {
         },
       },
     };
-    send_chat_Msg(chat_Msg);
+    // send_chat_Msg(chat_Msg);
   }
 };
 const send_chat_Msg = (MsgContent) => {

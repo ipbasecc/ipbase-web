@@ -1,12 +1,14 @@
  
-import { computed, watch, nextTick } from "vue";
+import { computed, watch, onMounted, onUnmounted } from "vue";
 import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 import { mergeObjects } from 'src/hooks/utilits.js'
 import { useRouter } from "vue-router";
 import { fetchProject } from "src/hooks/project/useProcess.js";
+import { useQuasar } from "quasar";
 
 export default function useWatcher() {
   const router = useRouter();
+  const $q = useQuasar();
   const val = computed(() => teamStore.income);
   watch(val, async(newVal, oldVal) => {
     if(!newVal) return;
@@ -561,6 +563,137 @@ export default function useWatcher() {
           }
         });
       }
+      if(val.value.event === 'document:created'){
+        if(teamStore.project?.id === Number(project_id)){
+          teamStore.project.project_documents.push(data);
+        }
+        if(teamStore.card?.id === Number(card_id)){
+          teamStore.card.card_documents.push(data);
+        }
+      }
+      if(val.value.event === 'document:updated'){
+        const _document_id = data?.id;
+        const isOpened = () => {
+          if(!teamStore.active_document || !_document_id) return false
+          return teamStore.active_document.id === _document_id
+        }
+        if(isOpened()){
+          // todo 此处需要完善，应该只在当前页面非聚焦时赋值
+          // 聚焦时是自己在修改，内容已经是最新
+          // 否则则是别人的修改，需要提示用户，是否显示最新内容，以便用户选择是否保存自己的修改
+          if (document.visibilityState === 'hidden') {
+            teamStore.active_document = data;
+          } else {
+            // const { updator } = val.value?.data;
+            // if(updator?.id !== teamStore.init?.id) return;
+            $q.notify({
+              color: 'positive',
+              position: 'top',
+              message: '当前文档有更新，是否显示最新内容？',
+              timeout: 0,
+              closeBtn: true,
+              actions: [
+                { label: 'Reply', noCaps: true, color: 'yellow', handler: () => {
+                  teamStore.active_document = data;
+                }},
+              ]
+            })
+          }
+        }
+        if(teamStore.project?.id === Number(project_id)){
+          const index = teamStore.project.project_documents.findIndex(i => i.id === Number(data.id));
+          if(index !== -1){
+            teamStore.project.project_documents[index] = data;
+          }
+        }
+        if(teamStore.card?.id === Number(card_id)){
+          const index = teamStore.card.card_documents.findIndex(i => i.id === Number(data.id));
+          if(index !== -1){
+            teamStore.card.card_documents[index] = data;
+          }
+        }
+      }
+      if(val.value.event === 'document:removed'){
+        if(teamStore.project?.id === Number(project_id)){
+          const index = teamStore.project.project_documents.findIndex(i => i.id === Number(data.removed_document_id));
+          if(index !== -1){
+            teamStore.project.project_documents.splice(index, 1);
+            router.push(`/teams/projects/${teamStore.project.id}/document`);
+          }
+        }
+        if(teamStore.card?.id === Number(card_id)){
+          const index = teamStore.card.card_documents.findIndex(i => i.id === Number(data.removed_document_id));
+          if(index !== -1){
+            teamStore.card.card_documents.splice(index, 1);
+          }
+        }
+        if(teamStore.active_document?.id === data.removed_document_id){
+          teamStore.active_document = null;
+        }
+      }
+      if(val.value.event === 'schedule:updated'){
+        if(teamStore.active_storage_id === Number(data.id)){
+          teamStore.active_storage = data;
+        }
+        if(teamStore.project?.id === Number(project_id)){
+          const index = teamStore.project.storages.findIndex(i => i.id === Number(data.id));
+          if(index !== -1){
+            teamStore.project.storages[index] = data;
+          }
+        }
+        if(teamStore.card?.id === Number(card_id)){
+          teamStore.card.storage = data;
+        }
+      }
+      if(val.value.event === 'schedule:created'){
+        if(teamStore.project?.id === Number(project_id)){
+          teamStore.project.schedules.push(data);
+        }
+        if(teamStore.card?.schedule.id === Number(card_id)){
+          teamStore.card.schedule = data;
+        }
+      }
+      if(val.value.event === 'schedule:deleted'){
+        if(teamStore.project?.schedules?.map(i => i.id).includes(Number(data.removed_schedule_id))){
+          const index = teamStore.project.schedules.findIndex(i => i.id === Number(data.removed_schedule_id));
+          if(index !== -1){
+            teamStore.project.schedules.splice(index, 1);
+          }
+        }
+        if(teamStore.card?.schedule?.id === Number(data.removed_schedule_id)){
+          teamStore.card.schedule = null;
+        }
+      }
+      if(val.value.event === 'schedule:updated'){
+        if(teamStore.project?.schedules?.map(i => i.id).includes(Number(data.id))){
+          const index = teamStore.project.schedules.findIndex(i => i.id === Number(data.id));
+          if(index !== -1){
+            teamStore.project.schedules[index] = data;
+          }
+        }
+        if(teamStore.card?.schedule?.id === Number(data.id)){
+          teamStore.card.schedule = data;
+        }
+      }
     }
   },{ immediate: true, deep: true });
+
+  const handleVisibilityChange = (val) => {
+    if(!val) return;
+      teamStore.active_document = val;
+    if (window.document.visibilityState === 'hidden') {
+    }
+  }
+    // 监听标签页的可见性变化
+  let visibilityListenerAdded = false;
+  onMounted(() => {
+    window.document.addEventListener('visibilitychange', handleVisibilityChange);
+    visibilityListenerAdded = true;
+  });
+
+  onUnmounted(() => {
+    if (visibilityListenerAdded) {
+      window.document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }
+  });
 }

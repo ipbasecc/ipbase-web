@@ -315,7 +315,7 @@ const createStorageFn = async () => {
         },
       };
     }
-    await send_chat_Msg(chat_Msg);
+    // await send_chat_Msg(chat_Msg);
   }
 };
 const closeSubFolder = () => {
@@ -331,6 +331,11 @@ const send_chat_Msg = async (MsgContent) => {
   await send_MattersMsg(MsgContent);
 };
 
+// watch(folder, (newVal) => {
+//   teamStore.active_storage = newVal;
+//   teamStore.active_storage_id = newVal?.id;
+// });
+
 const restore = splitterModel.value;
 const _projectLeftDrawer = uiStore.projectLeftDrawer;
 const fullscreenWeb = (state) => {
@@ -338,6 +343,39 @@ const fullscreenWeb = (state) => {
   limits.value = state ? [0, 0] : [180, 800];
   uiStore.projectLeftDrawer = state ? false : _projectLeftDrawer;
 };
+
+
+const val = computed(() => teamStore.income);
+watch(val, async(newVal) => {
+  if(!newVal) return;
+  const { team_id, storage_id, data } = val.value?.data;
+  if(teamStore.team?.id === Number(team_id)){
+
+    if(val.value.event === 'storage:updated' && subsRef.value.id === Number(data.id)){
+      subsRef.value = data;
+    }
+    if(val.value.event === 'storage:created' && subsRef.value.id === Number(storage_id)){
+      subsRef.value.sub_folders = [
+        ...subsRef.value.sub_folders,
+        data,
+      ];
+    }
+    if(val.value.event === 'storage:removed' && subsRef.value.id === Number(data.removed_storage_id)){
+      subsRef.value.sub_folders = subsRef.value.sub_folders.filter(
+        (i) => i.id !== Number(data.removed_storage_id)
+      );
+      if (folder.value?.id === Number(data.removed_storage_id)) {
+        folder.value = null;
+      }
+    }
+    if(val.value.event === 'file:removed'){
+      subsRef.value.storage_files = subsRef.value.storage_files.filter(
+        (i) => i.id !== Number(data.removed_file_id)
+      );
+    }
+  }
+});
+
 watch(mm_wsStore, async () => {
   if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
     let post =

@@ -87,7 +87,7 @@ provide("roles", roles.value);
 
 const readOnly = computed(() => uiStore.isShared)
 
-const storage = ref();
+const storage = computed(() => teamStore.active_storage)
 const fetchStorage = async () => {
   let res
   if(teamStore.shareInfo){
@@ -96,7 +96,7 @@ const fetchStorage = async () => {
     res = await useFetchStorage(_storage_id.value, project_id.value);
   }
   if (res) {
-    storage.value = res;
+    teamStore.active_storage = res;
   }
 };
 watch(

@@ -68,7 +68,7 @@
 </template>
 
 <script setup>
-import {computed, ref, toRefs, watch, watchEffect, onBeforeUnmount} from "vue";
+import {computed, ref, toRefs, watch, watchEffect, onMounted, onUnmounted} from "vue";
 import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
 
 import {updateDocument} from "src/api/strapi/project.js";
@@ -201,7 +201,7 @@ const tiptapIsReady = ref(false);
 const tiptapReady = async () => {
   if(islocked.value || tiptapIsReady.value) return;
   tiptapIsReady.value = true;
-  await setDocumentLockedStatus(true);
+  // await setDocumentLockedStatus(true);
 }
 const showUnlock = ref(false);
 const unlock = async () => {
@@ -212,7 +212,7 @@ const tiptapIsDestroy = ref(false);
 const tiptapDestroy = async () => {
   if(islocked.value || tiptapIsDestroy.value) return;
   tiptapIsDestroy.value = true;
-  await unlock();
+  // await unlock();
 }
 const send_chat_Msg = async (MsgContent) => {
   await send_MattersMsg(MsgContent);
@@ -235,6 +235,7 @@ const process_documentContent_change = (val) => {
   if (by_info.value.user_id) {
   }
 };
+
 watch(
   mm_wsStore,
   async () => {

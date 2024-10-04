@@ -377,7 +377,7 @@ fetch_MmMe()
   .catch((e) => console.error(e));
 
 const disableParentFn = ref(false);
-const activeStorage = ref();
+const activeStorage = computed(() => teamStore.active_storage_id);
 const route_params = computed(() => Number(route.params?.storage_id));
 const enterStorage = async (storage_id) => {
   if (
@@ -386,7 +386,7 @@ const enterStorage = async (storage_id) => {
     disableParentFn.value
   )
     return;
-  activeStorage.value = storage_id;
+  teamStore.active_storage_id = storage_id;
   await router.push(`/teams/projects/${teamStore.project.id}/storage/${storage_id}`);
   uiStore.showMainContentList = false;
 };
@@ -395,7 +395,7 @@ watch(
   route_params,
   () => {
     if (route_params.value) {
-      activeStorage.value = route_params.value;
+      teamStore.active_storage_id = route_params.value;
     }
   },
   { immediate: true, deep: false }
@@ -455,7 +455,7 @@ const createFn = async (azureInfo) => {
         )}新建了存储: ${res.data?.name}`;
         chat_Msg.props.strapi.data.card_id = card.value.id;
       }
-      await send_chat_Msg(chat_Msg);
+      // await send_chat_Msg(chat_Msg);
     }
     loading.value = false;
   }
@@ -502,7 +502,7 @@ const deleteFn = async (i) => {
       )}的存储: ${i.name}`;
       chat_Msg.props.strapi.data.card_id = card.value.id;
     }
-    await send_chat_Msg(chat_Msg);
+    // await send_chat_Msg(chat_Msg);
   }
 };
 const changeName = (i) => {
@@ -546,7 +546,7 @@ const updateFn = async (i) => {
         )} 的存储: ${i.name} 改名为: ${res.data?.name}`;
         chat_Msg.props.strapi.data.card_id = card.value.id;
       }
-      await send_chat_Msg(chat_Msg);
+      // await send_chat_Msg(chat_Msg);
     }
   }
 };

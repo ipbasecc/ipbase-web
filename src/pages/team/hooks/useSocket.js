@@ -10,6 +10,9 @@ import board from './useSocket/board.js'
 import group from './useSocket/group.js'
 import kanban from './useSocket/kanban.js'
 import overview from './useSocket/overview.js'
+import document from './useSocket/document.js'
+import storage from './useSocket/storage.js'
+import schedule from './useSocket/schedule.js'
 
 export function useSocket() {
   const jwt = JSON.parse(localStorage.getItem("jwt"));
@@ -53,6 +56,9 @@ export function useSocket() {
         group(socket, processEvent);
         kanban(socket, processEvent);
         overview(socket, processEvent);
+        document(socket, processEvent);
+        storage(socket, processEvent);
+        schedule(socket, processEvent);
       });
     }
   });

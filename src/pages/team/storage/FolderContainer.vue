@@ -425,7 +425,7 @@ const onDrop = async (e, storage_id) => {
           // todo 需要补充文件夹名称
           chat_Msg.body = `${userStore.me?.username}向文件夹${storage_idRef.value}上传了文件`;
         }
-        await send_chat_Msg(chat_Msg);
+        // await send_chat_Msg(chat_Msg);
         // emit('storageUpdate',res_upload.data)
         return batchCreated.data;
       }
@@ -491,7 +491,7 @@ const createStorageFn = async (folder, storage_id) => {
       // todo 需要补充文件夹、新建的文件夹名称
       chat_Msg.body = `${userStore.me?.username}在文件夹${storage_idRef.value}内新建了文件夹：`;
     }
-    await send_chat_Msg(chat_Msg);
+    // await send_chat_Msg(chat_Msg);
 
     params.value.data.name = "";
     loading.value = false;
@@ -568,7 +568,7 @@ const removeFile = async (file) => {
       chat_Msg.props.strapi.data.project_id = teamStore.project.id;
     }
     // emit('storageUpdate',res_update.data)
-    await send_chat_Msg(chat_Msg);
+    // await send_chat_Msg(chat_Msg);
   }
 };
 const removeFolder = async (folder) => {
@@ -599,7 +599,7 @@ const removeFolder = async (folder) => {
       // todo 需要补充文件夹名称
       chat_Msg.body = `${userStore.me?.username}删除了文件夹${storage_idRef.value}内的文件夹 ${folder.name}`;
     }
-    await send_chat_Msg(chat_Msg);
+    // await send_chat_Msg(chat_Msg);
   }
 };
 
@@ -649,12 +649,27 @@ const setCardColor = async (i, color) => {
         },
       },
     };
-    await send_chat_Msg(chat_Msg);
+    // await send_chat_Msg(chat_Msg);
   }
 };
 const send_chat_Msg = async (MsgContent) => {
   await send_MattersMsg(MsgContent);
 };
+
+
+const val = computed(() => teamStore.income);
+watch(val, async(newVal) => {
+  if(!newVal) return;
+  const { team_id, storage_id, data } = val.value?.data;
+  if(teamStore.team?.id === Number(team_id)){
+    if(val.value.event === 'storage:updated' && sub_foldersRef.value.id === Number(data.id)){
+      masterList.list = masterList?.list.map((i) => ({
+        ...i,
+        color_marker: i.id === Number(data.id) ? data?.color :i.color_marker,
+      }));
+    }
+  }
+});
 
 watch(
   mm_wsStore,

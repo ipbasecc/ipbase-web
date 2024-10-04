@@ -383,7 +383,7 @@ const update = async (schedule) => {
     if (by_info.value?.by === "user") {
       process_updatedData(res.data);
     } else {
-      await send_chat_Msg(chat_Msg);
+      // await send_chat_Msg(chat_Msg);
     }
   }
 };
@@ -437,7 +437,7 @@ const remove = async (i) => {
     if (by_info.value?.by === "user") {
       process_removedData(res.data);
     } else {
-      await send_chat_Msg(chat_Msg);
+      // await send_chat_Msg(chat_Msg);
     }
   }
 };
@@ -518,6 +518,7 @@ const waring = (schedule) => {
 watch(
   mm_wsStore,
   async () => {
+    return;
     if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
       let post =
         mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);

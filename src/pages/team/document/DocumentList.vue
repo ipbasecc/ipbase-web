@@ -223,6 +223,7 @@ const fetchDocument = async (document_id) => {
 const enterDocument = async (element) => {
   if (unEnter.value) return;
   const res = await fetchDocument(element.id);
+  element = res;
   teamStore.active_document = res;
   if(!teamStore.card) {
     router.push(`/teams/projects/${teamStore.project?.id}/document/${element.id}`);
@@ -287,7 +288,7 @@ const create = async () => {
 
   let res = await createDocument(params);
   if (res?.data) {
-    if (by_info.value?.by === "user" || !mm_wsStore.online) {
+    if (by_info.value?.by === "user") {
       process_createdData(res.data);
     }
     creating.value = false;
@@ -363,7 +364,7 @@ const update = async (document) => {
     if (by_info.value?.by === "user") {
       process_updatedData(res.data);
     } else {
-      await send_chat_Msg(chat_Msg);
+      // await send_chat_Msg(chat_Msg);
     }
   }
 };
@@ -410,7 +411,7 @@ const remove = async (i) => {
     if (by_info.value?.by === "user") {
       process_removedData(res.data);
     } else {
-      await send_chat_Msg(chat_Msg);
+      // await send_chat_Msg(chat_Msg);
     }
   }
 };

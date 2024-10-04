@@ -52,41 +52,6 @@ const close = () => {
 onBeforeUnmount(() => {
   close();
 });
-// watch([document_id, document], async () => {
-//   const fetchDoucment = async (_docid) => {
-//     const {data} = await getDocument(_docid);
-//     if (data) {
-//       return data;
-//     }
-//   }
-//   if (document_id.value && !document.value) {
-//     console.log("document_id.value", document_id.value);
-    
-//     document.value = await fetchDoucment(document_id.value);
-//   }
-// },{immediate:true,deep:false})
-watch(
-  mm_wsStore,
-  async () => {
-    if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
-      let post =
-        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
-      if (!post) return;
-      const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
-      if (isCurClint) return;
-      let strapi = post?.props?.strapi;
-      if (strapi) {
-        if (
-          strapi.data?.body?.id === document.value?.id &&
-          strapi.data.action === "document_updated"
-        ) {
-          document.value = strapi.data?.body;
-        }
-      }
-    }
-  },
-  { immediate: false, deep: true }
-);
 </script>
 
 <style lang="scss" scoped></style>
