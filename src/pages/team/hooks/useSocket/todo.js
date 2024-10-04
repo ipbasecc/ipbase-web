@@ -17,15 +17,21 @@ export default function (socket, processEvent) {
             ...data
         });
     });
-    socket.on("file:removed", (data) => {
+    socket.on("todo:created", (data) => {
         processEvent({
-            event: "file:removed",
+            event: "todo:created",
             ...data
         });
     });
-    socket.on("file:batchCreated", (data) => {
+    socket.on("todo:updated", (data) => {
         processEvent({
-            event: "file:batchCreated",
+            event: "todo:updated",
+            ...data
+        });
+    });
+    socket.on("todo:removed", (data) => {
+        processEvent({
+            event: "todo:removed",
             ...data
         });
     });

@@ -158,7 +158,7 @@
             </template>
           </TodoPage>
         </template>
-        <template v-if="$q.screen.gt.xs">
+        <template v-if="$q.screen.gt.xs && !teamStore.card">
           <q-dialog v-model="uiStore.topPannel" seamless position="top" full-width>
             <div class="q-pt-md overflow-show">
               <q-card bordered @mouseenter="setTip" @mouseleave="showDeleteTip = false" class="radius-md shadow-24">

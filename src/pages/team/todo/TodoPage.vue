@@ -638,6 +638,7 @@
                   @click.stop="todo_add_ing = i.id"
                 >
                   <q-icon name="add" size="xs" class="op-5" />
+                  ASASA
                 </q-btn>
               </div>
             </template>
@@ -1621,9 +1622,9 @@ const dragTodo_sort = async (i) => {
       todos: sort,
     },
   };
-  if (byInfo.value?.by === "card") {
+  if (card.value) {
     params.props = {
-      card_id: byInfo.value?.card_id,
+      card_id: card.value.id,
     };
   }
   let res = await updateTodogroup(i.id, params);

@@ -238,7 +238,7 @@ import TodoInput from "./TodoInput.vue";
 import TodoMenu from "./TodoMenu.vue";
 
 import {mm_wsStore, teamStore, uiStore} from "src/hooks/global/useStore.js";
-import {todoDeleted, todoItemUpdate} from "src/hooks/team/useCard.js";
+import {todoDeleted} from "src/hooks/team/useCard.js";
 
 import {useQuasar} from 'quasar'
 
@@ -376,9 +376,9 @@ const updateTodoFn = async (todo) => {
   updating.value = true;
 
   todo_params.value.data = todo;
-  if (byInfo.value?.by === "card") {
+  if (card.value) {
     todo_params.value.props = {
-      card_id: byInfo.value?.card_id,
+      card_id: card.value.id
     };
   }
   if(isFeedback.value){
@@ -391,8 +391,6 @@ const updateTodoFn = async (todo) => {
   if (res?.data) {
     if (card.value || teamStore.card) {
       const _card = card.value || teamStore.card;
-      // 发送ws消息
-      await todoItemUpdate(_card, todogroup.value?.id, res.data);
     }
     setTimeout(() => {
       // 延时重置，否则UI闪烁
@@ -442,7 +440,6 @@ const deleteTodoFn = async (i, todo) => {
   if (res?.data) {    
     if (card.value || teamStore.card) {
       const _card = card.value || teamStore.card;
-      await todoDeleted(_card, todogroup.value?.id, todo.id);
     }
     emit("todoDeleted", i.id, todo.id);
   }
