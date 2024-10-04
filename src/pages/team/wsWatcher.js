@@ -675,6 +675,81 @@ export default function useWatcher() {
           teamStore.card.schedule = data;
         }
       }
+
+      if(val.value.event === 'event:created'){
+        const { schedule_id } = val.value.data;
+        const _project_schedules_ids = teamStore.project?.schedules?.map(i => i.id);
+        if (_project_schedules_ids?.includes(Number(schedule_id))) {
+          teamStore.project = {
+            ...teamStore.project,
+            schedules: teamStore.project.schedules.map((i) => {
+              if(i.id === Number(schedule_id)){
+                return {
+                  ...i,
+                  schedule_events: [...i.schedule_events, data],
+                }
+              } else {
+                return i;
+              }
+            }),
+          };
+        }
+        if (teamStore.card?.schedule?.id === Number(schedule_id)) {
+          teamStore.card?.schedule?.schedule_events.push(data);
+        }
+      }
+      if(val.value.event === 'event:updated'){
+        const { schedule_id } = val.value.data;
+        const _project_schedules_ids = teamStore.project?.schedules?.map(i => i.id);
+        if (_project_schedules_ids?.includes(Number(schedule_id))) {
+          teamStore.project.schedules = teamStore.project.schedules.map((i) => {
+            if(i.id === Number(schedule_id)){
+              return {
+                ...i,
+                schedule_events: i.schedule_events.map((j) => {
+                  if(j.id === Number(data.id)) {
+                    return data;
+                  } else {
+                    return j;
+                  }
+                })
+              }
+            } else {
+              return i;
+            }
+          })
+        }
+        if (teamStore.card?.schedule?.id === Number(schedule_id)) {
+          if(teamStore.card?.schedule?.schedule_events?.length > 0){
+            teamStore.card.schedule.schedule_events.forEach((i) => {
+              if(i.id === data.id){
+                i = data;
+              }
+            })
+          } else {
+            teamStore.card.schedule.schedule_events = [data];
+          }
+        }
+      }
+      if(val.value.event === 'event:deleted'){
+        const { schedule_id } = val.value.data;
+        const _project_schedules_ids = teamStore.project?.schedules?.map(i => i.id);
+        if (_project_schedules_ids?.includes(Number(schedule_id))) {
+          teamStore.project.schedules = teamStore.project.schedules.map((i) => {
+            if(i.id === Number(schedule_id)){
+              return {
+                ...i,
+                schedule_events: i.schedule_events.filter((j) => j.id !== Number(data.removed_event_id)),
+              }
+            } else {
+              return i;
+            }
+          });
+        }
+        if (teamStore.card?.schedule?.id === Number(schedule_id)) {
+          teamStore.card.schedule.schedule_events = teamStore.card?.schedule?.schedule_events.filter((i) => i.id !== Number(data.removed_event_id));
+        }
+      }
     }
   },{ immediate: true, deep: true });
 

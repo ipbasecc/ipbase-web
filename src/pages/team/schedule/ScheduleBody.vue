@@ -128,7 +128,7 @@ const set_schedule_data = () => {
     schedule_data.value = [];
   }
   if (schedule_data.value?.length > 0) {
-    selectedDate.value = getData(schedule_data.value);
+    selectedDate.value = selectedDate.value || getData(schedule_data.value);
   }
   eventSettings.value = {
     dataSource: extend([], schedule_data.value, null, true),
@@ -167,7 +167,7 @@ watch(
   schedule,
   () => {
     if (schedule.value) {
-      //   console.log("schedule changed");
+        console.log("schedule changed");
       set_schedule_data();
     }
   },
@@ -300,6 +300,7 @@ const removeEvents = async (args) => {
   //   console.log("remove", successfulResults);
   emit("remove", successfulResults);
 };
+
 const handleActionBegin = async (args) => {
   if (isShare.value || teamStore.shareInfo) {
     args.cancel = onEventCheck(args);
@@ -313,7 +314,7 @@ const handleActionBegin = async (args) => {
       const res = await updateEvents(change);
       console.log("updateEvents", res);
       if (res) {
-        emit("eventUpdated", res);
+        // emit("eventUpdated", res);
       }
     }
     if (args.requestType === "eventRemove") {

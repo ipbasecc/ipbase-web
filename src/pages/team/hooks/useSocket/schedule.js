@@ -17,4 +17,23 @@ export default function (socket, processEvent) {
             ...data
         });
     });
+
+    socket.on("event:created", (data) => {
+        processEvent({
+            event: "event:created",
+            ...data
+        });
+    });
+    socket.on("event:updated", (data) => {
+        processEvent({
+            event: "event:updated",
+            ...data
+        });
+    });
+    socket.on("event:deleted", (data) => {
+        processEvent({
+            event: "event:deleted",
+            ...data
+        });
+    });
 }

@@ -66,6 +66,7 @@ export default defineStore("team", {
     active_document: null,
     active_storage_id: null,
     active_storage: null,
+    project_schedule: null,
     adding_news: {
       title: void 0,
       cover: void 0,
