@@ -1135,6 +1135,7 @@
               :class="morphGroupModel === 'addbtn2' ? 'q-pr-sm' : ''"
               :label="morphGroupModel === 'addbtn2' ? $t('add_todogroup') : null"
               icon="add"
+              @click="createGroupHandler"
             />
           </div>
         </template>
@@ -1543,10 +1544,6 @@ const cancelUpdateGroupHandler = () => {
 };
 const createTodogroupFn = async () => {
   if (loading.value) return;
-
-  let scroolPosition = scrollAreaRef.value?.getScrollPosition();
-  let x = scroolPosition.left;
-
   loading.value = true;
   if (!params.value.data.name) {
     createTodogroup_ing.value = false;
@@ -1575,9 +1572,6 @@ const createTodogroupFn = async () => {
       // todogroups.value.push(res.data);
       teamStore.init.todogroups.push(res.data);
       getTodogroups();
-      setTimeout(() => {
-        scrollAreaRef.value?.setScrollPosition("horizontal", x, 0);
-      }, 10);
     }
     params.value.data.name = "";
     createTodogroup_ing.value = false;
@@ -1596,9 +1590,9 @@ const todogroupMenuRef = ref();
 
 const updateTodogroupFn = async (i) => {
   if (!params.value.data.name) return;
-  if (byInfo.value?.by === "card") {
+  if (card.value) {
     params.value.props = {
-      card_id: byInfo.value?.card_id,
+      card_id: card.value?.id,
     };
   }
   let res = await updateTodogroup(i.id, params.value);

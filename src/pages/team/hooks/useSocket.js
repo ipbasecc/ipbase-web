@@ -13,6 +13,7 @@ import overview from './useSocket/overview.js'
 import document from './useSocket/document.js'
 import storage from './useSocket/storage.js'
 import schedule from './useSocket/schedule.js'
+import todo from './useSocket/todo.js'
 
 export function useSocket() {
   const jwt = JSON.parse(localStorage.getItem("jwt"));
@@ -59,6 +60,7 @@ export function useSocket() {
         document(socket, processEvent);
         storage(socket, processEvent);
         schedule(socket, processEvent);
+        todo(socket, processEvent);
       });
     }
   });

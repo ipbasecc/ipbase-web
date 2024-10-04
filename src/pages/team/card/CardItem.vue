@@ -258,8 +258,7 @@
           </q-btn>
         </template>
         <q-space />
-        <div
-          v-if="!isDilgMode"
+        <div v-if="!isDilgMode"
           class="undrag flex flex-center hover-show transition"
         >
           <q-btn
@@ -272,8 +271,7 @@
             @click="_enterCard(useAuths('read', ['card']))"
           />
         </div>
-        <div
-          v-else
+        <div v-else
           class="undrag flex flex-center hover-show transition"
         >
           <q-btn
@@ -295,8 +293,7 @@
             </q-tooltip>
           </q-btn>
         </div>
-        <q-icon
-          v-if="!isShared || (isShared && color_marker)"
+        <q-icon v-if="!isShared || (isShared && color_marker)"
           :name="
             color_marker && show_byPreference?.color_marker?.value
               ? 'mdi-checkbox-blank-circle'
@@ -493,24 +490,21 @@
         </q-icon>
       </q-card-section>
       <template v-if="cardRef.expand === 'collapse'">
-        <div
+        <div @dblclick="_enterCard(useAuths('read', ['card']))"
           class="absolute-bottom bg-gradient-bottom-unfold_card full-width"
           style="height: calc(100% - 34px)"
-          @dblclick="_enterCard(useAuths('read', ['card']))"
         ></div>
-        <q-btn
+        <q-btn @click="toggleExpand(cardRef)"
           dense
           square
           unelevated
           icon-right="mdi-chevron-down"
           :label="$t('show_more')"
           class="full-width hover-highlight-lg"
-          @click="toggleExpand(cardRef)"
         />
       </template>
       <!-- 重要度、紧急度 左边框颜色标记 -->
-      <div
-        class="absolute-left full-height z-fab"
+      <div class="absolute-left full-height z-fab"
         :class="`${highlight ? 'highlight transition' : ''}`"
         :style="`${style}`"
       ></div>
@@ -937,6 +931,36 @@ const _leaveCard = () => {
   leaveCard();
   syncDeletedByWS();
 };
+
+
+const val = computed(() => teamStore.income);
+watch(val, async(newVal) => {
+  if(!newVal) return;
+  const { team_id, card_id, data } = val.value?.data;
+  if(teamStore.team?.id === Number(team_id)){
+    if(val.value.event === 'todogroup:created'){
+      if(cardRef.value.id === Number(card_id)){
+        cardRef.value.todogroups.push(data);
+      }
+    }
+    if(val.value.event === 'todogroup:updated'){
+      if(cardRef.value.id === Number(card_id)){
+        const index = cardRef.value.todogroups.findIndex(i => i.id === data.id);
+        if(index > -1){
+          cardRef.value.todogroups.splice(index, 1, data);
+        }
+      }
+    }
+    if(val.value.event === 'todogroup:removed'){
+      if(cardRef.value.id === Number(card_id)){
+        const index = cardRef.value.todogroups.findIndex(i => i.id === data.removed_todogroup_id);
+        if(index > -1){
+          cardRef.value.todogroups.splice(index, 1);
+        }
+      }
+    }
+  }
+});
 
 // ws data line -------------------------
 let strapi;
