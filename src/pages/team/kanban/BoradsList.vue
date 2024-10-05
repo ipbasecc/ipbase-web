@@ -192,7 +192,6 @@ import { useRouter, useRoute } from "vue-router";
 import BoradToggler from "./BoradToggler.vue";
 import KanbanListitem from "src/pages/team/kanban/KanbanListitem.vue";
 import { VueDraggable } from 'vue-draggable-plus'
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import {
   groupOrder,
   groupUpdate,
@@ -380,10 +379,6 @@ watch(
   },
   { immediate: true, deep: true }
 );
-
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
-};
 
 watch(
   mm_wsStore,

@@ -379,11 +379,6 @@
       </q-icon>
     </td>
   </tr>
-  <!-- 重要度、紧急度 左边框颜色标记 -->
-  <div class="absolute-left full-height z-fab"
-    :class="`${highlight ? 'highlight transition' : ''}`"
-    :style="`${style}`"
-  />
 </template>
 
 <script setup>
@@ -621,231 +616,73 @@ const disableAction = (val) => {
   disableActionbtn.value = val;
 };
 
-watch(
-  mm_wsStore,
-  async () => {
-    if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
-      let post =
-        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
-      if (!post) return;
-      const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
-      if (isCurClint) return;
-      let strapi = post?.props?.strapi;
-      let project_users = teamStore.project?.project_members.map(
-        (i) => i.by_user
-      );
-      if (strapi) {
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.body?.id === cardRef.value.id &&
-          strapi.data.action === "delete"
-        ) {
-          emit("cardDelete", cardRef.value.id);
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === cardRef.value.id &&
-          strapi.data.action === "update_card_executor"
-        ) {
-          let _executor_member;
-          if (strapi.data.executor) {
-            _executor_member = cardRef.value?.card_members.find(
-              (i) => i.id === strapi.data.executor
-            );
-          }
-          cardRef.value.member_roles.find(
-            (i) => i.subject === "executor"
-          ).members = [_executor_member] || [];
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === cardRef.value.id &&
-          strapi.data.action === "update_card_type"
-        ) {
-          cardRef.value.type = strapi.data.card_type;
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === cardRef.value.id &&
-          strapi.data.action === "update_card_color"
-        ) {
-          cardRef.value.color_marker = strapi.data.card_color;
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === cardRef.value.id &&
-          strapi.data.action === "update_card_name"
-        ) {
-          cardRef.value.name = strapi.data.card_name;
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === cardRef.value.id &&
-          strapi.data.action === "update_card_status"
-        ) {
-          cardRef.value.status = strapi.data.card_status;
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === cardRef.value.id &&
-          strapi.data.action === "update_card_jsonContent"
-        ) {
-          cardRef.value.jsonContent = strapi.data.jsonContent;
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === cardRef.value?.id &&
-          strapi.data.action === "new_card_followed"
-        ) {
-          console.log("触发followCard WS", strapi.data);
-          let __ = project_users.find((u) => u.id === strapi.data.new_followed);
-          cardRef.value.followed_bies.push(__);
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === cardRef.value.id &&
-          strapi.data.action === "remove_card_followed"
-        ) {
-          cardRef.value.followed_bies = cardRef.value.followed_bies.filter(
-            (u) => u.id !== strapi.data.remove_followed
-          );
-        }
-        // 其他用户在卡片详情中修改卡片jsonContent内容时同步数据
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data?.card_id === cardRef.value.id &&
-          strapi.data.action === "change_card_content"
-        ) {
-          // console.log("ws detial changed");
-          cardRef.value.jsonContent = strapi.data.body;
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === cardRef.value.id &&
-          strapi.data.action === "card_todogroup_order"
-        ) {
-          // console.log(strapi.data);
-          cardRef.value.todogroups = strapi.data.order.map((i) =>
-            cardRef.value.todogroups.find((t) => t.id === i)
-          );
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === cardRef.value.id &&
-          strapi.data.action === "card_todogroup_update"
-        ) {
-          const isSameId = (element) => {
-            return element.id === strapi.data.body.id;
-          };
-          const index = cardRef.value.todogroups.findIndex(isSameId);
-          if (index !== -1) {
-            cardRef.value.todogroups[index] = strapi.data.body
-          }
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === cardRef.value.id &&
-          strapi.data.action === "card_todogroup_deleted"
-        ) {
-          const isSameId = (element) => {
-            return element.id === strapi.data.id;
-          };
-          const index = cardRef.value.todogroups.findIndex(isSameId);
-          if (index !== -1) {
-            cardRef.value.todogroups.splice(index, 1);
-          }
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === cardRef.value.id &&
-          strapi.data.action === "card_todogroup_created"
-        ) {
-          if (cardRef.value.todogroups?.length > 0) {
-            cardRef.value.todogroups.push(strapi.data.body);
-          } else {
-            cardRef.value.todogroups = [strapi.data.body];
-          }
-        }
-        if (
-          strapi.data?.is === "todogroup" &&
-          strapi.data.card_id === cardRef.value.id &&
-          strapi.data.action === "card_todo_sort"
-        ) {
-          // console.log(all_todos.length);
-          const isSameId = (element) => {
-            return element.id === strapi.data.group_id;
-          };
-          const index = cardRef.value.todogroups.findIndex(isSameId);
-          if (index !== -1) {
-            cardRef.value.todogroups[index].todos = strapi.data.body.todos;
-          }
-        }
-        // console.log(strapi.data);
-        if (
-          strapi.data?.is === "todo" &&
-          strapi.data.card_id === cardRef.value?.id &&
-          strapi.data.action === "card_todo_updated"
-        ) {
-          // console.log("card_todo_updated ws");
-          cardRef.value.todogroups = cardRef.value.todogroups.map((g) => ({
-            ...g,
-            todos: g.todos.map((t) =>
-              t.id === strapi.data.todo_id ? strapi.data.body : t
-            ),
-          }));
-        }
-        if (
-          strapi.data?.is === "todo" &&
-          strapi.data.card_id === cardRef.value.id &&
-          strapi.data.action === "card_todo_created"
-        ) {
-          let _todo = strapi.data.body
-          _todo.mm_thread = JSON.parse(mm_wsStore.event.data.post)
-          const processAfter = (after, todos) => {
-            if(!after) {
-              return [...todos, strapi.data.body]
-            } else {
-              const _index = todos.findIndex((t) => t.id === after);
-              if(_index !== -1){
-                todos.splice(_index + 1, 0, _todo);
-                return todos
-              }
-            }
-          }
-          cardRef.value.todogroups = cardRef.value.todogroups.map((g) => ({
-            ...g,
-            todos:g.id === Number(strapi.data.group_id)
-                  && !g.todos?.map((todo) => todo.id).includes(strapi.data.body.id)
-                  ? processAfter(strapi.data.after, g.todos)
-                  : g.todos
-          }));
-        }
-        if (
-          strapi.data?.is === "todo" &&
-          strapi.data.card_id === cardRef.value.id &&
-          strapi.data.action === "card_todo_deleted"
-        ) {
-          cardRef.value.todogroups = cardRef.value.todogroups.map((g) => ({
-            ...g,
-            todos: g.todos.filter((t) => t.id !== strapi.data.todo_id),
-          }));
-        }
-        if (
-          strapi.data?.is === "overview" &&
-          strapi.data?.attachedTo_id === cardRef.value.id &&
-          strapi.data.action === "overview_mediaChanged"
-        ) {
-          cardRef.value.overviews.find(
-            (i) =>
-              i.id === cardRef.value.default_version ||
-              cardRef.value.overviews[0].id
-          ).media = strapi.data.media;
+const val = computed(() => teamStore.income);
+watch(val, async(newVal) => {
+  if(!newVal) return;
+  const { team_id, card_id, todogroup_id, data } = val.value?.data;
+  if(teamStore.team?.id === Number(team_id)){
+    if(val.value.event === 'todogroup:created'){
+      if(cardRef.value.id === Number(card_id)){
+        cardRef.value.todogroups.push(data);
+      }
+    }
+    if(val.value.event === 'todogroup:updated'){
+      if(cardRef.value.id === Number(card_id)){
+        const index = cardRef.value.todogroups.findIndex(i => i.id === data.id);
+        if(index > -1){
+          cardRef.value.todogroups.splice(index, 1, data);
         }
       }
     }
-  },
-  { immediate: true, deep: true }
-);
+    if(val.value.event === 'todogroup:removed'){
+      if(cardRef.value.id === Number(card_id)){
+        const index = cardRef.value.todogroups.findIndex(i => i.id === data.removed_todogroup_id);
+        if(index > -1){
+          cardRef.value.todogroups.splice(index, 1);
+        }
+      }
+    }
+    const todogroups_ids = cardRef.value.todogroups?.map(i => i.id);
+    const isInCard = todogroups_ids?.includes(Number(todogroup_id));
+    if(val.value.event === 'todo:created' && isInCard){
+      const index = cardRef.value.todogroups.findIndex(i => i.id === Number(todogroup_id));
+      if(index > -1){
+        const { position } = val.value?.data;
+        if(position?.after){
+          const insertIndex = cardRef.value.todogroups[index].todos.findIndex(i => i.id === position.after);
+          if(insertIndex > -1){
+            cardRef.value.todogroups[index].todos.splice(insertIndex + 1, 0, data);
+          }
+        } else {
+          cardRef.value.todogroups[index].todos.push(data);
+        }
+      }
+    }
+    if(val.value.event === 'todo:updated' && isInCard){
+      const index = cardRef.value.todogroups.findIndex(i => i.id === Number(todogroup_id));
+      if(index > -1){
+        const todoIndex = cardRef.value.todogroups[index].todos.findIndex(i => i.id === data.id);
+        if(todoIndex > -1){
+          cardRef.value.todogroups[index].todos.splice(todoIndex, 1, data);
+        }
+      }
+    }
+    if(val.value.event === 'todo:removed' && isInCard){
+      const index = cardRef.value.todogroups.findIndex(i => i.id === Number(todogroup_id));
+      if(index > -1){
+        const todoIndex = cardRef.value.todogroups[index].todos.findIndex(i => i.id === Number(data.removed_todo_id));
+        if(todoIndex > -1){
+          cardRef.value.todogroups[index].todos.splice(todoIndex, 1);
+        }
+      }
+    }
+
+    if(teamStore.card?.id === cardRef.value.id){
+      teamStore.card.todogroups = cardRef.value.todogroups;
+    }
+  }
+});
+
 </script>
 
 <style lang="scss" scoped>

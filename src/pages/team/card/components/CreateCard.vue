@@ -1,76 +1,147 @@
 <template>
-  <q-card
-    v-if="props"
-    bordered
-    class="q-mt-xs column no-wrap"
-    :style="$q.screen.gt.xs ? 'width: 322px' : 'width: 100%'"
-    @mouseenter="uiStore.dragKanbanScrollEnable = false"
-    @mouseleave="uiStore.dragKanbanScrollEnable = true"
-  >
-    <q-card-section
-      v-if="create_with_name || name_onlyRef"
-      class="q-pa-xs"
+  <template v-if="props">
+    <q-card
+      v-if="view_model === 'kanban'"
+      v-bind="$attrs"
+      bordered
+      class="q-mt-xs column no-wrap"
+      :style="$q.screen.gt.xs ? 'width: 322px' : 'width: 100%'"
+      @mouseenter="uiStore.dragKanbanScrollEnable = false"
+      @mouseleave="uiStore.dragKanbanScrollEnable = true"
     >
-      <q-input
-        v-model="params.data.name"
-        type="text"
-        :placeholder="$t('type_name_here')"
-        dense
-        square
-        filled
-        autofocus
-        class="full-width"
-        @keydown.esc="closeCreate()"
-        @keyup.enter="createCardFn"
-        @keyup.ctrl.enter="createCardFn"
+      <q-card-section
+        v-if="create_with_name || name_onlyRef"
+        class="q-pa-xs"
       >
-        <template v-if="params.data.name" v-slot:append>
+        <q-input
+          v-model="params.data.name"
+          type="text"
+          :placeholder="$t('type_name_here')"
+          dense
+          square
+          filled
+          autofocus
+          class="full-width"
+          @keydown.esc="closeCreate()"
+          @keyup.enter="createCardFn"
+          @keyup.ctrl.enter="createCardFn"
+        >
+          <template v-if="params.data.name" v-slot:append>
+            <q-btn
+              icon="check"
+              dense
+              size="sm"
+              flat
+              round
+              @click="createCardFn"
+            />
+          </template>
+        </q-input>
+      </q-card-section>
+      <template v-else>
+        <q-card-section class="column no-wrap q-space q-pa-none card no-padding">
+          <TipTap
+            :square="true"
+            need="json"
+            :toolbarHeight="34"
+            @tiptapBlur="tiptapBlur"
+            @tiptapUpdate="tiptapUpdate"
+            @keyup.ctrl.enter="createCardFn"
+          />
+        </q-card-section>
+        <q-card-section class="row no-wrap q-pa-xs border-top">
           <q-btn
-            icon="check"
             dense
-            size="sm"
+            padding="xs md"
             flat
-            round
+            :label="$t('cancel')"
+            @click.stop="closeCreate()"
+          />
+          <q-space />
+          <q-btn
+            dense
+            padding="xs md"
+            color="primary"
+            icon="done_all"
+            :label="$t('create')"
+            :disable="loading"
             @click="createCardFn"
           />
-        </template>
-      </q-input>
-    </q-card-section>
-    <template v-else>
-      <q-card-section class="column no-wrap q-space q-pa-none card no-padding">
+        </q-card-section>
+      </template>
+      <div v-if="loading" class="absolute-full bg-black op-5 flex flex-center">
+        <q-spinner-orbit color="primary" size="2em" />
+      </div>
+    </q-card>
+
+    <tr v-if="view_model === 'list'" class="hovered-item relative-position" :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-4'">
+      <td>
+        <div class="fit flex flex-center hover-show op-0">
+          <q-icon name="drag_indicator" />
+        </div>
+      </td>
+      <!-- 状态 -->
+      <td class="status no-padding">
+      </td>
+      <!-- 预览图 -->
+      <td class="thumbnial no-padding">
+      </td>
+      <!-- 名称 -->
+      <td class="name no-padding">
+        <q-input
+          v-model="params.data.name"
+          type="text"
+          :placeholder="$t('type_name_here')"
+          dense
+          square
+          filled
+          autofocus
+          class="full-width"
+          @keydown.esc="closeCreate()"
+          @keyup.enter="createCardFn"
+          @keyup.ctrl.enter="createCardFn"
+        >
+          <template v-if="params.data.name" v-slot:append>
+            <q-btn
+              icon="check"
+              dense
+              size="sm"
+              flat
+              round
+              @click="createCardFn"
+            />
+          </template>
+        </q-input>
+      </td>
+      <!-- 内容 -->
+      <td class="content q-pa-xs">
         <TipTap
           :square="true"
           need="json"
+          class="border"
           :toolbarHeight="34"
           @tiptapBlur="tiptapBlur"
           @tiptapUpdate="tiptapUpdate"
           @keyup.ctrl.enter="createCardFn"
         />
-      </q-card-section>
-      <q-card-section class="row no-wrap q-pa-xs border-top">
-        <q-btn
-          dense
-          padding="xs md"
-          flat
-          :label="$t('cancel')"
-          @click.stop="closeCreate()"
-        />
-        <q-space />
-        <q-btn
-          dense
-          padding="xs md"
-          color="primary"
-          icon="done_all"
-          :label="$t('create')"
-          :disable="loading"
-          @click="createCardFn"
-        />
-      </q-card-section>
-    </template>
-    <div v-if="loading" class="absolute-full bg-black op-5 flex flex-center">
-      <q-spinner-orbit color="primary" size="2em" />
-    </div>
-  </q-card>
+      </td>
+      <!-- 清单 -->
+      <td class="todos no-padding">
+      </td>
+      <!-- 分值 -->
+      <td class="score no-padding">
+      </td>
+      <!-- 进度 -->
+      <td class="progress no-padding">
+      </td>
+      <!-- 关注者 -->
+      <td class="follow no-padding">
+      </td>
+      <!-- 操作 -->
+      <td class="more no-padding">
+      </td>
+    </tr>
+  </template>
 </template>
 
 <script setup>
@@ -98,12 +169,17 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  view_model: {
+    type: String,
+    default: 'kanban',
+  },
 });
 const {
   column_id: column_idRef,
   name_only: name_onlyRef,
   DefaultCreateCardType: DefaultCreateCardTypeRef,
   createType: createTypeRef,
+  view_model
 } = toRefs(props);
 
 // 新建卡片的类型
@@ -187,25 +263,13 @@ watch([isBlur, isCannel], () => {
 const emit = defineEmits(["closeCreate"]);
 
 const createCardFn = async () => {
-  if (isCannel.value) return;
-  if (loading.value) {
-    closeCreate();
-    return;
-  }
+  if (isCannel.value || loading.value) return;
   loading.value = true;
   if (!name_onlyRef.value) {
     const isChanged = !isEqual(tipta_source, params.value.data.jsonContent);
-    if (
-      (!isChanged || !params.value.data.jsonContent) &&
-      !params.value.data.name &&
-      !params.value.data.content
-    ) {
-      closeCreate();
-      return;
-    }
-  } else if (!params.value.data.name && !params.value.data.content) {
-    closeCreate();
-    return;
+    if (!isChanged || !params.value.data.jsonContent) return;
+  } else {
+    if (!params.value.data.name) return;
   }
   let res = await createCard(params.value);
   if (res?.data) {

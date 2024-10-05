@@ -372,11 +372,11 @@ const createColumnFn = async () => {
         },
       },
     };
-    await send_chat_Msg(chat_Msg);
-    if (teamStore.card?.mm_thread?.id) {
-      delete chat_Msg.props;
-      await send_CardMsg(chat_Msg);
-    }
+    // await send_chat_Msg(chat_Msg);
+    // if (teamStore.card?.mm_thread?.id) {
+    //   delete chat_Msg.props;
+    //   await send_CardMsg(chat_Msg);
+    // }
     new_column_ing.value = false;
     new_column_name.value = "";
   }
@@ -436,12 +436,16 @@ const syncStoreByKanban = async () => {
 const val = computed(() => teamStore.income);
 watch(val, async(newVal, oldVal) => {
   if(!newVal || newVal === oldVal) return;
-  const { team_id, column_id, card_id, data, order } = val.value.data;
+  const { team_id, column_id, card_id, kanban_id, data, order } = val.value.data;
   if(teamStore.team?.id === Number(team_id)){
 
     if(val.value.event === 'kanban:updated' && order && kanban.value?.id === Number(data.id)) {
       if(order?.length > 0){
-        
+        /**
+         * @description: 从所有已打开的看板以及当前看板的分栏浅拷贝中获取所有分栏数据，
+         * @description: 当前用户拥有完整的数据，因此只需要根据排序索引排序即可
+         * @description: 其它用户接收到ws数据后，如果有新分栏被拖入，可能没有该分栏的数据，因此需要重新获取数据
+         */
         let _columns = [...oldColumns.value];
         if(teamStore.dropKanban?.columns?.length > 0){
           _columns = [..._columns, ...teamStore.dropKanban.columns];
@@ -456,14 +460,12 @@ watch(val, async(newVal, oldVal) => {
           return order.map(i => columns.find(j => j.id === Number(i)))
         }
         if(havaAddColumn){
-          console.log('no data fecth')
           const fetch = await getKanban(kanban.value?.id);
           if (fetch) {
             const _attachExpand = await attachExpand(fetch);
             kanban.value.columns = orderColumns(_attachExpand.columns)
           }
         } else {
-          console.log('have data order')
           kanban.value.columns = orderColumns(_columns)
         }
       } else {
@@ -524,6 +526,31 @@ watch(val, async(newVal, oldVal) => {
       }
       if(teamStore.card?.id === Number(card_id)){
         teamStore.card = data;
+      }
+    }
+
+    if(val.value.event === 'column:created' && kanban.value?.id === Number(kanban_id)){
+      if (kanban.value.columns?.length > 0) {
+        kanban.value.columns.push(data);
+      } else {
+        kanban.value.columns = [data];
+      }
+      syncKanbanStore(kanban.value);
+    }
+
+    if(val.value.event === 'column:updated'){
+      const index = kanban.value.columns?.findIndex(i => i.id === Number(data.id));
+      if(index > -1){
+        kanban.value.columns[index] = data;
+        syncKanbanStore(kanban.value);
+      }
+    }
+
+    if(val.value.event === 'column:deleted'){
+      const index = kanban.value.columns?.findIndex(i => i.id === Number(data.removed_column_id));
+      if(index > -1){
+        kanban.value.columns.splice(index, 1);
+        syncKanbanStore(kanban.value);
       }
     }
   }

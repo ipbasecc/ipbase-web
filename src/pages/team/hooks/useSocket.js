@@ -14,6 +14,7 @@ import document from './useSocket/document.js'
 import storage from './useSocket/storage.js'
 import schedule from './useSocket/schedule.js'
 import todo from './useSocket/todo.js'
+import column from './useSocket/column.js'
 
 export function useSocket() {
   const jwt = JSON.parse(localStorage.getItem("jwt"));
@@ -61,6 +62,7 @@ export function useSocket() {
         storage(socket, processEvent);
         schedule(socket, processEvent);
         todo(socket, processEvent);
+        column(socket, processEvent);
       });
     }
   });

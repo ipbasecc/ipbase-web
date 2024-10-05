@@ -12,7 +12,6 @@
         modify: (useAuths('importance', ['card']) && useAuths('urgency', ['card'])),
         delete: useAuths('delete', ['card']),
       }"
-      @QuadrantChange="QuadrantChange"
     />
   </div>
 </template>
@@ -74,32 +73,6 @@ watch(
   },
   { immediate: true, deep: false }
 );
-
-const QuadrantChange = (id, params) => {
-  let card = kanban.value.columns
-    .map((i) => i.cards)
-    .flat(2)
-    .find((card) => card.id === id);
-  let chat_Msg = {
-    body: `${userStore.me.username}调整了卡片"${card.name}"在四象限中的位置`,
-    props: {
-      strapi: {
-        data: {
-          is: "card",
-          by_user: userStore.userId,
-          kanban_id: kanban.value.id,
-          card_id: id,
-          action: "QuadrantChange",
-          quadrant: params.data,
-        },
-      },
-    },
-  };
-  send_chat_Msg(chat_Msg);
-};
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
-};
 </script>
 <style scoped>
 .add-column-txt {

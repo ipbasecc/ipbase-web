@@ -74,7 +74,7 @@ const props = defineProps({
   },
 });
 const { auth } = toRefs(props)
-const emit = defineEmits(["QuadrantChange", "itemChanged"]);
+const emit = defineEmits(["itemChanged"]);
 
 const idRef = toRef(props, "id");
 const axisDataRef = toRef(props, "axisData");
@@ -401,10 +401,7 @@ onBeforeUnmount(() => {
   }
 });
 const updateCardFn = async (id, params) => {
-  let res = await updateCard(id, params);
-  if (res) {
-    emit("QuadrantChange", id, params);
-  }
+  await updateCard(id, params);
 };
 </script>
 

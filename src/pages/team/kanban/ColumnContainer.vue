@@ -374,14 +374,12 @@
                 v-close-popup
                 @click="CreateCardFn(columnRef.id, i.val)"
               >
-                <q-item-section side
-                  ><q-icon
-                    :name="i.icon"
-                    :color="DefaultCreateCardType === i.val ? 'orange' : ''"
-                /></q-item-section>
-                <q-item-section class="q-pr-md text-no-wrap">{{
-                  $t(i.label)
-                }}</q-item-section>
+                <q-item-section side>
+                  <q-icon :name="i.icon" :color="DefaultCreateCardType === i.val ? 'orange' : ''"/>
+                </q-item-section>
+                <q-item-section class="q-pr-md text-no-wrap">
+                  {{ $t(i.label) }}
+                </q-item-section>
               </q-item>
             </q-list>
           </q-menu>
@@ -416,7 +414,8 @@
                           flat
                           size="sm"
                           round
-                          icon="add"
+                          icon="check"
+                          v-close-popup
                           @click="updateColumnFn()"
                         />
                       </template>
@@ -451,35 +450,40 @@
         <q-markup-table dense flat bordered class="full-width q-space table-view">
           <thead>
             <tr>
-              <th v-if="!teamStore.shareInfo" class="text-left"></th>
-              <th class="text-left status">{{$t('status')}}</th>
-              <th class="text-left thumbnial">{{$t('thumbnial')}}</th>
-              <th class="text-left name">{{$t('title')}}</th>
-              <th class="text-left content">{{$t('content')}}</th>
-              <th class="text-left todos">{{$t('todo')}}</th>
-              <th class="text-left score">{{$t('score')}}</th>
-              <th class="text-left progress">{{$t('progress')}}</th>
-              <th v-if="!teamStore.shareInfo" class="text-left follow">{{$t('follower')}}</th>
-              <th v-if="!teamStore.shareInfo" class="text-left more">{{$t('more_actions')}}</th>
+              <th v-if="!teamStore.shareInfo" class="text-left op-5"></th>
+              <th class="text-left status op-5">{{$t('status')}}</th>
+              <th class="text-left thumbnial op-5">{{$t('thumbnial')}}</th>
+              <th class="text-left name op-5">{{$t('title')}}</th>
+              <th class="text-left content op-5">{{$t('content')}}</th>
+              <th class="text-left todos op-5">{{$t('todo')}}</th>
+              <th class="text-left score op-5">{{$t('score')}}</th>
+              <th class="text-left progress op-5">{{$t('progress')}}</th>
+              <th v-if="!teamStore.shareInfo" class="text-left follow op-5">{{$t('follower')}}</th>
+              <th v-if="!teamStore.shareInfo" class="text-left more op-5">{{$t('more_actions')}}</th>
             </tr>
           </thead>
-          <div v-if=" createCard_in === columnRef.id && useAuths('create', ['card'])" class="q-pa-sm">
-            <CreateCard
-              :column_id="columnRef.id"
-              :DefaultCreateCardType="DefaultCreateCardType"
-              @createCannel="createCannel"
-            />
-          </div>
           <tbody class="taskItems">
-            <RowCardItem v-for="(element, index) in filteredCards" :key="element.id"
-              :card="element"
-              :index="index"
-              :isCreator_column="isCreator"
-              :viewType="'list'"
-              :uiOptions="uiOptions"
-              @cardChange="cardChange"
-              @cardDelete="cardDelete"
-            />
+            <template v-if="createCard_in === columnRef.id && useAuths('create', ['card'])">
+              <CreateCard
+                :column_id="columnRef.id"
+                :DefaultCreateCardType="DefaultCreateCardType"
+                :view_model=view_modelRef
+                @createCannel="createCannel"
+                @created="created"
+                @closeCreate="closeCreate"
+              />
+            </template>
+            <template v-if="filteredCards?.length > 0">
+              <RowCardItem v-for="(element, index) in filteredCards" :key="element.id"
+                :card="element"
+                :index="index"
+                :isCreator_column="isCreator"
+                :viewType="'list'"
+                :uiOptions="uiOptions"
+                @cardChange="cardChange"
+                @cardDelete="cardDelete"
+              />
+            </template>
           </tbody>
         </q-markup-table>
       </VueDraggable>
@@ -495,7 +499,8 @@ import {
   watchEffect,
   computed,
   onBeforeMount,
-  nextTick
+  nextTick,
+  onMounted
 } from "vue";
 import { VueDraggable } from 'vue-draggable-plus'
 import CardItem from "src/pages/team/card/CardItem.vue";
@@ -570,9 +575,8 @@ let column_executor = ref();
 watchEffect(() => {
   filter_txt.value = teamStore.filter_txt;
 });
-watch(
-  columnRef,
-  () => {
+watch(columnRef, () => {
+  if(columnRef.value){
     cards.value = columnRef.value?.cards;
     filteredCards.value = cards.value;
     column_name.value = columnRef.value?.name;
@@ -580,9 +584,8 @@ watch(
     column_status.value = columnRef.value?.status;
     column_type.value = columnRef.value?.type;
     column_executor.value = columnRef.value?.executor;
-  },
-  { immediate: true, deep: true }
-);
+  }
+},{ immediate: true, deep: true });
 
 const deleteColumnFn = () => {
   const deleteFn = async () => {
@@ -612,7 +615,7 @@ const deleteColumnFn = () => {
           },
         },
       };
-      await send_chat_Msg(chat_Msg);
+      // await send_chat_Msg(chat_Msg);
     }
   };
   if (columnRef.value.cards.length > 0) {
@@ -656,7 +659,7 @@ const updateColumnFn = async () => {
           },
         },
       };
-      await send_chat_Msg(chat_Msg);
+      // await send_chat_Msg(chat_Msg);
     }
     if (params.value.data.status) {
       let chat_Msg = {
@@ -673,7 +676,7 @@ const updateColumnFn = async () => {
           },
         },
       };
-      await send_chat_Msg(chat_Msg);
+      // await send_chat_Msg(chat_Msg);
     }
     delete params.value.data.status;
     params.value.data.name = "";
@@ -690,6 +693,8 @@ const updateCannel = () => {
 
 const emit = defineEmits(["cardChange", "cardDelete", "orderCard"]);
 const dragCard_sort = async () => {
+  console.log("dragCard_sort", filteredCards.value);
+  await nextTick();
   let params = {
     project_id: teamStore.project.id,
     kanban_id: kanban_idRef.value,
@@ -714,11 +719,10 @@ const dragCard_sort = async () => {
         },
       },
     };
-    await send_chat_Msg(chat_Msg);
+    // await send_chat_Msg(chat_Msg);
   }
 };
 const onSort = async () => {
-  await nextTick();
   await dragCard_sort()
 }
 
@@ -799,42 +803,28 @@ const setDefaultCreateCardType = async (val) => {
   }
 };
 
-watch(
-  filter_txt,
-  () => {
-    if (cards.value) {
-      if (filter_txt.value) {
-        // 对filteredCards进行筛选，而不是columnRef.value.cards
-        filteredCards.value = filterCardsByString(
-          filter_txt.value,
-          cards.value
-        );
-      }
-      if (!filter_txt.value) {
-        // 将filteredCards恢复为原始的数据，而不是columnRef.value.cards
-        filteredCards.value = cards.value;
-      }
-    }
-  },
-  { immediate: true, deep: false }
-);
+// watch(filter_txt, () => {
+//   if (cards.value) {
+//     if (filter_txt.value) {
+//       filteredCards.value = filterCardsByString(filter_txt.value,cards.value);
+//     } else {
+//       filteredCards.value = cards.value;
+//     }
+//   }
+// },{ immediate: true, deep: false });
 
 const { current } = useMagicKeys();
 const keys = computed(() => Array.from(current));
-watch(
-  keys,
-  () => {
-    if (keys.value) {
-      if (
-        keys.value?.includes("escape") &&
-        createCard_in.value === columnRef.value?.id
-      ) {
-        createCard_in.value = void 0;
-      }
+watch(keys, () => {
+  if (keys.value) {
+    if (
+      keys.value?.includes("escape") &&
+      createCard_in.value === columnRef.value?.id
+    ) {
+      createCard_in.value = void 0;
     }
-  },
-  { immediate: false, deep: false }
-);
+  }
+}, { immediate: false, deep: false });
 
 // 有竖向滚动条，当鼠标进入分栏后，禁用滚轮横向滚动
 const hasScrollBar = ref();
@@ -859,128 +849,7 @@ const pushCard = (_card) => {
     columnRef.value.cards = [...columnRef.value?.cards, _card];
   }
 }
-watch(
-  mm_wsStore,
-  async () => {
-    if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
-      let post =
-        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
 
-      if (!post) return;
-      const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
-      if (isCurClint) return;
-      let strapi = post?.props?.strapi;
-
-      if (strapi) {
-        if (
-          strapi.data?.is === "column" &&
-          strapi.data?.column_id === columnRef.value?.id &&
-          strapi.data?.action === "columnNameUpdated"
-        ) {
-          // console.log(strapi);
-          columnRef.value.name = strapi.data?.name;
-        }
-        if (
-          strapi.data?.is === "column" &&
-          strapi.data?.column_id === columnRef.value?.id &&
-          strapi.data?.action === "columnStatusUpdated"
-        ) {
-          columnRef.value.status = strapi.data?.status;
-        }
-        // todo 接收到卡片被设置为私有后，检查当前用户是否包含在该卡片用户成员中，如果不在，删除此卡片
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.action === "card_privateChanged"
-        ) {
-          if (
-            filteredCards.value.map((i) => i.id).includes(strapi.data.card_id)
-          ) {
-            let card = filteredCards.value.find(
-              (i) => i.id === strapi.data.card_id
-            );
-            let card_members = card.card_members;
-            const card_users_ids = card_members.map((i) => i.by_user.id);
-            if (!card_users_ids?.includes(userStore.userId)) {
-              filteredCards.value = filteredCards.value.filter(
-                (i) => i.id !== strapi.data.card_id
-              );
-              cards.value = cards.value.filter(
-                (i) => i.id !== strapi.data.card_id
-              );
-              // 如果当前用户正在弹框内查看该卡片详情，关闭并发出提醒
-              if (teamStore.card.id === strapi.data.card_id) {
-                teamStore.card = null;
-                $q.notify($t('cant_view_private_card_tip'));
-              }
-            }
-          }
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.column_id === columnRef.value?.id &&
-          strapi.data.action === "cardCreated"
-        ) {
-          const _card_ids = columnRef.value.cards.map(i => i.id);
-          if(!_card_ids.includes(strapi.data.body.id)){
-            let res = await findCard(strapi.data.body.id);
-            if (res?.data) {
-              pushCard(res.data);
-            }
-          }
-        }
-        if (
-          strapi.data?.is === "column" &&
-          strapi.data.column_id === columnRef.value?.id &&
-          strapi.data.action === "orderCard"
-        ) {
-          await nextTick();
-          const order = strapi.data.order;
-          let _all_cards = teamStore.kanban.columns?.map(column => column.cards).flat();
-
-          // 如果 从 分栏 a 中移动卡片到 分栏 b,
-          // a 的移出行为将导致 store 中 card 被移出
-          // b 重新获取 all_cards时将不会得到被移出的卡片
-          // 所以 将a中被移出的卡片添加到流浪卡片中
-          // b 在获取all_cards后检查流浪卡片是否存在，如果存在则添加到all_cards中
-          const _notExit_cards_inOrder = columnRef.value.cards.filter(i => !order.includes(i.id));
-          if(_notExit_cards_inOrder.length > 0){
-            teamStore.kanban.wandringCards = _notExit_cards_inOrder;
-          }
-          if(teamStore.kanban.wandringCards){
-            _all_cards = [..._all_cards, ...teamStore.kanban.wandringCards];
-          }
-          const syncCards = async (_order) => {
-            const targetIds = _order;
-            // 创建一个包含所有异步操作的promise数组
-            const cardPromises = targetIds.map(async (id) => {
-              const card = _all_cards.find(i => i.id === id);
-              if (!card) {
-                const res = await findCard(id);
-                if (res?.data) {
-                  return res.data;
-                } else {
-                  return {
-                    id: -1,
-                    error: 'card_fetch_error'
-                  };
-                }
-              }
-              return card;
-            });
-
-            // 使用Promise.all等待所有异步操作完成
-            const cards = await Promise.allSettled(cardPromises);            
-
-            // 更新卡片数组
-            columnRef.value.cards = cards.map(i => i.status === "fulfilled" && i.value);
-          }
-          await syncCards(order);
-        }
-      }
-    }
-  },
-  { immediate: true, deep: true }
-);
 const uiOptions = ref([
   {
     val: "hidecompletedTodo",

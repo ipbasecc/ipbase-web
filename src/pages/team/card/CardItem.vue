@@ -585,18 +585,16 @@ import {
   updateCardThread,
   updateJsonContent
 } from "src/hooks/team/useCard.js";
-import {findCard} from "src/api/strapi/project.js";
 import {isEqual} from "lodash-es";
 import {useProjectCardPreference} from "src/pages/team/hooks/useSettingTemplate.js";
 import ThreadBtn from "../components/widgets/ThreadBtn.vue";
 import ReName from "../components/widgets/icons/ReName.vue";
-import {mm_wsStore, teamStore, uiStore, userStore,} from "src/hooks/global/useStore.js";
+import {teamStore, uiStore, userStore,} from "src/hooks/global/useStore.js";
 import ClassPage from "./ClassPage.vue";
 import FileViewer from "src/components/VIewComponents/FileViewer.vue";
 import CreateShare from "pages/team/components/CreateShare.vue";
 import DownloadApp from 'src/components/VIewComponents/DownloadApp.vue'
 import useOverview from 'src/pages/team/hooks/useOverview.js'
-import { onKeyStroke } from "@vueuse/core";
 
 const $q = useQuasar();
 const route = useRoute();
@@ -738,7 +736,7 @@ watch([storeCard, storeCardMedia, storeCardVersion], () => {
 },{immediate:false,deep:false})
 
 const executor = ref();
-const { style, highlight } = clac_cardEdgeStyle(cardRef.value);
+let { style, highlight } = clac_cardEdgeStyle(cardRef.value);
 
 const is_followed = computed(() =>
   cardRef.value?.followed_bies
@@ -950,7 +948,7 @@ watch(val, async(newVal) => {
     }
     if(val.value.event === 'todogroup:updated'){
       if(cardRef.value.id === Number(card_id)){
-        const index = cardRef.value.todogroups.findIndex(i => i.id === data.id);
+        const index = cardRef.value.todogroups?.findIndex(i => i.id === data.id);
         if(index > -1){
           cardRef.value.todogroups.splice(index, 1, data);
         }
@@ -958,14 +956,14 @@ watch(val, async(newVal) => {
     }
     if(val.value.event === 'todogroup:removed'){
       if(cardRef.value.id === Number(card_id)){
-        const index = cardRef.value.todogroups.findIndex(i => i.id === data.removed_todogroup_id);
+        const index = cardRef.value.todogroups?.findIndex(i => i.id === data.removed_todogroup_id);
         if(index > -1){
           cardRef.value.todogroups.splice(index, 1);
         }
       }
     }
-    const todogroups_ids = cardRef.value.todogroups.map(i => i.id);
-    const isInCard = todogroups_ids.includes(Number(todogroup_id));
+    const todogroups_ids = cardRef.value.todogroups?.map(i => i.id);
+    const isInCard = todogroups_ids?.includes(Number(todogroup_id));
     if(val.value.event === 'todo:created' && isInCard){
       const index = cardRef.value.todogroups.findIndex(i => i.id === Number(todogroup_id));
       if(index > -1){
@@ -1023,6 +1021,9 @@ watchEffect(() => {
     threads_needUpdate.value = [];
     threads_needUpdate_date.value = [];
   }
+  const edgeStyle = clac_cardEdgeStyle(cardRef.value);
+  style = edgeStyle.style;
+  highlight = edgeStyle.highlight;
 })
 </script>
 
