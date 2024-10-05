@@ -9,19 +9,19 @@
         bordered
         @update:model-value="updateVersionFn"
         mask="YYYY-MM-DD"
-        :options="(date) => date >= quasarDate(current_versionRef?.start)"
+        :options="(date) => date >= quasarDate(activeVersion?.start)"
       />
     </q-popup-proxy>
   </div>
 </template>
 
 <script setup>
-import { ref, toRef, watchEffect } from "vue";
+import { ref, toRefs, watchEffect } from "vue";
 
 import { date } from "quasar";
 
 const props = defineProps({
-  current_version: {
+  activeVersion: {
     type: Object,
     default() {
       return {};
@@ -36,11 +36,11 @@ const props = defineProps({
     default: false,
   },
 });
-const current_versionRef = toRef(props, "current_version");
+const {activeVersion} = toRefs(props);
 
-const end = ref(current_versionRef.value?.end);
+const end = ref(activeVersion.value?.end);
 watchEffect(() => {
-  end.value = current_versionRef.value?.end;
+  end.value = activeVersion.value?.end;
 });
 
 function quasarDate(val) {
@@ -49,7 +49,7 @@ function quasarDate(val) {
 
 const emit = defineEmits(["endChanged"]);
 const updateVersionFn = async () => {
-  if (end.value === current_versionRef.value?.end) return;
+  if (end.value === activeVersion.value?.end) return;
 
   emit("endChanged", end.value);
 };

@@ -499,8 +499,7 @@ import {
   watchEffect,
   computed,
   onBeforeMount,
-  nextTick,
-  onMounted
+  nextTick
 } from "vue";
 import { VueDraggable } from 'vue-draggable-plus'
 import CardItem from "src/pages/team/card/CardItem.vue";
@@ -511,13 +510,10 @@ import StatusMenu from "src/pages/team/components/user/StatusMenu.vue";
 import { useQuasar } from "quasar";
 import {
   updateColumn,
-  deleteColumn,
-  findCard,
+  deleteColumn
 } from "src/api/strapi/project.js";
 import localforage from "localforage";
 
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
-import { filterCardsByString } from "src/hooks/utilits.js";
 import { board_type } from "src/pages/team/kanban/BoradsList.js";
 
 import {
@@ -591,31 +587,13 @@ const deleteColumnFn = () => {
   const deleteFn = async () => {
     let res;
     if (teamStore.card?.id) {
-      const card_id = teamStore.card?.id;
-      res = await deleteColumn(
+      await deleteColumn(
         teamStore.project.id,
         columnRef.value.id,
-        card_id
+        teamStore.card?.id
       );
     } else {
-      res = await deleteColumn(teamStore.project.id, columnRef.value.id);
-    }
-    if (res) {
-      let chat_Msg = {
-        body: `${userStore.me?.username}删除了看板"${teamStore.kanban?.title}"内分栏${columnRef.value.name}`,
-        props: {
-          strapi: {
-            data: {
-              is: "column",
-              by_user: userStore.userId,
-              kanban_id: kanban_idRef.value,
-              action: "columnDeleted",
-              column_id: res.data.id,
-            },
-          },
-        },
-      };
-      // await send_chat_Msg(chat_Msg);
+      await deleteColumn(teamStore.project.id, columnRef.value.id);
     }
   };
   if (columnRef.value.cards.length > 0) {
@@ -644,40 +622,6 @@ const updateColumnFn = async () => {
   let res = await updateColumn(columnRef.value.id, params.value);
   if (res) {
     column_menu.value?.hide();
-    if (params.value.data.name) {
-      let chat_Msg = {
-        body: `${userStore.me.username}将看板"${teamStore.kanban?.title}"内分栏${columnRef.value.name}的名称修改为${res.data.name}`,
-        props: {
-          strapi: {
-            data: {
-              is: "column",
-              by_user: userStore.userId,
-              column_id: columnRef.value.id,
-              action: "columnNameUpdated",
-              name: res.data.name,
-            },
-          },
-        },
-      };
-      // await send_chat_Msg(chat_Msg);
-    }
-    if (params.value.data.status) {
-      let chat_Msg = {
-        body: `${userStore.me.username}将看板"${teamStore.kanban?.title}"内分栏${columnRef.value.name}的状态修改为${res.data.status}`,
-        props: {
-          strapi: {
-            data: {
-              is: "column",
-              by_user: userStore.userId,
-              column_id: columnRef.value.id,
-              action: "columnStatusUpdated",
-              status: res.data.status,
-            },
-          },
-        },
-      };
-      // await send_chat_Msg(chat_Msg);
-    }
     delete params.value.data.status;
     params.value.data.name = "";
   }
@@ -703,33 +647,11 @@ const dragCard_sort = async () => {
     },
   };
 
-  let res = await updateColumn(columnRef.value.id, params);
-  if (res?.data) {
-    let chat_Msg = {
-      body: `${userStore.me.username}拖拽了看板"${teamStore.kanban?.title}"内卡片的位置`,
-      props: {
-        strapi: {
-          data: {
-            is: "column",
-            by_user: userStore.userId,
-            column_id: columnRef.value?.id,
-            action: "orderCard",
-            order: params.data.cards,
-          },
-        },
-      },
-    };
-    // await send_chat_Msg(chat_Msg);
-  }
+  await updateColumn(columnRef.value.id, params);
 };
 const onSort = async () => {
   await dragCard_sort()
 }
-
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
-};
-
 //卡片部分
 const createCard_in = ref(null);
 const DefaultCreateCardType = ref();
@@ -803,15 +725,15 @@ const setDefaultCreateCardType = async (val) => {
   }
 };
 
-// watch(filter_txt, () => {
-//   if (cards.value) {
-//     if (filter_txt.value) {
-//       filteredCards.value = filterCardsByString(filter_txt.value,cards.value);
-//     } else {
-//       filteredCards.value = cards.value;
-//     }
-//   }
-// },{ immediate: true, deep: false });
+watch(filter_txt, () => {
+  if (cards.value) {
+    if (filter_txt.value) {
+      filteredCards.value = filterCardsByString(filter_txt.value,cards.value);
+    } else {
+      filteredCards.value = cards.value;
+    }
+  }
+},{ immediate: true, deep: false });
 
 const { current } = useMagicKeys();
 const keys = computed(() => Array.from(current));

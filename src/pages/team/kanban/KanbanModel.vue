@@ -122,10 +122,6 @@ import { VueDraggable } from 'vue-draggable-plus'
 import { kanbanUpdate, createColumn } from "src/api/strapi/project.js";
 import ColumnContainer from "./ColumnContainer.vue";
 import QuadrantModebl from "./QuadrantModebl.vue";
-import {
-  send_MattersMsg,
-  send_CardMsg,
-} from "src/pages/team/hooks/useSendmsg.js";
 import { attachExpand } from 'src/pages/team/hooks/useKanban.js'
 import {
   getKanbanCache,
@@ -134,7 +130,6 @@ import {
 } from "src/hooks/project/useProcess.js";
 import LoadingBlock from "../../../components/VIewComponents/LoadingBlock.vue";
 import { userStore,  teamStore, uiStore } from "src/hooks/global/useStore.js";
-import { genCardName } from "src/hooks/utilits.js";
 import ReelContainer from "./ReelContainer.vue";
 import SegmentPage from "../card/SegmentPage.vue";
 import { i18n } from 'src/boot/i18n.js';
@@ -322,23 +317,6 @@ const dragColumn_done = async (_kanban_id) => {
   let res = await kanbanUpdate(_kanban_id, params);
   if (res.data) {
     __dragging_column.value = false;
-    let chat_Msg = {
-      body: `${userStore.me?.username}将调整了看板 - ${teamStore.kanban?.title}内${columnLabel.value}的排序`,
-      props: {
-        strapi: {
-          data: {
-            is: "column",
-            by_user: userStore.userId,
-            kanban_id: _kanban_id,
-            action: "orderColumn",
-            body: {
-              order: res.data.columns.map((i) => i.id),
-            }
-          }
-        }
-      }
-    }
-    // await send_chat_Msg(chat_Msg);
   }
 };
 
@@ -356,34 +334,9 @@ const createColumnFn = async () => {
   }
   let res = await createColumn(params);
   if (res?.data) {
-    let chat_Msg = {
-      body: `${userStore.me?.username}在看板 - ${
-        teamStore.card ? genCardName(teamStore.card) : teamStore.kanban?.title
-      }内新建了${columnLabel.value} ${res.data.name}`,
-      props: {
-        strapi: {
-          data: {
-            is: "column",
-            by_user: userStore.userId,
-            kanban_id: kanban.value?.id,
-            action: "columnCreated",
-            body: res.data,
-          },
-        },
-      },
-    };
-    // await send_chat_Msg(chat_Msg);
-    // if (teamStore.card?.mm_thread?.id) {
-    //   delete chat_Msg.props;
-    //   await send_CardMsg(chat_Msg);
-    // }
     new_column_ing.value = false;
     new_column_name.value = "";
   }
-};
-
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
 };
 
 const cardChange = () => {
@@ -478,13 +431,13 @@ watch(val, async(newVal, oldVal) => {
     }
     
     if(val.value.event === 'card:created'){
-      const column = kanban.value.columns.find(i => i.id === column_id);
+      const column = kanban.value.columns?.find(i => i.id === column_id);
       if(column) {
         if(column.cards?.length > 0){
           if(kanban.value.type === 'kanban' || kanban.value.type === 'classroom'){
             column.cards.unshift(data);
           } else {
-            column.cards.push(data);
+            column.cards = [...column.cards, data];
           }
         } else {
           column.cards = [data];

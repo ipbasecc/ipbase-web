@@ -32,8 +32,7 @@
         class="row no-wrap gap-sm relative-position unselected"
         :class="uiStore.activeReel ? 'items-center' : 'flex-center'"
       >
-        <div
-          v-if="filteredCards?.length > 0 && !uiStore.activeReel"
+        <div v-if="filteredCards?.length > 0 && !uiStore.activeReel"
           style="height: 100%; width: 40vw; max-width: 39%"
         ></div>
         <VueDraggable v-model="filteredCards"
@@ -61,10 +60,9 @@
             />
           </template>
         </VueDraggable>
-        <div
-          v-if="filteredCards?.length > 0 && !uiStore.activeReel"
+        <div v-if="filteredCards?.length > 0 && !uiStore.activeReel"
           style="height: 100%; width: 40vw; max-width: 39%"
-        ></div>
+        />
       </div>
     </q-scroll-area>
     <q-bar v-show="!uiStore.activeReel" class="full-width transparent q-my-xs">
@@ -181,18 +179,15 @@ import { useQuasar } from "quasar";
 import {
   updateColumn,
   deleteColumn,
-  findCard,
   createCard,
 } from "src/api/strapi/project.js";
 
 import { confirmUpload } from "src/hooks/utilits/useConfirmUpload.js";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import { filterCardsByString } from "src/hooks/utilits.js";
 
 import {
   userStore,
   teamStore,
-  mm_wsStore,
   uiStore,
 } from "src/hooks/global/useStore.js";
 import { useMagicKeys } from "@vueuse/core";
@@ -244,9 +239,8 @@ let column_unread_count = ref();
 let column_status = ref();
 let column_type = ref();
 let column_executor = ref();
-watch(
-  columnRef,
-  () => {
+watch(columnRef, () => {
+  if(columnRef.value){
     cards.value = columnRef.value?.cards;
     filteredCards.value = cards.value;
     column_name.value = columnRef.value?.name;
@@ -254,39 +248,21 @@ watch(
     column_status.value = columnRef.value?.status;
     column_type.value = columnRef.value?.type;
     column_executor.value = columnRef.value?.executor;
-  },
-  { immediate: true, deep: true }
-);
+  }
+},{ immediate: true, deep: true });
 
 const deleteColumnFn = () => {
   const deleteFn = async () => {
     let res;
     if (teamStore.card?.id) {
       const card_id = teamStore.card?.id;
-      res = await deleteColumn(
+      await deleteColumn(
         teamStore.project.id,
         columnRef.value.id,
         card_id
       );
     } else {
-      res = await deleteColumn(teamStore.project.id, columnRef.value.id);
-    }
-    if (res) {
-      let chat_Msg = {
-        body: `${userStore.me?.username}删除了看板"${teamStore.kanban?.title}"内Reel${columnRef.value.name}`,
-        props: {
-          strapi: {
-            data: {
-              is: "column",
-              by_user: userStore.userId,
-              kanban_id: kanban_idRef.value,
-              action: "columnDeleted",
-              column_id: res.data.id,
-            },
-          },
-        },
-      };
-      await send_chat_Msg(chat_Msg);
+      await deleteColumn(teamStore.project.id, columnRef.value.id);
     }
   };
   if (columnRef.value.cards.length > 0) {
@@ -316,40 +292,6 @@ const updateColumnFn = async () => {
   let res = await updateColumn(columnRef.value.id, params.value);
   if (res) {
     column_menu.value?.hide();
-    if (params.value.data.name) {
-      let chat_Msg = {
-        body: `${userStore.me.username}将看板"${teamStore.kanban?.title}"内Reel${columnRef.value.name}的名称修改为${res.data.name}`,
-        props: {
-          strapi: {
-            data: {
-              is: "column",
-              by_user: userStore.userId,
-              column_id: columnRef.value.id,
-              action: "columnNameUpdated",
-              name: res.data.name,
-            },
-          },
-        },
-      };
-      await send_chat_Msg(chat_Msg);
-    }
-    if (params.value.data.status) {
-      let chat_Msg = {
-        body: `${userStore.me.username}将看板"${teamStore.kanban?.title}"内Reel${columnRef.value.name}的状态修改为${res.data.status}`,
-        props: {
-          strapi: {
-            data: {
-              is: "column",
-              by_user: userStore.userId,
-              column_id: columnRef.value.id,
-              action: "columnStatusUpdated",
-              status: res.data.status,
-            },
-          },
-        },
-      };
-      await send_chat_Msg(chat_Msg);
-    }
     delete params.value.data.status;
     params.value.data.name = "";
   }
@@ -372,37 +314,13 @@ const dragCard_sort = async () => {
       cards: filteredCards.value.map((i) => i.id),
     },
   };
-  // console.log('column changed',params);
-
-  let res = await updateColumn(columnRef.value.id, params);
-  if (res?.data) {
-    // emit("orderCard", res?.data);
-    let chat_Msg = {
-      body: `${userStore.me.username}拖拽了看板"${teamStore.kanban?.title}"内卡片的位置`,
-      props: {
-        strapi: {
-          data: {
-            is: "column",
-            by_user: userStore.userId,
-            column_id: columnRef.value?.id,
-            action: "orderCard",
-            order: params.data.cards,
-          },
-        },
-      },
-    };
-    await send_chat_Msg(chat_Msg);
-  }
+  await updateColumn(columnRef.value.id, params);
 };
 
 const onSort = async () => {
   await nextTick();
   await dragCard_sort()
 }
-
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
-};
 
 //卡片部分
 watchEffect(() => {
@@ -466,25 +384,15 @@ const dragEnd = () => {
   uiStore.draging = false;
 };
 
-watch(
-  filter_txt,
-  () => {
-    if (cards.value) {
-      if (filter_txt.value) {
-        // 对filteredCards进行筛选，而不是columnRef.value.cards
-        filteredCards.value = filterCardsByString(
-          filter_txt.value,
-          cards.value
-        );
-      }
-      if (!filter_txt.value) {
-        // 将filteredCards恢复为原始的数据，而不是columnRef.value.cards
-        filteredCards.value = cards.value;
-      }
+watch(filter_txt, () => {
+  if (cards.value) {
+    if (filter_txt.value) {
+      filteredCards.value = filterCardsByString(filter_txt.value,cards.value);
+    } else {
+      filteredCards.value = cards.value;
     }
-  },
-  { immediate: true, deep: false }
-);
+  }
+},{ immediate: true, deep: false });
 
 const { current } = useMagicKeys();
 const keys = computed(() => Array.from(current));
@@ -620,132 +528,6 @@ onUnmounted(() => {
   dropZone.value.removeEventListener("drop", handleDrop, false);
 });
 
-watch(
-  mm_wsStore,
-  async () => {
-    if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
-      let post =
-        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
-      if (!post) return;
-      const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
-      if (isCurClint) return;
-      let strapi = post?.props?.strapi;
-      if (strapi) {
-        if (
-          strapi.data?.is === "column" &&
-          strapi.data?.column_id === columnRef.value.id &&
-          strapi.data?.action === "columnNameUpdated"
-        ) {
-          // console.log(strapi);
-          columnRef.value.name = strapi.data?.name;
-        }
-        if (
-          strapi.data?.is === "column" &&
-          strapi.data?.column_id === columnRef.value.id &&
-          strapi.data?.action === "columnStatusUpdated"
-        ) {
-          columnRef.value.status = strapi.data?.status;
-        }
-        // todo 接收到卡片被设置为私有后，检查当前用户是否包含在该卡片用户成员中，如果不在，删除此卡片
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.action === "card_privateChanged"
-        ) {
-          if (
-            filteredCards.value.map((i) => i.id).includes(strapi.data.card_id)
-          ) {
-            let card = filteredCards.value.find(
-              (i) => i.id === strapi.data.card_id
-            );
-            let card_members = card.card_members;
-            const card_users_ids = card_members.map((i) => i.by_user.id);
-            if (!card_users_ids?.includes(userStore.userId)) {
-              filteredCards.value = filteredCards.value.filter(
-                (i) => i.id !== strapi.data.card_id
-              );
-              cards.value = cards.value.filter(
-                (i) => i.id !== strapi.data.card_id
-              );
-              // 如果当前用户正在弹框内查看该卡片详情，关闭并发出提醒
-              if (teamStore.card.id === strapi.data.card_id) {
-                teamStore.card = null;
-                $q.notify($t('cant_view_private_card_tip'));
-              }
-            }
-          }
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.column_id === columnRef.value?.id &&
-          strapi.data.action === "cardCreated"
-        ) {
-          let res = await findCard(strapi.data.body.id);
-          if (res) {
-            let card = res.data;
-            if (teamStore.kanban?.type === "kanban") {
-              columnRef.value.cards = [card, ...columnRef.value?.cards];
-            } else {
-              columnRef.value.cards = [...columnRef.value?.cards, card];
-            }
-          }
-        }
-        if (
-          strapi.data?.is === "column" &&
-          strapi.data.column_id === columnRef.value?.id &&
-          strapi.data.action === "orderCard"
-        ) {
-          console.log('orderCard');
-          
-          await nextTick();
-          const order = strapi.data.order;
-          let _all_cards = teamStore.kanban.columns?.map(column => column.cards).flat();
-
-          // 如果 从 分栏 a 中移动卡片到 分栏 b,
-          // a 的移出行为将导致 store 中 card 被移出
-          // b 重新获取 all_cards时将不会得到被移出的卡片
-          // 所以 将a中被移出的卡片添加到流浪卡片中
-          // b 在获取all_cards后检查流浪卡片是否存在，如果存在则添加到all_cards中
-          const _notExit_cards_inOrder = columnRef.value.cards.filter(i => !order.includes(i.id));
-          if(_notExit_cards_inOrder.length > 0){
-            teamStore.kanban.wandringCards = _notExit_cards_inOrder;
-          }
-          if(teamStore.kanban.wandringCards){
-            _all_cards = [..._all_cards, ...teamStore.kanban.wandringCards];
-          }
-          const syncCards = async (_order) => {
-            const targetIds = _order;
-            // 创建一个包含所有异步操作的promise数组
-            const cardPromises = targetIds.map(async (id) => {
-              const card = _all_cards.find(i => i.id === id);
-              if (!card) {
-                const res = await findCard(id);
-                if (res?.data) {
-                  return res.data;
-                } else {
-                  return {
-                    id: -1,
-                    error: 'card_fetch_error'
-                  };
-                }
-              }
-              return card;
-            });
-
-            // 使用Promise.all等待所有异步操作完成
-            const cards = await Promise.allSettled(cardPromises);
-            console.log(cards);
-            
-
-            // 更新卡片数组
-            columnRef.value.cards = cards.map(i => i.status === "fulfilled" && i.value);
-          }
-          await syncCards(order);
-        }
-      }
-    }
-  },
-  { immediate: true, deep: true }
-);
 const dragscrollstart = () => {
   uiStore.draging = true;
 };

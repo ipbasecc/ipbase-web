@@ -505,17 +505,14 @@ import StoragePage from "src/pages/team/storage/StoragePage.vue";
 import SchedulePage from "src/pages/team/schedule/SchedulePage.vue";
 
 import { useCardname } from "src/hooks/project/useCardname.js";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import ThreadContainer from "../chat/ThreadContainer.vue";
 import {
-  userStore,
   teamStore,
   mm_wsStore,
   uiStore,
 } from "src/hooks/global/useStore.js";
 import localforage from "localforage";
 import {useQuasar} from 'quasar';
-import { uniqueById } from "src/hooks/utilits.js";
 
 const props = defineProps({
   isExternal: {
@@ -571,10 +568,6 @@ const chatInfo = computed(() => ({
   mm_channel_id: teamStore.project?.mm_channel?.id,
   post_id: teamStore.card?.mm_thread?.id,
 }));
-
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
-};
 
 const project_members = computed(() => teamStore.project?.project_members);
 const members_forAdd = computed(() => project_members.value.filter((i) => !card_members.value?.map(j => j.id).includes(i.id)))

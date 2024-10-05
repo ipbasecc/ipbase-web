@@ -191,7 +191,7 @@
 </template>
 
 <script setup>
-import { ref, toRefs, watch, computed, nextTick } from "vue";
+import { ref, toRefs, computed, nextTick } from "vue";
 import {
   updateProject,
   createBoard,
@@ -199,9 +199,8 @@ import {
   deleteBoard,
 } from "src/api/strapi/project.js";
 import { useRouter } from "vue-router";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import { VueDraggable } from 'vue-draggable-plus'
-import { teamStore, userStore, mm_wsStore } from "src/hooks/global/useStore.js";
+import { teamStore} from "src/hooks/global/useStore.js";
 import { boards } from "./BoradsList.js";
 import { i18n } from 'src/boot/i18n.js';
 
@@ -319,67 +318,6 @@ const updateBoardFn = async (board_id) => {
     rename_text.value = null;
   }
 };
-
-watch(
-  mm_wsStore,
-  async () => {
-    if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
-      let post =
-        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
-      if (!post) return;
-      const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
-      if (isCurClint) return;
-      let strapi = post?.props?.strapi;
-      if (strapi) {
-        if (
-          strapi.data?.is === "board" &&
-          strapi.data?.project_id === teamStore.project.id &&
-          strapi.data.action === "sortBoard"
-        ) {
-          teamStore.project.boards = strapi.data.order.map((i) =>
-            teamStore.project.boards.find((b) => b.id === i)
-          );
-        }
-        if (
-          strapi.data?.is === "board" &&
-          strapi.data?.project_id === teamStore.project.id &&
-          strapi.data.action === "board_created"
-        ) {
-          teamStore.project.boards.push(strapi.data.body);
-        }
-        if (
-          strapi.data?.is === "board" &&
-          strapi.data?.project_id === teamStore.project.id &&
-          strapi.data.action === "board_deleted"
-        ) {
-          teamStore.project.boards = teamStore.project.boards.filter(
-            (i) => i.id !== strapi.data.body.id
-          );
-        }
-        if (
-          strapi.data?.is === "board" &&
-          strapi.data?.project_id === teamStore.project.id &&
-          strapi.data.action === "update_borad"
-        ) {
-          // 定义一个条件函数，判断元素的id是否与obj的id相同
-          function isSameId(element) {
-            return element.id === strapi.data.board_id;
-          }
-          // 使用findIndex()方法找到arr中满足条件的元素的索引
-          const index = teamStore.project.boards.findIndex(isSameId);
-          // 如果找到了，就使用splice()方法替换该元素
-          if (index !== -1) {
-            teamStore.project.boards.splice(index, 1, strapi.data.body);
-          }
-          if (teamStore.board.id === strapi.data.board_id) {
-            teamStore.board = strapi.data.body;
-          }
-        }
-      }
-    }
-  },
-  { immediate: true, deep: true }
-);
 </script>
 
 <style lang="scss">

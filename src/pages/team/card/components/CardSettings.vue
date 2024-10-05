@@ -135,29 +135,6 @@ const updateCardFn = async () => {
     return data
   }
 };
-watch(
-  mm_wsStore,
-  async () => {
-    if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
-      let post =
-        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
-      if (!post) return;
-      const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
-      if (isCurClint) return;
-      let strapi = post?.props?.strapi;
-      if (strapi) {
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card.id &&
-          strapi.data.action === "card_privateChanged"
-        ) {
-          teamStore.card.private = strapi.data.private;
-        }
-      }
-    }
-  },
-  { immediate: true, deep: true }
-);
 </script>
 
 <style lang="scss" scoped></style>

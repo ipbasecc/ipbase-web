@@ -4,7 +4,7 @@ import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 import { mergeObjects } from 'src/hooks/utilits.js'
 import { useRouter } from "vue-router";
 import { fetchProject } from "src/hooks/project/useProcess.js";
-import { attachExpand } from 'src/pages/team/hooks/useKanban.js'
+import { cleanCache } from 'src/pages/team/hooks/useAuths.js'
 import { useQuasar } from "quasar";
 
 export default function useWatcher() {
@@ -748,6 +748,46 @@ export default function useWatcher() {
         if (teamStore.card?.schedule?.id === Number(schedule_id)) {
           teamStore.card.schedule.schedule_events = teamStore.card?.schedule?.schedule_events.filter((i) => i.id !== Number(data.removed_event_id));
         }
+      }
+
+      if(val.value.event === 'member-role:created'){
+        if(project_id && teamStore.project?.id === Number(project_id)){
+          teamStore.project.member_roles.push(data);
+        }
+        if(card_id && teamStore.card?.id === Number(card_id)){
+          teamStore.card.member_roles.push(data);
+        }
+        cleanCache();
+      }
+      if(val.value.event === 'member-role:removed'){
+        if(teamStore.project){
+          const index = teamStore.project?.member_roles?.findIndex(i => i.id === Number(data.removed_role_id));
+          if(index !== -1){
+            teamStore.project.member_roles.splice(index, 1);
+          }
+        }
+        if(teamStore.card){
+          const index = teamStore.card?.member_roles?.findIndex(i => i.id === Number(data.removed_role_id));
+          if(index !== -1){
+            teamStore.card.member_roles.splice(index, 1);
+          }
+        }
+        cleanCache();
+      }
+      if(val.value.event === 'member-role:updated'){
+        if(teamStore.project?.id === Number(project_id)){
+          const index = teamStore.project?.member_roles?.findIndex(i => i.id === Number(data.id));
+          if(index !== -1){
+            teamStore.project.member_roles[index] = data;
+          }
+        }
+        if(teamStore.card?.id === Number(card_id)){
+          const index = teamStore.card?.member_roles?.findIndex(i => i.id === Number(data.id));
+          if(index !== -1){
+            teamStore.card.member_roles[index] = data;
+          }
+        }
+        cleanCache();
       }
     }
   },{ immediate: true, deep: true });

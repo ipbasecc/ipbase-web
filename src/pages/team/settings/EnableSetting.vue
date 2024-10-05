@@ -34,10 +34,9 @@
 
 <script setup>
 import { ref, watchEffect } from "vue";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import { updateProject } from "src/api/strapi/project.js";
 import { useProjectCanEnableItems } from "src/hooks/project/useSettingTemplate.js";
-import { userStore, teamStore } from "src/hooks/global/useStore.js";
+import { teamStore } from "src/hooks/global/useStore.js";
 
 const preferences = ref([]);
 const enable_settings = ref([]);
@@ -82,10 +81,6 @@ const updatePreferences = async () => {
   } catch (error) {
     console.log(error);
   }
-};
-
-const send_chat_Msg = (MsgContent) => {
-  send_MattersMsg(MsgContent);
 };
 </script>
 

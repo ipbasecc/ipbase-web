@@ -68,19 +68,16 @@
 </template>
 
 <script setup>
-import {computed, ref, toRefs, watch, watchEffect, onMounted, onUnmounted} from "vue";
+import {computed, ref, toRefs, watchEffect} from "vue";
 import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
 
 import {updateDocument} from "src/api/strapi/project.js";
-import {send_MattersMsg} from "src/pages/team/hooks/useSendmsg.js";
 import localforage from "localforage";
-import {mm_wsStore, teamStore, uiStore, userStore} from "src/hooks/global/useStore.js";
+import {teamStore, uiStore} from "src/hooks/global/useStore.js";
 import {isEqual} from "lodash-es";
 import {i18n} from 'src/boot/i18n.js';
 
 const $t = i18n.global.t;
-
-const userId = computed(() => teamStore.init?.id);
 const props = defineProps({
   by_info: {
     type: Object,
@@ -136,30 +133,9 @@ const updateDocumentFn = async () => {
 
   let res = await updateDocument(document.value.id, params);
   if (res) {
-    updateChatMsg.value = {
-      props: {
-        strapi: {
-          data: {
-            is: "document",
-            action: "DocumentContentUpdate",
-            document_id: document.value.id,
-            by_user: userId.value,
-            body: res.data,
-          },
-        },
-      },
-    };
-
-    if (by_info.value.project_id) {
-      updateChatMsg.value.body = `${userStore.me.username} ${$t('changed_project_props')}'${teamStore.project.name}' ${$t('inner_document')}'${document.value.title}' ${$t('of_content')}`;
-    }
-    if (by_info.value.card_id) {
-      updateChatMsg.value.body = `${userStore.me.username} ${$t('changed_card_props')}'${teamStore.card.name}' ${$t('inner_document')}'${document.value.title}'${document.value.title}' ${$t('of_content')}`;
-    }
     if (by_info.value.user_id) {
       process_documentContent_change(res.data);
     }
-    await send_chat_Msg(updateChatMsg.value);
     setTimeout(() => {
       localforage.removeItem(`__document_${document.value.id}`);
     }, 3000);
@@ -214,10 +190,6 @@ const tiptapDestroy = async () => {
   tiptapIsDestroy.value = true;
   // await unlock();
 }
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
-  updateChatMsg.value = null;
-};
 
 const process_documentContent_change = (val) => {
   // console.log("val", val);
@@ -236,26 +208,6 @@ const process_documentContent_change = (val) => {
   }
 };
 
-watch(
-  mm_wsStore,
-  async () => {
-    if (mm_wsStore.event && mm_wsStore.event.event === "thread_updated") {
-      const _thread = JSON.parse(mm_wsStore.event.data.thread);
-      // console.log("message.event", message);
-      if (_thread.id === document.value?.mm_thread?.id) {
-        document.value.mm_thread = _thread;
-        const _params = {
-          data: {
-            mm_thread: _thread,
-          },
-        };
-        console.log("updateDocument");
-        await updateDocument(document.value.id, _params);
-      }
-    }
-  },
-  { immediate: false, deep: true }
-);
 </script>
 
 <style lang="scss" scoped></style>

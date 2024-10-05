@@ -20,7 +20,7 @@
             }}</q-item-label>
           </q-item-section>
           <q-item-section avatar>
-            <q-toggle v-model="i.enable" color="green" />
+            <q-toggle v-model="i.enable" color="green" @update:model-value="updatePreferences()" />
           </q-item-section>
         </q-item>
       </template>
@@ -29,8 +29,7 @@
 </template>
 
 <script setup>
-import { ref, watch, watchEffect } from "vue";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
+import { ref, watchEffect } from "vue";
 import { updateProject } from "src/api/strapi/project.js";
 import { userStore, teamStore } from "src/hooks/global/useStore.js";
 
@@ -53,45 +52,12 @@ const updatePreferences = async () => {
     let res = await updateProject(teamStore.project?.id, params);
     if (res?.data) {
       preferences.value = res.data.preferences;
-      let chat_Msg = {
-        body: `${userStore.me?.username}修改了项目：${teamStore.project?.name}`,
-        props: {
-          strapi: {
-            data: {
-              is: "project",
-              by_user: userStore.userId,
-              project_id: teamStore.project?.id,
-              action: "projece_preference_Updated",
-              preferences: preferences.value,
-            },
-          },
-        },
-      };
-      send_chat_Msg(chat_Msg);
       return res;
     }
   } catch (error) {
     console.log(error);
   }
 };
-
-const send_chat_Msg = (MsgContent) => {
-  send_MattersMsg(MsgContent);
-};
-watch(
-  card_settings,
-  async () => {
-    if (card_settings.value) {
-      if (loading.value) return;
-      loading.value = true;
-      let res = await updatePreferences();
-      if (res) {
-        loading.value = false;
-      }
-    }
-  },
-  { immediate: false, deep: true }
-);
 </script>
 
 <style lang="scss" scoped></style>

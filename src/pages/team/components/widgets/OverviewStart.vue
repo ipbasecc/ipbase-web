@@ -15,10 +15,10 @@
 </template>
 
 <script setup>
-import { ref, toRef, watchEffect } from "vue";
+import { ref, toRefs, watchEffect } from "vue";
 
 const props = defineProps({
-  current_version: {
+  activeVersion: {
     type: Object,
     default() {
       return {};
@@ -33,16 +33,16 @@ const props = defineProps({
     default: false,
   },
 });
-const current_versionRef = toRef(props, "current_version");
-const start = ref(current_versionRef.value?.start);
+const { activeVersion } = toRefs(props);
+const start = ref(activeVersion.value?.start);
 
 watchEffect(() => {
-  start.value = current_versionRef.value?.start;
+  start.value = activeVersion.value?.start;
 });
 
 const emit = defineEmits(["startChanged"]);
 const updateVersionFn = async () => {
-  if (start.value === current_versionRef.value?.start) return;
+  if (start.value === activeVersion.value?.start) return;
 
   emit("startChanged", start.value);
 };

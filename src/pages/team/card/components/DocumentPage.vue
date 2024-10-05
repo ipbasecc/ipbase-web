@@ -18,8 +18,7 @@ import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
 import { toRef, ref } from "vue";
 
 import { updateDocument } from "src/api/strapi/project.js";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
-import { userStore, teamStore } from "src/hooks/global/useStore.js";
+import { teamStore } from "src/hooks/global/useStore.js";
 
 const props = defineProps({
   current_document: {
@@ -46,28 +45,7 @@ const updateDocumentFn = async (val) => {
       jsonContent: val,
     },
   };
-  let res = await updateDocument(current_documentRef.value.id, params);
-  if (res) {
-    let chat_Msg = {
-      body: `${userStore.me.username}修改了卡片：'${teamStore.card.name}'内的文档：'${current_documentRef.value.title}'的内容`,
-      props: {
-        strapi: {
-          data: {
-            is: "card",
-            by_user: userStore.userId,
-            card_id: teamStore.card.id,
-            action: "card_motifyDocumentContent",
-            document_id: current_documentRef.value.id,
-            jsonContent: res.data.jsonContent,
-          },
-        },
-      },
-    };
-    // send_chat_Msg(chat_Msg);
-  }
-};
-const send_chat_Msg = (MsgContent) => {
-  send_MattersMsg(MsgContent);
+  await updateDocument(current_documentRef.value.id, params);
 };
 </script>
 

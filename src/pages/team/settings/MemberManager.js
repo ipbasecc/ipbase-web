@@ -123,10 +123,6 @@ export async function removeMember(byInfo, member) {
   }
 }
 
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
-};
-
 export const new_roles_IDs = ref();
 export const set_new_roles_IDs = (member) => {
   if (!member) return [];

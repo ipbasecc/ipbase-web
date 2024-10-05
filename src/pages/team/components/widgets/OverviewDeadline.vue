@@ -8,7 +8,7 @@
         minimal
         bordered
         mask="YYYY-MM-DDTHH:mm:ss.SSSZ"
-        :options="(date) => date >= quasarDate(current_versionRef?.end)"
+        :options="(date) => date >= quasarDate(activeVersion?.end)"
       />
       <q-time
         v-model="deadline"
@@ -20,7 +20,7 @@
 </template>
 
 <script setup>
-import { ref, toRef, watchEffect } from "vue";
+import { ref, toRefs, watchEffect } from "vue";
 
 import { date } from "quasar";
 
@@ -29,7 +29,7 @@ function quasarDate(val) {
 }
 
 const props = defineProps({
-  current_version: {
+  activeVersion: {
     type: Object,
     default() {
       return {};
@@ -44,15 +44,15 @@ const props = defineProps({
     default: false,
   },
 });
-const current_versionRef = toRef(props, "current_version");
-const deadline = ref(current_versionRef.value?.deadline);
+const {activeVersion} = toRefs(props);
+const deadline = ref(activeVersion.value?.deadline);
 watchEffect(() => {
-  deadline.value = current_versionRef.value?.deadline;
+  deadline.value = activeVersion.value?.deadline;
 });
 
 const emit = defineEmits(["deadlineChanged"]);
 const updateVersionFn = async () => {
-  if (deadline.value === current_versionRef.value?.deadline) return;
+  if (deadline.value === activeVersion.value?.deadline) return;
 
   emit("deadlineChanged", deadline.value);
 };

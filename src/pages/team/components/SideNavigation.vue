@@ -351,7 +351,7 @@ import CreateProject from "./CreateProject.vue";
 import EditChannel from "./EditChannel.vue";
 import {createChannel} from "src/pages/team/hooks/useCreateChannel.js";
 import {debounce, useQuasar} from "quasar";
-import {mm_wsStore, teamStore, uiStore} from 'src/hooks/global/useStore.js';
+import {teamStore, uiStore} from 'src/hooks/global/useStore.js';
 import {i18n} from 'src/boot/i18n.js';
 import {
   enable_threads,
@@ -647,64 +647,5 @@ const callbackChannelRefreshEvents = [
   'channel_updated',
   'channel_converted',
 ]
-// watch(
-//   mm_wsStore,
-//   async () => {    
-//     // 判断消息类型
-//     return;
-//     if (mm_wsStore?.event?.event === "posted") {
-//       let post =
-//         mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
-//       if (!post) return;
-//       let strapi = post?.props?.strapi;
-//       if (
-//         strapi?.data?.action === "change_project_name" &&
-//         strapi?.data?.project_id
-//       ) {
-//         const _pid = strapi.data.project_id;
-//         // teamStore.team.projects.find((i) => i.id === _pid).name = strapi.data?.body;
-//         const project = teamStore.team.projects.find((i) => i.id === _pid);
-//         console.log('project', project);
-//         if (project) {
-//           project.name = strapi.data?.body;
-//         }
-//       }
-//       if (
-//         strapi?.data?.action === "overview_mediaChanged" &&
-//         strapi?.data?.project_id
-//       ) {
-//         const _pid = strapi.data.project_id;
-//         const _version = strapi.data.version;
-//         const _newUrl = strapi.data?.media?.url;
-//         teamStore.team.projects.map((i) => i.id === _pid ? {
-//           ...i,
-//           overviews: i.overviews.map((j) => ({
-//             ...j,
-//             url: j.id === _version ? _newUrl : j.url,
-//           })),
-//         } : i);
-//       }
-//     } else if(callbackChannelRefreshEvents.includes(mm_wsStore?.event?.event)){
-      
-//       const reGetTeam = async () => {
-//         // console.log('callbackChannelRefreshEvents');
-//         const res = await getTeamByID(teamStore.team.id);
-//         if (res?.data) {
-//           teamStore.team = res.data;
-//         } else {
-//           $q.notify({
-//             type: "negative",
-//             message: "获取团队信息失败,请刷新页面重试",
-//           })
-//         }
-//       }
-//       debounce(reGetTeam(),1000)
-//     } else if(mm_wsStore?.event?.event === 'delete_team'){
-//       teamStore.status = 'deleted'
-//       teamStore.teams = teamStore.teams.filter(i => i.id !== teamStore.team.id)
-//     }
-//   },
-//   { immediate: true, deep: true }
-// );
 
 </script>

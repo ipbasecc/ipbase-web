@@ -234,75 +234,33 @@ onBeforeMount(() => {
   sync_uiOptions();
 });
 
-watch(
-  mm_wsStore,
-  async () => {
-    if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
-      let post =
-        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
-      if (!post) return;
-      const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
-      if (isCurClint) return;
-      let strapi = post?.props?.strapi;
-      if (strapi) {
-        if (
-          strapi.data?.is === "project" &&
-          strapi.data?.project_id === teamStore.project?.id &&
-          (strapi.data.action === "delete" || strapi.data.action === "archive")
-        ) {
-          projectRemoved.value = true;
-          projectRemovedFn();
-        }
-        if (
-          strapi.data?.is === "project" &&
-          strapi.data.action === "projectDeleted" &&
-          strapi.data.project_id === teamStore.project?.id
-        ) {
-          teamStore.need_refecth_projects = true;
-          await localforage.removeItem("last_project_id");
-          await router.push("/teams");
-        }
-        if (
-          strapi.data?.is === "project" &&
-          strapi.data?.project_id === teamStore.project?.id &&
-          strapi.data.action === "member_removed"
-        ) {
-          teamStore.project.project_members =
-            teamStore.project.project_members.filter(
-              (i) => i.id !== strapi.data?.removedMember_id
-            );
-          if (strapi.data.removeUser_id === userStore.userId) {
-            await localforage.removeItem("last_project_id");
-            teamStore.need_refecth_projects = true;
-            await router.push("/teams");
-          }
-        }
-        if (
-          strapi.data?.is === "project" &&
-          strapi.data.action === "role_updated" &&
-          strapi.data.project_id === teamStore.project?.id
-        ) {
-          const res = await getProject(teamStore.project?.id);
-          if (res?.data) {
-            teamStore.project.member_roles = res.data.member_roles;
-          }
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.action === "cardCreated"
-        ) {
-          try {
-            await getProject(teamStore.project?.id);
-          } catch (error) {
-            console.error(error);
-          }
+const val = computed(() => teamStore.income);
+watch(val, async(newVal, oldVal) => {
+  if(!newVal || newVal === oldVal) return;
+  const { team_id, card_id, data } = val.value.data;
+  if(teamStore.team?.id === Number(team_id)){
+
+    const isMine = data.card_members?.map(i => i.by_user.id).includes(teamStore.init?.id);
+    if(val.value.event === 'card:created'){
+      if(isMine){
+        cards.value.push(data)
+      }
+    }
+    if(val.value.event === 'card:deleted'){
+      const index = cards.value.findIndex(i => i.id === Number(card_id));
+      if(index !== -1){
+        cards.value.splice(index, 1)
+    }
+    if(val.value.event === 'card:updated'){
+      if(isMine){
+        const index = cards.value.findIndex(i => i.id === Number(card_id));
+        if(index !== -1){
+          cards.value[index] = data;
         }
       }
     }
-  },
-  { immediate: true, deep: true }
-);
-
+  }}
+})
 onUnmounted(() => {
   teamStore.project = null;
 });

@@ -222,9 +222,8 @@
 </template>
 
 <script setup>
-import { ref, toRefs, computed, watch, nextTick, onBeforeMount, watchEffect } from "vue";
+import { ref, toRefs, computed, watch, nextTick, watchEffect } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import { VueDraggable } from 'vue-draggable-plus'
 import {
   createSchedule,
@@ -233,7 +232,7 @@ import {
   updateProject,
 } from "src/api/strapi/project.js";
 import ShareSchedule from "./ShareSchedule.vue";
-import {userStore, mm_wsStore, teamStore, uiStore} from 'src/hooks/global/useStore.js';
+import {teamStore, uiStore} from 'src/hooks/global/useStore.js';
 
 const router = useRouter();
 const route = useRoute();
@@ -360,30 +359,8 @@ const update = async (schedule) => {
   const res = await updateSchedule(schedule.id, params.value);
   if (res) {
     loading.value = false;
-    let chat_Msg = {
-      props: {
-        strapi: {
-          data: {
-            is: by_info.value?.by,
-            by_user: userStore.userId,
-            action: "schedule_updated",
-            body: res.data,
-          },
-        },
-      },
-    };
-    if (by_info.value?.by === "project") {
-      chat_Msg.body = `${userStore.me.username}：修改了项目规划 - ${schedule.id}`;
-      chat_Msg.props.strapi.data.project_id = teamStore.project?.id;
-    }
-    if (by_info.value?.by === "card") {
-      chat_Msg.body = `${userStore.me.username}：修改了任务规划 - ${schedule.id}`;
-      chat_Msg.props.strapi.data.card_id = teamStore.card?.id;
-    }
     if (by_info.value?.by === "user") {
       process_updatedData(res.data);
-    } else {
-      // await send_chat_Msg(chat_Msg);
     }
   }
 };
@@ -414,30 +391,8 @@ const process_removedData = (val) => {
 const remove = async (i) => {
   const res = await deleteSchedule(i.id);
   if (res) {
-    let chat_Msg = {
-      props: {
-        strapi: {
-          data: {
-            is: by_info.value?.by,
-            by_user: userStore.userId,
-            action: "schedule_removed",
-            body: res.data,
-          },
-        },
-      },
-    };
-    if (by_info.value?.by === "project") {
-      chat_Msg.body = `${userStore.me.username}：删除了项目规划 - ${document.title}`;
-      chat_Msg.props.strapi.data.project_id = teamStore.project?.id;
-    }
-    if (by_info.value?.by === "card") {
-      chat_Msg.body = `${userStore.me.username}：删除了任务规划 - ${document.title}`;
-      chat_Msg.props.strapi.data.card_id = teamStore.card?.id;
-    }
     if (by_info.value?.by === "user") {
       process_removedData(res.data);
-    } else {
-      // await send_chat_Msg(chat_Msg);
     }
   }
 };
@@ -466,44 +421,21 @@ const orderSchedule = async () => {
     };
 
     let res;
-    let Msg_body;
+    let order = res.data.schedules.map((i) => i.id);
 
     if (by_info.value?.by === "project") {
       res = await updateProject(project_id, params);
-      Msg_body = res.data.schedules.map((i) => i.id);
     }
     if (by_info.value?.by === "user") {
     }
 
     if (res) {
       teamStore.project = res.data;
-
-      let chat_Msg = {
-        props: {
-          strapi: {
-            data: {
-              is: by_info.value?.by,
-              by_user: userStore.userId,
-              action: "schedule_ordered",
-              body: Msg_body,
-            },
-          },
-        },
-      };
-      if (by_info.value?.by === "project") {
-        chat_Msg.body = `${userStore.me.username}：对项目规划进行了排序`;
-        chat_Msg.props.strapi.data.project_id = teamStore.project?.id;
-      }
       if (by_info.value?.by === "user") {
-        process_orderData(Msg_body);
-      } else {
-        // await send_chat_Msg(chat_Msg);
+        process_orderData(order);
       }
     }
   }
-};
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
 };
 
 const shareDlg = ref(false);
@@ -515,52 +447,6 @@ const share = async (_schedule) => {
 const waring = (schedule) => {
   return schedule.share_codes?.filter((i) => i.max_count < 1)?.length > 0;
 };
-watch(
-  mm_wsStore,
-  async () => {
-    return;
-    if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
-      let post =
-        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
-      if (!post) return;
-      const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
-      if (isCurClint) return;
-      let strapi = post?.props?.strapi;
-      if (strapi) {
-        if (
-          strapi.data?.is == by_info.value?.by &&
-          strapi.data?.project_id == teamStore.project?.id &&
-          strapi.data.action === "schedule_created"
-        ) {
-        console.log('by_info.value?.by', by_info.value?.by);
-          process_createdData(strapi.data.body);
-        }
-        if (
-          strapi.data?.is === by_info.value?.by &&
-          strapi.data?.project_id === teamStore.project?.id &&
-          strapi.data.action === "schedule_updated"
-        ) {
-          process_updatedData(strapi.data.body);
-        }
-        if (
-          strapi.data?.is === by_info.value?.by &&
-          strapi.data?.project_id === teamStore.project?.id &&
-          strapi.data.action === "schedule_removed"
-        ) {
-          process_removedData(strapi.data.body);
-        }
-        if (
-          strapi.data?.is === by_info.value?.by &&
-          strapi.data?.project_id === teamStore.project?.id &&
-          strapi.data.action === "schedule_ordered"
-        ) {
-          process_orderData(strapi.data.body);
-        }
-      }
-    }
-  },
-  { immediate: true, deep: true }
-);
 </script>
 
 <style lang="scss" scoped></style>

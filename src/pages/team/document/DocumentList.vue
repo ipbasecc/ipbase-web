@@ -341,30 +341,8 @@ const update = async (document) => {
   let res = await updateDocument(document.id, params);
   if (res?.data) {
     loading.value = false;
-    let chat_Msg = {
-      props: {
-        strapi: {
-          data: {
-            is: by_info.value?.by,
-            by_user: userStore.userId,
-            action: "document_updated",
-            body: res.data,
-          },
-        },
-      },
-    };
-    if (by_info.value?.by === "project") {
-      chat_Msg.body = `${userStore.me.username}：${$t('changed_project_document')} - ${document.id}`;
-      chat_Msg.props.strapi.data.project_id = teamStore.project?.id;
-    }
-    if (by_info.value?.by === "card") {
-      chat_Msg.body = `${userStore.me.username}：${$t('changed_task_document')} - ${document.id}`;
-      chat_Msg.props.strapi.data.card_id = teamStore.card?.id;
-    }
     if (by_info.value?.by === "user") {
       process_updatedData(res.data);
-    } else {
-      // await send_chat_Msg(chat_Msg);
     }
   }
 };
@@ -388,30 +366,8 @@ const process_removedData = (val) => {
 const remove = async (i) => {
   let res = await deleteDocument(i.id);
   if (res) {
-    let chat_Msg = {
-      props: {
-        strapi: {
-          data: {
-            is: by_info.value?.by,
-            by_user: userStore.userId,
-            action: "document_removed",
-            body: res.data,
-          },
-        },
-      },
-    };
-    if (by_info.value?.by === "project") {
-      chat_Msg.body = `${userStore.me.username}：${$t('deleted_project_document')} - ${document.title}`;
-      chat_Msg.props.strapi.data.project_id = teamStore.project?.id;
-    }
-    if (by_info.value?.by === "card") {
-      chat_Msg.body = `${userStore.me.username}：${$t('deleted_task_document')} - ${document.title}`;
-      chat_Msg.props.strapi.data.card_id = teamStore.card?.id;
-    }
     if (by_info.value?.by === "user") {
       process_removedData(res.data);
-    } else {
-      // await send_chat_Msg(chat_Msg);
     }
   }
 };
@@ -460,61 +416,6 @@ const orderDocuments = async () => {
     process_orderData(sort);
   }
 };
-
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
-};
-
-watch(
-  mm_wsStore,
-  async () => {
-    // console.log("mm_wsStore.event", mm_wsStore.event);
-    if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
-      let post =
-        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
-      if (!post) return;
-      const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
-      if (isCurClint) return;
-      let strapi = post?.props?.strapi;
-      if (strapi) {
-        if (
-          strapi.data?.is === by_info.value?.by &&
-          (strapi.data?.project_id === teamStore.project?.id ||
-            strapi.data?.card_id === teamStore.card?.id) &&
-          strapi.data.action === "document_created"
-        ) {
-          process_createdData(strapi.data.body);
-        }
-        if (
-          strapi.data?.is === by_info.value?.by &&
-          (strapi.data?.project_id === teamStore.project?.id ||
-            strapi.data?.card_id === teamStore.card?.id) &&
-          strapi.data.action === "document_updated"
-        ) {
-          process_updatedData(strapi.data.body);
-        }
-        if (
-          strapi.data?.is === by_info.value?.by &&
-          (strapi.data?.project_id === teamStore.project?.id ||
-            strapi.data?.card_id === teamStore.card?.id) &&
-          strapi.data.action === "document_removed"
-        ) {          
-          process_removedData(strapi.data.body);
-        }
-        if (
-          strapi.data?.is === by_info.value?.by &&
-          (strapi.data?.project_id === teamStore.project?.id ||
-            strapi.data?.card_id === teamStore.card?.id) &&
-          strapi.data.action === "document_ordered"
-        ) {
-          console.log('document_ordered', strapi);
-          process_orderData(strapi.data.body);
-        }
-      }
-    }
-  },
-  { immediate: false, deep: true }
-);
 </script>
 
 <style lang="scss" scoped></style>

@@ -157,13 +157,12 @@
 <script setup>
 import {
   computed,
-  onBeforeMount,
-  onBeforeUnmount,
   onMounted,
   ref,
   toRef,
   watch,
   watchEffect,
+  nextTick
 } from "vue";
 import { __dict } from "src/hooks/dict.js";
 import {
@@ -171,11 +170,9 @@ import {
   updateMemberRole,
   deleteMemberRole,
 } from "src/api/strapi/project.js";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import { useQuasar } from "quasar";
-import { userStore, teamStore } from "src/hooks/global/useStore.js";
+import { teamStore } from "src/hooks/global/useStore.js";
 import { i18n } from 'src/boot/i18n.js';
-import { cleanCache } from 'src/pages/team/hooks/useAuths.js'
 
 const props = defineProps({
   isCard: {
@@ -197,12 +194,19 @@ const locked_role = ["creator", "owner", "member", "unconfirmed", "external"];
 
 const active_role = ref();
 const active_role_detial = ref();
-const init = () => {
-  active_role.value = role.value && role.value[0].subject;
-};
 
 const processData = () => {
   // console.log("processData");
+  if (teamStore?.card) {
+    role.value = teamStore.card?.member_roles;
+  } else if (teamStore?.project) {
+    role.value = teamStore.project?.member_roles;
+  }
+};
+
+const projectRole = computed(() => teamStore.project?.member_roles);
+const cardRole = computed(() => teamStore.card?.member_roles);
+watchEffect(() => {
   const members = teamStore.card?.card_members?.map((i) => i.by_user.id);
   if (members?.includes(userId.value)) {
     authBase.value = {
@@ -215,44 +219,22 @@ const processData = () => {
       of: "project",
     };
   }
-  if (teamStore?.card) {
-    role.value = teamStore.card?.member_roles;
-  } else if (teamStore?.project) {
-    role.value = teamStore.project?.member_roles;
-  }
-};
 
-const projectRole = ref();
-const cardRole = ref();
-watchEffect(() => {
   active_role.value = active_role.value
     ? active_role.value
     : role.value && role.value[0].subject;
   active_role_detial.value =
     active_role.value &&
     role.value?.find((i) => i.subject === active_role.value);
-
-  projectRole.value = teamStore.project?.member_roles;
-  cardRole.value = teamStore.card?.member_roles;
 });
-
-watch(
-  [projectRole, cardRole],
-  () => {
-    if (projectRole.value || cardRole.value) {
-      processData();
-    }
-  },
-  { immediate: false, deep: false }
-);
-
-onBeforeMount(() => {
-  processData();
-});
+watch([projectRole, cardRole], () => {
+  if (projectRole.value || cardRole.value) {
+    processData();
+  }
+},{ immediate: true, deep: true });
 
 onMounted(() => {
-  init();
-  // console.log('role', role.value);
+  active_role.value = role.value && role.value[0].subject;
 });
 const disable_checkbox_collection = computed(
   () =>
@@ -280,10 +262,6 @@ watchEffect(() => {
   }
 });
 
-const loading = ref(false);
-// 定义一个已变化变量，当用户修改时为真，在用户离开权限设置组件后发送ws消息给其它成员通知权限变化
-// 如果此处实时修改变化数据，当前用户界面会实时触发鉴权判断，但是鉴权判断依赖的数据此时正在修改
-// 导致修改期间鉴权结果均为false，UI会短暂闪烁，因此修改数据页面变化，但pinia中的数据在关闭组件时再更新，那时再触发鉴权判断时数据已经更新完毕，不会闪烁
 const isChanged = ref(false);
 const update = async () => {
   const params = active_role_detial.value;
@@ -292,7 +270,6 @@ const update = async () => {
   const res = await updateMemberRole(role_id, params);
   if (res) {
     isChanged.value = true;
-    cleanCache()
   }
 };
 
@@ -300,62 +277,10 @@ const remove = async (member_role) => {
   const _id = member_role.id;
   const res = await deleteMemberRole(_id);
   if (res?.data) {
-    const removed_id = res.data.id;
-    if (isCardRef.value) {
-      teamStore.card.member_roles = teamStore.card?.member_roles.filter(
-        (i) => i.id !== removed_id
-      );
-    } else {
-      teamStore.project.member_roles = teamStore.project?.member_roles.filter(
-        (i) => i.id !== removed_id
-      );
-    }
-    init();
     isChanged.value = true;
   }
 };
 
-onBeforeUnmount(() => {
-  if (isChanged.value) {
-    // 手动更新数据 - 使用ws更新，这里注释
-    // if (isCardRef.value) {
-    //   teamStore.card.member_roles = teamStore.card?.member_roles?.map(
-    //     (i) => (i.id === res.data.id ? res.data : i)
-    //   );
-    // } else {
-    //   teamStore.project.member_roles =
-    //     teamStore.project?.member_roles?.map((i) =>
-    //       i.id === res.data.id ? res.data : i
-    //     );
-    // }
-    let MsgParmas = {
-      by_user: userStore.userId,
-      action: "role_updated",
-    };
-    if (isCardRef.value) {
-      MsgParmas.is = "card";
-      MsgParmas.card_id = teamStore.card.id;
-    } else {
-      MsgParmas.is = "project";
-      MsgParmas.project_id = teamStore.project.id;
-    }
-    let chat_Msg = {
-      body: `${userStore.me?.username}更新了${
-        teamStore.card ? "卡片" : "项目"
-      }的权限系统`,
-      props: {
-        strapi: {
-          data: MsgParmas,
-        },
-      },
-    };
-    send_chat_Msg(chat_Msg);
-  }
-});
-
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
-};
 const createRole_ing = ref(false);
 const createRole_params = ref({
   data: {
@@ -375,13 +300,6 @@ const createRole = async () => {
   }
   const res = await createMemberRole(createRole_params.value);
   if (res?.data) {
-    // if (isCardRef.value) {
-    //   teamStore.card.member_roles.push(res?.data);
-    // } else {
-    //   teamStore.project.member_roles.push(res?.data);
-    // }
-    role.value = [...role.value, res?.data];
-    active_role.value = res?.data?.subject;
     createRole_ing.value = false;
   }
   isChanged.value = true;

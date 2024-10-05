@@ -225,8 +225,6 @@ import OverviewStart from "./widgets/OverviewStart.vue";
 import OverviewEnd from "./widgets/OverviewEnd.vue";
 import OverviewDeadline from "./widgets/OverviewDeadline.vue";
 import ReName from "./widgets/icons/ReName.vue";
-
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import { useQuasar } from "quasar";
 import {
   userStore,
@@ -356,23 +354,6 @@ const removeVersion = async (id) => {
     getCurrentVersion();
     set_current_version(current_version.value?.id)
     versionListMenuRef.value?.hide();
-    let chat_Msg = {
-      body: `${userStore.me.username}删除了'${
-        wasAttached_toRef.value === "project" ? "项目" : "卡片"
-      }'内的概览版本：${id}`,
-      props: {
-        strapi: {
-          data: {
-            is: "overview",
-            by_user: userStore.userId,
-            attachedTo_id: overView_attachedTo.value.id,
-            removed_id: res.data.id,
-            action: "removeVersion",
-          },
-        },
-      },
-    };
-    // await send_chat_Msg(chat_Msg);
   }
 };
 const _input_text = ref('');
@@ -395,23 +376,6 @@ const newVersion = async () => {
   if (res?.data) {
     current_version.value = res.data;
     setActive();
-    let chat_Msg = {
-      body: `${userStore.me.username}在'${
-        wasAttached_toRef.value === "project" ? "项目" : "卡片"
-      }'内新增了概览版本：${_input_text.value}`,
-      props: {
-        strapi: {
-          data: {
-            is: "overview",
-            by_user: userStore.userId,
-            attachedTo_id: overView_attachedTo.value.id,
-            action: "newVersion",
-            body: res.data,
-          },
-        },
-      },
-    };
-    // await send_chat_Msg(chat_Msg);
     // set_current_version(res.data.id);
     _input_text.value = null;
   }
@@ -442,24 +406,6 @@ const updateVersionFn = async () => {
     version_update_ing.value = null;
     // current_version.value = res.data;
     updateVersionParams.value.data = {};
-
-    let chat_Msg = {
-      body: `${userStore.me.username}在'${
-        wasAttached_toRef.value === "project" ? "项目" : "卡片"
-      }'内新增了概览版本：${_input_text.value}`,
-      props: {
-        strapi: {
-          data: {
-            is: "overview",
-            by_user: userStore.userId,
-            overview_id: res.id,
-            action: "updateVersion_name",
-            body: res,
-          },
-        },
-      },
-    };
-    // await send_chat_Msg(chat_Msg);
   }
 };
 const updateVersionBlur = (newVal, oldVal) => {
@@ -504,110 +450,28 @@ const startChanged = async (val) => {
     start: val,
   };
   await __updateVersion();
-  let chat_Msg = {
-    body: `${userStore.me.username}将'${
-      wasAttached_toRef.value === "project" ? "项目" : "卡片"
-    }'的版本:'${activeVersion.value.name}'的开始时间修改为：${val}`,
-    props: {
-      strapi: {
-        data: {
-          is: "overview",
-          by_user: userStore.userId,
-          attachedTo_id: overView_attachedTo.value.id,
-          action: "overview_startChanged",
-          start: val,
-        },
-      },
-    },
-  };
-  await send_chat_Msg(chat_Msg);
 };
 const endChanged = async (val) => {
   updateVersionParams.value.data = {
     end: val,
   };
   await __updateVersion();
-  let chat_Msg = {
-    body: `${userStore.me.username}将'${
-      wasAttached_toRef.value === "project" ? "项目" : "卡片"
-    }'的版本:'${activeVersion.value.name}'的结束时间修改为：${val}`,
-    props: {
-      strapi: {
-        data: {
-          is: "overview",
-          by_user: userStore.userId,
-          attachedTo_id: overView_attachedTo.value.id,
-          action: "overview_endChanged",
-          end: val,
-        },
-      },
-    },
-  };
-  await send_chat_Msg(chat_Msg);
 };
 const deadlineChanged = async (val) => {
   updateVersionParams.value.data = {
     deadline: val,
   };
   await __updateVersion();
-  let chat_Msg = {
-    body: `${userStore.me.username}将'${
-      wasAttached_toRef.value === "project" ? "项目" : "卡片"
-    }'的版本:'${activeVersion.value.name}'的审核时间修改为：${val}`,
-    props: {
-      strapi: {
-        data: {
-          is: "overview",
-          by_user: userStore.userId,
-          attachedTo_id: overView_attachedTo.value.id,
-          action: "overview_deadlineChanged",
-          deadline: val,
-        },
-      },
-    },
-  };
-  await send_chat_Msg(chat_Msg);
 };
 const mediaChanged = async (version, id, media) => {
   updateVersionParams.value.data = {
     media: id,
   };
-  try {
-    let res = await __updateVersion(version);
-    if (res) {
-      // console.log("mediaChanged", res);
-      let action = id === null ? "删除了" : "修改了";
-      let chat_Msg = {
-        body: `${userStore.me.username} ${action} '${
-          wasAttached_toRef.value === "project" ? "项目" : "卡片"
-        }' 版本:'${activeVersion.value.name}'的预览媒体`,
-        props: {
-          strapi: {
-            data: {
-              is: "overview",
-              by_user: userStore.userId,
-              attachedTo_id: overView_attachedTo.value.id,
-              action: "overview_mediaChanged",
-              version: activeVersion.value?.id,
-              project_id: teamStore.project?.id,
-              media: id === null ? null : media.attributes,
-            },
-          },
-        },
-      };
-      await send_chat_Msg(chat_Msg);
-    }
-  } catch (error) {
-    console.error(error);
-  }
+  await __updateVersion(version);
 };
 const mediaWidth = computed(
   () => ((uiStore.mainWindowSize?.height - 187) / 9) * 16
 );
-
-const send_chat_Msg = async (MsgContent) => {
-  await send_MattersMsg(MsgContent);
-};
 
 watchEffect(() => {
   if (overView_attachedTo.value?.overviews.length === 0) {
@@ -615,244 +479,6 @@ watchEffect(() => {
     newVersion();
   }
 });
-const val = computed(() => teamStore.income);
-watch(val, async(newVal, oldVal) => {
-  if(!newVal) return;
-  const { team_id, project_id, card_id, data } = val.value?.data;
-},{ immediate: true, deep: true });
-
-watch(
-  mm_wsStore,
-  async () => {
-    if (mm_wsStore.event && mm_wsStore.event.event === "posted" && !onlyMedia.value) {
-      let post =
-        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
-      if (!post) return;
-      const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
-      if (isCurClint) return;
-      let strapi = post?.props?.strapi;
-      if (strapi) {
-        if (
-          strapi.data?.is === "overview" &&
-          strapi.data?.overview_id === activeVersion.value.id &&
-          strapi.data.action === "updateVersion_name"
-        ) {
-          if (wasAttached_toRef.value === "project") {
-            teamStore.project.overviews = teamStore.project.overviews.map(
-              (i) => ({
-                ...i,
-                name:
-                  (i.id === activeVersion.value.id &&
-                    strapi.data.body.name) ||
-                  i.name,
-              })
-            );
-          } else {
-            teamStore.card.overviews = teamStore.card.overviews.map((i) => ({
-              ...i,
-              name:
-                (i.id === activeVersion.value.id && strapi.data.body.name) ||
-                i.name,
-            }));
-          }
-          activeVersion.value.name = strapi.data.body.name;
-        }
-        if (
-          strapi.data?.is === "overview" &&
-          strapi.data.action === "updateVersion_name"
-        ) {
-          if (
-            wasAttached_toRef.value === "project" &&
-            strapi.data?.attachedTo_id === overView_attachedTo.value.id
-          ) {
-            teamStore.project.name = strapi.data.body.name;
-            activeVersion.value.name = strapi.data.body.name;
-          } else if (
-            wasAttached_toRef.value === "card" &&
-            strapi.data?.attachedTo_id === overView_attachedTo.value.id
-          ) {
-            teamStore.card.name = strapi.data.body.name;
-            activeVersion.value.name = strapi.data.body.name;
-          }
-        }
-        if (
-          strapi.data?.is === "project" &&
-          strapi.data?.project_id === teamStore.project.id &&
-          strapi.data.action === "change_project_name"
-        ) {
-          teamStore.project.name = strapi.data.body;
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data?.card_id === teamStore.card?.id &&
-          strapi.data.action === "change_card_name"
-        ) {
-          teamStore.card.name = strapi.data.body;
-        }
-        if (
-          strapi.data?.is === "project" &&
-          strapi.data?.project_id === teamStore.project.id &&
-          strapi.data.action === "change_project_description"
-        ) {
-          teamStore.project.description = strapi.data.body;
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data?.card_id === teamStore.card?.id &&
-          strapi.data.action === "change_card_description"
-        ) {
-          teamStore.card.description = strapi.data.body;
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card?.id &&
-          strapi.data.action === "update_card_jsonContent"
-        ) {
-          teamStore.card.jsonContent = strapi.data.jsonContent;
-        }
-        if (
-          strapi.data?.is === "project" &&
-          strapi.data?.project_id === teamStore.project.id &&
-          strapi.data.action === "change_project_content"
-        ) {
-          teamStore.project.jsonContent = strapi.data.body;
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data?.card_id === teamStore.card?.id &&
-          strapi.data.action === "change_card_content"
-        ) {
-          teamStore.card.jsonContent = strapi.data.body;
-        }
-        if (
-          strapi.data?.is === "overview" &&
-          strapi.data?.attachedTo_id === overView_attachedTo.value.id &&
-          strapi.data.action === "set_default_version"
-        ) {
-          overView_attachedTo.value.default_version =
-            strapi.data.default_version;
-        }
-        if (
-          strapi.data?.is === "overview" &&
-          strapi.data?.attachedTo_id === overView_attachedTo.value.id &&
-          strapi.data.action === "newVersion"
-        ) {
-          if (wasAttached_toRef.value === "project") {
-            if (teamStore.project?.overviews?.length > 0 && !teamStore.project?.overviews.map(i => i.id).includes(strapi.data?.body?.id)) {
-              teamStore.project.overviews.push(strapi.data?.body);
-            } else {
-              teamStore.project.overviews = [strapi.data?.body];
-            }
-          } else {
-            if (teamStore.card?.overviews?.length > 0 && !teamStore.card?.overviews.map(i => i.id).includes(strapi.data?.body?.id)) {
-              teamStore.card.overviews.push(strapi.data?.body);
-            } else {
-              teamStore.card.overviews = [strapi.data?.body];
-            }
-          }
-        }
-        if (
-          strapi.data?.is === "overview" &&
-          strapi.data?.attachedTo_id === overView_attachedTo.value.id &&
-          strapi.data.action === "removeVersion"
-        ) {
-          function isSameId(element) {
-            return element.id === strapi.data.removed_id;
-          }
-          if (wasAttached_toRef.value === "project") {
-            const index = teamStore.project.overviews.findIndex(isSameId);
-            if (index !== -1) {
-              teamStore.project.overviews.splice(index, 1);
-            }
-          } else {
-            const index = teamStore.card.overviews.findIndex(isSameId);
-            if (index !== -1) {
-              teamStore.card.overviews.splice(index, 1);
-            }
-          }
-          if (activeVersion.value.id === strapi.data.removed_id) {
-            getCurrentVersion();
-          }
-        }
-        if (
-          strapi.data?.is === "overview" &&
-          strapi.data?.attachedTo_id === overView_attachedTo.value.id &&
-          strapi.data.action === "overview_startChanged"
-        ) {
-          if (wasAttached_toRef.value === "project") {
-            teamStore.project.overviews.find(
-              (i) => i.id === activeVersion.value.id
-            ).start = strapi.data.start;
-          }
-          if (wasAttached_toRef.value === "card") {
-            // console.log("overview_startChanged");
-            teamStore.card.overviews.find(
-              (i) => i.id === activeVersion.value.id
-            ).start = strapi.data.start;
-          }
-          getCurrentVersion();
-        }
-        if (
-          strapi.data?.is === "overview" &&
-          strapi.data?.attachedTo_id === overView_attachedTo.value.id &&
-          strapi.data.action === "overview_endChanged"
-        ) {
-          if (wasAttached_toRef.value === "project") {
-            teamStore.project.overviews.find(
-              (i) => i.id === activeVersion.value.id
-            ).end = strapi.data.end;
-          }
-          if (wasAttached_toRef.value === "card") {
-            teamStore.card.overviews.find(
-              (i) => i.id === activeVersion.value.id
-            ).end = strapi.data.end;
-          }
-          getCurrentVersion();
-        }
-        if (
-          strapi.data?.is === "overview" &&
-          strapi.data?.attachedTo_id === overView_attachedTo.value.id &&
-          strapi.data.action === "overview_deadlineChanged"
-        ) {
-          if (wasAttached_toRef.value === "project") {
-            teamStore.project.overviews.find(
-              (i) => i.id === activeVersion.value.id
-            ).deadline = strapi.data.deadline;
-          }
-          if (wasAttached_toRef.value === "card") {
-            teamStore.card.overviews.find(
-              (i) => i.id === activeVersion.value.id
-            ).deadline = strapi.data.deadline;
-          }
-          getCurrentVersion();
-        }
-        if (
-          strapi.data?.is === "overview" &&
-          strapi.data?.attachedTo_id === overView_attachedTo.value.id &&
-          strapi.data.action === "overview_mediaChanged"
-        ) {
-          if (wasAttached_toRef.value === "project") {
-            teamStore.project.overviews.find(
-              (i) => i.id === activeVersion.value.id
-            ).media = strapi.data.media;
-            const _index = teamStore.team.projects.findIndex((i) => i.id === teamStore.project.id);
-            if(_index !== -1){
-              teamStore.team.projects[_index] = teamStore.project;
-            }
-          }
-          if (wasAttached_toRef.value === "card") {
-            teamStore.card.overviews.find(
-              (i) => i.id === activeVersion.value.id
-            ).media = strapi.data.media;
-          }
-          // getCurrentVersion();
-          activeVersion.value.media = strapi.data.media;
-        }
-      }
-    }
-  },
-  { immediate: true, deep: true }
-);
 </script>
 
 <style lang="scss" scoped></style>
