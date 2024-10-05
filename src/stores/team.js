@@ -14,8 +14,6 @@ export default defineStore("team", {
     project_id: null,
     board: null,
     kanban: null,
-    kanban_id: null,
-    kanban_type: null,
     kanban_rightDrawer: null,
     card: null,
     cards: null,
@@ -90,8 +88,6 @@ export default defineStore("team", {
       this.board = null;
       this.kanban = null;
       this.all_kanbans = [];
-      this.kanban_id = null;
-      this.kanban_type = null;
       this.kanban_rightDrawer = null;
       this.card = null;
       this.cards = null;
@@ -120,8 +116,6 @@ export default defineStore("team", {
       this.board = null;
       this.kanban = null;
       this.all_kanbans = [];
-      this.kanban_id = null;
-      this.kanban_type = null;
       this.kanban_rightDrawer = null;
       this.card = null;
       this.cards = null;
@@ -146,8 +140,6 @@ export default defineStore("team", {
       this.board = null;
       this.kanban = null;
       this.all_kanbans = [];
-      this.kanban_id = null;
-      this.kanban_type = null;
       this.kanban_rightDrawer = null;
       this.card = null;
       this.cards = null;

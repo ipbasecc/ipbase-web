@@ -115,6 +115,7 @@
             <div class="absolute-full" @click="activeSplite('left')">
               <KanbanModel v-if="kanban_id"
                 ref="KanbanModelRef"
+                belong="project_kanban"
                 :key="`kanban-${kanban_id}`"
                 :project_id="Number(project_id)"
                 :kanban_id="Number(kanban_id)"
@@ -129,6 +130,7 @@
               <KanbanModel v-if="teamStore?.project?.id && teamStore.dropKanbanID"
                 :project_id="teamStore?.project.id"
                 :kanban_id="teamStore.dropKanbanID"
+                belong="project_dropKanban"
                 view_model="kanban"
               />
               <div v-if="!teamStore.dropKanbanID"
@@ -383,7 +385,6 @@ const closeThread = () => {
 };
 const backList = () => {
   uiStore.showMainContentList = true;
-  teamStore.kanban_id = void 0;
   teamStore.kanban = void 0;
   router.push(`/teams/projects/${teamStore.project?.id}/${board_type.value}`);
 }

@@ -4,6 +4,7 @@ import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 import { mergeObjects } from 'src/hooks/utilits.js'
 import { useRouter } from "vue-router";
 import { fetchProject } from "src/hooks/project/useProcess.js";
+import { attachExpand } from 'src/pages/team/hooks/useKanban.js'
 import { useQuasar } from "quasar";
 
 export default function useWatcher() {
@@ -146,7 +147,8 @@ export default function useWatcher() {
           return _board;
         })
       }
-      if(val.value.event === 'kanban:updated') {
+      const { order } = val.value?.data;
+      if(val.value.event === 'kanban:updated' && !order) {
         teamStore.project.boards = teamStore.project.boards?.map(board => {
           let cur_board_id;
           const _board = {
@@ -154,9 +156,8 @@ export default function useWatcher() {
             groups: board.groups?.map(group => {
               return {
                 ...group,
-                kanbans: group.kanbans?.map(kanban => {
+                kanbans: group.kanbans?.map(async(kanban) => {
                   if (kanban.id === Number(data.id)) {
-                    cur_board_id = board.id;
                     return data;
                   } else {
                     return kanban;

@@ -302,18 +302,14 @@ const kanbanCreateFn = async (group_id, type) => {
 
 const enterKanban = async (kanban) => {
   await setLastKanban(teamStore.project?.id, kanban, board_type.value);
-  teamStore.kanban_id = kanban?.id;
-  teamStore.kanban_type = kanban?.type;
   uiStore.showMainContentList = false;
   await router.push(
     `/teams/projects/${teamStore.project?.id}/${board_type.value}/${kanban?.id}`
   );
 };
 const removeKanban = async (kanban_id) => {
-  if(kanban_id !== teamStore.kanban_id) return
+  if(kanban_id !== teamStore.kanban?.id) return
   await removeLastKanban(teamStore.project?.id, board_type.value);
-  teamStore.kanban_id = void 0;
-  teamStore.kanban_type = void 0;
   uiStore.showMainContentList = true;
   await router.push(
     `/teams/projects/${teamStore.project?.id}/${board_type.value}`
@@ -347,7 +343,6 @@ watch(
           removeLastKanban(teamStore.project?.id, board_type.value);
         }
       });
-      teamStore.kanban_id = null;
       teamStore.kanban = null;
     }
   },{ immediate: true, deep: true }

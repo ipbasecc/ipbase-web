@@ -126,15 +126,15 @@ import {
   send_MattersMsg,
   send_CardMsg,
 } from "src/pages/team/hooks/useSendmsg.js";
+import { attachExpand } from 'src/pages/team/hooks/useKanban.js'
 import {
   getKanbanCache,
   getKanban,
   putKanbanCache,
 } from "src/hooks/project/useProcess.js";
 import LoadingBlock from "../../../components/VIewComponents/LoadingBlock.vue";
-import { userStore,  teamStore,  mm_wsStore,  uiStore } from "src/hooks/global/useStore.js";
+import { userStore,  teamStore, uiStore } from "src/hooks/global/useStore.js";
 import { genCardName } from "src/hooks/utilits.js";
-import localforage from "localforage";
 import ReelContainer from "./ReelContainer.vue";
 import SegmentPage from "../card/SegmentPage.vue";
 import { i18n } from 'src/boot/i18n.js';
@@ -157,8 +157,12 @@ const props = defineProps({
     type: String,
     default: "kanban",
   },
+  belong: {
+    type: String,
+    default: "project_kanban",
+  },
 });
-const { project_id, kanban_id, view_model } = toRefs(props);
+const { project_id, kanban_id, view_model, belong } = toRefs(props);
 const isShared = computed(() => uiStore.isShared)
 const columnLabel = computed(() => {
   let _label;
@@ -210,57 +214,30 @@ const setDragHandle = (view_model) => {
   }
 }
 
+const syncKanbanStore = (_attachExpand) => {
+  if (belong.value === 'project_kanban') {
+    teamStore.kanban = _attachExpand;
+  }
+  if(belong.value === 'project_dropKanban'){
+    teamStore.dropKanban = _attachExpand;
+  }
+  if(belong.value === 'project_cardKanban') {
+    teamStore.cardKanban = _attachExpand;
+  }
+}
+const init = async (res) => {
+  // 附加卡片的折叠状态数据
+  // console.log('res', res)
+  const _attachExpand = await attachExpand(res);
+  if (_attachExpand) {
+    kanban.value = _attachExpand;
+    _kanbanSource.value = kanban.value;
+    syncKanbanStore(_attachExpand)
+  }
+};
 const initKanban = async (kid) => {
   if (loading.value) return;
   loading.value = true;
-  async function attachExpand(kanban) {
-    if (kanban.columns && kanban.columns.length > 0) {
-      kanban.columns = kanban.columns.map(async (i) => {
-        if (i.cards && i.cards.length > 0) {
-          // 使用 Promise.all 来等待所有异步操作完成
-          const cardPromises = i.cards.map(async (card) => {
-            const expandStatus = await localforage.getItem(
-              `___card_expandStatus_${card.id}`
-            );
-            return { ...card, expand: expandStatus || "expand" };
-          });
-
-          // 等待所有 card 的异步操作完成
-          const updatedCards = await Promise.all(cardPromises);
-          return { ...i, cards: updatedCards };
-        } else {
-          return { ...i, cards: [] };
-        }
-      });
-
-      // 等待所有 column 的异步操作完成
-      kanban.columns = await Promise.all(kanban.columns);
-    }
-    return kanban;
-  }
-  const init = async (res) => {
-    // 附加卡片的折叠状态数据
-    // console.log('res', res)
-    const _attachExpand = await attachExpand(res);
-    if (_attachExpand) {
-      kanban.value = _attachExpand;
-      _kanbanSource.value = kanban.value;
-      // 当有 teamStore.card 时，说明card的详情弹框是打开状态
-      if (teamStore.card) {
-        teamStore.cardKanban = _attachExpand;
-      } else {
-        if(teamStore.dropKanbanID && uiStore.split_kanban_active === 'right'){
-          teamStore.dropKanban = kanban.value;
-        } else {
-          teamStore.kanban = kanban.value;
-          teamStore.kanban_type = kanban.value.type;
-          teamStore.kanban_id = kanban.value.id;
-          await putKanbanCache(_attachExpand);
-        }
-      }
-    }
-  };
-
   if(isShared.value){
     await init(teamStore.card?.card_kanban)
   } else {
@@ -310,7 +287,6 @@ watch(
   [project_id, kanban_id],
   () => {
     if (project_id.value && kanban_id.value) {
-      teamStore.kanban_id = kanban_id.value;
       initKanban(kanban_id.value);
     }
   },
@@ -329,12 +305,17 @@ watch(
   { immediate: false, deep: false }
 );
 
+const oldColumns = computed(() => kanban.value?.columns?.length > 0 ? [...kanban.value?.columns] : []); // 获取一个浅拷贝，在更新时辅助：1.判断是否需要重新fetch数据；2.作为排序赋值的数据源
 const __dragging_column = ref(false);
 const dragColumn_done = async (_kanban_id) => {
   await nextTick();
+  const _order = columns.value?.map((i) => i.id)
   let params = {
     data: {
-      columns: columns.value?.map((i) => i.id),
+      columns: _order,
+    },
+    __props:{
+      order: _order
     }
   }
   // console.log('columns params', params)
@@ -357,7 +338,7 @@ const dragColumn_done = async (_kanban_id) => {
         }
       }
     }
-    await send_chat_Msg(chat_Msg);
+    // await send_chat_Msg(chat_Msg);
   }
 };
 
@@ -455,8 +436,45 @@ const syncStoreByKanban = async () => {
 const val = computed(() => teamStore.income);
 watch(val, async(newVal, oldVal) => {
   if(!newVal || newVal === oldVal) return;
-  const { team_id, column_id, card_id, data } = val.value.data;
+  const { team_id, column_id, card_id, data, order } = val.value.data;
   if(teamStore.team?.id === Number(team_id)){
+
+    if(val.value.event === 'kanban:updated' && order && kanban.value?.id === Number(data.id)) {
+      if(order?.length > 0){
+        
+        let _columns = [...oldColumns.value];
+        if(teamStore.dropKanban?.columns?.length > 0){
+          _columns = [..._columns, ...teamStore.dropKanban.columns];
+        }
+        if(teamStore.cardKanban?.columns?.length > 0){
+          _columns = [..._columns, ...teamStore.cardKanban.columns];
+        }
+
+        const oldColums_ids = _columns.map(i => i.id);
+        const havaAddColumn = order?.filter(i => !oldColums_ids.includes(i))?.length > 0;
+        const orderColumns = (columns) => {
+          return order.map(i => columns.find(j => j.id === Number(i)))
+        }
+        if(havaAddColumn){
+          console.log('no data fecth')
+          const fetch = await getKanban(kanban.value?.id);
+          if (fetch) {
+            const _attachExpand = await attachExpand(fetch);
+            kanban.value.columns = orderColumns(_attachExpand.columns)
+          }
+        } else {
+          console.log('have data order')
+          kanban.value.columns = orderColumns(_columns)
+        }
+      } else {
+        kanban.value.columns = []
+      }
+      syncKanbanStore(kanban.value);
+    }
+    if(val.value.event === 'kanban:deleted' && kanban.value?.id === Number(data.removed_kanban)) {
+      kanban.value = null;
+    }
+    
     if(val.value.event === 'card:created'){
       const column = kanban.value.columns.find(i => i.id === column_id);
       if(column) {
@@ -472,12 +490,31 @@ watch(val, async(newVal, oldVal) => {
       }
     }
     if(val.value.event === 'card:deleted'){
-      const column = kanban.value.columns.find(i => i.cards?.map(j => j.id).includes(Number(card_id)));
-      if(column) {
-        const isInColumn = column.cards.find(i => i.id === Number(card_id));
-        if(isInColumn){
-          kanban.value.columns.find(i => i.id === column.id).cards = column.cards.filter(i => i.id !== Number(card_id));
+      const syncRemove = () => {
+        const column = kanban.value.columns.find(i => i.cards?.map(j => j.id).includes(Number(card_id)));
+        if(column) {
+          const isInColumn = column.cards.find(i => i.id === Number(card_id));
+          if(isInColumn){
+            kanban.value.columns.find(i => i.id === column.id).cards = column.cards.filter(i => i.id !== Number(card_id));
+          }
         }
+      }
+      if(teamStore.card?.id === Number(card_id)){
+        $q.notify({
+          progress: true,
+          color: 'negative',
+          message: '卡片已删除',
+          position: 'top',
+          timeout: 0,
+          actions: [
+            { label: $t('confirm'), color: 'white', handler: () => {
+              syncRemove();
+              teamStore.card = null;
+            } }
+          ]
+        })
+      } else {
+        syncRemove();
       }
     }
     if(val.value.event === 'card:updated'){
@@ -490,93 +527,7 @@ watch(val, async(newVal, oldVal) => {
       }
     }
   }
-  // teamStore.income = null;
 },{immediate: true, deep: true})
 
-// -----------------------------------------
-// ws data update line
-watch(
-  mm_wsStore,
-  async () => {
-    return
-    if (mm_wsStore.event && mm_wsStore.event.event === "posted") {
-      let post =
-        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
-      if (!post) return;
-      const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
-      if (isCurClint) return;
-      let strapi = post?.props?.strapi;
-      if (strapi) {
-        if (
-          strapi.data?.is === "column" &&
-          strapi.data.kanban_id === kanban.value.id &&
-          strapi.data.action === "columnCreated"
-        ) {        
-          kanban.value.columns.push(strapi.data.body);
-          syncStoreByKanban();
-        }
-        if (
-          strapi.data?.is === "column" &&
-          strapi.data.kanban_id === kanban.value.id &&
-          strapi.data.action === "columnDeleted"
-        ) {
-          function isSameId(element) {
-            return element.id === strapi.data.column_id;
-          }
-          if (teamStore.showCards) {
-            const index = teamStore.card.card_kanban.columns.findIndex(isSameId);
-            if (index !== -1) {
-              teamStore.card.card_kanban.columns.splice(index, 1);
-            }
-          } else {
-            const index = kanban.value.columns.findIndex(isSameId);
-            if (index !== -1) {
-              kanban.value.columns.splice(index, 1);
-            }
-          }
-          syncStoreByKanban();
-        }
-        if (
-          strapi.data?.is === "column" &&
-          strapi.data.kanban_id === kanban_id.value &&
-          strapi.data.action === "orderColumn"
-        ) {
-          const order = strapi.data.body.order
-          let _all_columns = kanban.value.columns
-          teamStore.kanban.wanderingColumns = kanban.value.columns.filter((i) => !order.includes(i.id));
-          if(teamStore.kanban.wanderingColumns){
-            _all_columns = [...teamStore.kanban.wanderingColumns, ..._all_columns]
-          }
-          kanban.value.columns = order.map((i) =>
-            _all_columns.find((c) => c.id === i)
-          );
-          syncStoreByKanban();
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.kanban_id === kanban.value?.id &&
-          strapi.data.action === "QuadrantChange"
-        ) {
-          kanban.value.columns = kanban.value.columns?.map((column) => ({
-            ...column,
-            cards: column.cards.map((card) => ({
-              ...card,
-              importance:
-                (card.id === strapi.data.card_id &&
-                  strapi.data.quadrant.importance) ||
-                card.importance,
-              urgency:
-                (card.id === strapi.data.card_id &&
-                  strapi.data.quadrant.urgency) ||
-                card.urgency,
-            })),
-          }));
-          syncStoreByKanban();
-        }
-      }
-    }
-  },
-  { immediate: true, deep: true }
-);
 </script>
 <style scoped></style>
