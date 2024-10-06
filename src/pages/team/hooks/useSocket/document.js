@@ -12,6 +12,7 @@ export default function (socket, processEvent) {
         });
     });
     socket.on("document:removed", (data) => {
+        console.log('document:removed', data);
         processEvent({
             event: "document:removed",
             ...data

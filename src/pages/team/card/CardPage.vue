@@ -124,7 +124,6 @@
               </q-tab>
             </template>
           </q-tabs>
-          {{current_model}}
           <q-space />
           <MembersIndicator
             v-if="card_members"
@@ -219,20 +218,25 @@
             </KeepAlive>
           </q-tab-panel>
           <q-tab-panel name="feedback" class="no-padding">
-            <TodoPage
-              v-if="current_card_id"
-              :assignData="[teamStore.card?.feedback]"
-              :isFeedback="true"
+            <AffairsContainer v-if="current_card_id"
+              :todogroups="feedback"
+              :card="teamStore.card"
               :hideToolbar="true"
-              :byInfo>
+              _for="personal_kanbanTodo"
+              layout="column"
+              class="fit"
+            >
               <template v-slot:header>
-                <q-btn flat dense size="sm" round
-                   icon="mdi-refresh"
-                   class="q-ml-sm"
-                   @click="refetchFeedback(teamStore.card?.id)"
-                />
+                <q-bar dark class="transparent">
+                  <q-space />
+                  <q-btn flat dense size="sm" round
+                    icon="mdi-refresh"
+                    class="q-ml-sm"
+                    @click="refetchFeedback(teamStore.card?.id)"
+                  />
+                </q-bar>
               </template>
-            </TodoPage>
+            </AffairsContainer>
             <q-inner-loading :showing="loading">
               <q-spinner-orbit size="2em" color="primary" />
             </q-inner-loading>
@@ -245,9 +249,13 @@
         :width="420"
         class="border-left"
       >
-        <TodoPage
-          v-if="rightDrawer === 'todo'"
-          :kanban_id="teamStore.card?.card_kanban?.id"
+        <AffairsContainer v-if="rightDrawer === 'todo'"
+          :todogroups="personal_kanbanTodo"
+          :card="teamStore.card"
+          :hideToolbar="true"
+          _for="personal_kanbanTodo"
+          layout="column"
+          class="fit"
         />
         <MemberManager
           v-if="rightDrawer === 'member_setting'"
@@ -314,16 +322,11 @@
               {{ $t('no_premission_to_view') }}
             </div>
           </template>
-          <TodoPage v-if="false"
-            :assignData="teamStore.card?.todogroups"
-            _for="card_todo"
-            layout="row"
-            class="absolute-full"
-          />
           <AffairsContainer v-if="current_model === 'card_todo'"
             :todogroups="teamStore.card?.todogroups"
             :card="teamStore.card"
             _for="card"
+            class="absolute-full"
           />
           <template v-if="current_model === 'card_documents'">
             <q-splitter
@@ -409,15 +412,25 @@
           />
         </q-tab-panel>
         <q-tab-panel name="card_feedback" class="no-padding">
-          <TodoPage v-if="current_card_id" :assignData="[teamStore.card?.feedback]" :isFeedback="true" :hideToolbar="true" :byInfo>
+          <AffairsContainer v-if="current_card_id"
+            :todogroups="feedback"
+            :card="teamStore.card"
+            :hideToolbar="true"
+            _for="personal_kanbanTodo"
+            layout="column"
+            class="fit"
+          >
             <template v-slot:header>
-              <q-btn flat dense size="sm" round
-                 icon="mdi-refresh"
-                 class="q-ml-sm"
-                 @click="refetchFeedback(teamStore.card?.id)"
-              />
+              <q-bar dark class="transparent">
+                <q-space />
+                <q-btn flat dense size="sm" round
+                  icon="mdi-refresh"
+                  class="q-ml-sm"
+                  @click="refetchFeedback(teamStore.card?.id)"
+                />
+              </q-bar>
             </template>
-          </TodoPage>
+          </AffairsContainer>
           <q-inner-loading :showing="loading">
             <q-spinner-orbit size="2em" color="primary" />
           </q-inner-loading>
@@ -436,12 +449,12 @@
           </div>
         </q-tab-panel>
         <q-tab-panel name="card_todo" class="no-padding">
-          <TodoPage
-              v-if="current_model === 'card_todo'"
-              :assignData="teamStore.card?.todogroups"
-              _for="card_todo"
-              layout="column"
-              class="absolute-full"
+          <AffairsContainer
+            :todogroups="teamStore.card?.todogroups"
+            :card="teamStore.card"
+            _for="card"
+            layout="column"
+            class="absolute-full"
           />
         </q-tab-panel>
         <q-tab-panel name="card_documents" class="no-padding">
@@ -472,9 +485,13 @@
           <SchedulePage v-if="teamStore.card?.schedule?.id" by="card" :schedule_id="teamStore.card.schedule.id" />
         </q-tab-panel>
         <q-tab-panel name="private_todo" class="no-padding">
-          <TodoPage
-            class="absolute-full"
-            :kanban_id="teamStore.card?.card_kanban?.id"
+          <AffairsContainer
+            :todogroups="personal_kanbanTodo"
+            :card="teamStore.card"
+            :hideToolbar="true"
+            _for="personal_kanbanTodo"
+            layout="column"
+            class="fit"
           />
         </q-tab-panel>
     </q-tab-panels>
@@ -497,7 +514,6 @@ import { useRoute } from "vue-router";
 import { findCard, findCardByShare, findCardFeedback, updateCard, getOneProject } from "src/api/strapi/project.js";
 
 import OverView from "src/pages/team/components/OverView.vue";
-import TodoPage from "src/pages/team/todo/TodoPage.vue";
 import CardSettings from "./components/CardSettings.vue";
 import MemberManager from "src/pages/team/settings/MemberManager.vue";
 import MembersIndicator from "src/pages/team/components/MembersIndicator.vue";
@@ -512,7 +528,6 @@ import ThreadContainer from "../chat/ThreadContainer.vue";
 import AffairsContainer from 'src/pages/team/todo/AffairsContainer.vue'
 import {
   teamStore,
-  mm_wsStore,
   uiStore,
 } from "src/hooks/global/useStore.js";
 import localforage from "localforage";
@@ -531,16 +546,15 @@ const props = defineProps({
 const { isExternal, shareInfo } = toRefs(props);
 provide("isExternal", isExternal.value);
 
-const isCreator = computed(() => {
-  const _member = teamStore.card?.card_members.find(i => i.by_user.id === teamStore.init?.id);
-  const _member_roles_ids = _member.member_roles.map(i => i.id)
-  const _role = teamStore.card?.member_roles.find(i => i.subject === 'creator')
-  return _member_roles_ids.includes(_role.id);
-});
-
 const inDilg = ref(true);
+const personal_kanbanTodo = ref();
+const feedback = ref([]);
 watchEffect(() => {
+  if(teamStore.card?.feedback){
+    feedback.value = [teamStore.card?.feedback];
+  }
   inDilg.value = !isExternal.value && !uiStore.isFocusMode;
+  personal_kanbanTodo.value = teamStore.init?.todogroups?.filter(i => i.kanban?.id === teamStore.card?.card_kanban?.id) || []
 })
 const emit = defineEmits([
   "closeCardList",
@@ -592,6 +606,8 @@ const getCard = async (card_id) => {
     teamStore.cards = [res.data];
   }
 };
+
+
 const refetchFeedback = async (card_id) => {
   if(loading.value) return
   loading.value = true
@@ -658,12 +674,6 @@ onBeforeMount(async () => {
         ? "chat"
         : "overview";
   }
-  console.log(
-    "leftDrawerOpen.value",
-    leftDrawerOpen.value,
-    "side_pannel.value",
-    side_pannel.value
-  );
 });
 
 const rightDrawerOpen = ref(false);

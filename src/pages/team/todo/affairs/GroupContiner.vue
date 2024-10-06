@@ -20,13 +20,14 @@
     >
         <q-btn dense flat icon="mdi-plus" size="sm" class="border full-width" @click="toggleCreatetodo()" />
     </div>
-    <q-scroll-area v-if="$q.screen.gt.sm" class="q-space q-px-xs scroll-container flex-content">
-      <GroupBody v-model="group" :card ref="todogroupBodyRef" />
+    <q-scroll-area v-if="layout === 'row'" class="q-space q-px-xs scroll-container flex-content">
+      <GroupBody v-model="group" :card :displayType ref="todogroupBodyRef" />
     </q-scroll-area>
-    <div v-else class="q-space q-px-xs">
+    <div v-else class="q-px-xs">
       <GroupBody v-model="group"
         ref="todogroupBodyRef"
-        class="q-space q-px-xs"
+        class="q-px-xs"
+        :displayType
       />
     </div>
   </div>
@@ -40,13 +41,6 @@ import { useQuasar } from 'quasar';
 import GroupBody from './GroupBody.vue'
 
 const $q = useQuasar();
-const columnStyle = computed(() => {
-  if($q.platform.is.mobile && !$q.screen.gt.sm) {
-    return `flex: 0 0 100%;width: 100%`
-  } else {
-    return `flex: 0 0 ${uiStore.columnWidth}px;width: ${uiStore.columnWidth}px`
-  }
-})
 const props = defineProps({
   group: {
     type: Object,
@@ -55,10 +49,27 @@ const props = defineProps({
   card: {
     type: Object,
     required: true
+  },
+  _for: {
+    type: String
+  },
+  layout: {
+    type: String
+  },
+  displayType: {
+    type: String
   }
 });
 const emit = defineEmits(['todogroupDeleted']);
-const { group, card } = toRefs(props);
+const { group, card, _for, layout, displayType } = toRefs(props);
+
+const columnStyle = computed(() => {
+  if(layout.value === 'column') {
+    return `width: 100%`
+  } else {
+    return `flex: 0 0 ${uiStore.columnWidth}px;width: ${uiStore.columnWidth}px`
+  }
+})
 
 const todogroupBodyRef = useTemplateRef('todogroupBodyRef');
 const toggleCreatetodo = () => {

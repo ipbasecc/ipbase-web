@@ -16,6 +16,7 @@
         :todo="todo"
         :card
         :group="modelValue"
+        :displayType
         class="todoItem"
         @todoDeleted="todoDeleted"
       />
@@ -49,8 +50,9 @@ import {VueDraggable} from 'vue-draggable-plus'
 import { updateTodogroup } from "src/api/strapi/project.js";
 import { useQuasar } from 'quasar';
 
-const { card } = defineProps({
+const { card, displayType } = defineProps({
   card: Object,
+  displayType: String
 })
 
 const $q = useQuasar();

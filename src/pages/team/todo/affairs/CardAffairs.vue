@@ -5,18 +5,25 @@
       handle=".dragBar" filter=".undrag" group="todogroup"
       chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
       class="gap-sm no-wrap q-pa-sm"
-      :class="$q.platform.is.mobile && !$q.screen.gt.sm ? 'column' : 'row'"
-      :style="$q.screen.gt.sm ? `height: ${mainArea?.height}px;` : ''"
+      :class="`
+        ${layout === 'row' ? 'row' : 'column'}
+        ${todogroups?.length > 0 ? 'bordered' : 'flex-center'}
+      `"
+      :style="layout === 'row' ? `height: ${mainArea?.height}px;` : ''"
       @start="dragStart" @sort="dragTodogroup_sort" @end="dragEnd"
     >
-      <template v-for="group in todogroups" :key="group.id">
+      <template v-if="todogroups?.length > 0">
         <GroupContiner
+          v-for="group in todogroups" :key="group.id"
           :group="group"
           :card
+          :_for
+          :layout
+          :displayType
           @todogroupDeleted="todogroupDeleted"
         />
       </template>
-      <CreateColumn :card />
+      <CreateColumn :card :_for :createStyle="todogroups?.length > 0 ? 'normal' : 'init_create'" />
     </VueDraggable>
 </template>
 
@@ -24,24 +31,17 @@
 import { ref, watchEffect, nextTick } from 'vue'
 import {teamStore, uiStore, userStore} from 'src/hooks/global/useStore';
 import {VueDraggable} from 'vue-draggable-plus'
-import {updateUserTodogroups} from "src/api/strapi.js";
 import GroupContiner from './GroupContiner.vue'
 import CreateColumn from './CreateColumn.vue'
-import {
-  createTodo,
-  createTodogroup,
-  deleteTodogroup,
-  findCardFeedback,
-  findCardFeedbackByShare,
-  updateCard,
-  updateTodo,
-  updateTodogroup,
-} from "src/api/strapi/project.js";
+import { updateCard } from "src/api/strapi/project.js";
 
-const { data = [], mainArea, card, } = defineProps({
+const { data = [], mainArea, card, _for, layout, displayType } = defineProps({
   data: Array,
   mainArea: Object,
   card: Object,
+  _for: String,
+  layout: String,
+  displayType: String,
 })
 const todogroups = ref();
 watchEffect(() => {

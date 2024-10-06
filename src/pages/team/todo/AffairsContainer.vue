@@ -1,6 +1,6 @@
 <template>
-  <div class="absolute-full column no-wrap">
-    <q-bar class="transparent border-bottom q-px-xs" style="height: 36px">
+  <div class="column no-wrap">
+    <q-bar v-if="!hideToolbar" class="transparent border-bottom q-px-xs" style="height: 36px">
       <q-btn-group flat class="border">
         <q-btn
           v-for="i in viewModels"
@@ -21,12 +21,19 @@
         />
       </q-btn-group>
     </q-bar>
+    <slot name="header" />
     <div class="q-space relative-position">
-      <q-resize-observer @resize="onResize" />
-      <ScrollBody v-if="viewModel === 'kanban'">
-        <CardAffairs v-if="_for === 'card'" :mainArea :data="todogroups" :card :_for />
-      </ScrollBody>
-      <QuadrantView v-if="viewModel === 'quadrant'" :mainArea :card />
+        <q-resize-observer @resize="onResize" />
+        <template v-if="viewModel === 'kanban'">
+            <ScrollBody v-if="layout === 'row'">
+                <AffairsBody v-if="_for === 'personal'" :mainArea />
+                <CardAffairs v-else :mainArea :data="todogroups" :card :_for :layout :displayType />
+            </ScrollBody>
+            <template v-else>
+                <CardAffairs :mainArea :data="todogroups" :card :_for :layout :displayType />
+            </template>
+        </template>
+        <QuadrantView v-if="viewModel === 'quadrant'" :mainArea :card />
     </div>
   </div>
 </template>
@@ -34,20 +41,18 @@
 <script setup>
 import { ref, toRefs } from "vue";
 import ScrollBody from './affairs/ScrollBody.vue'
-import AffairsBody from './affairs/AffairsBody.vue'
 import CardAffairs from './affairs/CardAffairs.vue'
+import AffairsBody from './affairs/AffairsBody.vue'
 import QuadrantView from './affairs/QuadrantView.vue';
 
-const { todogroups, _for = 'personal', card } = defineProps({
+const { todogroups, _for = 'personal', card, hideToolbar, layout = 'row', displayType = 'todo' } = defineProps({
     todogroups: Array,
     _for: String,
-    card: Object
+    card: Object,
+    hideToolbar: Boolean,
+    layout: String,
+    displayType: String
 })
-// const props = defineProps({
-//     todogroups: Array,
-//     _for: String
-// })
-// const { todogroups, _for } = toRefs(props)
 
 const mainArea = ref(null);
 const onResize = (size) => {

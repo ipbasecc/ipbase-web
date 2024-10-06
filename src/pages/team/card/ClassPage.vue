@@ -112,12 +112,13 @@
               />
             </KeepAlive>
           </template>
-          <TodoPage
-            v-if="current_classExtend === 'class_note'"
-            :kanban_id="teamStore.card?.card_kanban?.id"
-            :isClassroom="true"
-            _for="user_todos"
+          <AffairsContainer v-if="current_classExtend === 'class_note'"
+            :todogroups="personal_kanbanTodo"
+            :card="teamStore.card"
+            :hideToolbar="true"
+            _for="personal_kanbanTodo"
             displayType="note"
+            layout="column"
             class="fit"
           />
           <template v-if="current_classExtend === 'class_kanban'">
@@ -195,18 +196,18 @@
 </template>
 
 <script setup>
-import { ref, toRefs, computed, watch, onMounted, reactive } from "vue";
+import { ref, toRefs, computed, watchEffect, onMounted, reactive } from "vue";
 import { findCard } from "src/api/strapi/project.js";
 import OverView from "src/pages/team/components/OverView.vue";
-import TodoPage from "src/pages/team/todo/TodoPage.vue";
 import KanbanContainer from "./KanbanContainer.vue";
 import DocumentList from "src/pages/team/document/DocumentList.vue";
 import DocumentBody from "src/pages/team/document/DocumentBody.vue";
 import StoragePage from "src/pages/team/storage/StoragePage.vue";
 import ThreadContainer from "../chat/ThreadContainer.vue";
-import { teamStore, mm_wsStore, uiStore } from "src/hooks/global/useStore.js";
+import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 import CoursesList from './components/CoursesList.vue'
 import VersionTogger from './components/VersionTogger.vue'
+import AffairsContainer from 'src/pages/team/todo/AffairsContainer.vue'
 import { useMouse } from '@vueuse/core'
 
 const props = defineProps({
@@ -217,6 +218,10 @@ const props = defineProps({
 });
 const { card } = toRefs(props);
 
+const personal_kanbanTodo = ref([]);
+watchEffect(async () => {
+  personal_kanbanTodo.value = teamStore.init?.todogroups?.filter(i => i.kanban?.id === teamStore.card?.card_kanban?.id);
+});
 const emit = defineEmits(["closeCardList"]);
 
 const rightDrawerWidth = ref(640);
@@ -346,142 +351,9 @@ const classExtendIcon = () => {
   return _cur_extend.icon;
 };
 
-const current_document = ref();
 const resetHeight = (offset, height) => {
   return { minHeight: `calc(${height - offset - 2}px)` }
 }
-
-
-watch(
-  mm_wsStore,
-  async () => {
-    // console.log(mm_wsStore.event);
-    if (mm_wsStore.event?.event === "posted") {
-      let post =
-        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
-      if (!post) return;
-      const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
-      if (isCurClint) return;
-      let strapi = post?.props?.strapi;
-      if (strapi) {
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card?.id &&
-          strapi.data.action === "card_documentCreated"
-        ) {
-          // console.log('card_documentCreated');
-          teamStore.card.card_documents.push(strapi.data.body);
-          // 修改当前cards里的对应card，防止下次通过顶部tab切换时还是旧数据
-          const isSameCardId = (element) => {
-            return element.id === teamStore.card.id;
-          }
-          const card_index = teamStore.cards.findIndex(isSameCardId);
-          if (card_index !== -1) {
-            teamStore.cards[card_index] = teamStore.card;
-          }
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card?.id &&
-          strapi.data.action === "card_documentDeleted"
-        ) {
-          // 修改当前card的文档
-          const isSameId = (element) => {
-            return element.id === strapi.data.document_id;
-          }
-          const doc_index = teamStore.card.card_documents.findIndex(isSameId);
-          if (doc_index !== -1) {
-            teamStore.card.card_documents.splice(doc_index, 1);
-          }
-
-          // 修改当前cards里的对应card，防止下次通过顶部tab切换时还是旧数据
-          const isSameCardId = (element) => {
-            return element.id === teamStore.card.id;
-          }
-          const card_index = teamStore.cards.findIndex(isSameCardId);
-          if (card_index !== -1) {
-            teamStore.cards[card_index] = teamStore.card;
-          }
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card?.id &&
-          strapi.data.action === "card_motifyDocumentTitle"
-        ) {
-          // 修改当前card的文档
-          function isSameId(element) {
-            return element.id === strapi.data.document_id;
-          }
-          const doc_index = teamStore.card.card_documents.findIndex(isSameId);
-          if (doc_index !== -1) {
-            teamStore.card.card_documents[doc_index].title = strapi.data.title;
-          }
-
-          // 修改当前cards里的对应card，防止下次通过顶部tab切换时还是旧数据
-          function isSameCardId(element) {
-            return element.id === teamStore.card.id;
-          }
-          const card_index = teamStore.cards.findIndex(isSameCardId);
-          if (card_index !== -1) {
-            teamStore.cards[card_index] = teamStore.card;
-          }
-
-          motify_document.value = null;
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card?.id &&
-          strapi.data.action === "card_motifyDocumentContent"
-        ) {
-          // console.log("get document update event");
-          teamStore.card.card_documents.find(
-            (i) => i.id === strapi.data.document_id
-          ).jsonContent = strapi.data.jsonContent;
-          current_document.value = teamStore.card.card_documents.find(
-            (i) => i.id === strapi.data.document_id
-          );
-          // 修改当前cards里的对应card，防止下次通过顶部tab切换时还是旧数据
-          teamStore.cards
-            .find((i) => i.id === teamStore.card.id)
-            .card_documents.find(
-              (i) => i.id === strapi.data.document_id
-            ).jsonContent = strapi.data.jsonContent;
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card?.id &&
-          strapi.data.action === "role_updated"
-        ) {
-          const res = await getCard(strapi.data.card_id);
-          if (res?.data) {
-            teamStore.card.member_roles = res.data.member_roles;
-          }
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card?.id &&
-          strapi.data.action === "card_member_updated"
-        ) {
-          const res = await getCard(strapi.data.card_id);
-          if (res?.data) {
-            teamStore.card.card_members = res.data.card_members;
-          }
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card?.id &&
-          strapi.data.action === "card_member_removed"
-        ) {
-          teamStore.card.card_members = teamStore.card.card_members.filter(
-            (i) => i.id !== strapi.data.member_id
-          );
-          card_members.value = teamStore.card.card_members;
-        }
-      }
-    }
-  },
-  { immediate: true, deep: true }
-);
 </script>
 
 <style lang="scss" scoped></style>

@@ -44,7 +44,7 @@
             >
         </q-item>
         <q-item
-            v-if="group.kanban?.id && !teamStore.project"
+            v-if="false"
             clickable
             v-close-popup
             class="radius-xs"
@@ -156,13 +156,15 @@ const toProjectKanban = async (id) => {
         };
     }
     const _kanban_by_group = teamStore.init.todogroups.find(i => i.id === group.id)?.kanban;
-    if(_kanban_by_group.kanban?.group?.board?.project?.id) {
+    if(_kanban_by_group?.group?.board?.project?.id) {
         to(_kanban_by_group)
-    }
-    const { data } = await findKanbanByTodogroupID(id);
-    if(data) {
-        teamStore.init.todogroups.find(i => i.id === group.id).kanban = data;
-        to(data)
+    } else {
+        const { data } = await findKanbanByTodogroupID(id);
+        console.log('findKanbanByTodogroupID', data);
+        if(data) {
+            teamStore.init.todogroups.find(i => i.id === group.id).kanban = data;
+            to(data)
+        }
     }
 }
 </script>

@@ -91,7 +91,7 @@
           mainStyle="no-padding"
         />
         <div
-          class="absolute-full bg-gradient-bottom-black hover-show transition"
+          class="absolute-full bg-gradient-bottom-black hover-hide transition"
           @dblclick.stop="
             _enterSegment(useAuths('read', ['card']))
           "

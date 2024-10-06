@@ -1,9 +1,6 @@
 <template>
-  <div
-    class="relative-position hovered-item"
-    :class="`
-      ${isClassroom ? 'column flex-center q-space' : ''}
-    `"
+  <div class="relative-position hovered-item"
+    :class="`${isClassroom ? 'column flex-center q-space' : ''}`"
   >
     <q-responsive
       v-if="isShared && !activeVersion?.media"
@@ -15,9 +12,7 @@
       </div>
     </q-responsive>
     <template v-if="activeVersion?.media">
-      <template
-        v-if="
-          activeVersion.media.url &&
+      <template v-if="activeVersion.media.url &&
           filetype(activeVersion?.media.url) === 'image'
         "
       >
@@ -86,9 +81,7 @@
           : 'full-width relative-position'
       "
     >
-      <div
-        class="absolute-full flex flex-center q-pa-xl"
-      >
+      <div class="absolute-full flex flex-center q-pa-xl">
         <q-card bordered flat style="min-width: 22rem">
           <StrapiUpload
             :label="upload_label"

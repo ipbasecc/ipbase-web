@@ -17,22 +17,31 @@
             </template>
           </q-input>
         </div>
-        <div v-else
+        <div v-else-if="createStyle === 'normal'"
           :class="`${ $q.dark.mode ? 'text-grey-1' : 'text-grey-10' }`"
           class="q-px-xs q-pt-xs q-pb-xl cursor-pointer transition font-medium hover-highlight-lg"
           @click="new_column_ing = true"
         >
-          {{ $t('create_person_todogroup') }}
+          {{ _for === 'personal_kanbanTodo' ? $t('create_person_todogroup') : $t('create_todogroup')}}
         </div>
+        <q-responsive v-else-if="createStyle === 'init_create'" :ratio="16/9">
+          <div class="flex flex-center">
+            <q-btn flat icon="add"
+              :label="_for === 'personal_kanbanTodo' ? $t('create_person_todogroup') : $t('create_todogroup')"
+              class="border"
+              @click="new_column_ing = true"
+            />
+          </div>
+        </q-responsive>
     </div>
 </template>
 
 <script setup>
-import { uiStore, userStore } from 'src/hooks/global/useStore';
+import { teamStore, uiStore, userStore } from 'src/hooks/global/useStore';
 import { ref } from 'vue'
 import { createTodogroup } from "src/api/strapi/project.js";
 
-const { kanban, card } = defineProps(['kanban','card']);
+const { kanban, card, _for, createStyle } = defineProps(['kanban','card', '_for', 'createStyle']);
 const emit = defineEmits(['todogroupCreated']);
 
 const new_column_ing = ref(false);
@@ -51,10 +60,10 @@ const createColumnFn = async () => {
     loading.value = false;
     return;
   }
-  if (kanban) {
-    params.value.kanban_id = kanban.id;
+  if (_for === 'personal_kanbanTodo') {
+    params.value.kanban_id = teamStore.card?.card_kanban?.id;
   }
-  if (card) {
+  if (card && _for === 'card') {
     params.value.card_id = card.id;
   }
   // console.log("params.value", params.value);
@@ -64,6 +73,9 @@ const createColumnFn = async () => {
     params.value.data.name = "";
     new_column_ing.value = false;
     loading.value = false;
+    if (_for === 'personal_kanbanTodo') {
+      teamStore.init.todogroups?.length > 0 ? teamStore.init.todogroups.push(res.data) : teamStore.init.todogroups = [res.data];
+    }
   }
 }
 </script>

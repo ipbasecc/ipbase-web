@@ -228,6 +228,8 @@ const enterDocument = async (element) => {
   if(!teamStore.card) {
     router.push(`/teams/projects/${teamStore.project?.id}/document/${element.id}`);
     uiStore.showMainContentList = false;
+  } else {
+    emit("enterDocument", element.id);
   }
 };
 onMounted(async() => {

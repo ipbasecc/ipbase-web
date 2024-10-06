@@ -14,6 +14,7 @@
         :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-1'"
       >
         <q-toolbar class="transparent border-bottom">
+          {{teamStore.card?.id}}
           <q-tabs
             v-model="current_classExtend"
             inline-label
@@ -46,12 +47,13 @@
               />
             </KeepAlive>
           </template>
-          <TodoPage
-            v-if="current_classExtend === 'card_note'"
-            :kanban_id="teamStore.card?.card_kanban?.id"
+          <AffairsContainer v-if="current_classExtend === 'card_note'"
+            :todogroups="teamStore.card?.todogroups"
+            :card="teamStore.card"
             :hideToolbar="true"
-            _for="segment"
-            class="fit"
+            _for="card"
+            layout="column"
+            class="absolute-full"
           />
           <template v-if="current_classExtend === 'card_documents'">
             <q-splitter
@@ -68,6 +70,7 @@
                 <DocumentList
                   :documents="teamStore.card.card_documents"
                   :by_info="byInfo"
+                  :sortAuth="useAuths('modify', ['card'])"
                   @enterDocument="enterDocument"
                 />
               </template>
@@ -141,9 +144,10 @@ import TodoPage from "src/pages/team/todo/TodoPage.vue";
 import DocumentList from "src/pages/team/document/DocumentList.vue";
 import DocumentBody from "src/pages/team/document/DocumentBody.vue";
 import StoragePage from "src/pages/team/storage/StoragePage.vue";
+import AffairsContainer from 'src/pages/team/todo/AffairsContainer.vue'
 
 import ThreadContainer from "../chat/ThreadContainer.vue";
-import { teamStore, mm_wsStore, uiStore } from "src/hooks/global/useStore.js";
+import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 
 const emit = defineEmits(["closeCardList"]);
 const route = useRoute();
@@ -298,137 +302,6 @@ onKeyStroke(['Escape'], (e) => {
   e.preventDefault();
   close()
 });
-
-watch(
-  mm_wsStore,
-  async () => {
-    // console.log(mm_wsStore.event);
-    if (mm_wsStore.event?.event === "posted") {
-      let post =
-        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
-      if (!post) return;
-      const isCurClint = mm_wsStore?.clientId === post?.props?.clientId;
-      if (isCurClint) return;
-      let strapi = post?.props?.strapi;
-      if (strapi) {
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card?.id &&
-          strapi.data.action === "card_documentCreated"
-        ) {
-          // console.log('card_documentCreated');
-          teamStore.card.card_documents.push(strapi.data.body);
-          // 修改当前cards里的对应card，防止下次通过顶部tab切换时还是旧数据
-          const isSameCardId = (element) => {
-            return element.id === teamStore.card.id;
-          }
-          const card_index = teamStore.cards.findIndex(isSameCardId);
-          if (card_index !== -1) {
-            teamStore.cards[card_index] = teamStore.card;
-          }
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card?.id &&
-          strapi.data.action === "card_documentDeleted"
-        ) {
-          // 修改当前card的文档
-          const isSameId = (element) => {
-            return element.id === strapi.data.document_id;
-          }
-          const doc_index = teamStore.card.card_documents.findIndex(isSameId);
-          if (doc_index !== -1) {
-            teamStore.card.card_documents.splice(doc_index, 1);
-          }
-
-          // 修改当前cards里的对应card，防止下次通过顶部tab切换时还是旧数据
-          const isSameCardId = (element) => {
-            return element.id === teamStore.card.id;
-          }
-          const card_index = teamStore.cards.findIndex(isSameCardId);
-          if (card_index !== -1) {
-            teamStore.cards[card_index] = teamStore.card;
-          }
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card?.id &&
-          strapi.data.action === "card_motifyDocumentTitle"
-        ) {
-          // 修改当前card的文档
-          const isSameId = (element) => {
-            return element.id === strapi.data.document_id;
-          }
-          const doc_index = teamStore.card.card_documents.findIndex(isSameId);
-          if (doc_index !== -1) {
-            teamStore.card.card_documents[doc_index].title = strapi.data.title;
-          }
-
-          // 修改当前cards里的对应card，防止下次通过顶部tab切换时还是旧数据
-          const isSameCardId = (element) => {
-            return element.id === teamStore.card.id;
-          }
-          const card_index = teamStore.cards.findIndex(isSameCardId);
-          if (card_index !== -1) {
-            teamStore.cards[card_index] = teamStore.card;
-          }
-
-          motify_document.value = null;
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card?.id &&
-          strapi.data.action === "card_motifyDocumentContent"
-        ) {
-          // console.log("get document update event");
-          teamStore.card.card_documents.find(
-            (i) => i.id === strapi.data.document_id
-          ).jsonContent = strapi.data.jsonContent;
-          current_document.value = teamStore.card.card_documents.find(
-            (i) => i.id === strapi.data.document_id
-          );
-          // 修改当前cards里的对应card，防止下次通过顶部tab切换时还是旧数据
-          teamStore.cards
-            .find((i) => i.id === teamStore.card.id)
-            .card_documents.find(
-              (i) => i.id === strapi.data.document_id
-            ).jsonContent = strapi.data.jsonContent;
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card?.id &&
-          strapi.data.action === "role_updated"
-        ) {
-          const res = await getCard(strapi.data.card_id);
-          if (res?.data) {
-            teamStore.card.member_roles = res.data.member_roles;
-          }
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card?.id &&
-          strapi.data.action === "card_member_updated"
-        ) {
-          const res = await getCard(strapi.data.card_id);
-          if (res?.data) {
-            teamStore.card.card_members = res.data.card_members;
-          }
-        }
-        if (
-          strapi.data?.is === "card" &&
-          strapi.data.card_id === teamStore.card?.id &&
-          strapi.data.action === "card_member_removed"
-        ) {
-          teamStore.card.card_members = teamStore.card.card_members.filter(
-            (i) => i.id !== strapi.data.member_id
-          );
-          card_members.value = teamStore.card.card_members;
-        }
-      }
-    }
-  },
-  { immediate: true, deep: true }
-);
 </script>
 
 <style lang="scss" scoped></style>

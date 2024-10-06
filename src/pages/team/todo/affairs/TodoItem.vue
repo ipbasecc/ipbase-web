@@ -92,9 +92,9 @@
 </template>
 
 <script setup>
-import { ref, toRefs, toRaw, computed } from 'vue'
+import { ref, toRefs, toRaw, computed, watch } from 'vue'
 import InputDiv from 'src/components/Utilits/InputDiv.vue'
-import { uiStore } from 'src/hooks/global/useStore';
+import { uiStore, mm_wsStore } from 'src/hooks/global/useStore';
 import {deleteTodo, updateTodo} from "src/api/strapi/project.js";
 import TodoMenu from './TodoMenu.vue'
 import StrapiUpload from "src/components/Utilits/StrapiUpload.vue";
@@ -115,12 +115,15 @@ const props = defineProps({
         type: Object,
         required: true
     },
+    displayType: {
+        type: String,
+        default: 'todo'
+    }
 });
 const emit = defineEmits(['todoDeleted']);
 const { group, todo, card } = toRefs(props);
 const _todo = toRaw(todo.value);
 
-const { style, highlight } = clac_cardEdgeStyle(todo.value);
 const edgeStyle = computed(() => clac_cardEdgeStyle(todo.value));
 
 const cancelUpdateTodo = () => {
@@ -202,6 +205,21 @@ const deleteTodoFn = async () => {
     emit("todoDeleted", todo.value?.id);
   }
 }
+
+watch(
+  mm_wsStore,
+  () => {
+    if (mm_wsStore.event && mm_wsStore.event.event === "thread_updated") {
+      const _thread = JSON.parse(mm_wsStore.event.data.thread);
+      // console.log("message.event", message);
+      if (_thread.id === element.value?.mm_thread?.id) {
+        element.value.mm_thread = _thread;
+        // updateTodoThread(element.value, _thread);
+      }
+    }
+  },
+  { immediate: true, deep: true }
+);
 </script>
 
 <style scoped>

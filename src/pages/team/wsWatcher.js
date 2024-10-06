@@ -564,12 +564,21 @@ export default function useWatcher() {
           }
         });
       }
+      
       if(val.value.event === 'document:created'){
         if(teamStore.project?.id === Number(project_id)){
-          teamStore.project.project_documents.push(data);
+          if(teamStore.project.project_documents?.length > 0){
+            teamStore.project.project_documents.push(data);
+          } else {
+            teamStore.project.project_documents = [data]
+          }
         }
         if(teamStore.card?.id === Number(card_id)){
-          teamStore.card.card_documents.push(data);
+          if(teamStore.card.card_documents?.length > 0){
+            teamStore.card.card_documents.push(data);
+          } else {
+            teamStore.card.card_documents = [data]
+          }
         }
       }
       if(val.value.event === 'document:updated'){
@@ -615,6 +624,7 @@ export default function useWatcher() {
         }
       }
       if(val.value.event === 'document:removed'){
+        console.log('document:removed', data);
         if(teamStore.project?.id === Number(project_id)){
           const index = teamStore.project.project_documents.findIndex(i => i.id === Number(data.removed_document_id));
           if(index !== -1){
@@ -623,6 +633,7 @@ export default function useWatcher() {
           }
         }
         if(teamStore.card?.id === Number(card_id)){
+          console.log('document:removed', data);
           const index = teamStore.card.card_documents.findIndex(i => i.id === Number(data.removed_document_id));
           if(index !== -1){
             teamStore.card.card_documents.splice(index, 1);
@@ -632,6 +643,7 @@ export default function useWatcher() {
           teamStore.active_document = null;
         }
       }
+
       if(val.value.event === 'storage:created'){
         if(teamStore.project?.id === Number(project_id)){
           const index = teamStore.project.storages.findIndex(i => i.id === Number(data.id));
