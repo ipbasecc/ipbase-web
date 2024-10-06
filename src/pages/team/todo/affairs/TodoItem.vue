@@ -7,7 +7,7 @@
         ${isFocused ? 'border-info border-solid border-xs' : ''}
     `"
   >
-    <q-checkbox v-model="todo.status" dense class="q-mt-xs" />
+    <q-checkbox v-model="todo.status" dense class="q-mt-xs" @update:model-value="updateTodoFn()" />
     <div class="column no-wrap gap-xs q-space">
         <InputDiv
             v-model="todo.content"
@@ -23,8 +23,8 @@
                     : ''
                 }
             `"
-            @update="updateTodoFn(i, null)"
-            @ctrlEnter="updateTodoFn(i, null)"
+            @update="updateTodoFn()"
+            @ctrlEnter="updateTodoFn()"
             @ESC="cancelUpdateTodo"
             @onFocus="onFocus"
             @onBlur="onBlur"
