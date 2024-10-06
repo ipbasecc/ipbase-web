@@ -12,11 +12,12 @@
   >
     <template v-for="todo in modelValue.todos" :key="todo.id">
       <TodoItem
-        v-show="(modelValue.hideCompleted && !todo.status) || !modelValue.hideCompleted"
+        v-show="hidecompletedTodo(todo)"
         :todo="todo"
         :card
         :group="modelValue"
         :displayType
+        :dense
         class="todoItem"
         @todoDeleted="todoDeleted"
       />
@@ -50,13 +51,26 @@ import {VueDraggable} from 'vue-draggable-plus'
 import { updateTodogroup } from "src/api/strapi/project.js";
 import { useQuasar } from 'quasar';
 
-const { card, displayType } = defineProps({
+const { card, displayType, dense, uiOptions } = defineProps({
   card: Object,
-  displayType: String
+  displayType: String,
+  dense: Boolean,
+  uiOptions: Object
 })
 
 const $q = useQuasar();
 const modelValue = defineModel();
+
+const hidecompletedTodo = (i) => {
+  if(teamStore?.card){
+    return (modelValue.value.hideCompleted && !i.status) || !modelValue.value.hideCompleted
+  } else {
+    const pfrs = uiOptions?.find((item) => item.val === "hidecompletedTodo");
+    const _hideCompletedTodo = pfrs?.enable;
+  
+    return !i.status || !_hideCompletedTodo
+  }
+};
 
 const dragStart = () => {
     uiStore.dragKanbanScrollEnable = false;

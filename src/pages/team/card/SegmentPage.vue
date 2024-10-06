@@ -140,7 +140,6 @@ import { findCard, getOneProject } from "src/api/strapi/project.js";
 import {onKeyStroke, useMouse} from '@vueuse/core';
 
 import OverView from "src/pages/team/components/OverView.vue";
-import TodoPage from "src/pages/team/todo/TodoPage.vue";
 import DocumentList from "src/pages/team/document/DocumentList.vue";
 import DocumentBody from "src/pages/team/document/DocumentBody.vue";
 import StoragePage from "src/pages/team/storage/StoragePage.vue";

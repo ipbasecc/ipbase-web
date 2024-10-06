@@ -107,23 +107,37 @@
             <div v-else class="absolute-full column flex-center">{{ $t('no_subtask') }}...</div>
           </template>
           <template v-if="current_model === 'card_todo'">
-            <TodoPage
-                v-if="teamStore.card?.todogroups?.length > 0"
-                layout="row" class="absolute-full"
+            <AffairsContainer
+              v-if="teamStore.card?.todogroups?.length > 0"
+              :todogroups="teamStore.card?.todogroups"
+              :card="teamStore.card"
+              _for="card"
+              layout="row"
+              class="absolute-full"
             />
             <div v-else class="absolute-full column flex-center">{{ $t('no_todos') }}...</div>
           </template>
           <template v-if="current_model === 'card_feedback'" >
             <div v-if="teamStore.card?.feedback" class="absolute-full column items-center">
-              <TodoPage :assignData="[teamStore.card?.feedback]" :isFeedback="true" :hideToolbar="true" class="fit">
+              <AffairsContainer v-if="teamStore.card.feedback"
+                :todogroups="[teamStore.card.feedback]"
+                :card="teamStore.card"
+                :hideToolbar="true"
+                _for="personal_kanbanTodo"
+                layout="column"
+                class="fit"
+              >
                 <template v-slot:header>
-                  <q-btn flat dense size="sm" round
-                    icon="mdi-refresh"
-                    class="q-ml-sm"
-                    @click="refetchFeedback(teamStore.card?.id)"
-                  />
+                  <q-bar dark class="transparent">
+                    <q-space />
+                    <q-btn flat dense size="sm" round
+                      icon="mdi-refresh"
+                      class="q-ml-sm"
+                      @click="refetchFeedback(teamStore.card?.id)"
+                    />
+                  </q-bar>
                 </template>
-              </TodoPage>
+              </AffairsContainer>
               <q-inner-loading :showing="loading">
                 <q-spinner-orbit size="2em" color="primary" />
               </q-inner-loading>
@@ -208,7 +222,7 @@ import {findCardByShare, findCardFeedbackByShare} from 'src/api/strapi/project.j
 
 import OverView from "src/pages/team/components/OverView.vue";
 import KanbanContainer from "../../KanbanContainer.vue";
-import TodoPage from "pages/team/todo/TodoPage.vue";
+import AffairsContainer from 'src/pages/team/todo/AffairsContainer.vue'
 import DocumentList from "src/pages/team/document/DocumentList.vue";
 import DocumentBody from "src/pages/team/document/DocumentBody.vue";
 import StoragePage from "src/pages/team/storage/StoragePage.vue";

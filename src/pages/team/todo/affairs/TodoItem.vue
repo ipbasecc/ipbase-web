@@ -1,7 +1,8 @@
 <template>
-  <div v-if="todo" data-no-dragscroll class="hovered-item relative-position q-px-xs radius-xs row no-wrap items-start gap-xs dragBar todo-item"
+  <div v-if="todo" data-no-dragscroll
+    class="hovered-item relative-position q-px-xs radius-xs row no-wrap items-start gap-xs dragBar todo-item"
     :class="`
-        ${$q.dark.mode ? 'bg-grey-9' : 'bg-white'}
+        ${dense ? '' : $q.dark.mode ? 'bg-grey-9' : 'bg-white'}
         ${todo.status ? 'op-3' : ''}
         ${isFocused ? 'border-info border-solid border-xs' : ''}
     `"
@@ -10,7 +11,7 @@
     <div class="column no-wrap gap-xs q-space">
         <InputDiv
             v-model="todo.content"
-            :auth="card ? useAuths('create', authCollections) : uiStore.app === 'affairs'"
+            :auth="card ? useAuths('content', authCollections) : uiStore.app === 'affairs'"
             :baseClass="`q-space q-pa-xs`"
             :autofocus="false"
             class="undrag"
@@ -68,7 +69,7 @@
     <!-- 重要度、紧急度 左边框颜色标记 -->
     <div
         class="absolute-left full-height z-fab"
-        :class="`${edgeStyle.highlight ? 'highlight transition' : ''}`"
+        :class="`${edgeStyle.highlight ? 'edge-highlight transition' : ''}`"
         :style="`${edgeStyle.style}`"
     ></div>
     <q-dialog v-model="add_attachment_dialog" persistent>
@@ -104,20 +105,20 @@ import { authCollections } from "./useAffairs.js";
 
 const props = defineProps({
     group: {
-        type: Object,
-        required: true
+        type: Object
     },
     todo: {
-        type: Object,
-        required: true
+        type: Object
     },
     card: {
-        type: Object,
-        required: true
+        type: Object
     },
     displayType: {
         type: String,
         default: 'todo'
+    },
+    dense: {
+        type: Boolean
     }
 });
 const emit = defineEmits(['todoDeleted']);
@@ -229,10 +230,13 @@ watch(
 .todo-item:hover {
     border: 1px solid rgb(201, 201, 201);
 }
-.highlight {
+.edge-highlight {
   width: 5px;
+  border-radius: 5px;
+  transform: translateX(-3px);
 }
-.todo-item:hover .highlight {
-  width: 2px;
+.todo-item:hover .edge-highlight {
+  width: 3px;
+  transform: translateX(-6px);
 }
 </style>

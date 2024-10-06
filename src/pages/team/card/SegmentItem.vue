@@ -492,21 +492,18 @@ import {
   clac_cardEdgeStyle,
   clac_todoData,
   updateCardName,
-  updateCardThread,
   setCardColor,
   setScore,
   removeCard,
   enterSegment,
   setStatus,
 } from "src/hooks/team/useCard.js";
-import { uniqueById } from "src/hooks/utilits.js";
 import { useProjectCardPreference } from "src/pages/team/hooks/useSettingTemplate.js";
 import ThreadBtn from "../components/widgets/ThreadBtn.vue";
 import ReName from "../components/widgets/icons/ReName.vue";
 import {
   userStore,
   teamStore,
-  mm_wsStore,
   uiStore,
 } from "src/hooks/global/useStore.js";
 import FileViewer from "src/components/VIewComponents/FileViewer.vue";

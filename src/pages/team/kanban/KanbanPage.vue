@@ -89,9 +89,12 @@
       :width="rightDrawer_width"
       class="q-pa-xs border-left"
     >
-      <TodoPage
-        v-if="teamStore.kanban_rightDrawer === 'private_todos'"
-        :kanban_id="teamStore.kanban?.id"
+      <AffairsContainer v-if="teamStore.kanban_rightDrawer === 'private_todos'"
+        :todogroups="personal_kanbanTodo"
+        :hideToolbar="true"
+        _for="personal_projectKanbanTodo"
+        layout="column"
+        class="fit"
       />
       <ThreadContainer
         v-if="teamStore.kanban_rightDrawer === 'thread' && teamStore.thread"
@@ -151,14 +154,13 @@
               :class="$q.dark.mode ? 'bg-darker text-grey-1' : 'bg-grey-1 text-grey-10'"
               @closeThread="closeThread"
           />
-          <TodoPage v-if="teamStore.kanban_rightDrawer === 'private_todos'"
-            class="absolute-full"
-            :kanban_id="teamStore.kanban?.id"
-          >
-            <template #bar_left>
-              <q-btn flat dense icon="close" @click="teamStore.kanban_rightDrawer = void 0" />
-            </template>
-          </TodoPage>
+          <AffairsContainer v-if="teamStore.kanban_rightDrawer === 'private_todos'"
+            :todogroups="personal_kanbanTodo"
+            :hideToolbar="true"
+            _for="personal_projectKanbanTodo"
+            layout="column"
+            class="fit"
+          />
         </template>
         <template v-if="$q.screen.gt.xs && !teamStore.card">
           <q-dialog v-model="uiStore.topPannel" seamless position="top" full-width>
@@ -202,7 +204,7 @@ import {computed, watchEffect, ref, toRefs, onMounted} from 'vue';
 import { useRouter, useRoute } from "vue-router";
 
 import KanbanModel from "./KanbanModel.vue";
-import TodoPage from "src/pages/team/todo/TodoPage.vue";
+import AffairsContainer from 'src/pages/team/todo/AffairsContainer.vue'
 import BgBrand from "src/components/VIewComponents/BgBrand.vue";
 
 import localforage from "localforage";
@@ -224,7 +226,9 @@ const setTip = () => {
     showDeleteTip.value = true
   }
 }
+const personal_kanbanTodo = ref();
 watchEffect(async () => {
+  personal_kanbanTodo.value = teamStore.init?.todogroups?.filter(i => i.kanban?.id === teamStore.kanban?.id) || []
   if (_dropItems.value?.length > 0) {
     if(uiStore.dropGroup === 'tasks'){
         await Promise.all(_dropItems.value.map((card) => removeCard(card)));

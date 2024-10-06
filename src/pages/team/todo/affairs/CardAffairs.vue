@@ -4,9 +4,10 @@
       :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
       handle=".dragBar" filter=".undrag" group="todogroup"
       chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
-      class="gap-sm no-wrap q-pa-sm"
+      class="gap-sm no-wrap"
       :class="`
         ${layout === 'row' ? 'row' : 'column'}
+        ${dense ? 'q-pa-xs' : 'q-pa-sm'}
         ${todogroups?.length > 0 ? 'bordered' : 'flex-center'}
       `"
       :style="layout === 'row' ? `height: ${mainArea?.height}px;` : ''"
@@ -20,10 +21,15 @@
           :_for
           :layout
           :displayType
+          :dense
+          :uiOptions
           @todogroupDeleted="todogroupDeleted"
         />
       </template>
-      <CreateColumn :card :_for :createStyle="todogroups?.length > 0 ? 'normal' : 'init_create'" />
+      <CreateColumn
+        :card :_for :layout :dense
+        :createStyle="todogroups?.length > 0 ? 'normal' : 'init_create'"
+      />
     </VueDraggable>
 </template>
 
@@ -35,13 +41,15 @@ import GroupContiner from './GroupContiner.vue'
 import CreateColumn from './CreateColumn.vue'
 import { updateCard } from "src/api/strapi/project.js";
 
-const { data = [], mainArea, card, _for, layout, displayType } = defineProps({
+const { data = [], mainArea, card, _for, layout, displayType, dense, uiOptions } = defineProps({
   data: Array,
   mainArea: Object,
   card: Object,
   _for: String,
   layout: String,
   displayType: String,
+  dense: Boolean,
+  uiOptions: Object
 })
 const todogroups = ref();
 watchEffect(() => {

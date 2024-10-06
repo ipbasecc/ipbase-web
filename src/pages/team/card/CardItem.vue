@@ -188,7 +188,7 @@
       <!-- 待办 -->
       <q-card-section
         v-if="cardRef.type === 'todo' && cardRef.type !== 'classroom'"
-        class="column no-wrap q-px-xs q-py-sm q-pb-sm overflow-hidden relative-position"
+        class="column no-wrap q-pa-none overflow-hidden relative-position"
         :class="
           uiStore.dragging
             ? 'border-dashed border-op-sm bg-primary-active'
@@ -198,13 +198,15 @@
         :style="cardRef.expand === 'collapse' ? 'max-height: 6rem' : ''"
         @click="expandCard(cardRef)"
       >
-        <TodoPage
-          ref="todoRef"
+        <AffairsContainer
+          :todogroups="cardRef?.todogroups"
+          :auth="useAuths('content', ['card_todo'])"
           :card="cardRef"
-          :card_id="cardRef.id"
-          :isCreator="isCreator"
-          :isPrivate="cardRef.private"
-          :uiOptions="uiOptions"
+          :hideToolbar="true"
+          :dense="true"
+          :uiOptions
+          _for="card"
+          layout="column"
         />
       </q-card-section>
       <!-- 卡片底部 -->
@@ -562,7 +564,7 @@ import StatusMenu from "src/pages/team/components/user/StatusMenu.vue";
 import CardPage from "./CardPage.vue";
 import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
 import overlappingAvatar from "src/pages/team/components/widgets/overlappingAvatar.vue";
-import TodoPage from "src/pages/team/todo/TodoPage.vue";
+import AffairsContainer from 'src/pages/team/todo/AffairsContainer.vue'
 import CardExecutor from "src/pages/team/card/components/CardExecutor.vue";
 
 import {useRoute} from "vue-router";

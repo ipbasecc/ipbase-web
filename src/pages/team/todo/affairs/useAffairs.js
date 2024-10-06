@@ -58,4 +58,4 @@ export function useChartData(_todogroups) {
   return transform(todos, props);
 }
 
-export const authCollections = computed(() => teamStore.card ? ['card'] : ['card_todo', 'card'])
+export const authCollections = computed(() => teamStore.card ? ['todo'] : ['card_todo', 'todo'])

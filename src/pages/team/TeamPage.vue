@@ -74,10 +74,6 @@
           v-if="teamStore.rightDrawer === 'member_manager' && teamStore?.project?.id"
           :byInfo
         />
-        <TodoPage
-          v-else-if="teamStore.rightDrawer === 'person_todos'"
-          :kanban_id="teamStore.kanban?.id"
-        />
         <FlagsContainder
           v-else-if="teamStore.rightDrawer === 'flaggeds'"
           :headerless="false"
@@ -136,13 +132,12 @@
 </template>
 
 <script setup>
-import {ref, watch, computed, onBeforeMount, reactive, provide, watchEffect} from "vue";
+import {ref, watch, computed, reactive, provide, watchEffect} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useMouse } from '@vueuse/core'
 
 import NavigatorContainer from './NavigatorContainer.vue'
 import FlagsContainder from "src/pages/team/chat/FlagsContainder.vue";
-import TodoPage from "src/pages/team/todo/TodoPage.vue";
 
 import BoradsList from "src/pages/team/kanban/BoradsList.vue";
 import ChatList from "src/pages/team/chat/ChatList.vue";

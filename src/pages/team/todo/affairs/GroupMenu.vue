@@ -27,6 +27,7 @@
             </q-item-section>
         </q-item>
         <q-item
+            v-if="card && teamStore?.card || !card"
             clickable
             v-close-popup
             class="radius-xs"

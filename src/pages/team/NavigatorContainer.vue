@@ -109,13 +109,16 @@
           side="right"
           :width="420"
         >
-          <TodoPage
+          <AffairsContainer 
             v-if="
               uiStore.projectRightDrawerContent === 'person_todos' &&
               uiStore.app !== 'affairs'
             "
-            _for="user_todos"
-            class="absolute-full"
+            :todogroups="teamStore.init?.todogroups"
+            :hideToolbar="true"
+            _for="personal"
+            layout="column"
+            class="fit"
           />
           <FlagsContainder
             v-if="uiStore.projectRightDrawerContent === 'flaggeds'"
@@ -178,7 +181,7 @@ import SideNavigation from "src/pages/team/components/SideNavigation.vue";
 import TeamAddmenu from "src/pages/team/components/TeamAddmenu.vue";
 import WelcomePage from "src/pages/team/WelcomePage.vue";
 import TeamList from "src/pages/team/components/TeamList.vue";
-import TodoPage from "src/pages/team/todo/TodoPage.vue";
+import AffairsContainer from 'src/pages/team/todo/AffairsContainer.vue'
 import {teamStore, uiStore} from "src/hooks/global/useStore.js";
 import {useMouse} from "@vueuse/core";
 import {useQuasar} from "quasar";

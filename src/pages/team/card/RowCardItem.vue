@@ -99,13 +99,15 @@
               <q-btn flat dense round icon="close" v-close-popup />
             </q-toolbar>
             <q-card-section class="q-space">
-              <TodoPage
+              <AffairsContainer
+                :todogroups="cardRef?.todogroups"
+                :auth="useAuths('content', ['card_todo'])"
                 :card="cardRef"
-                :card_id="cardRef.id"
-                :isCreator="isCreator"
-                :isPrivate="cardRef.private"
-                :uiOptions="uiOptions"
-                @disableAction="disableAction"
+                :hideToolbar="true"
+                :dense="true"
+                :uiOptions
+                _for="card"
+                layout="column"
               />
             </q-card-section>
           </q-card>
@@ -400,7 +402,7 @@ import StatusMenu from "src/pages/team/components/user/StatusMenu.vue";
 import CardPage from "./CardPage.vue";
 import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
 import overlappingAvatar from "src/pages/team/components/widgets/overlappingAvatar.vue";
-import TodoPage from "src/pages/team/todo/TodoPage.vue";
+import AffairsContainer from 'src/pages/team/todo/AffairsContainer.vue'
 
 import { useRoute } from "vue-router";
 import { useQuasar } from "quasar";

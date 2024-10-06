@@ -686,6 +686,7 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   delete_card_warning: 'Delete current content.',
 
   create_person_todogroup: 'Create Personal Affairs Grouping',
+  create_todogroup: 'Create Todo Grouping',
   budget: 'budget',
   set_team_notification_label: 'Set Team Notification',
   confirm: 'Confirm',

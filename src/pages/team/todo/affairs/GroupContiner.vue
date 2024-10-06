@@ -2,9 +2,12 @@
   <div class="column no-wrap gap-xs radius-xs"
     :style="columnStyle"
   >
-    <div data-no-dragscroll class="column-header row no-wrap items-center q-pt-xs q-px-sm">
+    <div data-no-dragscroll class="column-header row no-wrap items-center q-px-sm hovered-item"
+      :class="dense ? '' : 'q-pt-xs'"
+    >
         <span class="dragBar q-space">{{ group.name }}</span>
-        <q-btn flat dense size="sm" round icon="mdi-dots-vertical" :class="$q.screen.gt.sm ? 'undrag' : ''">
+        <q-btn dense round flat icon="mdi-plus" size="sm" class="undrag hover-show transition" @click="toggleCreatetodo()" />
+        <q-btn flat dense size="sm" round icon="mdi-dots-vertical" class="hover-show transition" :class="$q.screen.gt.sm ? 'undrag' : ''">
             <q-menu class="radius-sm shadow-24" ref="todogroupMenuRef">
                 <GroupMenu
                     :group
@@ -15,21 +18,22 @@
             </q-menu>
         </q-btn>
     </div>
-    <div data-no-dragscroll class="column-footer row no-wrap items-center q-px-xs"
+    <div v-if="!dense" data-no-dragscroll class="column-footer row no-wrap items-center q-px-xs"
       :class="$q.screen.gt.sm ? 'undrag' : ''"
     >
         <q-btn dense flat icon="mdi-plus" size="sm" class="border full-width" @click="toggleCreatetodo()" />
     </div>
     <q-scroll-area v-if="layout === 'row'" class="q-space q-px-xs scroll-container flex-content">
-      <GroupBody v-model="group" :card :displayType ref="todogroupBodyRef" />
+      <GroupBody v-model="group" :card :displayType :uiOptions ref="todogroupBodyRef" />
     </q-scroll-area>
-    <div v-else class="q-px-xs">
-      <GroupBody v-model="group"
-        ref="todogroupBodyRef"
-        class="q-px-xs"
-        :displayType
-      />
-    </div>
+    <GroupBody v-else v-model="group"
+      ref="todogroupBodyRef"
+      class="q-px-xs"
+      :displayType
+      :dense
+      :card
+      :uiOptions
+    />
   </div>
 </template>
 
@@ -58,10 +62,17 @@ const props = defineProps({
   },
   displayType: {
     type: String
-  }
+  },
+  dense: {
+    type: Boolean
+  },
+  uiOptions: {
+    type: Object,
+    required: true
+  },
 });
 const emit = defineEmits(['todogroupDeleted']);
-const { group, card, _for, layout, displayType } = toRefs(props);
+const { group, card, _for, layout, displayType, dense, uiOptions } = toRefs(props);
 
 const columnStyle = computed(() => {
   if(layout.value === 'column') {

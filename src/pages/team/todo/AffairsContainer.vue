@@ -27,10 +27,10 @@
         <template v-if="viewModel === 'kanban'">
             <ScrollBody v-if="layout === 'row'">
                 <AffairsBody v-if="_for === 'personal'" :mainArea />
-                <CardAffairs v-else :mainArea :data="todogroups" :card :_for :layout :displayType />
+                <CardAffairs v-else :mainArea :data="todogroups" :card :_for :layout :displayType :dense :uiOptions />
             </ScrollBody>
             <template v-else>
-                <CardAffairs :mainArea :data="todogroups" :card :_for :layout :displayType />
+                <CardAffairs :mainArea :data="todogroups" :card :_for :layout :displayType :dense :uiOptions />
             </template>
         </template>
         <QuadrantView v-if="viewModel === 'quadrant'" :mainArea :card />
@@ -45,13 +45,15 @@ import CardAffairs from './affairs/CardAffairs.vue'
 import AffairsBody from './affairs/AffairsBody.vue'
 import QuadrantView from './affairs/QuadrantView.vue';
 
-const { todogroups, _for = 'personal', card, hideToolbar, layout = 'row', displayType = 'todo' } = defineProps({
+const { todogroups, _for = 'personal', card, hideToolbar, layout = 'row', displayType = 'todo', dense = false } = defineProps({
     todogroups: Array,
     _for: String,
     card: Object,
     hideToolbar: Boolean,
     layout: String,
-    displayType: String
+    displayType: String,
+    dense: Boolean,
+    uiOptions: Object
 })
 
 const mainArea = ref(null);
