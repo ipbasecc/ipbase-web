@@ -379,6 +379,11 @@
       </q-icon>
     </td>
   </tr>
+  <!-- 重要度、紧急度 左边框颜色标记 -->
+  <div class="absolute-left full-height z-fab"
+    :class="`${edgeStyle.highlight ? 'highlight transition' : ''}`"
+    :style="`${edgeStyle.style}`"
+  ></div>
 </template>
 
 <script setup>
@@ -506,7 +511,7 @@ watch(cardRef, () => {
 });
 
 const executor = ref();
-const { style, highlight } = clac_cardEdgeStyle(cardRef.value);
+const edgeStyle = computed(() => clac_cardEdgeStyle(cardRef.value));
 
 const { todo_process } = clac_todoData(cardRef.value);
 

@@ -2,14 +2,13 @@
   <div class="column no-wrap gap-xs radius-xs"
     :style="columnStyle"
   >
-    <div data-no-dragscroll class="column-header row no-wrap items-center q-pt-xs q-px-sm"
-      
-    >
+    <div data-no-dragscroll class="column-header row no-wrap items-center q-pt-xs q-px-sm">
         <span class="dragBar q-space">{{ group.name }}</span>
         <q-btn flat dense size="sm" round icon="mdi-dots-vertical" :class="$q.screen.gt.sm ? 'undrag' : ''">
             <q-menu class="radius-sm shadow-24" ref="todogroupMenuRef">
                 <GroupMenu
                     :group
+                    :card
                     @cancelUpdate="cancelUpdate"
                     @todogroupDeleted="todogroupDeleted"
                 />
@@ -22,7 +21,7 @@
         <q-btn dense flat icon="mdi-plus" size="sm" class="border full-width" @click="toggleCreatetodo()" />
     </div>
     <q-scroll-area v-if="$q.screen.gt.sm" class="q-space q-px-xs scroll-container flex-content">
-      <GroupBody v-model="group" ref="todogroupBodyRef" />
+      <GroupBody v-model="group" :card ref="todogroupBodyRef" />
     </q-scroll-area>
     <div v-else class="q-space q-px-xs">
       <GroupBody v-model="group"
@@ -52,10 +51,14 @@ const props = defineProps({
   group: {
     type: Object,
     required: true
+  },
+  card: {
+    type: Object,
+    required: true
   }
 });
 const emit = defineEmits(['todogroupDeleted']);
-const { group } = toRefs(props);
+const { group, card } = toRefs(props);
 
 const todogroupBodyRef = useTemplateRef('todogroupBodyRef');
 const toggleCreatetodo = () => {

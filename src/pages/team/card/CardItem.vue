@@ -505,8 +505,8 @@
       </template>
       <!-- 重要度、紧急度 左边框颜色标记 -->
       <div class="absolute-left full-height z-fab"
-        :class="`${highlight ? 'highlight transition' : ''}`"
-        :style="`${style}`"
+        :class="`${edgeStyle.highlight ? 'highlight transition' : ''}`"
+        :style="`${edgeStyle.style}`"
       ></div>
     </q-card>
     <!-- 对话框中，需要使用esc来取消输入框的聚焦状态，这里关闭组件的esc事件 -->
@@ -736,7 +736,7 @@ watch([storeCard, storeCardMedia, storeCardVersion], () => {
 },{immediate:false,deep:false})
 
 const executor = ref();
-let { style, highlight } = clac_cardEdgeStyle(cardRef.value);
+const edgeStyle = computed(() => clac_cardEdgeStyle(cardRef.value));
 
 const is_followed = computed(() =>
   cardRef.value?.followed_bies
@@ -997,7 +997,8 @@ watch(val, async(newVal) => {
       }
     }
 
-    if(teamStore.card?.id === cardRef.value.id){
+    if(teamStore.card?.id === cardRef.value?.id){
+      console.log('sync teamStore.card', cardRef.value);
       teamStore.card.todogroups = cardRef.value.todogroups;
     }
   }
@@ -1021,9 +1022,6 @@ watchEffect(() => {
     threads_needUpdate.value = [];
     threads_needUpdate_date.value = [];
   }
-  const edgeStyle = clac_cardEdgeStyle(cardRef.value);
-  style = edgeStyle.style;
-  highlight = edgeStyle.highlight;
 })
 </script>
 

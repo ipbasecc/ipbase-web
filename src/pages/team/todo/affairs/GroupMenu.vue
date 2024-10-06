@@ -44,7 +44,7 @@
             >
         </q-item>
         <q-item
-            v-if="group.kanban?.id"
+            v-if="group.kanban?.id && !teamStore.project"
             clickable
             v-close-popup
             class="radius-xs"
@@ -94,7 +94,10 @@ import { teamStore, uiStore } from 'src/hooks/global/useStore';
 
 const router = useRouter();
 
-const { group } = defineProps(['group']);
+const { group, card, } = defineProps({
+  group: Object,
+  card: Object,
+})
 const emit = defineEmits(['todogroupUpdated', 'cancelUpdate', 'todogroupDeleted']);
 
 const cancelUpdate = () => {
@@ -107,8 +110,13 @@ const update_params = ref({
 });
 const updateTodogroupFn = async () => {
   if (!update_params.value.data.name || update_params.value.data.name === group.name) return;
+  if (card) {
+    update_params.value.props = {
+      card_id: card.id,
+    };
+  }
   let { data } = await updateTodogroup(group?.id, update_params.value);
-  if (data) {
+  if (data && card) {
     Object.assign(group, data);
     emit('cancelUpdate');
   }

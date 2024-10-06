@@ -32,7 +32,7 @@ import { uiStore, userStore } from 'src/hooks/global/useStore';
 import { ref } from 'vue'
 import { createTodogroup } from "src/api/strapi/project.js";
 
-const { kanban } = defineProps(['kanban']);
+const { kanban, card } = defineProps(['kanban','card']);
 const emit = defineEmits(['todogroupCreated']);
 
 const new_column_ing = ref(false);
@@ -54,6 +54,9 @@ const createColumnFn = async () => {
   if (kanban) {
     params.value.kanban_id = kanban.id;
   }
+  if (card) {
+    params.value.card_id = card.id;
+  }
   // console.log("params.value", params.value);
   let res = await createTodogroup(params.value);
   if (res?.data) {
@@ -63,7 +66,6 @@ const createColumnFn = async () => {
     loading.value = false;
   }
 }
-
 </script>
 
 <style scoped>

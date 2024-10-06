@@ -1,5 +1,5 @@
 
-import { ref, watchEffect } from "vue";
+import { ref, watchEffect, computed } from "vue";
 import {teamStore, userStore} from 'src/hooks/global/useStore';
 import { getRandomInt } from 'src/hooks/utilits.js'
 
@@ -57,3 +57,5 @@ export function useChartData(_todogroups) {
   ];
   return transform(todos, props);
 }
+
+export const authCollections = computed(() => teamStore.card ? ['card'] : ['card_todo', 'card'])

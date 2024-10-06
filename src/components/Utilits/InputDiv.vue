@@ -19,11 +19,11 @@
 </template>
 
 <script setup>
-import {ref, onMounted, useTemplateRef, toRaw} from 'vue';
+import {ref, onMounted, useTemplateRef, toRaw, watchEffect} from 'vue';
 import {removeHtmlTags} from "src/hooks/utilits.js";
 import { onKeyStroke } from "@vueuse/core";
 
-const { baseClass, activeClass, auth, autofocus } = defineProps({
+const { baseClass, activeClass, auth, autofocus, passiveContent } = defineProps({
   baseClass: {
     type: String,
     default: "q-pa-xs",
@@ -39,7 +39,7 @@ const { baseClass, activeClass, auth, autofocus } = defineProps({
   autofocus: {
     type: Boolean,
     default: false,
-  }
+  },
 });
 const editableDiv = useTemplateRef('editableDiv')
 // 定义一个 v-model 绑定的变量
@@ -58,11 +58,11 @@ onMounted(async() => {
 });
 
 const isFocused = ref(false);
-// watchEffect(() => {
-//   if (editableDiv.value === document.activeElement) {
-//     isFocused.value = true;
-//   }
-// })
+watchEffect(() => {
+  if (editableDiv.value && modelValue.value !== editableDiv.value?.innerText) {
+    editableDiv.value.innerText = modelValue.value
+  }
+})
 
 const emit = defineEmits(["ctrlEnter", "shiftEnter", "ESC", "onFocus", "onBlur"]);
 const ESC = () => {

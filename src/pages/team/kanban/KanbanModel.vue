@@ -431,7 +431,7 @@ watch(val, async(newVal, oldVal) => {
     }
     
     if(val.value.event === 'card:created'){
-      const column = kanban.value.columns?.find(i => i.id === column_id);
+      const column = kanban.value?.columns?.find(i => i.id === column_id);
       if(column) {
         if(column.cards?.length > 0){
           if(kanban.value.type === 'kanban' || kanban.value.type === 'classroom'){
@@ -473,7 +473,8 @@ watch(val, async(newVal, oldVal) => {
       }
     }
     if(val.value.event === 'card:updated'){
-      const column = kanban.value.columns.find(i => i.cards?.map(j => j.id).includes(Number(card_id)));
+      if(!kanban.value?.columns) return;
+      const column = kanban.value.columns.find(i => i.cards && i.cards.map(j => j.id).includes(Number(card_id)));
       if(column) {
         column.cards = column.cards.map(i => i.id === Number(card_id) ? data : i);
       }

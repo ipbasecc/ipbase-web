@@ -1,5 +1,5 @@
 <template>
-  <!-- <span class="z-max">{{ axisDataRef }}</span> -->
+  <!-- <span class="z-max">{{ auth }}</span> -->
   <div v-if="axisDataRef" id="main" class="fit chart" ref="chartRef" />
   <q-dialog
     v-model="show_cardDetial"
@@ -72,8 +72,12 @@ const props = defineProps({
     type: String,
     default: "card",
   },
+  splitLineColor: {
+    type: String,
+    default: "#aaaaaa50",
+  },
 });
-const { auth } = toRefs(props)
+const { auth, splitLineColor } = toRefs(props)
 const emit = defineEmits(["itemChanged"]);
 
 const idRef = toRef(props, "id");
@@ -83,7 +87,6 @@ const CardId = ref();
 const chartRef = shallowRef();
 
 let chart;
-
 const initECharts = () => {
   if (!chartRef.value || !taskContainerSIzeRef.value) return;
   chart = echarts.init(chartRef.value, $q.dark.mode ? "dark" : "light");
@@ -120,7 +123,7 @@ const initECharts = () => {
             show: true,
             lineStyle: {
               width: 1,
-              color: "#aaaaaa50",
+              color: splitLineColor.value,
             },
           },
         },
@@ -140,7 +143,7 @@ const initECharts = () => {
             show: true,
             lineStyle: {
               width: 1,
-              color: "#aaaaaa50",
+              color: splitLineColor.value,
             },
           },
         },

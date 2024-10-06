@@ -8,8 +8,8 @@
       <q-checkbox v-model="createtodo_params.data.status" dense class="q-mt-xs" />
       <InputDiv
           v-model="createtodo_params.data.content"
-          :auth="uiStore.app === 'affairs'"
-          :baseClass="`q-space q-pa-xs`"
+          :auth="card ? useAuths('create', authCollections) : uiStore.app === 'affairs'"
+          baseClass="q-space q-pa-xs"
           :autofocus="true"
           :class="createtodo_params.data.status ? 'line-through' : ''"
           @update="createTodoFn"
@@ -20,17 +20,24 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import InputDiv from 'src/components/Utilits/InputDiv.vue'
-import { uiStore } from 'src/hooks/global/useStore';
-import {
-  createTodo
-} from "src/api/strapi/project.js";
+import { uiStore, teamStore } from 'src/hooks/global/useStore';
+import { createTodo } from "src/api/strapi/project.js";
+import { authCollections } from "./useAffairs.js";
 
-const { group } = defineProps({
+const { group, card, after } = defineProps({
     group: {
         type: Object,
         required: true
+    },
+    card: {
+        type: Object,
+        required: false
+    },
+    after: {
+        type: Object,
+        required: false
     }
 });
 const emit = defineEmits(['created', 'cancelCreate']);
@@ -45,6 +52,13 @@ const loading = ref(false)
 const createTodoFn = async () => {
     if(!createtodo_params.value.data.content || loading.value) return
     loading.value = true
+    if(after){
+        createtodo_params.value.after = after.id
+    }
+    if (teamStore.shareInfo) {
+        createtodo_params.value.shareInfo = teamStore.shareInfo;
+        createtodo_params.value.data.fingerprint = window.fingerprint;
+    }
     const { data } = await createTodo(createtodo_params.value);
     if (data) {
         loading.value = false
