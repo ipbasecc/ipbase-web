@@ -23,7 +23,6 @@ import QuadrantBackgroud from "src/pages/team/card/components/QuadrantBackgroud.
 import { todogroups, useChartData } from './useAffairs';
 import { teamStore, uiStore } from 'src/hooks/global/useStore';
 import {updateTodo} from "src/api/strapi/project.js";
-import { authCollections } from "./useAffairs.js";
 import { useAuths } from 'src/pages/team/hooks/useAuths.js';
 
 const { mainArea, card } = defineProps({
@@ -51,7 +50,11 @@ const auth = computed(() => {
 
 const axisData = ref();
 watchEffect(() => {
-    axisData.value = useChartData(card.todogroups || todogroups.value)
+    if(card){
+        axisData.value = useChartData(card.todogroups)
+    } else {
+        axisData.value = useChartData(todogroups.value)
+    }
 })
 
 const updateQuery = ref([]);
