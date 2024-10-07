@@ -6,6 +6,7 @@ export default function (socket, processEvent) {
         });
     });
     socket.on("document:updated", (data) => {
+        // console.log('document:updated',data);
         processEvent({
             event: "document:updated",
             ...data

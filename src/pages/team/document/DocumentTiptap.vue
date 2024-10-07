@@ -14,6 +14,7 @@
     :withImageBtb="true"
     :contentStyle="contentStyle"
     :autofocus="!islocked"
+    _for="document"
     class="items-center"
     @tiptapUpdate="tiptapUpdate"
     @tiptapBlur="tiptapBlur"

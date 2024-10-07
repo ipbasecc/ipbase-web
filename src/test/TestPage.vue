@@ -10,6 +10,12 @@
 
         <q-page-container>
             <q-page class="q-pa-md">
+            <TipTap
+                :editable="true"
+                :need="'json'"
+                :square="true"
+            >
+            </TipTap>
 
             </q-page>
         </q-page-container>
@@ -17,49 +23,14 @@
 </template>
 
 <script setup>
-    import { onMounted, ref, watch, computed, watchEffect } from 'vue';
-    import { io } from "socket.io-client";
-    import { uiStore } from "src/hooks/global/useStore.js";
+import { onMounted, ref, watch, computed, watchEffect } from 'vue';
+import { uiStore } from "src/hooks/global/useStore.js";
+import { useQuasar } from 'quasar'
+import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
 
-    import { useQuasar } from 'quasar'
-    const $q = useQuasar()
-    const jwt = JSON.parse(localStorage.getItem('jwt'));
-    onMounted(() => {
-        uiStore.pageLoaded = true;
-    });
 
-    // URL to your strapi instance
-    const SERVER_URL = process.env.BACKEND_URI;
-    // generated token returned after sign in
-    const JWT_TOKEN = jwt;
-    console.log('JWT_TOKEN', JWT_TOKEN);
 
-    // const socket = io(SERVER_URL);
-    // connect the socket
-    const socket = io(SERVER_URL, {
-        auth: {
-            strategy: 'jwt',
-            token: JWT_TOKEN,
-        },
-    });
-
-    //  wait until socket connects before adding event listeners
-    socket.on('connect', () => {
-        socket.on('todo:create', (data) => {
-            console.log('article created!');
-            console.log(data);
-        });
-        socket.on('todo:update', (data) => {
-            console.log('article updated!');
-            console.log(data);
-        });
-        socket.on('todo:delete', (data) => {
-            console.log('article deleted!');
-            console.log(data);
-        });
-        socket.on('todo:delete', (data) => {
-            console.log('article deleted!');
-            console.log(data);
-        });
-    });
+onMounted(() => {
+    uiStore.pageLoaded = true;
+});
 </script>

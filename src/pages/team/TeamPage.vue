@@ -193,7 +193,6 @@ const handleMouseUp = () => {
 }
 const handleMouseMove = () => {
   if(!position.x || !dragWidth.value || !_ori_width.value) return
-
   const deltaX = x.value - position.x;
   if(_ori_width.value + deltaX >= leftDrawerMinWidth.value && _ori_width.value + deltaX <= leftDrawerMaxWidth.value){
     leftDrawerWidth.value = _ori_width.value + deltaX
@@ -218,25 +217,17 @@ const showBoard = computed(() => {
   return _show.includes(teamStore.navigation);
 });
 
-watch(
-  route,
-  () => {
-    if (route?.params?.project_id) {
-      teamStore.project_id = route.params.project_id;
-    }
-  },
-  { immediate: true, deep: true }
-);
+watch(route, () => {
+  if (route?.params?.project_id) {
+    teamStore.project_id = route.params.project_id;
+  }
+},{ immediate: true, deep: true });
 
-watch(
-  teamStore,
-  () => {
-    if (teamStore?.team?.status || teamStore?.team?.isExternal) {
-      router.push("/teams");
-    }
-  },
-  { immediate: true, deep: true }
-);
+watch(teamStore, () => {
+  if (teamStore?.team?.status || teamStore?.team?.isExternal) {
+    router.push("/teams");
+  }
+},{ immediate: true, deep: true });
 
 provide('isExternal', isExternal.value)
 </script>

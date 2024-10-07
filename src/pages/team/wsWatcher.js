@@ -6,10 +6,13 @@ import { useRouter } from "vue-router";
 import { fetchProject } from "src/hooks/project/useProcess.js";
 import { cleanCache } from 'src/pages/team/hooks/useAuths.js'
 import { useQuasar } from "quasar";
+import { useDocumentVisibility, useWindowFocus } from '@vueuse/core'
+
 
 export default function useWatcher() {
   const router = useRouter();
   const $q = useQuasar();
+
   const val = computed(() => teamStore.income);
   watch(val, async(newVal, oldVal) => {
     if(!newVal) return;
@@ -588,14 +591,12 @@ export default function useWatcher() {
           return teamStore.active_document.id === _document_id
         }
         if(isOpened()){
-          // todo 此处需要完善，应该只在当前页面非聚焦时赋值
-          // 聚焦时是自己在修改，内容已经是最新
-          // 否则则是别人的修改，需要提示用户，是否显示最新内容，以便用户选择是否保存自己的修改
-          if (document.visibilityState === 'hidden') {
+          const visibility = useDocumentVisibility();
+          const focused = useWindowFocus()
+          const { updator } = val.value?.data;
+          if (!focused.value) {
             teamStore.active_document = data;
-          } else {
-            // const { updator } = val.value?.data;
-            // if(updator?.id !== teamStore.init?.id) return;
+          } else if(updator !== teamStore.init?.id) {
             $q.notify({
               color: 'positive',
               position: 'top',
