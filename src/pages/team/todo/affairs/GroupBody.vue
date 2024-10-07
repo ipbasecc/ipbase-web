@@ -6,27 +6,26 @@
     handle=".dragBar" filter=".undrag" group="todo"
     chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
     class="column no-wrap gap-sm q-py-xs"
-    @start="dragStart" @sort="todo_sort" @end="dragEnd"
+    @start="dragStart" @end="dragEnd" @sort="todo_sort"
     @mouseenter="uiStore.dragKanbanScrollEnable = false"
     @mouseleave="uiStore.dragKanbanScrollEnable = true"
   >
-    <template v-for="todo in modelValue.todos" :key="todo.id">
-      <div v-if="hidecompletedTodo(todo)" class="relative-position hovered-item column no-wrap">
-        <TodoItem
-          :todo="todo"
-          :card
-          :group="modelValue"
-          :displayType
-          :dense
-          class="todoItem"
-          @todoDeleted="todoDeleted"
-        />
-        <div v-if="!openCreatetodo && !uiStore.dragging" class="absolute-bottom row q-px-md undrag hover-show transition bg-primary overflow-show" style="height: 1px;">
-            <q-space />
-            <q-btn color="primary" icon="mdi-plus" round size="0.4rem" style="transform: translateY(-50%);"
-              @click="toggleCreatetodo(todo)"
-            />
-        </div>
+    <div v-for="todo in modelValue.todos" :key="todo.id" v-show="hidecompletedTodo(todo)"
+    class="relative-position hovered-item column no-wrap gap-sm">
+      <TodoItem
+        :todo="todo"
+        :card
+        :group="modelValue"
+        :displayType
+        :dense
+        class=""
+        @todoDeleted="todoDeleted"
+      />
+      <div v-if="!openCreatetodo && !uiStore.dragging" class="absolute-bottom row q-px-md undrag hover-show transition bg-primary overflow-show" style="height: 1px;">
+          <q-space />
+          <q-btn color="primary" icon="mdi-plus" round size="0.4rem" style="transform: translateY(-50%);"
+            @click="toggleCreatetodo(todo)"
+          />
       </div>
       <CreateTodo v-if="openCreatetodo && after?.id === todo.id"
           class="undrag"
@@ -36,7 +35,7 @@
           @created="created"
           @cancelCreate="cancelCreatetodo"
       />
-    </template>
+    </div>
     <CreateTodo v-if="openCreatetodo && !after"
         class="undrag"
         :group="modelValue"
@@ -85,7 +84,8 @@ const dragEnd = () => {
   uiStore.dragKanbanScrollEnable = true;
   uiStore.dragging = false;
 }
-const todo_sort = async () => {
+const todo_sort = async (e) => {
+  // console.log('todo_sort', e);
   await nextTick();
   let sort = modelValue.value.todos.map((i) => i.id);
   let params = {
@@ -98,12 +98,7 @@ const todo_sort = async () => {
       card_id: card.id,
     };
   }
-  let res = await updateTodogroup(modelValue.value.id, params);
-  if (res?.data && card) {    
-    setTimeout(() => {
-        Object.assign(modelValue.value, res.data);        
-    }, 500);
-  }
+  await updateTodogroup(modelValue.value.id, params);
 }
 
 const openCreatetodo = ref(false);
@@ -118,6 +113,7 @@ defineExpose({
     toggleCreatetodo,
 })
 const cancelCreatetodo = () => {
+  after.value = null;
     openCreatetodo.value = false;
 }
 const created = (todo) => {

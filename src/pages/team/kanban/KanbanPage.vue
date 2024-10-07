@@ -20,8 +20,8 @@
           </q-tooltip>
         </q-btn>
         <q-space />
-        <q-btn v-if="$q.screen.gt.md && view_model === 'kanban'" dense flat icon="flip"
-         :color="$q.dark.mode ? 'white' : 'black'"
+        <q-btn v-if="$q.screen.gt.md && view_model === 'kanban'" dense icon="flip"
+         :color="uiStore.splitterView ? 'primary' : $q.dark.mode ? 'white' : 'black'" :flat="!uiStore.splitterView"
          @click="toggleSplitterView()">
           <q-tooltip class="border font-medium" :class="$q.dark.mode ? 'bg-dark text-white' : 'bg-white text-black'">
             {{ $t('splite_kanban_tip') }}

@@ -28,9 +28,8 @@ export default function useSocket(cardRef){
             }
           }
         }
-        const todogroups_ids = cardRef.value.todogroups?.map(i => i.id);
-        const isInCard = todogroups_ids?.includes(Number(todogroup_id));
-        if(val.value.event === 'todo:created' && isInCard){
+        
+        if(val.value.event === 'todo:created'){
           const index = cardRef.value.todogroups.findIndex(i => i.id === Number(todogroup_id));
           if(index > -1){
             const { position } = val.value?.data;
@@ -44,7 +43,8 @@ export default function useSocket(cardRef){
             }
           }
         }
-        if(val.value.event === 'todo:updated' && isInCard){
+        if(val.value.event === 'todo:updated'){
+          console.log('todo:updated');
           const index = cardRef.value.todogroups.findIndex(i => i.id === Number(todogroup_id));
           if(index > -1){
             const todoIndex = cardRef.value.todogroups[index].todos.findIndex(i => i.id === data.id);
@@ -53,7 +53,7 @@ export default function useSocket(cardRef){
             }
           }
         }
-        if(val.value.event === 'todo:removed' && isInCard){
+        if(val.value.event === 'todo:removed'){
           const index = cardRef.value.todogroups.findIndex(i => i.id === Number(todogroup_id));
           if(index > -1){
             const todoIndex = cardRef.value.todogroups[index].todos.findIndex(i => i.id === Number(data.removed_todo_id));
