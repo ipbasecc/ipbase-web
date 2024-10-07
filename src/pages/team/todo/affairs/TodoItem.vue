@@ -67,11 +67,22 @@
         </q-btn>
     </div>
     <!-- 重要度、紧急度 左边框颜色标记 -->
-    <div
-        class="absolute-left full-height z-fab"
-        :class="`${edgeStyle.highlight ? 'edge-highlight transition' : ''}`"
-        :style="`${edgeStyle.style}`"
-    ></div>
+    <div class="absolute-left full-height z-fab">
+      <div :class="`${edgeStyle.highlight ? 'edge-highlight transition q-mt-xs' : ''}`" :style="`${edgeStyle.style}`">
+        <q-tooltip class="radius-sm no-padding">
+          <q-list bordered dense class="radius-sm" :class="$q.dark.mode ? 'bg-black text-white' : 'bg-grey-1 text-black'">
+            <q-item>
+              <q-item-section side>重要度：</q-item-section>
+              <q-item-section>{{ todo.importance }}</q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section side>紧急度：</q-item-section>
+              <q-item-section>{{ todo.urgency }}</q-item-section>
+            </q-item>
+          </q-list>
+        </q-tooltip>
+      </div>
+    </div>
     <q-dialog v-model="add_attachment_dialog" persistent>
         <q-card bordered style="min-width: 360px">
             <q-card-section class="q-pa-xs">
@@ -145,7 +156,7 @@ const updateTodoFn = async () => {
   let res = await updateTodo(todo.value?.id, todo_params.value);
   updating.value = false;
   if (res?.data) {
-    Object.assign(todo.value, res.data);
+    todo.value = res.data;
     setTimeout(() => {
       todo_params.value = {
         data: {
@@ -207,20 +218,14 @@ const deleteTodoFn = async () => {
   }
 }
 
-watch(
-  mm_wsStore,
-  () => {
-    if (mm_wsStore.event && mm_wsStore.event.event === "thread_updated") {
-      const _thread = JSON.parse(mm_wsStore.event.data.thread);
-      // console.log("message.event", message);
-      if (_thread.id === element.value?.mm_thread?.id) {
-        element.value.mm_thread = _thread;
-        // updateTodoThread(element.value, _thread);
-      }
+watch(mm_wsStore, () => {
+  if (mm_wsStore.event && mm_wsStore.event.event === "thread_updated") {
+    const _thread = JSON.parse(mm_wsStore.event.data.thread);
+    if (_thread.id === todo.value?.mm_thread?.id) {
+      todo.value.mm_thread = _thread;
     }
-  },
-  { immediate: true, deep: true }
-);
+  }
+},{ immediate: true, deep: true });
 </script>
 
 <style scoped>
@@ -232,6 +237,7 @@ watch(
 }
 .edge-highlight {
   width: 5px;
+  height: 20px;
   border-radius: 5px;
   transform: translateX(-3px);
 }

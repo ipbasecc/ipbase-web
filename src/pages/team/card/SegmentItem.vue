@@ -477,6 +477,8 @@ import {
   watch,
   watchEffect,
   computed,
+  nextTick,
+  onMounted
 } from "vue";
 import {onKeyStroke, useMagicKeys} from '@vueuse/core';
 import StatusMenu from "src/pages/team/components/user/StatusMenu.vue";
@@ -498,7 +500,7 @@ import {
   enterSegment,
   setStatus,
 } from "src/hooks/team/useCard.js";
-import { useProjectCardPreference } from "src/pages/team/hooks/useSettingTemplate.js";
+import { useProjectCardPreference, colorMarks, preferences } from "src/pages/team/hooks/useSettingTemplate.js";
 import ThreadBtn from "../components/widgets/ThreadBtn.vue";
 import ReName from "../components/widgets/icons/ReName.vue";
 import {
@@ -508,6 +510,8 @@ import {
 } from "src/hooks/global/useStore.js";
 import FileViewer from "src/components/VIewComponents/FileViewer.vue";
 import useProject from 'src/hooks/project/useProject.js'
+import useSocket from "src/pages/team/card/hooks/useSocket.js";
+import useMember from "src/hooks/team/useMember.js";
 
 const $q = useQuasar();
 const route = useRoute();
@@ -563,14 +567,6 @@ const project_card_preference = computed(
 const show_inPreference = (val) => {
   return project_card_preference.value.find((item) => item.val === val);
 };
-const preferences = {
-  status: "status",
-  score: "score",
-  percent: "percent",
-  executor: "executor",
-  follow: "follow",
-  color_marker: "color_marker",
-};
 
 const show_byPreference = {};
 for (const key in preferences) {
@@ -578,25 +574,10 @@ for (const key in preferences) {
     () => show_inPreference(preferences[key])?.enable
   );
 }
+const { _isCreator } = useMember();
 const isCreator = computed(() => {
-  // 卡片所有角色
-  const _member_roles = cardRef.value?.member_roles;
-  // 用户的所有角色id集合
-  const _userMember_roles = cardRef.value?.card_members
-    ?.filter((i) => i.by_user.id === userStore.userId)
-    ?.map((j) => j.member_roles.map((k) => k.id))
-    .flat(3);
-  // 筛选出用户在卡片中的角色
-  const _member_role = _member_roles?.filter((i) =>
-    _userMember_roles.includes(i.id)
-  );
-  // 判断是不是创建者
-  let _isCreator;
-  if (_member_role?.length > 0) {
-    _isCreator = _member_role.map((i) => i.subject)?.includes("creator");
-  }
-  return _isCreator;
-});
+  return _isCreator(userStore.userId, cardRef.value?.card_members, cardRef.value?.member_roles)
+})
 const isInCard = ref(false);
 const canEnter = computed(() => {
   let _can = false;
@@ -632,13 +613,14 @@ const is_followed = computed(() =>
     ?.map((i) => i.id)
     .includes(Number(userStore.userId))
 );
-const color_marker = computed(
-  () =>
-    (cardRef.value?.color_marker &&
-      cardRef.value.color_marker !== "clear" &&
-      cardRef.value.color_marker) ||
-    null
-);
+const color_marker = computed(() => {
+  const _card_colorMarker = cardRef.value?.color_marker;
+  if(!_card_colorMarker || _card_colorMarker === 'clear'){
+    return null
+  } else {
+    return _card_colorMarker
+  }
+});
 watchEffect(() => {
   isInCard.value = teamStore.card != null;
   const executorRole = cardRef.value?.member_roles?.find(
@@ -705,17 +687,6 @@ const _enterSegment = async (auth) => {
   await enterSegment(cardRef.value);
 };
 
-const colorMarks = [
-  "primary",
-  "secondary",
-  "accent",
-  "positive",
-  "red",
-  "info",
-  "warning",
-  "clear",
-];
-
 const { current } = useMagicKeys();
 const keys = computed(() => Array.from(current));
 watch(
@@ -730,72 +701,10 @@ watch(
   { immediate: false, deep: false }
 );
 
-const val = computed(() => teamStore.income);
-watch(val, async(newVal) => {
-  if(!newVal) return;
-  const { team_id, card_id, todogroup_id, data } = val.value?.data;
-  if(teamStore.team?.id === Number(team_id)){
-    if(val.value.event === 'todogroup:created'){
-      if(cardRef.value.id === Number(card_id)){
-        cardRef.value.todogroups.push(data);
-      }
-    }
-    if(val.value.event === 'todogroup:updated'){
-      if(cardRef.value.id === Number(card_id)){
-        const index = cardRef.value.todogroups.findIndex(i => i.id === data.id);
-        if(index > -1){
-          cardRef.value.todogroups.splice(index, 1, data);
-        }
-      }
-    }
-    if(val.value.event === 'todogroup:removed'){
-      if(cardRef.value.id === Number(card_id)){
-        const index = cardRef.value.todogroups.findIndex(i => i.id === data.removed_todogroup_id);
-        if(index > -1){
-          cardRef.value.todogroups.splice(index, 1);
-        }
-      }
-    }
-    const todogroups_ids = cardRef.value.todogroups?.map(i => i.id);
-    const isInCard = todogroups_ids?.includes(Number(todogroup_id));
-    if(val.value.event === 'todo:created' && isInCard){
-      const index = cardRef.value.todogroups.findIndex(i => i.id === Number(todogroup_id));
-      if(index > -1){
-        const { position } = val.value?.data;
-        if(position?.after){
-          const insertIndex = cardRef.value.todogroups[index].todos.findIndex(i => i.id === position.after);
-          if(insertIndex > -1){
-            cardRef.value.todogroups[index].todos.splice(insertIndex + 1, 0, data);
-          }
-        } else {
-          cardRef.value.todogroups[index].todos.push(data);
-        }
-      }
-    }
-    if(val.value.event === 'todo:updated' && isInCard){
-      const index = cardRef.value.todogroups.findIndex(i => i.id === Number(todogroup_id));
-      if(index > -1){
-        const todoIndex = cardRef.value.todogroups[index].todos.findIndex(i => i.id === data.id);
-        if(todoIndex > -1){
-          cardRef.value.todogroups[index].todos.splice(todoIndex, 1, data);
-        }
-      }
-    }
-    if(val.value.event === 'todo:removed' && isInCard){
-      const index = cardRef.value.todogroups.findIndex(i => i.id === Number(todogroup_id));
-      if(index > -1){
-        const todoIndex = cardRef.value.todogroups[index].todos.findIndex(i => i.id === Number(data.removed_todo_id));
-        if(todoIndex > -1){
-          cardRef.value.todogroups[index].todos.splice(todoIndex, 1);
-        }
-      }
-    }
-
-    if(teamStore.card?.id === cardRef.value.id){
-      teamStore.card.todogroups = cardRef.value.todogroups;
-    }
-  }
-});
+onMounted(async() => {
+  await nextTick();
+  useSocket(cardRef);
+})
 </script>
 
 <style lang="scss" scoped>

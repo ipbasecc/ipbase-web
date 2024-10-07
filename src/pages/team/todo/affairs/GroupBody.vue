@@ -11,22 +11,36 @@
     @mouseleave="uiStore.dragKanbanScrollEnable = true"
   >
     <template v-for="todo in modelValue.todos" :key="todo.id">
-      <TodoItem
-        v-show="hidecompletedTodo(todo)"
-        :todo="todo"
-        :card
-        :group="modelValue"
-        :displayType
-        :dense
-        class="todoItem"
-        @todoDeleted="todoDeleted"
+      <div v-if="hidecompletedTodo(todo)" class="relative-position hovered-item column no-wrap">
+        <TodoItem
+          :todo="todo"
+          :card
+          :group="modelValue"
+          :displayType
+          :dense
+          class="todoItem"
+          @todoDeleted="todoDeleted"
+        />
+        <div v-if="!openCreatetodo && !uiStore.dragging" class="absolute-bottom row q-px-md undrag hover-show transition bg-primary overflow-show" style="height: 1px;">
+            <q-space />
+            <q-btn color="primary" icon="mdi-plus" round size="0.4rem" style="transform: translateY(-50%);"
+              @click="toggleCreatetodo(todo)"
+            />
+        </div>
+      </div>
+      <CreateTodo v-if="openCreatetodo && after?.id === todo.id"
+          class="undrag"
+          :group="modelValue"
+          :card
+          :after
+          @created="created"
+          @cancelCreate="cancelCreatetodo"
       />
     </template>
-    <CreateTodo v-if="openCreatetodo"
+    <CreateTodo v-if="openCreatetodo && !after"
         class="undrag"
         :group="modelValue"
         :card
-        :after
         @created="created"
         @cancelCreate="cancelCreatetodo"
     />
@@ -73,10 +87,12 @@ const hidecompletedTodo = (i) => {
 };
 
 const dragStart = () => {
-    uiStore.dragKanbanScrollEnable = false;
+  uiStore.dragKanbanScrollEnable = false;
+  uiStore.dragging = true;
 }
 const dragEnd = () => {
-    uiStore.dragKanbanScrollEnable = true;
+  uiStore.dragKanbanScrollEnable = true;
+  uiStore.dragging = false;
 }
 const todo_sort = async () => {
   await nextTick();
@@ -100,9 +116,12 @@ const todo_sort = async () => {
 }
 
 const openCreatetodo = ref(false);
-const after = ref();
-const toggleCreatetodo = () => {
-    openCreatetodo.value = !openCreatetodo.value;
+const after = ref(null);
+const toggleCreatetodo = (todo) => {
+  if(todo){
+    after.value = after.value ? null : todo;
+  }
+  openCreatetodo.value = !openCreatetodo.value;
 }
 defineExpose({
     toggleCreatetodo,

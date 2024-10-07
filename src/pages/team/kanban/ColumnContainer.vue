@@ -657,7 +657,7 @@ const createCard_in = ref(null);
 const DefaultCreateCardType = ref();
 let DefaultCreateCardType_key = `___DefaultCreateCardType_key__${columnRef.value?.id}`;
 const CreateCardFn = (column_id, createCardType) => {
-  if (!uiStore.draging) {
+  if (!uiStore.dragging) {
     createCard_in.value = createCard_in.value ? null : column_id;
     if (createCardType) {
       DefaultCreateCardType.value = createCardType;
@@ -686,7 +686,7 @@ const cardDelete = (card_id) => {
 };
 const dragStart = (_gName) => {  
   teamStore.cardDragging = true;
-  uiStore.draging = true;
+  uiStore.dragging = true;
   uiStore.topPannel = true;
   uiStore.dropGroup = _gName;
 };
@@ -695,7 +695,7 @@ const dragEnd = () => {
   // console.log('dragEnd');
   setTimeout(() => {
     teamStore.cardDragging = false;
-    uiStore.draging = false;
+    uiStore.dragging = false;
   }, 500);
 };
 const setDragscroll = ref(false);
@@ -757,7 +757,7 @@ const setMouseWheelScroll = () => {
   hasScrollBar.value = verticalSize > verticalContainerSize;
 }
 const dragHandler = (val) => {
-  if (uiStore.draging || $q.screen.lt.sm) return;
+  if (uiStore.dragging || $q.screen.lt.sm) return;
   uiStore.scrollX_byWheel = hasScrollBar.value ? val : true;
 
   // 鼠标进入卡片范围后，禁用拖拽横向滚动

@@ -165,11 +165,11 @@ const handleMouseDown = () => {
   position.x = x.value;
   dragRightDrawerWidth.value = true
   _ori_width.value = rightDrawerWidth.value
-  uiStore.draging = true
+  uiStore.dragging = true
 }
 const handleMouseUp = () => {
   dragRightDrawerWidth.value = false
-  uiStore.draging = false
+  uiStore.dragging = false
 }
 const handleMouseMove = () => {
   if(!position.x || !dragRightDrawerWidth.value || !_ori_width.value) return

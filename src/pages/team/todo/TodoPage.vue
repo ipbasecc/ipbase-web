@@ -39,7 +39,7 @@
         v-on:dragscrollstart="dragscrollstart"
         v-on:dragscrollmove="draging"
         v-on:dragscrollend="dragscrollend"
-        :class="uiStore.draging ? 'cursor-grab' : ''"
+        :class="uiStore.dragging ? 'cursor-grab' : ''"
         class="q-space column no-wrap gap-sm q-px-sm q-pb-lg"
         ref="scrollAreaRef"
         @wheel="handleScroll"
@@ -1860,13 +1860,13 @@ watch([todo_add_ing, createTodogroup_ing], () => {
 });
 
 const dragscrollstart = () => {
-  uiStore.draging = true;
+  uiStore.dragging = true;
 };
 const draging = () => {
-  // uiStore.draging = true
+  // uiStore.dragging = true
 };
 const dragscrollend = () => {
-  uiStore.draging = false;
+  uiStore.dragging = false;
 };
 const mainAreaHeight = ref();
 const groupAreaHeight = ref();
@@ -1894,7 +1894,7 @@ const outsideScroll = (group, val) => {
 const scrollAreaRef = ref(null);
 const handleScroll = (event) => {
   if (!uiStore.scrollX_byWheel || layout.value === "column") return;
-  uiStore.draging = true;
+  uiStore.dragging = true;
   event.preventDefault();
   let scroolPosition = scrollAreaRef.value?.getScrollPosition();
   let x = scroolPosition.left;
@@ -1902,7 +1902,7 @@ const handleScroll = (event) => {
   const deltaY = event.deltaY || event.detail || event.wheelDelta;
   const moveAmount = -deltaY; // 正负号取决于你希望的滚动方向
   scrollAreaRef.value?.setScrollPosition("horizontal", x + moveAmount, 0);
-  uiStore.draging = false;
+  uiStore.dragging = false;
 };
 watch(
   todogroups,

@@ -1,4 +1,4 @@
-import { reactive } from "vue";
+import { reactive, ref, watchEffect } from "vue";
 import {
   findCard,
   findCardByShare,
@@ -13,6 +13,7 @@ import localforage from "localforage";
 import {
   userStore,
   teamStore,
+  mm_wsStore
 } from "src/hooks/global/useStore.js";
 
 const project = computed(() => teamStore?.project);
@@ -262,13 +263,6 @@ export async function updateJsonContent(card, val) {
   }
 }
 
-export async function updateCardThread(card, val) {
-  updateParmars.data.mm_thread = val;
-  // ws事件在聊天时已经直接发布了，这里只需要更新即可，无须再次发布ws消息
-  await updateCard(card.id, updateParmars);
-  delete updateParmars.data.mm_thread;
-}
-
 export async function removeCard(card, belong_card) {
   let res;
   if (belong_card) {
@@ -349,4 +343,31 @@ export async function setCardSharecode(card, val) {
   if(res) {
     return res
   }
+}
+
+/**
+ * 
+ * @param {Object} cardRef card的ref
+ * @description 当收到卡片聊天内容时，更新卡片的mm_thread，但并不需要等待更新结果
+ */
+export function updateCardThread(cardRef) {
+  watchEffect(() => {
+    const event = mm_wsStore.event;
+    if(event.data?.thread){
+      const _thread = JSON.parse(event.data.thread);
+      if (event.event === "thread_updated" && _thread.id === cardRef.value?.mm_thread?.id) {
+        cardRef.value.mm_thread = _thread;
+        updateParmars.data.mm_thread = _thread;
+        updateCard(cardRef.value.id, updateParmars);
+        delete updateParmars.data.mm_thread;
+      }
+    }
+    
+    if(mm_wsStore.event?.data?.post){
+      let post = JSON.parse(mm_wsStore.event.data.post);
+      if (event.event === "posted" && post.root_id === cardRef.value?.mm_thread?.id) {
+        cardRef.value.mm_thread.reply_count++;
+      }
+    }
+  });
 }

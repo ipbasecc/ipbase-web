@@ -107,11 +107,11 @@ const handleMouseDown = () => {
   position.x = x.value;
   dragWidth.value = true;
   _ori_width.value = threadsDrawerWidth.value;
-  uiStore.draging = true;
+  uiStore.dragging = true;
 };
 const handleMouseUp = () => {
   dragWidth.value = false;
-  uiStore.draging = false;
+  uiStore.dragging = false;
 };
 const handleMouseMove = () => {
   if (!position.x || !dragWidth.value || !_ori_width.value) return;

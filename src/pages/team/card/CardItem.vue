@@ -558,7 +558,7 @@
 </template>
 
 <script setup>
-import {computed, reactive, ref, toRef, toRefs, watch, watchEffect, nextTick} from "vue";
+import {computed, reactive, ref, toRef, toRefs, watch, watchEffect, nextTick, onMounted} from "vue";
 import {useMagicKeys} from "@vueuse/core";
 import StatusMenu from "src/pages/team/components/user/StatusMenu.vue";
 import CardPage from "./CardPage.vue";
@@ -588,15 +588,17 @@ import {
   updateJsonContent
 } from "src/hooks/team/useCard.js";
 import {isEqual} from "lodash-es";
-import {useProjectCardPreference} from "src/pages/team/hooks/useSettingTemplate.js";
+import {useProjectCardPreference,colorMarks,cardTypes,preferences,shareProps} from "src/pages/team/hooks/useSettingTemplate.js";
 import ThreadBtn from "../components/widgets/ThreadBtn.vue";
 import ReName from "../components/widgets/icons/ReName.vue";
-import {teamStore, uiStore, userStore,} from "src/hooks/global/useStore.js";
+import {teamStore, uiStore, userStore, mm_wsStore} from "src/hooks/global/useStore.js";
 import ClassPage from "./ClassPage.vue";
 import FileViewer from "src/components/VIewComponents/FileViewer.vue";
 import CreateShare from "pages/team/components/CreateShare.vue";
 import DownloadApp from 'src/components/VIewComponents/DownloadApp.vue'
 import useOverview from 'src/pages/team/hooks/useOverview.js'
+import useSocket from "src/pages/team/card/hooks/useSocket.js";
+import useMember from "src/hooks/team/useMember.js";
 
 const $q = useQuasar();
 const route = useRoute();
@@ -627,14 +629,6 @@ const { card: cardRef } = toRefs(props);
 
 const viewTypeRef = toRef(props, "viewType");
 const isShared = computed(() => uiStore.isShared);
-const shareProps = ref([
-  { val: "card_todo", label: "todo", enable: false },
-  { val: "card_kanban", label: "task", enable: false },
-  { val: "card_documents", label: "document", enable: false },
-  { val: "card_storage", label: "storage", enable: false },
-  { val: "card_schedule", label: "schedule", enable: false },
-  { val: "card_feedback", label: "feedback", enable: false },
-]);
 const videoOption = {
   muted: true,
   autoplay: false,
@@ -659,14 +653,6 @@ const project_card_preference = computed(
 const show_inPreference = (val) => {
   return project_card_preference.value.find((item) => item.val === val);
 };
-const preferences = {
-  status: "status",
-  score: "score",
-  percent: "percent",
-  executor: "executor",
-  follow: "follow",
-  color_marker: "color_marker",
-};
 
 const show_byPreference = {};
 for (const key in preferences) {
@@ -679,25 +665,10 @@ const toggleOffEditting = () => {
 };
 
 const cardMembers = computed(() => cardRef.value?.card_members || []);
+const { _isCreator } = useMember();
 const isCreator = computed(() => {
-  // 卡片所有角色
-  const _member_roles = cardRef.value?.member_roles;
-  // 用户的所有角色id集合
-  const _userMember_roles = cardRef.value?.card_members
-    ?.filter((i) => i.by_user.id === userStore.userId)
-    ?.map((j) => j.member_roles.map((k) => k.id))
-    .flat(3);
-  // 筛选出用户在卡片中的角色
-  const _member_role = _member_roles?.filter((i) =>
-    _userMember_roles.includes(i.id)
-  );
-  // 判断是不是创建者
-  let _isCreator;
-  if (_member_role?.length > 0) {
-    _isCreator = _member_role.map((i) => i.subject)?.includes("creator");
-  }
-  return _isCreator;
-});
+  return _isCreator(userStore.userId, cardMembers.value, cardRef.value?.member_roles)
+})
 const isInCard = ref(false);
 const multiple_versions = computed(() => cardRef.value?.overviews?.length > 1);
 const media = ref();
@@ -745,13 +716,14 @@ const is_followed = computed(() =>
     ?.map((i) => i.id)
     .includes(Number(userStore.userId))
 );
-const color_marker = computed(
-  () =>
-    (cardRef.value?.color_marker &&
-      cardRef.value.color_marker !== "clear" &&
-      cardRef.value.color_marker) ||
-    null
-);
+const color_marker = computed(() => {
+  const _card_colorMarker = cardRef.value?.color_marker;
+  if(!_card_colorMarker || _card_colorMarker === 'clear'){
+    return null
+  } else {
+    return _card_colorMarker
+  }
+});
 watchEffect(() => {
   isInCard.value = teamStore.card != null;
 
@@ -869,11 +841,6 @@ const tryEnter = async () => {
     await _enterCard(true);
   }
 };
-const cardTypes = ref([
-  { val: "task", label: "task", icon: "task_alt" },
-  { val: "note", label: "note", icon: "event_note" },
-  { val: "todo", label: "todo", icon: "checklist" },
-]);
 
 const toggleExpand = async (card) => {
   cardRef.value.expand =
@@ -902,128 +869,27 @@ const clickContent = (auth) => {
   }
 };
 
-const colorMarks = [
-  "primary",
-  "secondary",
-  "accent",
-  "positive",
-  "red",
-  "info",
-  "warning",
-  "clear",
-];
-
 const cardDomRef = ref(null);
 const cardSize = ref();
 
 const { current } = useMagicKeys();
 const keys = computed(() => Array.from(current));
-watch(
-  keys,
-  () => {
-    if (keys.value) {
-      if (keys.value?.includes("escape") && content_channging.value) {
-        toggleOffEditting();
-      }
+watch(keys, () => {
+  if (keys.value) {
+    if (keys.value?.includes("escape") && content_channging.value) {
+      toggleOffEditting();
     }
-  },
-  { immediate: false, deep: false }
-);
+  }
+},{ immediate: false, deep: false });
 
 const _leaveCard = () => {
-  // console.log('_leaveCard')
-  // cardRef.value.todogroups = teamStore.card.todogroups
   leaveCard();
-  syncDeletedByWS();
 };
 
-
-const val = computed(() => teamStore.income);
-watch(val, async(newVal) => {
-  if(!newVal) return;
-  const { team_id, card_id, todogroup_id, data } = val.value?.data;
-  if(teamStore.team?.id === Number(team_id)){
-    if(val.value.event === 'todogroup:created'){
-      if(cardRef.value.id === Number(card_id)){
-        cardRef.value.todogroups.push(data);
-      }
-    }
-    if(val.value.event === 'todogroup:updated'){
-      if(cardRef.value.id === Number(card_id)){
-        const index = cardRef.value.todogroups?.findIndex(i => i.id === data.id);
-        if(index > -1){
-          cardRef.value.todogroups.splice(index, 1, data);
-        }
-      }
-    }
-    if(val.value.event === 'todogroup:removed'){
-      if(cardRef.value.id === Number(card_id)){
-        const index = cardRef.value.todogroups?.findIndex(i => i.id === data.removed_todogroup_id);
-        if(index > -1){
-          cardRef.value.todogroups.splice(index, 1);
-        }
-      }
-    }
-    const todogroups_ids = cardRef.value.todogroups?.map(i => i.id);
-    const isInCard = todogroups_ids?.includes(Number(todogroup_id));
-    if(val.value.event === 'todo:created' && isInCard){
-      const index = cardRef.value.todogroups.findIndex(i => i.id === Number(todogroup_id));
-      if(index > -1){
-        const { position } = val.value?.data;
-        if(position?.after){
-          const insertIndex = cardRef.value.todogroups[index].todos.findIndex(i => i.id === position.after);
-          if(insertIndex > -1){
-            cardRef.value.todogroups[index].todos.splice(insertIndex + 1, 0, data);
-          }
-        } else {
-          cardRef.value.todogroups[index].todos.push(data);
-        }
-      }
-    }
-    if(val.value.event === 'todo:updated' && isInCard){
-      const index = cardRef.value.todogroups.findIndex(i => i.id === Number(todogroup_id));
-      if(index > -1){
-        const todoIndex = cardRef.value.todogroups[index].todos.findIndex(i => i.id === data.id);
-        if(todoIndex > -1){
-          cardRef.value.todogroups[index].todos.splice(todoIndex, 1, data);
-        }
-      }
-    }
-    if(val.value.event === 'todo:removed' && isInCard){
-      const index = cardRef.value.todogroups.findIndex(i => i.id === Number(todogroup_id));
-      if(index > -1){
-        const todoIndex = cardRef.value.todogroups[index].todos.findIndex(i => i.id === Number(data.removed_todo_id));
-        if(todoIndex > -1){
-          cardRef.value.todogroups[index].todos.splice(todoIndex, 1);
-        }
-      }
-    }
-
-    if(teamStore.card?.id === cardRef.value?.id){
-      console.log('sync teamStore.card', cardRef.value);
-      teamStore.card.todogroups = cardRef.value.todogroups;
-    }
-  }
-});
-
-// ws data line -------------------------
-const syncDeletedByWS = () => {
-  if (deletedCards.value.includes(cardRef.value.id)) {
-    emit("cardDelete", cardRef.value.id);
-  }
-};
-const deletedCards = ref([]);
-const threads_needUpdate = ref([]);
-const threads_needUpdate_date = ref([]);
-
-watchEffect(() => {
-  if (threads_needUpdate.value.length > 0 && threads_needUpdate.value.length === threads_needUpdate_date.value.length) {
-    threads_needUpdate_date.value.map(async (thread) => { 
-      await updateCardThread(cardRef.value, thread);
-    });
-    threads_needUpdate.value = [];
-    threads_needUpdate_date.value = [];
-  }
+onMounted(async() => {
+  await nextTick();
+  useSocket(cardRef);
+  updateCardThread(cardRef);
 })
 </script>
 

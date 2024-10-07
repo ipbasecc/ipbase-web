@@ -80,10 +80,9 @@ export default defineStore("ui", {
     dropIn: void 0,
     createCard_in: void 0,
     scrollX_byWheel: false,
-    draging: false, // 正在拖拽排序，或者拖拽横向滚动
     edittingCard: void 0,
     isShared: false,
-    dragging: false,
+    dragging: false, // 正在拖拽排序，或者拖拽横向滚动
     appDrawer: true,
     navigatorDrawer: true,
     threadsDrawer: true,

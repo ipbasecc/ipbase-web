@@ -11,7 +11,7 @@
       v-on:dragscrollmove="draging"
       v-on:dragscrollend="dragscrollend"
       class="absolute-full"
-      :class="`${$q.dark.mode ? 'bg-darker' : 'bg-grey-3'} ${uiStore.draging && 'cursor-grab'}`"
+      :class="`${$q.dark.mode ? 'bg-darker' : 'bg-grey-3'} ${uiStore.dragging && 'cursor-grab'}`"
     >
       <slot />
     </q-scroll-area>
@@ -21,13 +21,13 @@
 import { ref } from 'vue'
 import {teamStore, uiStore, userStore} from 'src/hooks/global/useStore';
 const dragscrollstart = () => {
-  uiStore.draging = true;
+  uiStore.dragging = true;
 };
 const draging = () => {
-  // uiStore.draging = true
+  // uiStore.dragging = true
 };
 const dragscrollend = () => {
-  uiStore.draging = false;
+  uiStore.dragging = false;
 };
 </script>
 

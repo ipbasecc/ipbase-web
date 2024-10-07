@@ -376,12 +376,12 @@ const cardDelete = (card_id) => {
 const dragStart = () => {
   teamStore.cardDragging = true;
   uiStore.dragReelscrollEnable = false;
-  uiStore.draging = true;
+  uiStore.dragging = true;
 };
 const dragEnd = () => {
   teamStore.cardDragging = false;
   uiStore.dragReelscrollEnable = true;
-  uiStore.draging = false;
+  uiStore.dragging = false;
 };
 
 watch(filter_txt, () => {
@@ -529,13 +529,13 @@ onUnmounted(() => {
 });
 
 const dragscrollstart = () => {
-  uiStore.draging = true;
+  uiStore.dragging = true;
 };
 const draging = () => {
-  // uiStore.draging = true
+  // uiStore.dragging = true
 };
 const dragscrollend = () => {
-  uiStore.draging = false;
+  uiStore.dragging = false;
 };
 </script>
 

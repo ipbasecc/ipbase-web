@@ -267,8 +267,8 @@ watch(reelHeight, () => {
 
 const scrollAreaRef = ref(null);
 const handleScroll = (event) => {
-  if (!uiStore.scrollX_byWheel || uiStore.draging || $q.screen.lt.sm) return;
-  uiStore.draging = true;
+  if (!uiStore.scrollX_byWheel || uiStore.dragging || $q.screen.lt.sm) return;
+  uiStore.dragging = true;
   event.preventDefault();
   const scroolPosition = scrollAreaRef.value?.getScrollPosition();
   let x = scroolPosition.left;
@@ -276,7 +276,7 @@ const handleScroll = (event) => {
   const deltaY = event.deltaY || event.detail || event.wheelDelta;
   const moveAmount = -deltaY; // 正负号取决于你希望的滚动方向
   scrollAreaRef.value?.setScrollPosition("horizontal", x + moveAmount, 0);
-  uiStore.draging = false;
+  uiStore.dragging = false;
 };
 watch(
   [project_id, kanban_id],
@@ -368,13 +368,13 @@ watchEffect(() => {
   }
 });
 const dragscrollstart = () => {
-  uiStore.draging = true;
+  uiStore.dragging = true;
 };
 const draging = () => {
-  // uiStore.draging = true
+  // uiStore.dragging = true
 };
 const dragscrollend = () => {
-  uiStore.draging = false;
+  uiStore.dragging = false;
 };
 
 const syncStoreByKanban = async () => {
