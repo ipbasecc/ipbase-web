@@ -106,7 +106,7 @@
     </q-drawer>
 
     <q-page-container v-element-size="onResize">
-      <q-page :class="`${uiStore?.draging ? 'unselected' : ''}`">
+      <q-page :class="`${uiStore?.dragging ? 'unselected' : ''}`">
         <q-splitter v-model="splitterModel"
           :limits="[0, Infinity]"
           class="absolute-full"

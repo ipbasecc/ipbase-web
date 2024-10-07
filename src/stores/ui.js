@@ -74,15 +74,16 @@ export default defineStore("ui", {
     mainWindowOffset: void 0,
     reelHeight: 160,
     reelHeight_SC: NaN,
-    dragReelscrollEnable: true, // Reel拖拽横向滚动
-    dragKanbanScrollEnable: true, // 看板拖拽横向滚动
+    dragReelscrollEnable: true, // 允许Reel拖拽横向滚动
+    dragKanbanScrollEnable: true, // 允许看板拖拽横向滚动
     dragscrollmove: false,
     dropIn: void 0,
     createCard_in: void 0,
     scrollX_byWheel: false,
     edittingCard: void 0,
     isShared: false,
-    dragging: false, // 正在拖拽排序，或者拖拽横向滚动
+    dragging: false, // 正在拖拽排序
+    draggingScroll: false, // 正在拖拽横向滚动
     appDrawer: true,
     navigatorDrawer: true,
     threadsDrawer: true,

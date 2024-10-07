@@ -267,7 +267,7 @@ watch(reelHeight, () => {
 
 const scrollAreaRef = ref(null);
 const handleScroll = (event) => {
-  if (!uiStore.scrollX_byWheel || uiStore.dragging || $q.screen.lt.sm) return;
+  if (!uiStore.scrollX_byWheel || uiStore.dragging || !$q.screen.lt.sm) return;
   uiStore.dragging = true;
   event.preventDefault();
   const scroolPosition = scrollAreaRef.value?.getScrollPosition();
@@ -367,15 +367,6 @@ watchEffect(() => {
     uiStore.navigatorDrawer = false
   }
 });
-const dragscrollstart = () => {
-  uiStore.dragging = true;
-};
-const draging = () => {
-  // uiStore.dragging = true
-};
-const dragscrollend = () => {
-  uiStore.dragging = false;
-};
 
 const syncStoreByKanban = async () => {
   if(teamStore.card){

@@ -1,23 +1,23 @@
 <template>
-    <VueDraggable v-model="todogroups"
-      :animation="300" :delay="50"
-      :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
-      handle=".dragBar" filter=".undrag" group="todogroup"
-      chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
-      class="gap-sm no-wrap q-pa-sm"
-      :class="$q.platform.is.mobile && !$q.screen.gt.sm ? 'column' : 'row'"
-      :style="$q.screen.gt.sm ? `height: ${mainArea?.height}px;` : ''"
-      @start="dragStart" @sort="dragTodogroup_sort" @end="dragEnd"
-    >
-      <template v-for="group in todogroups" :key="group.id">
-        <GroupContiner
-          :group="group"
-          :layout
-          @todogroupDeleted="todogroupDeleted"
-        />
-      </template>
-      <CreateColumn @todogroupCreated=todogroupCreated />
-    </VueDraggable>
+  <VueDraggable v-model="todogroups"
+    :animation="300" :delay="50"
+    :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+    handle=".dragBar" filter=".undrag" group="todogroup"
+    chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
+    class="gap-sm no-wrap q-pa-sm"
+    :class="$q.platform.is.mobile && !$q.screen.gt.sm ? 'column' : 'row'"
+    :style="$q.screen.gt.sm ? `height: ${mainArea?.height}px;` : ''"
+    @start="dragStart" @sort="dragTodogroup_sort" @end="dragEnd"
+  >
+    <template v-for="group in todogroups" :key="group.id">
+      <GroupContiner
+        :group="group"
+        :layout
+        @todogroupDeleted="todogroupDeleted"
+      />
+    </template>
+    <CreateColumn @todogroupCreated=todogroupCreated />
+  </VueDraggable>
 </template>
 
 <script setup>
@@ -31,8 +31,8 @@ import { todogroups } from './useAffairs';
 import { reorderArrayABasedOnArrayB } from 'src/hooks/utilits.js';
 
 const { mainArea, layout } = defineProps({
-    mainArea: Object,
-    layout: String,
+  mainArea: Object,
+  layout: String,
 })
 
 const dragging = ref(false);
@@ -77,13 +77,13 @@ const todogroupDeleted = (_id) => {
 }
 
 const dragStart = (e) => {
-    target.value = e.data    
-    uiStore.dragKanbanScrollEnable = false;
+  target.value = e.data    
+  uiStore.dragKanbanScrollEnable = false;
 }
 
 const dragEnd = (e) => {
-    newIndex.value = e.newIndex
-    uiStore.dragKanbanScrollEnable = true;
+  newIndex.value = e.newIndex
+  uiStore.dragKanbanScrollEnable = true;
 }
 </script>
 
