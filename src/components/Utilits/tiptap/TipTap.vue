@@ -77,7 +77,7 @@
                 <template v-for="(item, index) in i.children" :key="index">
                   <div
                     class="cursor-pointer"
-                    :style="`width: 1.3rem;height: 1.3rem;background-color: ${item.color};padding:1px`"
+                    :style="`width: 2rem;height: 2rem;background-color: ${item.color};padding:1px`"
                     v-close-popup
                     @click="item.handler"
                   />
@@ -95,6 +95,65 @@
         </template>
         <slot name="more_btn"></slot>
       </div>
+      <bubble-menu v-if="editor"
+        :editor="editor"
+        :tippy-options="{ duration: 100, maxWidth: 'none', }"
+      >
+        <q-card bordered class="q-pa-xs row gap-xs no-wrap">
+          <q-btn flat dense icon="mdi-format-title">
+            <q-menu>
+              <q-list bordered class="radius-sm q-pa-xs tiptap">
+                <template v-for="i in 6" :key="i">
+                  <q-item clickable v-close-popup class="radius-xs no-margin"
+                    @click="editor.chain().focus().toggleHeading({ level: i+1 }).run()">
+                    <q-item-section :class="`text-h${i+1}`">标题</q-item-section>
+                  </q-item>
+                </template>
+              </q-list>
+            </q-menu>
+          </q-btn>
+          <q-btn flat dense icon="mdi-format-color-text">
+            <q-menu>
+              <div class="row gap-xs radius-sm q-pa-xs border">
+                <div class="hover-op-none cursor-pointer radius-xs" style="height: 2rem; width: 2rem;" :style="`background-color: #efefef`"
+                  @click="editor.chain().focus().unsetColor().run()"
+                ></div>
+                <template v-for="i in uiStore.colors" :key="i">
+                  <div class="hover-op-none cursor-pointer radius-xs" style="height: 2rem; width: 2rem;" :style="`background-color: ${i}`"
+                    @click="editor.chain().focus().setColor(i).run()"
+                  ></div>
+                </template>
+              </div>
+            </q-menu>
+          </q-btn>
+          <q-btn flat dense icon="mdi-format-color-fill">
+            <q-menu>
+              <div class="row gap-xs radius-sm q-pa-xs border">
+                <div class="hover-op-none cursor-pointer radius-xs" style="height: 2rem; width: 2rem;" :style="`background-color: #efefef`"
+                  @click="editor.chain().focus().toggleHighlight().run()"
+                ></div>
+                <template v-for="i in uiStore.colors" :key="i">
+                  <div class="hover-op-none cursor-pointer radius-xs" style="height: 2rem; width: 2rem;" :style="`background-color: ${i}`"
+                    @click="editor.chain().focus().toggleHighlight({ color: i }).run()"
+                  ></div>
+                </template>
+              </div>
+            </q-menu>
+          </q-btn>
+          <q-btn flat dense icon="mdi-code-tags" @click="editor.chain().focus().toggleCode().run()" />
+          <q-separator vertical />
+          <q-btn flat dense icon="mdi-format-bold" @click="editor.chain().focus().toggleBold().run()" />
+          <q-btn flat dense icon="mdi-format-italic" @click="editor.chain().focus().toggleItalic().run()" />
+          <q-btn flat dense icon="mdi-format-strikethrough" @click="editor.chain().focus().toggleStrike().run()" />
+          <q-btn flat dense icon="mdi-format-underline" @click="editor.chain().focus().toggleUnderline().run()" />
+          <q-btn flat dense icon="mdi-format-superscript" @click="editor.chain().focus().toggleSuperscript().run()" />
+          <q-btn flat dense icon="mdi-format-subscript" @click="editor.chain().focus().toggleSubscript().run()" />
+          <q-separator vertical />
+          <q-btn flat dense icon="mdi-format-list-bulleted" @click="editor.chain().focus().toggleBulletList().run()" />
+          <q-btn flat dense icon="format_list_numbered" @click="editor.chain().focus().toggleOrderedList().run()" />
+          <q-btn flat dense icon="checklist" @click="editor.chain().focus().toggleTaskList().run()" />
+        </q-card>
+      </bubble-menu>
       <editor-content
         ref="dropZoneRef"
         class="q-space scroll-y fit"
@@ -131,7 +190,7 @@ import {
 } from "vue";
 import useTiptap from './useTiptap.js'
 
-import { Editor, EditorContent } from "@tiptap/vue-3";
+import { Editor, EditorContent, BubbleMenu } from "@tiptap/vue-3";
 import TaskItem from "@tiptap/extension-task-item";
 import TaskList from "@tiptap/extension-task-list";
 import TextStyle from "@tiptap/extension-text-style";
@@ -140,11 +199,11 @@ import { Color } from "@tiptap/extension-color";
 import Image from "@tiptap/extension-image";
 import { Markdown } from "tiptap-markdown";
 
-import { Extension } from '@tiptap/core'
+import { Extension, markPasteRule } from '@tiptap/core'
 import { Blockquote } from '@tiptap/extension-blockquote'
 import { Bold,  } from '@tiptap/extension-bold'
 import { BulletList,  } from '@tiptap/extension-bullet-list'
-import { Code,  } from '@tiptap/extension-code'
+import { Code } from '@tiptap/extension-code'
 import { CodeBlock,  } from '@tiptap/extension-code-block'
 import { Document } from '@tiptap/extension-document'
 import { Dropcursor,  } from '@tiptap/extension-dropcursor'
@@ -159,6 +218,10 @@ import { OrderedList,  } from '@tiptap/extension-ordered-list'
 import { Paragraph,  } from '@tiptap/extension-paragraph'
 import { Strike,  } from '@tiptap/extension-strike'
 import { Text } from '@tiptap/extension-text'
+import Highlight from '@tiptap/extension-highlight'
+import Underline from '@tiptap/extension-underline'
+import Superscript from '@tiptap/extension-superscript'
+import Subscript from '@tiptap/extension-subscript'
 
 import "prismjs";
 import "prismjs/themes/prism.css";
@@ -297,6 +360,18 @@ const cleanHtmlHandler = (val) => {
 };
 const tiptapReadyCount = ref(0);
 const init = () => {
+
+  const pasteRegex = /(?:^|\s)((?:~)((?:[^~]+))(?:~))/g
+  const CustomStrike = Strike.extend({
+    addPasteRules() {
+      return [
+        markPasteRule({
+          find: pasteRegex,
+          type: this.type,
+        }),
+      ]
+    },
+  })
   const _HardBreak = props.for !== 'chat' ? HardBreak.extend({
     addKeyboardShortcuts() {
       return {
@@ -314,11 +389,11 @@ const init = () => {
     editable: isEditable.value,
     autofocus: props.autofocus,
     editorProps: {
-      clipboardTextParser(text, $context) {
-        // 在这里处理粘贴的文本
-        // 例如，调用 cleanHtmlHandler 处理 HTML
-        return cleanHtmlHandler(text);
-      },
+      // clipboardTextParser(text, $context) {
+      //   // 在这里处理粘贴的文本
+      //   // 例如，调用 cleanHtmlHandler 处理 HTML
+      //   return cleanHtmlHandler(text);
+      // },
     },
     extensions: [
       TextStyle,
@@ -351,7 +426,12 @@ const init = () => {
       OrderedList,
       Paragraph,
       Strike,
-      Text
+      Text,
+      Highlight.configure({ multicolor: true }),
+      Underline,
+      Superscript,
+      Subscript,
+      CustomStrike
     ],
     onCreate({ editor }) {
       tiptapReadyCount.value++;
@@ -570,6 +650,13 @@ input[type="checkbox"] {
   padding: 0.1rem 0.3rem;
   box-decoration-break: clone;
 }
+.tiptap mark {
+  background-color: #faf594;
+  border-radius: .4rem;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding: .1rem .3rem;
+}
 ul[data-type="taskList"] {
   list-style: none;
   padding: 0;
@@ -600,5 +687,23 @@ ul[data-type="taskList"] {
       display: flex;
     }
   }
+}
+code {
+  background-color: var(--$primary);
+  border-radius: 4px;
+  color: #efefef;
+  font-size: 0.85rem;
+  padding: 0 4px;
+  border: 1px solid #979797;
+  margin: 0 4px
+}
+pre>code {
+  background-color: unset;
+  border-radius: unset;
+  color: unset;
+  font-size: unset;
+  padding: unset;
+  border: unset;
+  margin: unset;
 }
 </style>

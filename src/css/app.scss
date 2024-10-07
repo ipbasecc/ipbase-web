@@ -1474,3 +1474,10 @@ body.body--dark .cdx-marker {
   -ms-transform: scale(0.6) !important;
   -o-transform: scale(0.6) !important;
 }
+
+.hover-op-none {
+  opacity: 0.3;
+}
+.hover-op-none:hover {
+  opacity: 1;
+}
