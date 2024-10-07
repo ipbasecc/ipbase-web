@@ -41,23 +41,19 @@
             ? `${ $q.dark.mode ? 'bg-deep-purple-10' : 'bg-primary-9'} text-white`
             : 'transparent'}
         `"
+        style="min-height: 34px;"
       >
-      <div class="">
-        <StatusMenu
-          v-if="show_byPreference?.status?.value"
-          dense
-          :modify="useAuths('status', ['card'])"
-          :status="cardRef.status"
-          @statusChange="_card_statusChange"
-          class="undrag"
-        />
-      </div>
-        <div
-          v-if="
-            name_changing &&
-            useAuths('name', ['card']) &&
-            !isShared
-          "
+        <div>
+          <StatusMenu
+            v-if="show_byPreference?.status?.value"
+            dense
+            :modify="useAuths('status', ['card'])"
+            :status="cardRef.status"
+            @statusChange="_card_statusChange"
+            class="undrag"
+          />
+        </div>
+        <div v-if="name_changing && useAuths('name', ['card']) && !isShared"
           class="undrag text-medium q-space cursor-text q-px-sm z-fab"
           style="
             writing-mode: lr;
@@ -168,9 +164,7 @@
       >
         <TipTap
           :jsonContent="cardRef.jsonContent"
-          :editable="
-            useAuths('jsonContent', ['card']) && !isShared
-          "
+          :editable="useAuths('jsonContent', ['card']) && !isShared"
           :need="'json'"
           :square="true"
           :show_toolbar="false"
@@ -179,9 +173,7 @@
           class="undrag"
           @tiptapBlur="tiptapBlur"
           @tiptapClose="toggleOffEditting()"
-          @click.stop="
-            clickContent(useAuths('jsonContent', ['card']))
-          "
+          @click.stop="clickContent(useAuths('jsonContent', ['card']))"
           @keydown.esc="uiStore.edittingCard = void 0"
         />
       </q-card-section>

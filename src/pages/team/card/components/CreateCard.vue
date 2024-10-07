@@ -1,5 +1,4 @@
 <template>
-  {{isCannel}} - {{ loading }} - {{name_onlyRef}}
   <template v-if="props">
     <q-card
       v-if="view_model === 'kanban'"

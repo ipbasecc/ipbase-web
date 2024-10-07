@@ -428,7 +428,7 @@ const init = () => {
       ListItem,
       OrderedList,
       Paragraph,
-      Strike,
+      // Strike,
       Text,
       Highlight.configure({ multicolor: true }),
       Underline,

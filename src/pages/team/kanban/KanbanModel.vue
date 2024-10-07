@@ -377,6 +377,16 @@ const syncStoreByKanban = async () => {
   await putKanbanCache(kanban.value);
 }
 
+const dragscrollstart = () => {
+  
+};
+const draging = () => {
+  
+};
+const dragscrollend = () => {
+  
+};
+
 const val = computed(() => teamStore.income);
 watch(val, async(newVal, oldVal) => {
   if(!newVal || newVal === oldVal) return;
