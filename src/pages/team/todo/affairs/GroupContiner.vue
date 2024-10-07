@@ -25,6 +25,15 @@
     </div>
     <q-scroll-area v-if="layout === 'row'" class="q-space q-px-xs scroll-container flex-content">
       <GroupBody v-model="group" :card :displayType :uiOptions ref="todogroupBodyRef" />
+      <div v-if="$q.screen.gt.sm"
+          data-dragscroll
+          class="q-space op-0 undrag"
+          style="order: 9999;"
+          @mouseenter="uiStore.dragKanbanScrollEnable = true"
+          @dblclick="toggleCreatetodo()"
+          @keydown.esc="toggleCreatetodo()"
+      >
+      </div>
     </q-scroll-area>
     <GroupBody v-else v-model="group"
       ref="todogroupBodyRef"

@@ -44,15 +44,6 @@
         @created="created"
         @cancelCreate="cancelCreatetodo"
     />
-    <div v-if="!teamStore.cardDragging && $q.screen.gt.sm"
-        data-dragscroll
-        class="q-space op-0 undrag"
-        style="order: 9999;"
-        @mouseenter="uiStore.dragKanbanScrollEnable = true"
-        @dblclick="toggleCreatetodo()"
-        @keydown.esc="toggleCreatetodo()"
-    >
-    </div>
   </VueDraggable>
 </template>
 
@@ -130,10 +121,17 @@ const cancelCreatetodo = () => {
     openCreatetodo.value = false;
 }
 const created = (todo) => {
-    openCreatetodo.value = false;
-    if(!card){
+  openCreatetodo.value = false;
+  if(!card){
+    if(todo.position?.after){
+      const insertIndex = modelValue.value.todos.findIndex(i => i.id === todo.position.after);
+      if(insertIndex > -1){
+        modelValue.value.todos.splice(insertIndex + 1, 0, todo);
+      }
+    } else {
       modelValue.value.todos.push(todo);
     }
+  }
 }
 const todoDeleted = (id) => {
     modelValue.value.todos = modelValue.value.todos.filter((i) => i.id !== id);

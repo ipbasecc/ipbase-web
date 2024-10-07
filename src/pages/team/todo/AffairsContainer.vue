@@ -26,7 +26,7 @@
         <q-resize-observer @resize="onResize" />
         <template v-if="viewModel === 'kanban'">
             <ScrollBody v-if="layout === 'row'">
-                <AffairsBody v-if="_for === 'personal'" :mainArea />
+                <AffairsBody v-if="_for === 'personal'" :mainArea :layout />
                 <CardAffairs v-else :mainArea :data="todogroups" :card :_for :layout :displayType :dense :uiOptions />
             </ScrollBody>
             <template v-else>

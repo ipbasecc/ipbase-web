@@ -12,6 +12,7 @@
       <template v-for="group in todogroups" :key="group.id">
         <GroupContiner
           :group="group"
+          :layout
           @todogroupDeleted="todogroupDeleted"
         />
       </template>
@@ -29,8 +30,10 @@ import CreateColumn from './CreateColumn.vue'
 import { todogroups } from './useAffairs';
 import { reorderArrayABasedOnArrayB } from 'src/hooks/utilits.js';
 
-const props = defineProps(['mainArea']);
-const { mainArea } = toRefs(props);
+const { mainArea, layout } = defineProps({
+    mainArea: Object,
+    layout: String,
+})
 
 const dragging = ref(false);
 const newIndex = ref(null);
