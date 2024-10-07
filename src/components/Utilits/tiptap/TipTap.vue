@@ -223,6 +223,9 @@ import Underline from '@tiptap/extension-underline'
 import Superscript from '@tiptap/extension-superscript'
 import Subscript from '@tiptap/extension-subscript'
 
+import Commands from './commands.js'
+import suggestion from './suggestion.js'
+
 import "prismjs";
 import "prismjs/themes/prism.css";
 import { uiStore, userStore } from "src/hooks/global/useStore";
@@ -431,7 +434,11 @@ const init = () => {
       Underline,
       Superscript,
       Subscript,
-      CustomStrike
+      CustomStrike,
+      // slash菜单
+      // Commands.configure({
+      //   suggestion,
+      // }),
     ],
     onCreate({ editor }) {
       tiptapReadyCount.value++;

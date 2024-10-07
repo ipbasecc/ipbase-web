@@ -1,23 +1,16 @@
 <template>
-    <div class="items">
-      <template v-if="items.length">
-        <button
-          class="item"
-          :class="{ 'is-selected': index === selectedIndex }"
-          v-for="(item, index) in items"
-          :key="index"
-          @click="selectItem(index)"
-        >
-          {{ item }}
-        </button>
-      </template>
-      <div class="item" v-else>
-        No result
-      </div>
-    </div>
-  </template>
+  <q-list v-if="items.length" bordered dense class="radius-sm q-pa-xs"
+  :class="$q.dark.mode ? 'bg-grey-9 text-white' : 'bg-grey-1 text-black'">
+    <q-item v-for="(item, index) in items" :key="index" clickable @click="selectItem(index)"
+    class="radius-xs">
+      <q-item-section>
+        <q-item-label>{{ item }}</q-item-label>
+      </q-item-section>
+    </q-item>
+  </q-list>
+</template>
   
-  <script>
+<script>
   export default {
     props: {
       items: {
@@ -84,9 +77,9 @@
       },
     },
   }
-  </script>
+</script>
   
-  <style lang="scss">
+<style lang="scss">
   .items {
     padding: 0.2rem;
     position: relative;
@@ -115,4 +108,4 @@
       border-color: #000;
     }
   }
-  </style>
+</style>
