@@ -21,7 +21,7 @@
     <div v-if="!dense" data-no-dragscroll class="column-footer row no-wrap items-center q-px-xs"
       :class="$q.screen.gt.sm ? 'undrag' : ''"
     >
-        <q-btn dense flat icon="mdi-plus" size="sm" class="border full-width" @click="toggleCreatetodo()" />
+      <q-btn dense flat icon="mdi-plus" size="sm" class="border full-width" @click="toggleCreatetodo()" />
     </div>
     <q-scroll-area v-if="layout === 'row'" class="q-space q-px-xs scroll-container flex-content">
       <GroupBody v-model="group" :card :displayType :uiOptions ref="todogroupBodyRef" />
