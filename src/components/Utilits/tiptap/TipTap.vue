@@ -94,15 +94,16 @@
         </template>
         <slot name="more_btn"></slot>
       </div>
-      <bubble-menu v-if="editor"
+      <bubble-menu v-if="editor" ref="bubble-menuRef"
         :editor="editor"
         :tippy-options="{ duration: 100, maxWidth: 'none', }"
+        class="bubble-menu"
       >
        <BubbleMenuContent :editor />
       </bubble-menu>
       <editor-content
         ref="dropZoneRef"
-        class="q-space scroll-y fit"
+        class="tiptapBody q-space scroll-y fit"
         :class="styleClass ? styleClass : 'q-pa-md'"
         :editor="editor"
         :style="contentStyle"
@@ -132,7 +133,8 @@ import {
   toRefs,
   watch,
   computed,
-  nextTick
+  nextTick,
+  useTemplateRef
 } from "vue";
 import useTiptap from './useTiptap.js'
 
@@ -183,6 +185,7 @@ import BubbleMenuContent from './BubbleMenu.vue'
 
 const { t } = useI18n();
 const menu = ref();
+const bubbleMenuRef = useTemplateRef('useTemplateRef')
 
 const props = defineProps({
   show_toolbar: {
@@ -395,11 +398,14 @@ const init = () => {
       }
     },
     // triggered on every change
-    onUpdate: () => {
+    onUpdate: async () => {
+      await nextTick();
       isChanged.value = true;
       emit("tiptapChanged");
     },
     async onBlur({ editor, event }) {
+      const BubbleMenu = document.querySelector('.bubble-menu');
+      if(BubbleMenu) return
       await nextTick();
       const editorVal = JSON.stringify(editor.getJSON());
       const sourceVal = JSON.stringify(sourceContent.value);
@@ -648,20 +654,25 @@ ul[data-type="taskList"] {
 }
 code {
   background-color: var(--$primary);
-  border-radius: 4px;
-  color: #efefef;
-  font-size: 0.85rem;
-  padding: 0 4px;
-  border: 1px solid #979797;
+  border-radius: 3px;
+  padding: 2px 6px;
+  border: 1px solid #b5b5b5;
   margin: 0 4px
 }
-pre>code {
+body.body--dark code {
+  border: 1px solid #505050;
+}
+body.body--dark pre>code, pre>code {
   background-color: unset;
   border-radius: unset;
-  color: unset;
-  font-size: unset;
   padding: unset;
   border: unset;
   margin: unset;
+}
+mark {
+  color: white !important;
+}
+.tiptapBody > div {
+  height: 100%;
 }
 </style>
