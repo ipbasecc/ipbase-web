@@ -39,18 +39,15 @@
         <q-icon name="mdi-information-outline" />
       </div>
     </template>
-    <div v-if="msg.props?.strapi" class="text-grey-6">
-      {{ msg.message }}
-    </div>
-
-    <div v-else
-      class="column no-wrap gap-xs justify-between q-space relative-position"
+    <div class="column no-wrap gap-xs justify-between q-space relative-position"
       @mouseover="wiget_show = true"
       @mouseleave="wiget_show = false"
     >
       <span v-if="show_avatar" class="op-5">
-        <template v-if="!isExternal"> {{ member?.username }} · </template>
-        <TimeAgo v-if="!MsgOnly" :time="msg.create_at" />
+        <template v-if="!isExternal"> {{ member?.username }}</template>
+        <template v-if="!MsgOnly"> · 
+          <TimeAgo :time="msg.create_at" />
+        </template>
       </span>
       <div
         v-html="html"

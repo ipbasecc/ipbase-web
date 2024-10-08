@@ -399,9 +399,8 @@ const init = () => {
     },
     // triggered on every change
     onUpdate: async () => {
-      await nextTick();
       isChanged.value = true;
-      emit("tiptapChanged");
+      tiptapUpdate();
     },
     async onBlur({ editor, event }) {
       const BubbleMenu = document.querySelector('.bubble-menu');

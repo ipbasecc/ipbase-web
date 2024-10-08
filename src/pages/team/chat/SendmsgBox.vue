@@ -21,10 +21,13 @@
               flat
               dense
               padding="xs md"
-              icon="send"
               @click="sendMsg(msg)"
               class="border"
             >
+              <q-spinner-dots v-if="loading"
+                size="0.7em"
+              />
+              <q-icon v-else name="send" />
               <q-tooltip class="border text-no-wrap overflow-hidden" :class="$q.dark.mode ? 'bg-darker text-white' : 'bg-grey-1 text-black'">
                 CTRL + Enter
               </q-tooltip>
@@ -57,7 +60,6 @@
           </template>
         </TipTap>
       </q-card-section>
-      <LoadingBlock v-if="showLoading" />
       <q-linear-progress
         v-if="progress > 0"
         stripe
@@ -121,7 +123,6 @@ const tiptapRef = ref();
 
 const emit = defineEmits(["MsgSend"]);
 const loading = ref(false);
-const showLoading = ref(false);
 const sendMsg = async () => {
   if (loading.value) return;
   loading.value = true;
@@ -131,9 +132,6 @@ const sendMsg = async () => {
   parmars.value = {
     channel_id: channel_idRef.value,
     message: msg.value,
-    props: {
-      clientId: mm_wsStore?.clientId
-    },
   };
   if (asThreadRef.value) {
     parmars.value.root_id = thread_post_idRef.value;
@@ -141,18 +139,12 @@ const sendMsg = async () => {
   if (file_ids.value?.length > 0) {
     parmars.value.file_ids = file_ids.value;
   }
-  msg.value = "";
   const res = await sendPost(parmars.value);
-  if (!res) {
-    setTimeout(() => {
-      showLoading.value = true;
-    }, 1000);
-  }
   if (res) {
+    msg.value = "";
     tiptapRef.value.clear();
     emit("MsgSend");
     loading.value = false;
-    showLoading.value = false;
     files.value = void 0;
     file_ids.value = void 0;
   }
