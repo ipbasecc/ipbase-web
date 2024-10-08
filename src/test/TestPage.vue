@@ -4,7 +4,7 @@
             <q-toolbar class="gap-sm">
                 <q-toolbar-title> Title </q-toolbar-title>
                 <q-space />
-                <q-btn color="primary" no-caps label="Find" @click="refreshToken" />
+                <q-btn color="primary" no-caps label="Find" @click="refreshTokenFn" />
             </q-toolbar>
         </q-header>
 

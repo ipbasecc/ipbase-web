@@ -47,7 +47,7 @@ contextBridge.exposeInMainWorld("windowAPI", {
 
   
   logout() {
-    ipcRenderer.send("logout");
+    ipcRenderer.send("clearCache");
   },
 });
 contextBridge.exposeInMainWorld("pathAPI", {

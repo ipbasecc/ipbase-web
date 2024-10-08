@@ -102,6 +102,7 @@
     "hevue-img-preview": "^6.1.0",
     "js-base64": "^3.7.7",
     "jsonfile": "^6.1.0",
+    "jsonwebtoken": "^9.0.2",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
