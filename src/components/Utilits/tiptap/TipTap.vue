@@ -309,6 +309,7 @@ const cleanHtmlHandler = (val) => {
   return val.replace(/<[^>]*>?/gm, "");
 };
 const tiptapReadyCount = ref(0);
+const isChanged = ref(false);
 const init = () => {
 
   const pasteRegex = /(?:^|\s)((?:~)((?:[^~]+))(?:~))/g
@@ -395,7 +396,7 @@ const init = () => {
     },
     // triggered on every change
     onUpdate: () => {
-      tiptapUpdate();
+      isChanged.value = true;
       emit("tiptapChanged");
     },
     async onBlur({ editor, event }) {
@@ -502,7 +503,7 @@ const html = computed(() => editor.value && editor.value.getHTML());
 
 const tiptapBlur = () => {
   
-  if(!isEditable.value) return;
+  if(!isEditable.value || !isChanged.value) return;
   const cur = JSON.stringify(json.value);
   const prv = JSON.stringify(tiptapContent.value);
   if (cur === prv) return;
@@ -523,7 +524,7 @@ defineExpose({
 })
 
 const tiptapUpdate = () => {
-  if(!isEditable.value) return;
+  if(!isEditable.value || !isChanged.value) return;
   if (needRef.value === "html") {
     emit("tiptapUpdate", html.value);
   }
@@ -556,7 +557,7 @@ watch(
 
 onBeforeUnmount(() => {
   emit("tiptapDestroy");
-  if(!isEditable.value) {
+  if(!isEditable.value || !isChanged.value) {
     tiptapUpdate();
   }
   editor.value && editor.value.destroy();

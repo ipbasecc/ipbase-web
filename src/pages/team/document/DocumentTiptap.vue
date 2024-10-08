@@ -24,6 +24,15 @@
     <template v-if="showClose" v-slot:left-btn>
       <q-btn dense flat icon="mdi-chevron-left" @click="close" />
     </template>
+    <template v-slot:more_btn>
+      <div v-if="saving" class="row no-wrap gap-sm flex-center q-px-md">
+        <q-spinner
+          size="1em"
+          :thickness="2"
+        />
+        保存中...
+      </div>
+    </template>
     <template v-if="islocked && !readOnly" v-slot:locker>
       <div class="absolute-full bg-black op-5" />
       <div class="absolute-full q-pa-md">
@@ -108,14 +117,15 @@ const toggleReadOnly = () => {
 };
 const islocked = computed(() => document.value?.is_locked);
 
-const updateChatMsg = ref({});
+const saving = ref(false);
 const jsonContent = ref({});
 const updateDocumentFn = async () => {
-  if (!jsonContent.value) return;
+  if (!jsonContent.value || saving.value) return;
+  saving.value = true;
   uiStore.edittingDocument = document.value.id;
-  const isChanged = !isEqual(document.value.jsonContent, jsonContent.value);
-  // console.log("isChanged", isChanged);
-  if (!isChanged) return;
+  // const isChanged = !isEqual(document.value.jsonContent, jsonContent.value);
+  // // console.log("isChanged", isChanged);
+  // if (!isChanged) return;
   let params = {
     document_id: document.value.id,
     data: {
@@ -133,6 +143,7 @@ const updateDocumentFn = async () => {
   }
 
   let res = await updateDocument(document.value.id, params);
+  saving.value = false;
   if (res) {
     if (by_info.value.user_id) {
       process_documentContent_change(res.data);
