@@ -1,6 +1,10 @@
 import localforage from "localforage";
 import { DONT_CLEAN } from "src/config";
 
+/**
+ * 
+ * @param {String} val 为了调试方便知道什么地方调用了登出操作，无业务用途
+ */
 export async function clearLocalDB(val)  {
   console.log('clearLocalDB', val)
   // return

@@ -35,6 +35,22 @@ export async function login(params) {
   }
 }
 
+export async function refreshToken() {
+  try {
+    const res = await api.get(`users-permissions/user/me/refreshToken`);
+    if (res) {
+      if (res?.data) {
+        console.log('refreshToken', res)
+      }
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+
+ 
+
 // {
 //   username: 'Strapi user',
 //   email: 'user@strapi.io',

@@ -115,6 +115,9 @@ import {toggleTeam} from "src/pages/team/hooks/useTeam.js";
 import AppNotification from 'src/pages/team/components/AppNotification.vue'
 import { useSocket } from 'src/pages/team/hooks/useSocket.js'
 
+import { isTokenExpired } from 'src/hooks/utilits.js'
+import { ipcRenderer } from "electron";
+
 getUserData();
 useSocket();
 
@@ -138,18 +141,33 @@ const checkNotification = async () => {
   }
 }
 onBeforeMount(async() => {
-  uiStore.pageLoaded = true;
-  if(!teamStore.init){
-    await loginAndInit();
-    if(teamStore.init && !teamStore.init.default_team){
-      const cache = await localforage.getItem('default_team');
-      if(cache){
-        // 不要直接赋值，方法内部有更多事件处理
-        await toggleTeam(cache)
+  // 检查jwt是否过期
+  // 过期后：electron发送清理消息并跳转到登陆，其他直接清理并登陆
+  let isExpired
+  const jwt = localStorage.getItem('jwt');
+  if(jwt){
+    isExpired = isTokenExpired(jwt)
+  }
+  if(isExpired){
+    if($q.platform.is.electron){
+      ipcRenderer.send('clearCache', window.location.href);
+    } else {
+      toLogin();
+    }
+  } else {
+    uiStore.pageLoaded = true;
+    if(!teamStore.init){
+      await loginAndInit();
+      if(teamStore.init && !teamStore.init.default_team){
+        const cache = await localforage.getItem('default_team');
+        if(cache){
+          // 不要直接赋值，方法内部有更多事件处理
+          await toggleTeam(cache)
+        }
       }
     }
+    await checkNotification();
   }
-  await checkNotification();
 })
 
 onMounted(async () => {
@@ -199,6 +217,10 @@ const pullDownRefresh = (done) => {
   done();
   pageRefresh();
 }
+ipcRenderer.on('cacheCleared', () => {
+  // 清除 Local Storage 后跳转到登录页面
+  toLogin();
+});
 
 onMounted(() => {
   shortcut();

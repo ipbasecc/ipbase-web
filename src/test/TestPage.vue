@@ -4,18 +4,13 @@
             <q-toolbar class="gap-sm">
                 <q-toolbar-title> Title </q-toolbar-title>
                 <q-space />
-                <q-btn color="primary" no-caps label="Find" />
+                <q-btn color="primary" no-caps label="Find" @click="refreshToken" />
             </q-toolbar>
         </q-header>
 
         <q-page-container>
             <q-page class="q-pa-md">
-            <TipTap
-                :editable="true"
-                :need="'json'"
-                :square="true"
-            >
-            </TipTap>
+                {{token}}
 
             </q-page>
         </q-page-container>
@@ -25,10 +20,12 @@
 <script setup>
 import { onMounted, ref, watch, computed, watchEffect } from 'vue';
 import { uiStore } from "src/hooks/global/useStore.js";
-import { useQuasar } from 'quasar'
-import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
+import { refreshToken } from "src/api/strapi.js";
 
-
+const token = ref();
+const refreshTokenFn = async () => {
+    token.value = await refreshToken()
+}
 
 onMounted(() => {
     uiStore.pageLoaded = true;

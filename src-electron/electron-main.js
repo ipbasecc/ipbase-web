@@ -297,6 +297,14 @@ ipcMain.on("stop-download", async (event, fileInfo) => {
     stoped.push(fileInfo);
   }
 });
+ipcMain.on("clearCache", async (event) => {
+  const webContents = mainWindow.webContents;
+  webContents.session.clearStorageData({
+    storages: ['cache','indexedDB','localstorage','sessionStorage','webSQL'],
+  }, () => {
+    mainWindow.webContents.send('cacheCleared');
+  });
+});
 
 function getWindowsVersion() {
   if (process.platform !== 'win32') {

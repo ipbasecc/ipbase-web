@@ -44,6 +44,11 @@ contextBridge.exposeInMainWorld("windowAPI", {
       });
     }
   },
+
+  
+  logout() {
+    ipcRenderer.send("logout");
+  },
 });
 contextBridge.exposeInMainWorld("pathAPI", {
   pathService(_path) {

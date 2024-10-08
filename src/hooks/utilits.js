@@ -457,3 +457,9 @@ export function mergeObjects(target, source) {
   // 返回修改后的对象a
   return target;
 }
+
+export function isTokenExpired(token) {
+  const payload = JSON.parse(atob(token.split('.')[1]));
+  const currentTime = Date.now() / 1000; // 将当前时间转换为秒
+  return payload.exp < currentTime;
+}
