@@ -134,7 +134,7 @@ import {
   watch,
   computed,
   nextTick,
-  useTemplateRef
+  watchEffect
 } from "vue";
 import useTiptap from './useTiptap.js'
 
@@ -184,8 +184,6 @@ import { useI18n } from 'vue-i18n';
 import BubbleMenuContent from './BubbleMenu.vue'
 
 const { t } = useI18n();
-const menu = ref();
-const bubbleMenuRef = useTemplateRef('useTemplateRef')
 
 const props = defineProps({
   show_toolbar: {
@@ -282,12 +280,6 @@ const jsonContentRef = toRef(props, "jsonContent");
 const withSaveBtbRef = toRef(props, "withSaveBtb");
 const { withImageBtb, withAttachBtb } = toRefs(props);
 const isEditable = toRef(props, "editable");
-
-const uiConfig = {
-  withSaveBtb: withSaveBtbRef.value,
-  withImageBtb: withImageBtb.value,
-  withAttachBtb: withAttachBtb.value,
-}
 
 const needRef = toRef(props, "need");
 const { hideScroll } = toRefs(props);
@@ -421,6 +413,20 @@ const init = () => {
   });
 };
 
+const menu = ref();
+const uiConfig = ref({
+  withSaveBtb: withSaveBtbRef.value,
+  withImageBtb: withImageBtb.value,
+  withAttachBtb: withAttachBtb.value,
+})
+watchEffect(() => {
+  uiConfig.value.withSaveBtb = withSaveBtbRef.value;
+  if(editor.value){
+    const { editorMenu } = useTiptap(editor, uiConfig.value);
+    menu.value = editorMenu;
+  }
+})
+
 const sourceContent = ref();
 const setSourceContent = () => {
   sourceContent.value = editor.value && editor.value.getJSON();
@@ -481,10 +487,6 @@ onBeforeMount(() => {
   autoSetContent();
   setSourceContent();
   init();
-  if(editor.value){
-    const { editorMenu } = useTiptap(editor, uiConfig);
-    menu.value = editorMenu;
-  }
 });
 
 const clear = () => {
@@ -575,16 +577,6 @@ watch(
   },
   { immediate: true, deep: true }
 );
-
-// watch(
-//   contentRef,
-//   () => {
-//     if (contentRef.value === "") {
-//       editor.value && editor.value.commands.setContent(contentRef.value);
-//     }
-//   },
-//   { immediate: false, deep: true }
-// );
 
 
 </script>

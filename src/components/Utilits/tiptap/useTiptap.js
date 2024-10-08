@@ -266,12 +266,12 @@ export default function useTiptap(editor, uiConfig) {
     },
     {
       type: "|",
-      disable: !uiConfig.withSaveBtbRef,
+      disable: !uiConfig.withSaveBtb,
       always_show: false,
     },
     {
       type: "Botton",
-      disable: !uiConfig.withSaveBtbRef,
+      disable: !uiConfig.withSaveBtb,
       label: "Save",
       icon: "save",
       class: "",

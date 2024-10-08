@@ -10,7 +10,7 @@
     "
     :need="'json'"
     :square="true"
-    :withSaveBtb="true"
+    :withSaveBtb="!saving"
     :withImageBtb="true"
     :contentStyle="contentStyle"
     :autofocus="!islocked"
@@ -118,6 +118,10 @@ const toggleReadOnly = () => {
 const islocked = computed(() => document.value?.is_locked);
 
 const saving = ref(false);
+const withSaveBtb = ref(true);
+watchEffect(() => {
+  withSaveBtb.value = !saving.value
+})
 const jsonContent = ref({});
 const updateDocumentFn = async () => {
   if (!jsonContent.value || saving.value) return;
