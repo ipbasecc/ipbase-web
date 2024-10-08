@@ -6,9 +6,6 @@ import { init_user } from "src/api/strapi/project";
 import { refreshToken } from 'src/api/strapi.js'
 import { jwtDecode } from "jwt-decode";
 
-import { useRouter } from "vue-router";
-const router = useRouter();
-
 let needRefreshToken = false;
 let needLogin = false;
 const checkToken = () => {
@@ -75,13 +72,9 @@ export async function fetch_StrapiMe(option = "cache") {
   if(_me){
     checkToken()
 
-    if(needLogin){
-      router.push('/login')
-    }else if(needRefreshToken){
+    if(needRefreshToken){
       await refreshToken();
-      return _me;
-    } else {
-      return _me;
     }
+    return _me;
   }
 }
