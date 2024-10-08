@@ -76,7 +76,7 @@
           <span class="hover-height transition">{{ $t('favorited') }}</span>
         </div>
         <template v-if="msg?.reply_count > 0 && !msg?.root_id">
-          <q-chip icon="mdi-reply" dense :label="msg.reply_count" />
+          <q-chip icon="mdi-reply" dense :label="msg.reply_count" clickable @click="enterThread(msg)" />
         </template>
       </div>
       <!-- float action btns-->
