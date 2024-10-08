@@ -1,24 +1,29 @@
 <template>
-  <q-layout view="lHr lpR lFr" container>
+  <q-layout view="hHh LpR lfr" container class="absolute-full"
+    @mousemove="handleMouseMove"
+    @mouseup="handleMouseUp"
+  >
+    <NavigatorHeader />
     <q-drawer
-      v-model="uiStore.externalCardsDrawer"
+      v-model="uiStore.navigatorDrawer"
       side="left"
-      :width="338"
+      :width="navDrawerWidth"
       :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-1'"
     >
-      <q-scroll-area v-if="cards" class="absolute-full q-pa-sm">
+      <q-scroll-area v-if="cards" class="absolute-full q-pa-sm"
+      :class="$q.dark.mode ? '' : 'bg-primary-9 text-grey-1'">
         <q-infinite-scroll
           @load="onLoad"
           :offset="20"
           :disable="!cards_hasMore"
         >
-          <div class="column no-wrap gap-sm">
+          <div v-if="cards?.length > 0" class="column no-wrap gap-sm">
             <CardItem
               v-for="i in cards" :key="i.id" :card="i"
               :viewType="'card'"
               :uiOptions="uiOptions"
             />
-            <div class="flex flex-center">
+            <div v-if="cards_hasMore" class="flex flex-center">
               <q-chip
                 v-if="!cards_hasMore && done"
                 :label="$t('all_cards_loaded')"
@@ -27,10 +32,15 @@
               <q-spinner-dots v-else color="primary" size="2em" />
             </div>
           </div>
+          <q-responsive v-else-if="!cards_hasMore" :ratio="16/9">
+            <div class="flex flex-center">
+              {{ $t('no_tasks') }}
+            </div>
+          </q-responsive>
         </q-infinite-scroll>
       </q-scroll-area>
     </q-drawer>
-
+    <RightPannel />
     <q-page-container>
       <q-page
         class="border-left"
@@ -38,6 +48,28 @@
           teamStore.card ? '' : 'flex flex-center'
         }`"
       >
+        <div
+          v-if="uiStore.navigatorDrawer"
+          class="absolute-left full-height hover-col-resize flex flex-center toggle-container z-max"
+          :class="dragWidth ? 'bg-primary ' : ''"
+          :style="dragWidth ? 'width: 3px' : 'width: 10px'"
+          @mousedown="handleMouseDown"
+        >
+          <q-icon
+            :name="`mdi-chevron-${uiStore.navigatorDrawer ? 'left' : 'right'}`"
+            color="primary"
+            size="sm"
+            @click="toggleNavDrawer()"
+            class="cursor-pointer toggle-btn transition z-max"
+            :style="`transform: translateX(${
+              uiStore.navigatorDrawer ? -16 : 12
+            }px)`"
+          >
+            <q-tooltip class="border" :class="$q.dark.mode ? 'bg-darker text-white' : 'bg-grey-1 text-black'">
+              shift + {{ uiStore.navigatorDrawer ? '<' : '>' }}
+            </q-tooltip>
+          </q-icon>
+        </div>
         <!-- 这里的isExternal用来调整UI、当前模式下，要么是“外部成员”、要么是“专注模式”，都要用到此种UI，因此isExternal一定是true -->
         <CardPage
           v-if="teamStore.card"
@@ -51,9 +83,9 @@
 </template>
 
 <script setup>
-import {onMounted, onUnmounted, ref, toRefs, watch, computed, onBeforeMount} from "vue";
+import {onMounted, reactive, onUnmounted, ref, toRefs, watch, computed, onBeforeMount} from "vue";
 import { useRouter, useRoute } from "vue-router";
-
+import NavigatorHeader from './components/NavigatorHeader.vue'
 import localforage from "localforage";
 
 import {
@@ -65,7 +97,6 @@ import { getOneProject, getCards } from "src/api/strapi/project.js";
 import {
   teamStore,
   userStore,
-  mm_wsStore,
   uiStore,
 } from "src/hooks/global/useStore.js";
 
@@ -73,6 +104,8 @@ import CardPage from "./card/CardPage.vue";
 import CardItem from "./card/CardItem.vue";
 import BgBrand from "src/components/VIewComponents/BgBrand.vue";
 import { useI18n } from "vue-i18n";
+import {useMouse} from "@vueuse/core";
+import RightPannel from './components/RightPannel.vue'
 const { t } = useI18n();
 
 const props = defineProps({
@@ -92,10 +125,12 @@ const router = useRouter();
 const route = useRoute();
 onBeforeMount(() => {
   uiStore.showMainContentList = false;
-  if(route.name === 'team_projects_external_page'){
+  const externalArr = ['team_projects_external_page', 'team_projects_external_homepage'];
+  const focusArr = ['team_projects_focus_homepage', 'team_projects_focus_page'];
+  if(externalArr.includes(route.name)){
     teamStore.isExternal = true
   }
-  if(route.name === 'team_projects_focus_page'){
+  if(focusArr.includes(route.name)){
     uiStore.isFocusMode = true
   }
 })
@@ -177,7 +212,9 @@ const syncCardInList = (val) => {
 const isFocusMode = computed(() => uiStore.isFocusMode);
 onMounted(async () => {
   emit("openLeftDrawer");
-  if (route?.name !== "team_projects_page") {
+  if (project_id.value && !isFocusMode.value) {
+    console.log('project_id', project_id.value);
+    
     const id = Number(project_id.value);
     await getProject(id);
   }
@@ -186,6 +223,8 @@ watch(
   [project_id, isFocusMode],
   async () => {
     if (project_id.value && !isFocusMode.value) {
+      console.log('project_id', project_id.value);
+      
       const id = Number(project_id.value);
       await getProject(id);
     }
@@ -212,6 +251,46 @@ const uiOptions = ref([
     icon: "mdi-checkbox-marked-circle",
   },
 ]);
+
+const navDrawerWidth = ref(260);
+const { x } = useMouse({ touch: false });
+const navDrawerMinWidth = ref(180);
+const navDrawerMaxWidth = ref(340);
+const _ori_width = ref();
+const dragWidth = ref(false);
+const position = reactive({
+  x: NaN,
+  y: NaN,
+});
+
+const handleMouseDown = () => {
+  position.x = x.value;
+  dragWidth.value = true;
+  _ori_width.value = navDrawerWidth.value;
+  uiStore.dragging = true;
+};
+const handleMouseUp = () => {
+  dragWidth.value = false;
+  uiStore.dragging = false;
+};
+const handleMouseMove = () => {
+  if (!position.x || !dragWidth.value || !_ori_width.value) return;
+
+  const deltaX = x.value - position.x;
+  if (
+    _ori_width.value + deltaX >= navDrawerMinWidth.value &&
+    _ori_width.value + deltaX <= navDrawerMaxWidth.value
+  ) {
+    navDrawerWidth.value = _ori_width.value + deltaX;
+  } else if (_ori_width.value + deltaX > navDrawerMaxWidth.value) {
+    navDrawerWidth.value = navDrawerMaxWidth.value;
+  } else if (_ori_width.value + deltaX === navDrawerMaxWidth.value) {
+    navDrawerWidth.value = navDrawerMinWidth.value;
+  } else if (_ori_width.value + deltaX < 50) {
+    uiStore.navigatorDrawer = false;
+  }
+};
+
 const update_uiOptions = async (i) => {
   i.enable = !i.enable;
   uiOptions.value = uiOptions.value.map((ui) => (ui.val === i.val && i) || ui);

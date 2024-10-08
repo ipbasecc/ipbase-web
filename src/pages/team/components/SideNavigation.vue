@@ -71,7 +71,7 @@
           ></div>
         </q-item>
       </template>
-      <template v-if="enalbe_channel">
+      <template v-if="enable_channel">
         <q-item-label header class="q-pa-sm non-selectable text-white font-bold-600">
           {{ $t('channel') }}
         </q-item-label>
@@ -256,7 +256,7 @@
         </q-item>
       </template>
 
-      <template v-if="enalbe_project">
+      <template v-if="enable_project">
         <q-item-label header class="q-pa-sm non-selectable text-white font-bold-600"
           :class="$q.screen.gt.xs ? 'text-grey-1' : `text-grey-1${$q.dark.mode ? '' : '0'}`"
         >{{ $t('project') }}</q-item-label>
@@ -355,9 +355,9 @@ import {teamStore, uiStore} from 'src/hooks/global/useStore.js';
 import {i18n} from 'src/boot/i18n.js';
 import {
   enable_threads,
-  enalbe_channel,
+  enable_channel,
   enalbe_dashboard,
-  enalbe_project,
+  enable_project,
   isExternal,
   teamMode
 } from "src/pages/team/hooks/useConfig.js";
@@ -446,11 +446,11 @@ onMounted(async() => {
     await getTeamMembers(mm_team.value?.id, page.value, per_page.value);
     let mm_channels = []
     const mm_uid = localStorage.getItem("mmUserId")
-    if(team.value?.team_channels?.length > 0 && enalbe_channel.value){
+    if(team.value?.team_channels?.length > 0 && enable_channel.value){
       const filterMMChannel = team.value?.team_channels.filter(i => i.mm_channel)
       mm_channels.push(...filterMMChannel.map(i => i.mm_channel?.id));
     }
-    if(team.value.projects?.length > 0 && enalbe_project.value && teamMode.value === 'toMany'){
+    if(team.value.projects?.length > 0 && enable_project.value && teamMode.value === 'toMany'){
       // can read
       const filterHaveMM = team.value.projects.filter(i => i.mm_channel && i.auth?.read);
       

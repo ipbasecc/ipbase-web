@@ -55,7 +55,7 @@
                       <TeamMenu v-if="!userStatus_byTeam" :team />
                     </q-btn>
                     <q-space />
-                    <q-btn v-if="enalbe_project || enalbe_channel"
+                    <q-btn v-if="enable_project || enable_channel"
                     dense size="sm" flat round icon="add">
                       <TeamAddmenu />
                     </q-btn>
@@ -83,7 +83,7 @@
                   </q-card-section>
                 </q-card>
               </div>
-              <SideNavigation v-else-if="enalbe_project || enalbe_channel"
+              <SideNavigation v-else-if="enable_project || enable_channel"
                 class="q-space"
                 :width="navDrawerWidth"
                 :class="isExternal ? 'q-pt-sm' : ''"
@@ -102,30 +102,7 @@
           <AffairsList v-if="uiStore.app === 'affairs'" />
           <FollowedList v-if="uiStore.app === 'brand'" />
         </q-drawer>
-        <q-drawer
-          v-model="uiStore.projectRightDrawer"
-          v-if="uiStore.projectRightDrawer && uiStore.projectRightDrawerContent"
-          bordered
-          side="right"
-          :width="420"
-        >
-          <AffairsContainer 
-            v-if="
-              uiStore.projectRightDrawerContent === 'person_todos' &&
-              uiStore.app !== 'affairs'
-            "
-            :todogroups="teamStore.init?.todogroups"
-            :hideToolbar="true"
-            _for="personal"
-            layout="column"
-            class="fit"
-          />
-          <FlagsContainder
-            v-if="uiStore.projectRightDrawerContent === 'flaggeds'"
-            :headerless="true"
-            class="absolute-full"
-          />
-        </q-drawer>
+        <RightPannel />
       </template>
       <q-page-container>
         <q-page>
@@ -157,7 +134,7 @@
             class="absolute-full flex flex-center"
             :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-3'"
           >
-            <WelcomePage v-if="enalbe_project" />
+            <WelcomePage v-if="enable_project" />
             <BgBrand v-else />
           </div>
         </q-page>
@@ -173,7 +150,6 @@
 import {computed, reactive, ref, watch,} from "vue";
 import {useRoute} from "vue-router";
 
-import FlagsContainder from "src/pages/team/chat/FlagsContainder.vue";
 import CreateTeam from "src/pages/team/components/CreateTeam.vue";
 
 import TeamMenu from "src/pages/team/components/TeamMenu.vue";
@@ -181,17 +157,17 @@ import SideNavigation from "src/pages/team/components/SideNavigation.vue";
 import TeamAddmenu from "src/pages/team/components/TeamAddmenu.vue";
 import WelcomePage from "src/pages/team/WelcomePage.vue";
 import TeamList from "src/pages/team/components/TeamList.vue";
-import AffairsContainer from 'src/pages/team/todo/AffairsContainer.vue'
 import {teamStore, uiStore} from "src/hooks/global/useStore.js";
 import {useMouse} from "@vueuse/core";
 import {useQuasar} from "quasar";
 import BgBrand from "src/components/VIewComponents/BgBrand.vue";
-import {enalbe_channel, enalbe_project, isExternal,} from "src/pages/team/hooks/useConfig.js";
+import {enable_channel, enable_project, isExternal,} from "src/pages/team/hooks/useConfig.js";
 import RemovedPic from './components/widgets/icons/RemovedPic.vue'
 import ChatNavigation from './chat/components/ChatNavigation.vue'
 import AffairsList from 'src/pages/team/todo/affairs/AffairsList.vue'
 import FollowedList from 'src/pages/ChannelPage/FollowedList.vue'
 import NavigatorHeader from './components/NavigatorHeader.vue'
+import RightPannel from './components/RightPannel.vue'
 
 // 团队状态是否存在 blocked 或 unconfirmed
 const userStatus_byTeam = computed(() => teamStore.team?.status);

@@ -143,6 +143,7 @@ import {ossStore, teamStore, uiStore} from "src/hooks/global/useStore.js";
 import {isExternal,} from "src/pages/team/hooks/useConfig.js";
 import localforage from "localforage";
 import {useQuasar} from "quasar";
+import {useRouter} from "vue-router";
 
 import AccountMenu from "src/pages/team/components/AccountMenu.vue";
 import WindowToggle from "src/pages/team/components/widgets/icons/WindowToggle.vue";
@@ -151,6 +152,7 @@ import TeamList from "src/pages/team/components/TeamList.vue";
 import TeamNotification from './TeamNotification.vue'
 
 const $q = useQuasar();
+const router = useRouter();
 const emit = defineEmits(['createTeam']);
 const createTeam = () => {
   emit('createTeam');
@@ -212,7 +214,14 @@ watch(
     if (isExternal.value && !uiStore.isFocusMode) {
       console.log("router");
       const _team_id = teamStore.team?.id;
-      await router.push(`/teams/${_team_id}/focus/${teamStore.project?.id}`);
+      if(_team_id){
+        const project_id = teamStore.project?.id;
+        if(project_id){
+          await router.push(`/teams/${_team_id}/external/${project_id}`);
+        } else {
+          await router.push(`/teams/${_team_id}/external/`);
+        }
+      }
     }
   },
   { immediate: true }

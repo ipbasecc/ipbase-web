@@ -134,37 +134,49 @@ const routes = [
               },
             ],
           },
-          {
-            path: "/teams/:team_id/external/:project_id",
-            component: () => import("src/pages/team/ExternalPage.vue"),
-            name: "team_projects_external_page",
-            props: true,
-          },
-          {
-            path: "/teams/:team_id/focus/:project_id",
-            component: () => import("src/pages/team/ExternalPage.vue"),
-            name: "team_projects_focus_page",
-            props: true,
-          },
-          {
-            path: "/teams/:team_id/news",
-            component: () => import("src/pages/team/news/NewsPage.vue"),
-            name: "team_news_page",
-            props: true,
-            children: [
-              {
-                path: "/teams/:team_id/news/:news_id",
-                component: () => import("src/pages/team/news/NewsDetailPage.vue"),
-                name: "team_news_detail_page",
-                props: true,
-              }
-            ]
-          },
         ],
         meta: {
           requireAuth: true,
           title: "团队——易乎APP",
         },
+      },
+      {
+        path: "/teams/:team_id/external",
+        component: () => import("src/pages/team/ExternalPage.vue"),
+        name: "team_projects_external_homepage",
+        props: true,
+      },
+      {
+        path: "/teams/:team_id/external/:project_id",
+        component: () => import("src/pages/team/ExternalPage.vue"),
+        name: "team_projects_external_page",
+        props: true,
+      },
+      {
+        path: "/teams/:team_id/focus",
+        component: () => import("src/pages/team/ExternalPage.vue"),
+        name: "team_projects_focus_homepage",
+        props: true,
+      },
+      {
+        path: "/teams/:team_id/focus/:project_id",
+        component: () => import("src/pages/team/ExternalPage.vue"),
+        name: "team_projects_focus_page",
+        props: true,
+      },
+      {
+        path: "/teams/:team_id/news",
+        component: () => import("src/pages/team/news/NewsPage.vue"),
+        name: "team_news_page",
+        props: true,
+        children: [
+          {
+            path: "/teams/:team_id/news/:news_id",
+            component: () => import("src/pages/team/news/NewsDetailPage.vue"),
+            name: "team_news_detail_page",
+            props: true,
+          }
+        ]
       },
       {
         path: "/affairs",

@@ -725,4 +725,5 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   read_only_mode: 'Nur-Lesen-Modus',
   document_unlock: 'Entsperren',
   document_unlock_tip: 'Bitte stellen Sie sicher: Das Dokument ist aufgrund eines unerwarteten Grundes gesperrt, sonst können andere Personen durch die Bearbeitung des Inhalts Daten verlieren.',
+  no_tasks: 'Keine Aufgaben',
 };

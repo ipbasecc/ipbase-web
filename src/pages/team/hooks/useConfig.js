@@ -9,22 +9,22 @@ const disabled = computed(() => teamStore.team?.config?.disabled);
 const teamMode = computed(() => teamStore.team?.config?.mode);
 const setFalse = computed(() => isExternal.value || userStatus_byTeam.value)
 
-const enalbe_project = computed(() => {
+const enable_project = computed(() => {
   if(setFalse.value || disabled.value?.includes('projects')){
     return false
   } else {
     return true
   }
 })
-const enalbe_channel = computed(() => {
+const enable_channel = computed(() => {
   if(setFalse.value || disabled.value?.includes('channels') || teamMode.value === 'toOne'){
     return false
   } else {
     return true
   }
 })
-const enable_threads = computed(() => enalbe_project.value || enalbe_channel.value)
-const enalbe_dashboard = computed(() => enalbe_project.value)
+const enable_threads = computed(() => enable_project.value || enable_channel.value)
+const enalbe_dashboard = computed(() => enable_project.value)
 
 export {
     allFeathers,
@@ -33,6 +33,6 @@ export {
     teamMode,
     enable_threads,
     enalbe_dashboard,
-    enalbe_project,
-    enalbe_channel,
+    enable_project,
+    enable_channel,
 }
