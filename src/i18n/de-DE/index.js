@@ -215,6 +215,7 @@ export default {
   no_todos: 'Noch keine Aufgaben',
 
   clean_cache: 'Cache leeren',
+  clean: 'Leeren',
   pinned_messages: 'Angeheftete Nachrichten',
   favorited_message: 'Gefavorisierte Nachrichten',
   chose_a_channel: 'Bitte wählen Sie zuerst einen Chat-Kanal',

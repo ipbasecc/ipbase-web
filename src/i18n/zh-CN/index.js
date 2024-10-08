@@ -215,6 +215,7 @@ export default {
   no_todos: '尚无任何待办事项',
 
   clean_cache: '清除缓存',
+  clean: '清除',
   pinned_messages: '置顶的消息',
   favorited_message: '收藏的消息',
   chose_a_channel: '请先选择一个聊天频道',

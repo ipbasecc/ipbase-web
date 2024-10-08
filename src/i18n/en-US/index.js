@@ -215,6 +215,7 @@ export default {
   no_todos: 'threr no todos',
 
   clean_cache: 'clear cache',
+  clean: 'Clear',
   pinned_messages: 'pinned messages',
   favorited_message: 'favorited messages',
   chose_a_channel: 'chose a channel, please',

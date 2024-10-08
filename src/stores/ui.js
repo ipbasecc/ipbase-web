@@ -147,7 +147,7 @@ export default defineStore("ui", {
     createTeam: false,
     edittingDocument: void 0,
     colors: [
-      '#1d1d1d', '#1976D2', '#26A69A', '#9C27B0', '#21BA45', '#C10015', '#31CCEC', '#F2C037'
+      '#1976D2', '#26A69A', '#9C27B0', '#21BA45', '#C10015', '#31CCEC', '#F2C037'
     ]
   }),
   actions: {

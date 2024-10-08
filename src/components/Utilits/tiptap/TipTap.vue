@@ -1,8 +1,7 @@
 <template>
   <div class="fit column no-wrap q-space items-center" :class="toolbar_onBottom ? 'reverse' : ''" ref="tiptap">
     <template v-if="isEditable">
-      <div
-        v-if="show_toolbar && isEditable"
+      <div v-if="show_toolbar && isEditable"
         class="full-width row no-wrap gap-xs items-center justify-start q-py-xs q-px-sm"
         :class="`${square ? '' : 'radius-xs'}${toolbar_onBottom ? 'border-top' : 'border-bottom'}`"
         :style="`height: ${toolbarHeight}px`"
@@ -99,60 +98,7 @@
         :editor="editor"
         :tippy-options="{ duration: 100, maxWidth: 'none', }"
       >
-        <q-card bordered class="q-pa-xs row gap-xs no-wrap">
-          <q-btn flat dense icon="mdi-format-title">
-            <q-menu>
-              <q-list bordered class="radius-sm q-pa-xs tiptap">
-                <template v-for="i in 6" :key="i">
-                  <q-item clickable v-close-popup class="radius-xs no-margin"
-                    @click="editor.chain().focus().toggleHeading({ level: i+1 }).run()">
-                    <q-item-section :class="`text-h${i+1}`">标题</q-item-section>
-                  </q-item>
-                </template>
-              </q-list>
-            </q-menu>
-          </q-btn>
-          <q-btn flat dense icon="mdi-format-color-text">
-            <q-menu>
-              <div class="row gap-xs radius-sm q-pa-xs border">
-                <div class="hover-op-none cursor-pointer radius-xs" style="height: 2rem; width: 2rem;" :style="`background-color: #efefef`"
-                  @click="editor.chain().focus().unsetColor().run()"
-                ></div>
-                <template v-for="i in uiStore.colors" :key="i">
-                  <div class="hover-op-none cursor-pointer radius-xs" style="height: 2rem; width: 2rem;" :style="`background-color: ${i}`"
-                    @click="editor.chain().focus().setColor(i).run()"
-                  ></div>
-                </template>
-              </div>
-            </q-menu>
-          </q-btn>
-          <q-btn flat dense icon="mdi-format-color-fill">
-            <q-menu>
-              <div class="row gap-xs radius-sm q-pa-xs border">
-                <div class="hover-op-none cursor-pointer radius-xs" style="height: 2rem; width: 2rem;" :style="`background-color: #efefef`"
-                  @click="editor.chain().focus().toggleHighlight().run()"
-                ></div>
-                <template v-for="i in uiStore.colors" :key="i">
-                  <div class="hover-op-none cursor-pointer radius-xs" style="height: 2rem; width: 2rem;" :style="`background-color: ${i}`"
-                    @click="editor.chain().focus().toggleHighlight({ color: i }).run()"
-                  ></div>
-                </template>
-              </div>
-            </q-menu>
-          </q-btn>
-          <q-btn flat dense icon="mdi-code-tags" @click="editor.chain().focus().toggleCode().run()" />
-          <q-separator vertical />
-          <q-btn flat dense icon="mdi-format-bold" @click="editor.chain().focus().toggleBold().run()" />
-          <q-btn flat dense icon="mdi-format-italic" @click="editor.chain().focus().toggleItalic().run()" />
-          <q-btn flat dense icon="mdi-format-strikethrough" @click="editor.chain().focus().toggleStrike().run()" />
-          <q-btn flat dense icon="mdi-format-underline" @click="editor.chain().focus().toggleUnderline().run()" />
-          <q-btn flat dense icon="mdi-format-superscript" @click="editor.chain().focus().toggleSuperscript().run()" />
-          <q-btn flat dense icon="mdi-format-subscript" @click="editor.chain().focus().toggleSubscript().run()" />
-          <q-separator vertical />
-          <q-btn flat dense icon="mdi-format-list-bulleted" @click="editor.chain().focus().toggleBulletList().run()" />
-          <q-btn flat dense icon="format_list_numbered" @click="editor.chain().focus().toggleOrderedList().run()" />
-          <q-btn flat dense icon="checklist" @click="editor.chain().focus().toggleTaskList().run()" />
-        </q-card>
+       <BubbleMenuContent :editor />
       </bubble-menu>
       <editor-content
         ref="dropZoneRef"
@@ -232,7 +178,8 @@ import { uiStore, userStore } from "src/hooks/global/useStore";
 import { useFileDialog } from "@vueuse/core";
 import { confirmUpload } from "src/hooks/utilits/useConfirmUpload.js";
 import { useDropZone } from "@vueuse/core";
-import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n';
+import BubbleMenuContent from './BubbleMenu.vue'
 
 const { t } = useI18n();
 const menu = ref();
@@ -555,7 +502,7 @@ const html = computed(() => editor.value && editor.value.getHTML());
 
 const tiptapBlur = () => {
   
-  emit("tiptapClose", html.value);
+  if(!isEditable.value) return;
   const cur = JSON.stringify(json.value);
   const prv = JSON.stringify(tiptapContent.value);
   if (cur === prv) return;
@@ -576,6 +523,7 @@ defineExpose({
 })
 
 const tiptapUpdate = () => {
+  if(!isEditable.value) return;
   if (needRef.value === "html") {
     emit("tiptapUpdate", html.value);
   }
@@ -608,7 +556,9 @@ watch(
 
 onBeforeUnmount(() => {
   emit("tiptapDestroy");
-  tiptapUpdate();
+  if(!isEditable.value) {
+    tiptapUpdate();
+  }
   editor.value && editor.value.destroy();
 });
 

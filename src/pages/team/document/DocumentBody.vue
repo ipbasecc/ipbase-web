@@ -33,7 +33,7 @@ const props = defineProps({
 
 const { project_id, document_id, by_info } = toRefs(props);
 const contentStyle = computed(() => {
-  return $q.screen.gt.xs && !teamStore.card ? 'max-width: 100%;min-width: 64rem;' : 'max-width: 100%;'
+  return $q.screen.gt.xs ? 'max-width: 64rem;' : 'max-width: 100%;'
 })
 
 const document = ref();
