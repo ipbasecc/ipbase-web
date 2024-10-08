@@ -116,7 +116,6 @@ import AppNotification from 'src/pages/team/components/AppNotification.vue'
 import { useSocket } from 'src/pages/team/hooks/useSocket.js'
 
 import { isTokenExpired } from 'src/hooks/utilits.js'
-import { ipcRenderer } from "electron";
 
 getUserData();
 useSocket();
@@ -150,10 +149,9 @@ onBeforeMount(async() => {
   }
   if(isExpired){
     if($q.platform.is.electron){
-      ipcRenderer.send('clearCache', window.location.href);
-    } else {
-      toLogin();
+      window.windowAPI?.logout();
     }
+    toLogin();
   } else {
     uiStore.pageLoaded = true;
     if(!teamStore.init){
@@ -217,10 +215,6 @@ const pullDownRefresh = (done) => {
   done();
   pageRefresh();
 }
-ipcRenderer.on('cacheCleared', () => {
-  // 清除 Local Storage 后跳转到登录页面
-  toLogin();
-});
 
 onMounted(() => {
   shortcut();
