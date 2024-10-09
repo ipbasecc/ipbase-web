@@ -269,7 +269,7 @@ export default {
   view_limit: 'max view times',
   view_limit_rule_tip: 'can not be less than 1',
   date_limit: 'exprire date',
-  chose_share_moudle: 'chose share moudle',
+  chose_share_moudle: 'Allow viewing associated:',
   available_times: 'available times',
   expried_data: 'expried date',
   forever: 'forever',

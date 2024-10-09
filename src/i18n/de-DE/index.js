@@ -269,7 +269,7 @@ export default {
   view_limit: 'Maximale Anzeigezahl',
   view_limit_rule_tip: 'Darf nicht kleiner als 0 sein',
   date_limit: 'Gültigkeitsdauer',
-  chose_share_moudle: 'Bitte wählen Sie das zu teilende Modul',
+  chose_share_moudle: 'Erlauben Sie das Anzeigen von zugeordneten:',
   available_times: 'Verfügbare Male',
   exprid_data: 'Ablaufdatum',
   forever: 'Unbegrenzt',

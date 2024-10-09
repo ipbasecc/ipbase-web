@@ -269,7 +269,7 @@ export default {
   view_limit: '最大查看次数',
   view_limit_rule_tip: '不能小于0',
   date_limit: '有效期',
-  chose_share_moudle: '请选择共享模块',
+  chose_share_moudle: '允许查看关联的：',
   available_times: '可用次数',
   expried_data: '过期时间',
   forever: '永久',

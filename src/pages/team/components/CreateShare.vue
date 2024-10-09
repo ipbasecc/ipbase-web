@@ -158,7 +158,8 @@
       >
         <div class="font-medium">{{ $t('chose_share_moudle') }}</div>
         <div class="row gap-md">
-          <q-checkbox v-for="i in share_code.props" :key="i.val" dense v-model="i.enable" :label="i.label" @update:model-value="setShareEnable(share_code.props)" />
+          <q-checkbox v-for="i in share_code.props" :key="i.val" dense v-model="i.enable" :label="$t(i.label)"
+          @update:model-value="setShareEnable(share_code.props)" />
         </div>
       </q-card-section>
     </template>
