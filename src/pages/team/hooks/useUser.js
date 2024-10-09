@@ -1,5 +1,8 @@
 import localforage from "localforage";
 import { DONT_CLEAN } from "src/config";
+import { useQuasar } from "quasar";
+
+const $q = useQuasar();
 
 /**
  * 
@@ -36,6 +39,9 @@ export async function clearLocalDB(val)  {
         console.error(`Error restoring value for key ${key}:`, err);
       }
     }
+  }
+  if($q.platform.is.electron){
+    window.windowAPI?.logout();
   }
 
   sessionStorage.clear();
