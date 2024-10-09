@@ -139,6 +139,13 @@ const checkNotification = async () => {
     }
   }
 }
+
+// 必须有token时才判断要不要显示初始化用户组件
+const hasToken = computed(() => {
+  let _strapi_jwt = localStorage.getItem('jwt');
+  let _mm_token = localStorage.getItem('mmtoken');
+  return _strapi_jwt && _mm_token
+})
 onBeforeMount(async() => {
   // 检查jwt是否过期
   // 过期后：electron发送清理消息并跳转到登陆，其他直接清理并登陆
@@ -148,9 +155,6 @@ onBeforeMount(async() => {
     isExpired = isTokenExpired(jwt)
   }
   if(isExpired){
-    if($q.platform.is.electron){
-      window.windowAPI?.logout();
-    }
     toLogin();
   } else {
     uiStore.pageLoaded = true;
@@ -168,17 +172,11 @@ onBeforeMount(async() => {
   }
 })
 
+// 开发环境下，关闭 仅electron可用模式
 onMounted(async () => {
   if (process.env.NODE_ENV === 'development') {
     uiStore.only_electron = [];
   }
-})
-
-// 必须有token时才判断要不要显示初始化用户组件
-const hasToken = computed(() => {
-  let _strapi_jwt = localStorage.getItem('jwt');
-  let _mm_token = localStorage.getItem('mmtoken');
-  return _strapi_jwt && _mm_token
 })
 const Initialized = (val) => {
   teamStore.init.initialization = val;
