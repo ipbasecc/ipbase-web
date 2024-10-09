@@ -282,7 +282,7 @@ const { withImageBtb, withAttachBtb } = toRefs(props);
 const isEditable = toRef(props, "editable");
 
 const needRef = toRef(props, "need");
-const { hideScroll } = toRefs(props);
+const { hideScroll, autofocus } = toRefs(props);
 const emit = defineEmits([
   "tiptapReady",
   "tiptapDestroy",
@@ -333,7 +333,7 @@ const init = () => {
   editor.value = new Editor({
     content: tiptapContent.value,
     editable: isEditable.value,
-    autofocus: props.autofocus,
+    autofocus: autofocus.value,
     editorProps: {
       // clipboardTextParser(text, $context) {
       //   // 在这里处理粘贴的文本
@@ -395,13 +395,11 @@ const init = () => {
       tiptapUpdate();
     },
     async onBlur({ editor, event }) {
+      const sourceVal = JSON.stringify(sourceContent.value);
+      const editorVal = JSON.stringify(editor.getJSON());
+      
       const BubbleMenu = document.querySelector('.bubble-menu');
       if(BubbleMenu) return
-      await nextTick();
-      const editorVal = JSON.stringify(editor.getJSON());
-      const sourceVal = JSON.stringify(sourceContent.value);
-      // console.log(editorVal, sourceVal);
-      
       if(editorVal !== sourceVal){        
         tiptapBlur();
       }

@@ -170,6 +170,7 @@
           :show_toolbar="false"
           styleClass="q-px-md q-py-sm"
           :hideScroll="cardRef.expand === 'collapse'"
+          :autofocus="false"
           class="undrag"
           @tiptapBlur="tiptapBlur"
           @tiptapClose="toggleOffEditting()"

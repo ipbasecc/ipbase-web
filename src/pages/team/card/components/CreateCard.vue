@@ -240,7 +240,7 @@ const tipta_source = {
 };
 const tiptapBlur = async (val) => {
   if (loading.value || isCannel.value) return;
-  console.log("tiptapBlur");
+  console.log("tiptapBlur", val);
 
   const isChanged = !isEqual(tipta_source, val);
   if (!isChanged) {
@@ -265,14 +265,14 @@ const emit = defineEmits(["closeCreate"]);
 const createCardFn = async () => {
   if (isCannel.value || loading.value) return;
   loading.value = true;
-  console.log("createCardFn 1");
-  if (name_onlyRef.value) {
+  
+  if (!name_onlyRef.value) {
     const isChanged = !isEqual(tipta_source, params.value.data.jsonContent);
     if (!isChanged || !params.value.data.jsonContent) return;
   } else {
     if (!params.value.data.name) return;
   }
-  console.log("createCardFn 2");
+  
   let res = await createCard(params.value);
   if (res?.data) {
     closeCreate(); // 父组件关闭创建窗口
