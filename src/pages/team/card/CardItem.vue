@@ -156,13 +156,11 @@
           </q-responsive>
 
         </template>
-        <div v-else class="column flex-center q-py-md cursor-pointer" @click="show_cardDetial = true">
-          <q-responsive :ratio="16/5">
-            <div class="rounded-borders flex flex-center">
-              {{ $t('only_electron') }}
-            </div>
-          </q-responsive>
-        </div>
+        <q-responsive v-else :ratio="16/5" @click="show_cardDetial = true">
+          <div class="rounded-borders flex flex-center">
+            {{ $t('only_electron') }}
+          </div>
+        </q-responsive>
       </q-card-section>
       <!-- 任务、备忘 -->
       <q-card-section
