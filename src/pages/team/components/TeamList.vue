@@ -49,7 +49,7 @@
               size="sm"
             >
               <q-img
-                :src="i.team_logo?.url"
+                :src="$resize(i.team_logo?.url, [64, 64])"
                 :ratio="1"
                 spinner-color="primary"
                 spinner-size="22px"
@@ -65,7 +65,12 @@
               >{{ i.display_name.charAt(0) }}</q-avatar
             >
           </q-item-section>
-          <q-item-section>{{ i.display_name }}</q-item-section>
+          <q-item-section>
+            <span class="text-limit">{{ i.display_name }}</span>
+            <q-tooltip>
+              {{ i.display_name }}
+            </q-tooltip>
+          </q-item-section>
         </q-item>
       </template>
     </q-list>

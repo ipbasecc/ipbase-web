@@ -17,6 +17,15 @@ export default boot(({ app }) => {
   app.mixin({
     methods: {
       $pathService,
+      /**
+       * 
+       * @param {String} url 
+       * @param {Object} size //[width, height]
+       * @returns url + resize_param
+       */
+      $resize(url, size) {
+        return `${url}?x-oss-process=image/auto-orient,1/resize,m_fill,w_${size[0]},h_${size[1]}/quality,q_90`;
+      },
     },
   });
 });
