@@ -25,7 +25,7 @@
           ></div>
         </q-item>
         <!-- 事务沙盘-->
-        <q-item v-if="enalbe_dashboard"
+        <q-item v-if="enable_dashboard"
           :class="`${
             teamStore?.mm_channel?.id === 'teams' || route.name === 'teams'
               ? 'border active-listitem'
@@ -356,7 +356,7 @@ import {i18n} from 'src/boot/i18n.js';
 import {
   enable_threads,
   enable_channel,
-  enalbe_dashboard,
+  enable_dashboard,
   enable_project,
   isExternal,
   teamMode

@@ -24,7 +24,7 @@ const enable_channel = computed(() => {
   }
 })
 const enable_threads = computed(() => enable_project.value || enable_channel.value)
-const enalbe_dashboard = computed(() => enable_project.value)
+const enable_dashboard = computed(() => enable_project.value)
 
 export {
     allFeathers,
@@ -32,7 +32,7 @@ export {
     disabled,
     teamMode,
     enable_threads,
-    enalbe_dashboard,
+    enable_dashboard,
     enable_project,
     enable_channel,
 }
