@@ -136,9 +136,8 @@
 </template>
 
 <script setup>
-import {ref, toRefs, computed, watch, onBeforeMount, onMounted, nextTick, watchEffect} from 'vue';
+import {ref, toRefs, computed, onMounted, nextTick, watchEffect} from 'vue';
 import { useRouter, useRoute } from "vue-router";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 import { VueDraggable } from 'vue-draggable-plus'
 import {
   updateCard,

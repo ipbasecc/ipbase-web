@@ -103,7 +103,7 @@
                   <q-item-section side>
                     <ReName />
                   </q-item-section>
-                  <q-item-section>{{ $t('change_version_name') }}</q-item-section>
+                  <q-item-section class="text-no-wrap">{{ $t('change_version_name') }}</q-item-section>
                   <q-item-section side />
                 </q-item>
                 <q-separator
