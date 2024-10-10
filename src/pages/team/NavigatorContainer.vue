@@ -48,10 +48,11 @@
                       flat
                       no-caps
                       padding="xs sm"
-                      :label="team.display_name"
                       icon-right="mdi-chevron-down"
-                      class="no-wrap font-bold-600"
+                      class="no-wrap font-bold-600 q-space"
+                      :style="`max-width: ${navDrawerWidth - 40}px`"
                     >
+                      <span class="text-limit">{{ team.display_name }}</span>
                       <TeamMenu v-if="!userStatus_byTeam" :team />
                     </q-btn>
                     <q-space />

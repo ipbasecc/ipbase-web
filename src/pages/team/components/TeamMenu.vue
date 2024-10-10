@@ -94,6 +94,7 @@
         :v-close-popup="confirmRemove"
         class="radius-xs"
         :class="confirmRemove ? 'bg-negative' : ''"
+        @mouseleave="confirmRemove = false"
       >
         <q-item-section side>
           <q-icon name="close" />
@@ -166,7 +167,7 @@
 </template>
 
 <script setup>
-import { computed, ref, toRefs } from "vue";
+import { computed, ref, toRefs, onMounted } from "vue";
 import TeamInvite from "src/pages/team/components/widgets/TeamInvite.vue";
 import CreateTeam from "src/pages/team/components/CreateTeam.vue";
 import MemberManager from "src/pages/team/settings/MemberManager.vue";
@@ -210,8 +211,11 @@ const confirmLeave = ref(false);
 const leaveTeamFn = async () => {
   if (!confirmLeave.value) {
     confirmLeave.value = true;
-    return;
+  } else {
+    await confirmLeaveTeamFn();
   }
+}
+const confirmLeaveTeamFn = async () => {
   if (leaving.value) return;
   leaving.value = true;
   const res = await leaveTeam(team.value?.id);
