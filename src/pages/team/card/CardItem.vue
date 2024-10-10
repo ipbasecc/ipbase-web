@@ -132,27 +132,36 @@
       </div>
       <!-- 封面 -->
       <q-card-section
-        v-if="cardRef.expand !== 'collapse'"
+        v-if="teamStore.navigation !== 'kanban' || cardRef.expand !== 'collapse'"
         class="q-pa-none scroll-y mini-ui"
         style="max-height: 61vh;padding: 0 1px"
       >
-      <template v-if="!uiStore.only_electron.includes(teamStore.navigation) || $q.platform.is.electron">
-        <FileViewer
-          v-if="media?.url"
-          :key="media.url"
-          :file="quality?.length > 0 ? {
-            id: media.id,
-            ext: media.ext,
-            url: quality[quality.length - 1].url,
-          } : media"
-          :videoOption="videoOption"
-          :by_width="true"
-          mainStyle="no-padding"
-        />
+        <template v-if="!uiStore.only_electron.includes(teamStore.navigation) || $q.platform.is.electron">
+          <FileViewer
+            v-if="media?.url"
+            :key="media.url"
+            :file="quality?.length > 0 ? {
+              id: media.id,
+              ext: media.ext,
+              url: quality[quality.length - 1].url,
+            } : media"
+            :videoOption="videoOption"
+            :by_width="true"
+            mainStyle="no-padding"
+          />
+          <q-responsive v-else-if="alwaysShowCover" :ratio="16/5">
+            <div class="rounded-borders flex flex-center">
+              {{ $t('only_electron') }}
+            </div>
+          </q-responsive>
 
-      </template>
+        </template>
         <div v-else class="column flex-center q-py-md cursor-pointer" @click="show_cardDetial = true">
-          {{ $t('only_electron') }}
+          <q-responsive :ratio="16/5">
+            <div class="rounded-borders flex flex-center">
+              {{ $t('only_electron') }}
+            </div>
+          </q-responsive>
         </div>
       </q-card-section>
       <!-- 任务、备忘 -->
@@ -619,6 +628,10 @@ const props = defineProps({
   },
 });
 const { card: cardRef } = toRefs(props);
+const alwaysShowCover = computed(() => {
+  const _navsAlwaysShowCover = ['classroom', 'segment'];
+  return _navsAlwaysShowCover.includes(teamStore.navigation);
+});
 
 const viewTypeRef = toRef(props, "viewType");
 const isShared = computed(() => uiStore.isShared);

@@ -30,8 +30,7 @@
             teamStore?.mm_channel?.id === 'teams' || route.name === 'teams'
               ? 'border active-listitem'
               : 'border-placeholder op-7'
-          }
-                `"
+          }`"
           class="overflow-hidden radius-xs q-pa-xs hovered-item full-width"
           clickable
           v-ripple

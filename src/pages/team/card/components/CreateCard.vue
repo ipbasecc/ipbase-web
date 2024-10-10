@@ -263,16 +263,19 @@ watch([isBlur, isCannel], () => {
 const emit = defineEmits(["closeCreate"]);
 
 const createCardFn = async () => {
+  console.log('createCardFn 1');
   if (isCannel.value || loading.value) return;
   loading.value = true;
-  
-  if (!name_onlyRef.value) {
+  console.log('createCardFn 2');
+  if (!name_onlyRef.value && !create_with_name.value) {
+    console.log('createCardFn 3');
     const isChanged = !isEqual(tipta_source, params.value.data.jsonContent);
     if (!isChanged || !params.value.data.jsonContent) return;
   } else {
+    console.log('createCardFn 4');
     if (!params.value.data.name) return;
   }
-  
+  console.log('createCardFn 5');
   let res = await createCard(params.value);
   if (res?.data) {
     closeCreate(); // 父组件关闭创建窗口
