@@ -20,7 +20,7 @@
         class="loader"
         :class="{ 'loading': uiStore.axiosStauts === 'pending' }"
       />
-      <span class="radius-xs bg-black border absolute-top-right" style="font-size: 0.6rem">Beta</span>
+      <span class="radius-xs bg-black border absolute-top-right" style="font-size: 0.6rem">Alpha</span>
       <BrandMenu :offset="[0, -24]" />
     </div>
 

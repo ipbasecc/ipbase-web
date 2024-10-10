@@ -136,7 +136,7 @@
         class="q-pa-none scroll-y mini-ui"
         style="max-height: 61vh;padding: 0 1px"
       >
-        <template v-if="!uiStore.only_electron.includes(teamStore.navigation) || $q.platform.is.electron">
+        <template v-if="isElectron()">
           <FileViewer
             v-if="media?.url"
             :key="media.url"
@@ -151,7 +151,7 @@
           />
           <q-responsive v-else-if="alwaysShowCover" :ratio="16/5">
             <div class="rounded-borders flex flex-center">
-              {{ $t('only_electron') }}
+              {{ $t('no_media') }}
             </div>
           </q-responsive>
 
@@ -667,7 +667,14 @@ for (const key in preferences) {
 const toggleOffEditting = () => {
   uiStore.edittingCard = void 0;
 };
-
+const isElectron = computed(() => {
+  return false; // 临时关闭此判断，允许在web端显示，等待Alpha结束
+  if(!uiStore.only_electron.includes(teamStore.navigation) || $q.platform.is.electron){
+    return true
+  } else {
+    return false
+  }
+})
 const cardMembers = computed(() => cardRef.value?.card_members || []);
 const { _isCreator } = useMember();
 const isCreator = computed(() => {

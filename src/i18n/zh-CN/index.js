@@ -120,6 +120,7 @@ export default {
 
   edit: '编辑',
   no_video: '没有视频',
+  no_media: '没有媒体',
   unread: '未读',
   new_tag: '新标签',
   user_have_no_channel: '该用户没有创建自己的频道',

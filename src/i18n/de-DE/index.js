@@ -120,6 +120,7 @@ export default {
 
   edit: 'Bearbeiten',
   no_video: 'Kein Video',
+  no_media: 'Keine Medien',
   unread: 'Ungelesen',
   new_tag: 'Neuer Tag',
   user_have_no_channel: 'Dieser Benutzer hat keinen eigenen Kanal erstellt',
