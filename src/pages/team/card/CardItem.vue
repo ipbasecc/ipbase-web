@@ -136,7 +136,7 @@
         class="q-pa-none scroll-y mini-ui"
         style="max-height: 61vh;padding: 0 1px"
       >
-        <template v-if="isElectron()">
+        <template v-if="!isElectron">
           <FileViewer
             v-if="media?.url"
             :key="media.url"
