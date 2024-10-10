@@ -7,7 +7,7 @@ import { format } from "timeago.js";
 import { computed, toRefs } from "vue";
 const props = defineProps({
   time: {
-    type: Number,
+    type: [Number, String],
     default: NaN,
     require: true,
   },

@@ -477,9 +477,9 @@ const autoSetContent = () => {
   }
 }
 const applyContent = (newContent) => {
-  console.log(editor.value.getJSON(), newContent);
+  // console.log(editor.value.getJSON(), newContent);
   editor.value && editor.value.commands.setContent(newContent);
-  console.log(editor);
+  // console.log(editor);
 }
 onBeforeMount(() => {
   autoSetContent();

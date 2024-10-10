@@ -17,9 +17,15 @@
               spinner-size="2rem"
             >
             </q-img>
-            <q-card-section class="row no-wrap gap-sm q-pa-sm">
-              <div class="font-larger font-bold-600 cursor-pointer q-space" @click="openNews(i)">{{ i.title }}</div>
-              <div v-if="useAuths('modify', ['news']) || useAuths('remove', ['news'])">
+            <q-item class="hovered-item">
+              <q-item-section @click="openNews(i)">
+                <q-item-label class="font-larger font-bold-600 cursor-pointer q-space">{{ i.title }}</q-item-label>
+                <q-item-label caption lines="1" class="op-5">
+                  <TimeAgo :time="i.createdAt" />
+                </q-item-label>
+              </q-item-section>
+              <q-item-section side top class="hover-show transition">
+                <div v-if="useAuths('modify', ['news']) || useAuths('remove', ['news'])">
                 <q-btn flat dense round size="sm" icon="more_vert">
                   <q-menu class="radius-sm shadow-24">
                     <q-list bordered dense class="q-pa-xs radius-sm">
@@ -46,7 +52,8 @@
                   </q-menu>
                 </q-btn>
               </div>
-            </q-card-section>
+              </q-item-section>
+            </q-item>
           </q-card>
         </q-pull-to-refresh>
       </div>
@@ -59,20 +66,23 @@
 </template>
 
 <script setup>
-import { ref,watch, computed } from 'vue'
-import { useRouter } from 'vue-router';
+import { ref,watch, computed, onMounted, watchEffect, nextTick } from 'vue'
 import { getTeamDocuments } from 'src/api/strapi/team.js'
 import { deleteDocument } from 'src/api/strapi/project.js'
 import {teamStore, uiStore} from "src/hooks/global/useStore.js";
 import { useNews } from './useNews.js'
+import TimeAgo from "pages/team/components/widgets/TimeAgo.vue";
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
 
 const { openNews } = useNews();
-const router = useRouter();
 const team_id = computed(() => teamStore.team?.id);
 const page = ref(1);
 const PER_PAGE = 15;
 const hasMore = ref(true);
 const loading = ref(false);
+const news_id = computed(() => route.params.news_id);
 const fetchNews = async () => {
   if(loading.value) return;
     loading.value = true;
@@ -88,6 +98,10 @@ const fetchNews = async () => {
               }
             }
             teamStore.news.push(i);
+            // 用户通过网址直接访问新闻详情页，这里向详情页赋值
+            if(news_id.value && !teamStore.active_news && i.id == Number(news_id.value)){
+              teamStore.active_news = i
+            }
           }
         });
         hasMore.value = data.total > teamStore.news?.length;
@@ -97,6 +111,15 @@ const fetchNews = async () => {
       loading.value = false;
     }
 }
+onMounted(async () => {
+  if(!teamStore?.mm_channel){
+    teamStore.mm_channel = {
+      id: 'news',
+    }
+  }
+})
+watchEffect(async() => {
+});
 watch(team_id, async () => {
   if(team_id.value){
     teamStore.news = [];
