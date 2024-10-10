@@ -7,8 +7,7 @@
         dense
         dense-toggle
         :label="course.name"
-        group="courses"
-        :header-class="current_chapter?.id === course.id ? 'text-primary' : ''"
+        :header-class="expansionHeaderClass(course)"
         @show="current_chapter = course"
       >
         <q-list dense>
@@ -31,6 +30,9 @@
 <script setup>
 import { ref, toRefs, computed } from 'vue'
 import { teamStore } from 'src/hooks/global/useStore';
+import { useQuasar } from 'quasar'
+
+const $q = useQuasar()
 
 const props = defineProps({
   courses: {
@@ -49,6 +51,14 @@ const getOpenStatus = (course) => {
 }
 
 const current_chapter = ref();
+
+const expansionHeaderClass = (course) => {
+  if(current_chapter?.value?.id === course.id){
+    return $q.dark.mode ? 'text-grey-3 bg-grey-10' : 'text-grey-8 bg-grey-3'
+  } else {
+    return $q.dark.mode ? 'text-grey-3' : 'text-grey-8'
+  }
+}
 </script>
 
 <style scoped>

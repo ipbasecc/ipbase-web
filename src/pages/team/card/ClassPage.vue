@@ -52,7 +52,7 @@
         side="left"
         :width="200"
         :breakpoint="500"
-        :class="$q.dark.mode ? 'bg-dark border-right' : 'bg-grey-1 text-grey-10 border-right'"
+        :class="$q.dark.mode ? 'bg-darker border-right' : 'bg-grey-1 text-grey-10 border-right'"
       >
         <CoursesList :courses />
       </q-drawer>
