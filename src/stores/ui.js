@@ -108,7 +108,7 @@ export default defineStore("ui", {
       channels: []
     },
     disableBgEffects: false,
-    suportExts: [
+    supportExts: [
       "jpg", "png", "jpeg", "gif", "bmp", "svg", "webp",
       "mp4", "mov", "avi", "mkv", "flv", "wmv", "webm", "m4v", "mxf", "quicktime", "3gp", "3g2",
       "mp3", "wav", "flac", "aac", "ogg",

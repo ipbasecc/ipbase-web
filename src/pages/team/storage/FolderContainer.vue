@@ -363,7 +363,7 @@ const checkSupport = (file) => {
   // 根据 file 的名称提取出文件扩展
   const extension = file.name.split(".").pop().toLowerCase();
   // 检查文件扩展是否在支持的扩展列表中
-  return uiStore.suportExts.includes(extension);
+  return uiStore.supportExts.includes(extension);
 };
 
 // 定义响应式数据
