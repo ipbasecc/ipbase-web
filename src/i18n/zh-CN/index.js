@@ -729,4 +729,8 @@ export default {
   document_unlock: '解锁',
   document_unlock_tip: '请确保：文档的锁定是因为意外原因导致的，否则修改内容可能导致其它人的编辑内容丢失',
   no_tasks: '暂无待办任务',
+
+  create_notebook: '创建笔记本',
+  create_note: '创建笔记',
+  open_related_course: '打开关联课程',
 };

@@ -10,7 +10,7 @@
             @keyup.esc="new_column_ing = false"
           >
             <template v-slot:append>
-              <q-btn v-if="params.data.name" dense flat size="sm" round icon="add"
+              <q-btn v-if="params.data.name" dense flat size="sm" round icon="mdi-plus"
                 @click="createColumnFn"
               />
               <q-btn v-else dense flat size="sm" round icon="close"
@@ -26,7 +26,7 @@
           @click="new_column_ing = true"
         />
         <div v-else-if="createStyle === 'normal'"
-          :class="`
+          :class="`text-no-wrap
             ${ $q.dark.mode ? 'text-grey-1' : 'text-grey-10' }
             ${layout === 'row' ? 'q-pt-xs q-pb-xl' : ''}
           `"
@@ -90,9 +90,6 @@ const createColumnFn = async () => {
     params.value.data.name = "";
     new_column_ing.value = false;
     loading.value = false;
-    if (_for === 'personal_kanbanTodo' || _for === 'personal_projectKanbanTodo') {
-      teamStore.init.todogroups?.length > 0 ? teamStore.init.todogroups.push(res.data) : teamStore.init.todogroups = [res.data];
-    }
   }
 }
 </script>

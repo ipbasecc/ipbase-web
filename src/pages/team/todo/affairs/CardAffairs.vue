@@ -14,8 +14,7 @@
       @start="dragStart" @sort="dragTodogroup_sort" @end="dragEnd"
     >
       <template v-if="todogroups?.length > 0">
-        <GroupContiner
-          v-for="group in todogroups" :key="group.id"
+        <GroupContiner v-for="group in todogroups" :key="group.id"
           :group="group"
           :card
           :_for
@@ -29,6 +28,7 @@
       <CreateColumn
         :card :_for :layout :dense
         :createStyle="todogroups?.length > 0 ? 'normal' : 'init_create'"
+        @todogroupCreated="todogroupCreated"
       />
     </VueDraggable>
 </template>
@@ -75,15 +75,20 @@ const dragTodogroup_sort = async () => {
     await updateCard(card_id, params);
   }
 };
+const todogroupCreated = (val) => {
+  todogroups.value.push(val);
+}
 const todogroupDeleted = (_id) => {  
   const index = todogroups.value.findIndex((i) => i.id === _id);
-  console.log('todogroupDeleted index', index);
+  // console.log('todogroupDeleted index', index);
   if(index > -1){
     todogroups.value.splice(index, 1);
   }
-  teamStore.init.todogroups = teamStore.init.todogroups.filter(i => i.id !== _id);
-  if(userStore.affairsFilterIDs?.length > 0){
-    userStore.affairsFilterIDs = userStore.affairsFilterIDs.filter(i => i !== _id);
+  if(_for === 'personal_kanbanTodo' || _for === 'personal_projectKanbanTodo' || _for === 'personal'){
+    teamStore.init.todogroups = teamStore.init.todogroups.filter(i => i.id !== _id);
+    if(userStore.affairsFilterIDs?.length > 0){
+      userStore.affairsFilterIDs = userStore.affairsFilterIDs.filter(i => i !== _id);
+    }
   }
 }
 

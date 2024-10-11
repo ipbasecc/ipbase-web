@@ -95,9 +95,10 @@ import { teamStore, uiStore } from 'src/hooks/global/useStore';
 
 const router = useRouter();
 
-const { group, card, } = defineProps({
+const { group, card, _for } = defineProps({
   group: Object,
   card: Object,
+  _for: String
 })
 const emit = defineEmits(['todogroupUpdated', 'cancelUpdate', 'todogroupDeleted']);
 
@@ -106,20 +107,26 @@ const cancelUpdate = () => {
 }
 const update_params = ref({
     data: {
-        name: null,
+        name: group.name,
     }
 });
 const updateTodogroupFn = async () => {
   if (!update_params.value.data.name || update_params.value.data.name === group.name) return;
   if (card) {
-    update_params.value.props = {
-      card_id: card.id,
-    };
+    if(_for === "card"){
+        update_params.value.props = {
+            card_id: card.id,
+        };
+    }
   }
   let { data } = await updateTodogroup(group?.id, update_params.value);
-  if (data && card) {
-    Object.assign(group, data);
-    emit('cancelUpdate');
+  if (data) {
+    if(_for === 'personal_kanbanTodo' || _for === 'personal_projectKanbanTodo' || _for === 'personal'){
+        const index = teamStore.init.todogroups.findIndex(i => i.id === group.id);
+        if(index > -1){
+            teamStore.init.todogroups[index] = data
+        }
+    }
   }
 };
 const rf_delete = ref(false);

@@ -184,6 +184,27 @@ const routes = [
         name: "AffairsPage",
       },
       {
+        path: "/notebooks",
+        component: () => import("pages/team/notebook/NotebookPage.vue"),
+        name: "NotebookPage",
+        children: [
+          {
+            path: "/notebooks/:notebook_id",
+            component: () => import("pages/team/notebook/NotebookDetial.vue"),
+            name: "NotebookDetial",
+            props: true,
+            children: [
+              {
+              path: "/notebooks/:notebook_id/:note_id",
+              component: () => import("src/pages/team/notebook/note/NoteDetial.vue"),
+              name: "NoteDetial",
+              props: true,
+              }
+            ]
+          }
+        ]
+      },
+      {
         path: "/chats",
         component: () => import("src/pages/team/ChatsPage.vue"),
         name: "ChatsPage",

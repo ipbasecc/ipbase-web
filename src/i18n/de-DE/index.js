@@ -727,4 +727,8 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   document_unlock: 'Entsperren',
   document_unlock_tip: 'Bitte stellen Sie sicher: Das Dokument ist aufgrund eines unerwarteten Grundes gesperrt, sonst können andere Personen durch die Bearbeitung des Inhalts Daten verlieren.',
   no_tasks: 'Keine Aufgaben',
+
+  create_notebook: 'Notizbuch erstellen',
+  create_note: 'Notiz erstellen',
+  open_related_course: 'Verwandten Kurs öffnen',
 };

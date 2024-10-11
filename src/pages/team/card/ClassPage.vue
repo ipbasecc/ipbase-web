@@ -1,19 +1,15 @@
 <template>
   <q-card bordered class="fit q-space no-wrap row radius-sm shadow-focus relative-position">
-    <q-layout
-      v-if="teamStore?.card"
-      view="lHh LpR lFf"
-      container
-      class="q-space"
+    <q-layout v-if="teamStore?.card"
+      view="lHh LpR lFf" container class="q-space"
       @mousemove="handleMouseMove" @mouseup="handleMouseUp"
     >
       <q-header class="transparent">
-        <q-bar
-          class="border-bottom"
+        <q-bar class="border-bottom"
           :class="$q.dark.mode ? 'bg-dark text-grey-1' : 'bg-grey-1 text-grey-10'"
           style="height: 2.3rem"
         >
-          <q-btn dense flat icon="menu" @click="toggleLeftDrawer" />
+          <q-btn v-if="uiStore.app === 'teams'" dense flat icon="menu" @click="toggleLeftDrawer" />
           <q-space />
           <q-chip v-if="activeVersion && teamStore.card?.overviews.filter(o => o.media)?.length > 1"
             outline dense flat color="primary" clickable class="q-px-sm no-shadow"
@@ -33,31 +29,23 @@
             </q-menu>
           </q-chip>
           <q-space />
-          <q-btn
-            flat
-            dense
-            size="sm"
-            round
+          <q-btn @click="toggleRightDrawer()"
+            flat dense size="sm" round
             :icon="classExtendIcon()"
             :class="rightDrawerOpen ? '' : 'op-5'"
             :color="rightDrawerOpen ? 'positive' : ''"
-            @click="toggleRightDrawer()"
           />
           <q-separator spaced inset vertical />
           <q-btn dense round flat icon="close" size="sm" v-close-popup />
         </q-bar>
       </q-header>
-      <q-drawer
-        v-model="leftDrawerOpen"
-        side="left"
-        :width="200"
-        :breakpoint="500"
+      <q-drawer v-if="uiStore.app === 'teams'" v-model="leftDrawerOpen"
+        side="left" :width="200" :breakpoint="500"
         :class="$q.dark.mode ? 'bg-darker border-right' : 'bg-grey-1 text-grey-10 border-right'"
       >
         <CoursesList :courses />
       </q-drawer>
-      <q-drawer
-        v-if="rightDrawerOpen"
+      <q-drawer v-if="rightDrawerOpen"
         :key="teamStore.card?.id"
         v-model="rightDrawerOpen"
         side="right"
@@ -67,28 +55,18 @@
         :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-1'"
       >
         <q-bar class="transparent border-bottom" style="height: 36px;">
-          <q-tabs
-            v-model="current_classExtend"
-            inline-label
-            dense
-            no-caps
-            stretch
+          <q-tabs v-model="current_classExtend"
+            inline-label dense no-caps stretch
           >
             <template v-for="i in classExtends" :key="i.id">
               <q-tab :name="i.name" :label="$t(i.label)" class="q-px-sm" />
             </template>
           </q-tabs>
           <q-space />
-
-          <q-btn
-            dense
-            round
-            flat
-            icon="push_pin"
+          <q-btn @click="drawerOverlay = !drawerOverlay"
+            dense round flat icon="push_pin" size="sm"
             :color="drawerOverlay ? '' : 'positive'"
             :class="drawerOverlay ? 'op-5' : ''"
-            size="sm"
-            @click="drawerOverlay = !drawerOverlay"
           />
         </q-bar>
         <div class="q-space relative-position">
@@ -112,15 +90,10 @@
               />
             </KeepAlive>
           </template>
-          <AffairsContainer v-if="current_classExtend === 'class_note'"
-            :todogroups="personal_kanbanTodo"
-            :card="teamStore.card"
-            :hideToolbar="true"
-            _for="personal_kanbanTodo"
-            displayType="note"
-            layout="column"
-            class="fit"
-          />
+          <template v-if="current_classExtend === 'class_note'">
+            <NotebookList v-if="!uiStore.active_note_id" />
+            <NoteDetial :active_note_id="uiStore.active_note_id" v-else />
+          </template>
           <template v-if="current_classExtend === 'class_kanban'">
             <KanbanContainer
               v-if="
@@ -207,8 +180,9 @@ import ThreadContainer from "../chat/ThreadContainer.vue";
 import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 import CoursesList from './components/CoursesList.vue'
 import VersionTogger from './components/VersionTogger.vue'
-import AffairsContainer from 'src/pages/team/todo/AffairsContainer.vue'
 import { useMouse } from '@vueuse/core'
+import NotebookList from '../notebook/NotebookList.vue'
+import NoteDetial from '../notebook/note/NoteDetial.vue'
 
 const props = defineProps({
   card: {
@@ -219,8 +193,11 @@ const props = defineProps({
 const { card } = toRefs(props);
 
 const personal_kanbanTodo = ref([]);
+
 watchEffect(async () => {
+  // console.log('personal_kanbanTodo.value 1', personal_kanbanTodo.value);
   personal_kanbanTodo.value = teamStore.init?.todogroups?.filter(i => i.kanban?.id === teamStore.card?.card_kanban?.id);
+  // console.log('personal_kanbanTodo.value 2', personal_kanbanTodo.value);
 });
 const emit = defineEmits(["closeCardList"]);
 
@@ -309,6 +286,11 @@ const classExtends = ref([
   { id: 4, label: "class_storage", name: "class_storage", icon: "storage" },
   { id: 5, label: "class_note", name: "class_note", icon: "mdi-checkbox-marked-outline" }
 ]);
+watchEffect(() => {
+  if(uiStore.app === 'notebooks'){
+    classExtends.value = classExtends.value.filter(i => i.name !== 'class_note');
+  }
+})
 const splitterModel = ref(260);
 const limits = ref([160, 480]);
 const drawerOverlay = ref(true);

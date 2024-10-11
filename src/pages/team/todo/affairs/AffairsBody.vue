@@ -13,10 +13,11 @@
       <GroupContiner
         :group="group"
         :layout
+        :_for
         @todogroupDeleted="todogroupDeleted"
       />
     </template>
-    <CreateColumn @todogroupCreated=todogroupCreated />
+    <CreateColumn :createStyle="todogroups?.length > 0 ? 'normal' : 'init_create'" @todogroupCreated=todogroupCreated />
   </VueDraggable>
 </template>
 
@@ -30,9 +31,10 @@ import CreateColumn from './CreateColumn.vue'
 import { todogroups } from './useAffairs';
 import { reorderArrayABasedOnArrayB } from 'src/hooks/utilits.js';
 
-const { mainArea, layout } = defineProps({
+const { mainArea, layout, _for } = defineProps({
   mainArea: Object,
   layout: String,
+  _for: String,
 })
 
 const dragging = ref(false);
@@ -59,7 +61,7 @@ const dragTodogroup_sort = async () => {
 }
 const todogroupCreated = (val) => {
   todogroups.value.push(val);
-  teamStore.init.todogroups.push(val);
+  // teamStore.init.todogroups.push(val);
   if(userStore.affairsFilterIDs?.length > 0){
     userStore.affairsFilterIDs.push(val.id);
   }

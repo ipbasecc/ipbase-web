@@ -1,6 +1,6 @@
 <template>
   <NavigatorContainer>
-    <AffairsContainer class="absolute-full" layout='row' />
+    <AffairsContainer class="absolute-full" layout='row' _for='personal' />
   </NavigatorContainer>
 </template>
 

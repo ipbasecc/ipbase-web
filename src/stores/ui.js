@@ -21,6 +21,14 @@ export default defineStore("ui", {
         enable: true,
       },
       {
+        val: "notebooks",
+        label: 'notebooks',
+        icon: "mdi-book-open-page-variant",
+        description: 'app_notebooks_purpose',
+        to: "notebooks",
+        enable: true,
+      },
+      {
         val: "chats",
         label: 'chats',
         icon: "mark_chat_read",
@@ -148,7 +156,9 @@ export default defineStore("ui", {
     edittingDocument: void 0,
     colors: [
       '#1976D2', '#26A69A', '#9C27B0', '#21BA45', '#C10015', '#31CCEC', '#F2C037'
-    ]
+    ],
+    active_note_id: void 0,
+    can_drag_apps: ["teams", "chats", 'affairs', 'brand', 'notebooks'],
   }),
   actions: {
     $reset() {

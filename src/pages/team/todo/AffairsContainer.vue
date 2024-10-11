@@ -2,11 +2,8 @@
   <div class="column no-wrap">
     <q-bar v-if="!hideToolbar" class="transparent border-bottom q-px-xs" style="height: 36px">
       <q-btn-group flat class="border">
-        <q-btn
-          v-for="i in viewModels"
-          :key="i.val"
-          dense
-          padding="4px 10px"
+        <q-btn v-for="i in viewModels" :key="i.val"
+          dense padding="4px 10px"
           :label="$t(i.label)"
           :icon="i.icon"
           :color="viewModel === i.val ? 'primary' : ''"
@@ -26,7 +23,7 @@
         <q-resize-observer @resize="onResize" />
         <template v-if="viewModel === 'kanban'">
             <ScrollBody v-if="layout === 'row'">
-                <AffairsBody v-if="_for === 'personal'" :mainArea :layout />
+                <AffairsBody v-if="_for === 'personal'" :mainArea :layout :_for />
                 <CardAffairs v-else :mainArea :data="todogroups" :card :_for :layout :displayType :dense :uiOptions />
             </ScrollBody>
             <template v-else>

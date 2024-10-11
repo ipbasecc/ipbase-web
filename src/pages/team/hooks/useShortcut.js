@@ -8,7 +8,7 @@ export default function shortcut() {
     e.preventDefault();
     if (uiStore.navigatorDrawer && teamStore.team) {
       uiStore.navigatorDrawer = false;
-    } else if (uiStore.projectLeftDrawer && teamStore.project) {
+    } else if (uiStore.projectLeftDrawer) {
       uiStore.projectLeftDrawer = false;
     } else if (uiStore.newsLeftDrawer) {
       uiStore.newsLeftDrawer = false;
@@ -19,7 +19,7 @@ export default function shortcut() {
   onKeyStroke(["shiftKey", ">"], (e) => {
     if (uiStore.disable_shortcut) return;
     e.preventDefault();
-    if (!uiStore.isFocusMode && !uiStore.projectLeftDrawer && teamStore.project) {
+    if (!uiStore.isFocusMode && !uiStore.projectLeftDrawer) {
       uiStore.projectLeftDrawer = true;
     } else if (!uiStore.newsLeftDrawer) {
       uiStore.newsLeftDrawer = true;

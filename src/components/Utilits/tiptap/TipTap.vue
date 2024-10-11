@@ -292,7 +292,8 @@ const emit = defineEmits([
   "tiptapUpdate",
   "tiptapChanged",
   "mmMsgChange",
-  "ModEnter"
+  "ModEnter",
+  "contentChanged"
 ]);
 
 const tiptap = ref(null);
@@ -349,10 +350,6 @@ const init = () => {
         nested: true,
       }),
       Image,
-      Placeholder.configure({
-        // Use a placeholder:
-        placeholder: t('start_type_tip'),
-      }),
       Markdown,
       Extension,
       Blockquote,
@@ -378,6 +375,14 @@ const init = () => {
       Superscript,
       Subscript,
       CustomStrike,
+      Placeholder.configure({
+        placeholder: ({ node }) => {          
+          if (node.type.name === 'paragraph') {
+            return 'What’s the title?'
+          }
+          return 'Can you add some further context?'
+        },
+      }),
       // slash菜单
       // Commands.configure({
       //   suggestion,
@@ -393,6 +398,7 @@ const init = () => {
     onUpdate: async () => {
       isChanged.value = true;
       tiptapUpdate();
+      emit("contentChanged", isChanged.value);
     },
     async onBlur({ editor, event }) {
       const sourceVal = JSON.stringify(sourceContent.value);

@@ -102,6 +102,7 @@
           <ChatNavigation v-if="uiStore.app === 'chats'" />
           <AffairsList v-if="uiStore.app === 'affairs'" />
           <FollowedList v-if="uiStore.app === 'brand'" />
+          <NotebookList v-if="uiStore.app === 'notebooks'" />
         </q-drawer>
         <RightPannel />
       </template>
@@ -169,6 +170,7 @@ import AffairsList from 'src/pages/team/todo/affairs/AffairsList.vue'
 import FollowedList from 'src/pages/ChannelPage/FollowedList.vue'
 import NavigatorHeader from './components/NavigatorHeader.vue'
 import RightPannel from './components/RightPannel.vue'
+import NotebookList from './notebook/NotebookList.vue'
 
 // 团队状态是否存在 blocked 或 unconfirmed
 const userStatus_byTeam = computed(() => teamStore.team?.status);
@@ -194,8 +196,7 @@ watch(
   { immediate: true, deep: false }
 );
 const haveSubNav = computed(() => {
-  const enabelSubNavApps = ["teams", "chats", 'affairs', 'brand'];
-  return enabelSubNavApps.includes(uiStore.app) && $q.screen.gt.xs;
+  return uiStore.can_drag_apps.includes(uiStore.app) && $q.screen.gt.xs;
 });
 
 const toggleNavDrawer = () => {

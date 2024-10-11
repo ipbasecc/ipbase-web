@@ -55,11 +55,12 @@ import {VueDraggable} from 'vue-draggable-plus'
 import { updateTodogroup } from "src/api/strapi/project.js";
 import { useQuasar } from 'quasar';
 
-const { card, displayType, dense, uiOptions } = defineProps({
+const { card, displayType, dense, uiOptions, _for } = defineProps({
   card: Object,
   displayType: String,
   dense: Boolean,
-  uiOptions: Object
+  uiOptions: Object,
+  _for: String
 })
 
 const $q = useQuasar();
@@ -118,7 +119,7 @@ const cancelCreatetodo = () => {
 }
 const created = (todo) => {
   openCreatetodo.value = false;
-  if(!card){
+  if(_for === 'personal_kanbanTodo' || _for === 'personal_projectKanbanTodo' || _for === 'personal'){
     if(todo.position?.after){
       const insertIndex = modelValue.value.todos.findIndex(i => i.id === todo.position.after);
       if(insertIndex > -1){
