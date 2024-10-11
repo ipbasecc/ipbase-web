@@ -733,4 +733,6 @@ export default {
   create_notebook: '创建笔记本',
   create_note: '创建笔记',
   open_related_course: '打开关联课程',
+  notebooks: '笔记',
+  app_notebooks_purpose: '链接笔记'
 };

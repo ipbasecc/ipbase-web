@@ -731,4 +731,6 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   create_notebook: 'Notizbuch erstellen',
   create_note: 'Notiz erstellen',
   open_related_course: 'Verwandten Kurs öffnen',
+  notebooks: 'Notizen',
+  app_notebooks_purpose: 'Verlinkte Notizen'
 };

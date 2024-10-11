@@ -731,4 +731,6 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   create_notebook: 'Create Notebook',
   create_note: 'Create Note',
   open_related_course: 'Open Related Course',
+  notebooks: 'Notebooks',
+  app_notebooks_purpose: 'Link Notes'
 }

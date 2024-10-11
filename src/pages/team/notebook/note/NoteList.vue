@@ -9,8 +9,11 @@
                 <NoteitemMenu class="hover-show transition" :note="note" @updated="updated" @deleted="deleted" />
             </q-item>
         </template>
-        <q-item v-if="!creating" clickable v-ripple class="radius-xs" @click="creating = true">
-            <q-item-section>
+        <q-item v-if="!creating" clickable v-ripple class="radius-xs hovered-item" @click="creating = true">
+            <q-item-section side>
+                <q-icon name="mdi-plus" />
+            </q-item-section>
+            <q-item-section class="hover-show transition">
                 {{ $t('create_note') }}
             </q-item-section>
         </q-item>
