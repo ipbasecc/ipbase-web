@@ -272,13 +272,17 @@ const props = defineProps({
   for: {
     type: String,
     default: "document",
-  }
+  },
+  contentChanged: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const contentRef = toRef(props, "content");
 const jsonContentRef = toRef(props, "jsonContent");
 const withSaveBtbRef = toRef(props, "withSaveBtb");
-const { withImageBtb, withAttachBtb } = toRefs(props);
+const { withImageBtb, withAttachBtb, contentChanged } = toRefs(props);
 const isEditable = toRef(props, "editable");
 
 const needRef = toRef(props, "need");
@@ -305,7 +309,6 @@ const cleanHtmlHandler = (val) => {
   return val.replace(/<[^>]*>?/gm, "");
 };
 const tiptapReadyCount = ref(0);
-const isChanged = ref(false);
 const init = () => {
 
   const pasteRegex = /(?:^|\s)((?:~)((?:[^~]+))(?:~))/g
@@ -396,9 +399,8 @@ const init = () => {
     },
     // triggered on every change
     onUpdate: async () => {
-      isChanged.value = true;
       tiptapUpdate();
-      emit("contentChanged", isChanged.value);
+      emit("contentChanged");
     },
     async onBlur({ editor, event }) {
       const sourceVal = JSON.stringify(sourceContent.value);
@@ -514,7 +516,7 @@ const html = computed(() => editor.value && editor.value.getHTML());
 
 const tiptapBlur = () => {
   
-  if(!isEditable.value || !isChanged.value) return;
+  if(!isEditable.value || !contentChanged.value) return;
   const cur = JSON.stringify(json.value);
   const prv = JSON.stringify(tiptapContent.value);
   if (cur === prv) return;
@@ -535,7 +537,7 @@ defineExpose({
 })
 
 const tiptapUpdate = () => {
-  if(!isEditable.value || !isChanged.value) return;
+  if(!isEditable.value || !contentChanged.value) return;
   if (needRef.value === "html") {
     emit("tiptapUpdate", html.value);
   }
@@ -568,7 +570,7 @@ watch(
 
 onBeforeUnmount(() => {
   emit("tiptapDestroy");
-  if(!isEditable.value || !isChanged.value) {
+  if(!isEditable.value || !contentChanged.value) {
     tiptapUpdate();
   }
   editor.value && editor.value.destroy();

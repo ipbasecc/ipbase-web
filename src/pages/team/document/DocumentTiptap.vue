@@ -14,8 +14,10 @@
     :withImageBtb="true"
     :contentStyle="contentStyle"
     :autofocus="!islocked"
+    :contentChanged
     _for="document"
     class="items-center"
+    @contentChanged="contentChanged = true"
     @tiptapUpdate="tiptapUpdate"
     @tiptapBlur="tiptapBlur"
     @tiptapReady="tiptapReady()"
@@ -123,8 +125,9 @@ watchEffect(() => {
   withSaveBtb.value = !saving.value
 })
 const jsonContent = ref({});
+const contentChanged = ref(false)
 const updateDocumentFn = async () => {
-  if (!jsonContent.value || saving.value) return;
+  if (!jsonContent.value || saving.value || !contentChanged.value) return;
   saving.value = true;
   uiStore.edittingDocument = document.value.id;
   // const isChanged = !isEqual(document.value.jsonContent, jsonContent.value);
@@ -149,6 +152,7 @@ const updateDocumentFn = async () => {
   let res = await updateDocument(document.value.id, params);
   saving.value = false;
   if (res) {
+    contentChanged.value = false
     if (by_info.value.user_id) {
       process_documentContent_change(res.data);
     }

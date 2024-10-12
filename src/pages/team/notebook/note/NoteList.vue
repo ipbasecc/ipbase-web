@@ -1,12 +1,13 @@
 <template>
-    <q-list class="column no-wrap gap-xs">
+    <q-list dense class="column no-wrap gap-xs">
         <template v-if="notes?.length > 0">
             <q-item clickable v-ripple v-for="note in notes" :key="note.id"
             class="radius-xs hovered-item"
-            :class="teamStore.note?.id === note.id ? 'bg-primary' : ''"
+            :class="teamStore.note?.id === note.id ? 'border active-listitem' : 'border-placeholder op-7'"
+             @click="enterNote(note.id)"
            >
-                <q-item-section @click="enterNote(note.id)">{{ note.title }}</q-item-section>
-                <NoteitemMenu class="hover-show transition" :note="note" @updated="updated" @deleted="deleted" />
+                <q-item-section >{{ note.title }}</q-item-section>
+                <NoteitemMenu class="hover-show transition" :note="note" @updated="updated" @deleted="deleted" @mouseenter="disableEnter = true" @mouseleave="disableEnter = false" />
             </q-item>
         </template>
         <q-item v-if="!creating" clickable v-ripple class="radius-xs hovered-item" @click="creating = true">
@@ -41,7 +42,9 @@ watchEffect(async() => {
 })
 
 const creating = ref(false);
+const disableEnter = ref(false);
 const enterNote = (note_id) => {
+    if(disableEnter.value) return
     if(uiStore.app === 'notebooks'){
         router.push(`/notebooks/${teamStore.notebook.id}/${note_id}`)
     } else {

@@ -9,6 +9,7 @@
       contentStyle="width: 100%; max-width: 46rem;"
       :withSaveBtb="true"
       :withImageBtb="true"
+      :contentChanged
       need="json"
       @tiptapUpdate="tiptapUpdate"
       @tiptapBlur="tiptapBlur"
@@ -79,6 +80,7 @@ const updateDocumentFn = async () => {
   saving.value = false;
   if (data) {
     teamStore.note.jsonContent = data.jsonContent;
+    contentChanged.value = false
   }
 };
 

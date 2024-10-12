@@ -1,22 +1,23 @@
 <template>
-    <div class="absolute-full column no-wrap">
+    <div class="absolute-full column no-wrap" :class="$q.dark.mode ? '' : 'bg-primary-9 text-grey-1'">
         <q-toolbar class="transparent border-bottom">
             <q-btn flat dense :icon="togglerIcon" @click="toggleList()" />
         </q-toolbar>
         <q-scroll-area class="q-space q-pa-xs">
-            <q-list v-if="targetList === 'notebooks'" class="column no-wrap gap-xs">
+            <q-list v-if="targetList === 'notebooks'" dense class="column no-wrap gap-xs">
                 <template v-if="notebooks?.length > 0">
-                <q-item clickable v-ripple v-for="notebook in notebooks" :key="notebook.id"
-                class="radius-xs hovered-item">
-                    <q-item-section @click="enterNotebook(notebook.id)">{{ notebook.name }}</q-item-section>
-                    <NotebookItemMenu class="hover-show transition" :notebook="notebook" @cancelUpdate="cancelUpdateFn" @updated="updated" @deleted="deletedFn" />
-                </q-item>
+                    <q-item clickable v-ripple v-for="notebook in notebooks" :key="notebook.id"
+                    class="radius-xs hovered-item" @click="enterNotebook(notebook.id)">
+                        <q-item-section>{{ notebook.name }}</q-item-section>
+                        <NotebookItemMenu class="hover-show transition" :notebook="notebook" @cancelUpdate="cancelUpdateFn"
+                        @updated="updated" @deleted="deletedFn" @mouseenter="disableEnter = true" @mouseleave="disableEnter = false" />
+                    </q-item>
                 </template>
-                <q-item v-if="!creating" clickable v-ripple class="radius-xs" @click="creating = true">
+                <q-item v-if="!creating" clickable v-ripple class="radius-xs hovered-item" @click="creating = true">
                     <q-item-section side>
                         <q-icon name="mdi-plus" />
                     </q-item-section>
-                    <q-item-section>
+                    <q-item-section class="hover-show transition">
                         {{ $t('create_notebook') }}
                     </q-item-section>
                 </q-item>
@@ -40,6 +41,7 @@ const notebooks = ref([]);
 
 const targetList = ref('notebooks')
 const togglerIcon = ref('mdi-book-open-variant')
+const disableEnter = ref(false)
 watchEffect(() => {
     notebooks.value = teamStore.init.notebooks || [];
     if(teamStore.notebook){
@@ -77,10 +79,11 @@ const toggleList = () => {
     } else {
         targetList.value = 'notebooks'
     }
-    togglerIcon.value = targetList.value === 'notebooks' ? 'mdi-book-open-variant' : 'mdi-book-open-page-variant'
+    togglerIcon.value = targetList.value === 'notebooks' ? 'mdi-note-multiple-outline' : 'mdi-book-open-page-variant'
 }
 const notebook_id = ref()
 const enterNotebook = (id) => {
+    if(disableEnter.value) return
     targetList.value = 'note'
     if(uiStore.app !== 'notebooks') {
         notebook_id.value = id;
