@@ -73,5 +73,9 @@ const deleted = (val) => {
     if(index > -1){
         teamStore.notebook.documents.splice(index, 1);
     }
+    if(teamStore.note?.id === val.removed){
+        teamStore.note = null
+        router.push(`/notebooks/${teamStore.notebook?.id}`)
+    }
 }
 </script>

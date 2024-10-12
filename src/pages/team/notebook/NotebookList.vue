@@ -66,6 +66,10 @@ const updated = (val) => {
 }
 const deletedFn = (val) => {
     notebooks.value = notebooks.value.filter(notebook => notebook.id !== val.id);
+    if(teamStore.notebook?.id === val.id){
+        teamStore.notebook = null;
+        router.push(`/notebooks`)
+    }
 }
 const toggleList = () => {
     if(teamStore.notebook){
