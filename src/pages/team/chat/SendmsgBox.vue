@@ -8,7 +8,9 @@
           need="md"
           ref="tiptapRef"
           for="chat"
+          :contentChanged="isContentChanged"
           @tiptapUpdate="tiptapUpdate"
+          @contentChanged="contentChanged"
           @keyup.ctrl.enter="sendMsg(msg)"
         >
           <template v-slot:more_btn>
@@ -105,7 +107,18 @@ const msg = ref("");
 const parmars = ref({});
 const file_ids = ref([]);
 
-watchEffect(() => {});
+watchEffect(() => {
+  parmars.value = {
+    channel_id: channel_idRef.value,
+    message: msg.value,
+  };
+  if (asThreadRef.value) {
+    parmars.value.root_id = thread_post_idRef.value;
+  }
+  if (file_ids.value?.length > 0) {
+    parmars.value.file_ids = file_ids.value;
+  }
+});
 
 // turndown 将tipta输出的html转换为markdown，与Mattermost的存储格式保持一致
 const turndownService = new TurndownService();
@@ -119,6 +132,11 @@ const tiptapUpdate = async (val) => {
   msg.value = val;
 };
 
+const isContentChanged = ref(false);
+const contentChanged = async (val) => {
+  isContentChanged.value = val;
+};
+
 const tiptapRef = ref();
 
 const emit = defineEmits(["MsgSend"]);
@@ -129,22 +147,13 @@ const sendMsg = async () => {
   if (!msg.value && file_ids.value?.length === 0) {
     return;
   }
-  parmars.value = {
-    channel_id: channel_idRef.value,
-    message: msg.value,
-  };
-  if (asThreadRef.value) {
-    parmars.value.root_id = thread_post_idRef.value;
-  }
-  if (file_ids.value?.length > 0) {
-    parmars.value.file_ids = file_ids.value;
-  }
   const res = await sendPost(parmars.value);
   if (res) {
     msg.value = "";
     tiptapRef.value.clear();
     emit("MsgSend");
     loading.value = false;
+    isContentChanged.value = false;
     files.value = void 0;
     file_ids.value = void 0;
   }

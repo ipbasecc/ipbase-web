@@ -399,8 +399,9 @@ const init = () => {
     },
     // triggered on every change
     onUpdate: async () => {
+      emit("contentChanged", true);
+      await nextTick();
       tiptapUpdate();
-      emit("contentChanged");
     },
     async onBlur({ editor, event }) {
       const sourceVal = JSON.stringify(sourceContent.value);

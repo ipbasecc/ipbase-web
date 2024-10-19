@@ -217,7 +217,7 @@ import {generateUrlParams} from 'src/hooks/utilits.js'
 import MessageItem from "pages/team/chat/MessageItem.vue";
 import {mm_wsStore, mmUser, teamStore, uiStore} from "src/hooks/global/useStore";
 import SendmsgBox from "./SendmsgBox.vue";
-import {getChannelByID} from "src/api/strapi/team";
+// import {getChannelByID} from "src/api/strapi/team";
 import {useFetchAvatar} from "pages/Chat/hooks/useFetchAvatar";
 import MemberManager from "pages/team/settings/MemberManager.vue";
 import DirectMemberInfo from "pages/team/chat/components/DirectMemberInfo.vue";
