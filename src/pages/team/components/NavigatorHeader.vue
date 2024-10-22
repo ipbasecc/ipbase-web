@@ -106,15 +106,17 @@
         <AccountMenu v-else />
         <!--        <q-btn icon="check" dense @click="$q.dark.toggle()" />-->
 
-        <div v-if="isElectron" class="row no-wrap items-center gap-sm q-pl-md">
+        <q-separator spaced inset vertical />
+        <section v-if="isElectron" class="full-height row no-wrap items-center">
           <q-btn
-            dense
-            round
+            dense square
             size="sm"
             icon="mdi-window-minimize"
+            class="full-height"
+            padding="0 12px"
             @click="minimize()"
           />
-          <q-btn dense round size="sm" @click="toggleMaximize()">
+          <q-btn dense square size="sm" class="full-height" padding="0 12px" @click="toggleMaximize()">
             <WindowToggle
               v-if="isMax"
               :color="$q.dark.mode ? 'white' : 'black'"
@@ -122,16 +124,17 @@
             <q-icon v-else name="mdi-window-maximize" />
           </q-btn>
           <q-btn
-            dense
-            round
+            dense square
             size="sm"
             icon="close"
+            class="full-height"
+            padding="0 12px"
             @mouseenter="hoverClose = true"
             :class="hoverClose ? 'bg-negative' : ''"
             @mouseleave="hoverClose = false"
             @click="closeApp()"
           />
-        </div>
+        </section>
       </q-bar>
       <TeamNotification v-if="uiStore.showTeamNotification && teamStore.team?.notification" />
     </q-header>
