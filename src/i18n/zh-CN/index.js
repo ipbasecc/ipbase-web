@@ -52,6 +52,7 @@ export default {
   cancel_quick_create_card_props: "正在创建卡片",
 
   save: "保存",
+  saving: "保存中...",
   connect_refused_header: "连接被拒绝！",
   connect_refused_caption: "服务器可能离线，请返回登陆页面，修改服务器地址后重新连接",
   connect_refused_btn_label: "重新登陆",

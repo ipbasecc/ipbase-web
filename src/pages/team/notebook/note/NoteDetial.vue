@@ -24,11 +24,8 @@
             <q-btn dense flat no-caps :label="$t('open_related_course')" @click="showCourseDialog = true" />
           </template>
           <div v-if="saving" class="row no-wrap gap-sm flex-center q-px-md">
-              <q-spinner
-              size="1em"
-              :thickness="2"
-              />
-              保存中...
+              <q-spinner size="1em" :thickness="2" />
+              {{ $t('saving') }}
           </div>
         </template>
     </TipTap>

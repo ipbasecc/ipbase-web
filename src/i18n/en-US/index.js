@@ -52,6 +52,7 @@ export default {
   cancel_quick_create_card_props: "Creating card",
 
   save: "Save",
+  saving: "Saving...",
   connect_refused_header: "Connection refused!",
   connect_refused_caption: "The server may be offline. Please return to the login page, modify the server URL, and reconnect.",
   connect_refused_btn_label: "Relogin",
