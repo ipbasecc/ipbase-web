@@ -7,6 +7,8 @@
     need="json"
     styleClass="q-pa-md"
     class="fit"
+    :contentChanged
+    @contentChanged="contentChanged = true"
     @tiptapBlur="updateDocumentFn"
     @click.stop="content_channging = true"
     @keydown.esc="content_channging = false"
@@ -31,6 +33,7 @@ const props = defineProps({
 
 const current_documentRef = toRef(props, "current_document");
 const content_channging = ref(false);
+const contentChanged = ref(false);
 
 const emit = defineEmits(["documentChanged"]);
 const updateDocumentFn = async (val) => {
@@ -46,6 +49,7 @@ const updateDocumentFn = async (val) => {
     },
   };
   await updateDocument(current_documentRef.value.id, params);
+  contentChanged.value = false;
 };
 </script>
 

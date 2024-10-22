@@ -60,6 +60,8 @@
                         :jsonContent="teamStore.edit_news?.jsonContent"
                         :withSaveBtb="true"
                         need="json"
+                        :contentChanged
+                        @contentChanged="contentChanged = true"
                         @tiptapBlur="updateNews"
                     />
                 </template>
@@ -137,6 +139,7 @@ const newsCreated = (val) => {
     toggleAddnews();
 }
 
+const contentChanged = ref(false);
 const updateNews = async (jsonVal) => {
     if(!jsonVal || jsonVal === teamStore.edit_news.jsonContent) return;
     teamStore.edit_news.jsonContent = jsonVal;
@@ -150,6 +153,7 @@ const updateNews = async (jsonVal) => {
     const { data } = await updateDocument(news_id, params);
     if(data){
         teamStore.news.find(i => i.id === data.id).jsonContent = data.jsonContent;
+        contentChanged.value = false;
     }
 }
 // const newsUpdated = (val) => {

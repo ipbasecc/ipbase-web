@@ -44,6 +44,8 @@
             :square="true"
             need="json"
             :toolbarHeight="34"
+            :contentChanged
+            @contentChanged="contentChanged = true"
             @tiptapBlur="tiptapBlur"
             @tiptapUpdate="tiptapUpdate"
             @keyup.ctrl.enter="createCardFn"
@@ -238,6 +240,7 @@ const tipta_source = {
     },
   ],
 };
+const contentChanged = ref(false);
 const tiptapBlur = async (val) => {
   if (loading.value || isCannel.value) return;
   console.log("tiptapBlur", val);
@@ -249,6 +252,7 @@ const tiptapBlur = async (val) => {
 
   params.value.data.jsonContent = val;
   isBlur.value = true;
+  contentChanged.value = false;
 };
 watch([isBlur, isCannel], () => {
   if (isBlur.value) {

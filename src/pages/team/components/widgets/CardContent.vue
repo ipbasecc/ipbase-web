@@ -13,6 +13,8 @@
     "
     contentStyle="height: 100%"
     :styleClass="teamStore.shareInfo ? 'q-px-sm' : 'q-pa-md'"
+    :contentChanged
+    @contentChanged="contentChanged = true"
     @tiptapBlur="tiptapBlur"
   />
 </template>
@@ -56,6 +58,7 @@ watchEffect(() => {
 });
 
 const change_ing = ref(false);
+const contentChanged = ref(false);
 const tiptapBlur = async (val) => {
   const isChanged = !isEqual(jsonContent.value, val);
   // console.log('isChanged', isChanged);
@@ -63,6 +66,7 @@ const tiptapBlur = async (val) => {
   if (change_ing.value) {
     setTimeout(() => {
       tiptapBlur(val);
+      contentChanged.value = false;
     }, 1500);
   } else {
     await update_jsonContent(val);

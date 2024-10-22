@@ -175,10 +175,12 @@
           :need="'json'"
           :square="true"
           :show_toolbar="false"
+          class="undrag"
           styleClass="q-px-md q-py-sm"
           :hideScroll="cardRef.expand === 'collapse'"
           :autofocus="false"
-          class="undrag"
+          :contentChanged
+          @contentChanged="contentChanged = true"
           @tiptapBlur="tiptapBlur"
           @tiptapClose="toggleOffEditting()"
           @click.stop="clickContent(useAuths('jsonContent', ['card']))"
@@ -805,6 +807,7 @@ const content_channging = computed(
   () => uiStore.edittingCard === cardRef.value?.id
 );
 const loading = ref(false);
+const contentChanged = ref(false);
 const tiptapBlur = async (val) => {
   if (loading.value) return;
   const isChanged = !isEqual(cardRef.value.jsonContent, val);
@@ -818,6 +821,7 @@ const tiptapBlur = async (val) => {
   const res = await updateJsonContent(cardRef.value, val);
   if (res) {
     loading.value = false;
+    contentChanged.value = false;
   }
 };
 

@@ -9,11 +9,11 @@
       contentStyle="width: 100%; max-width: 46rem;"
       :withSaveBtb="true"
       :withImageBtb="true"
-      :contentChanged
       need="json"
+      :contentChanged
+      @contentChanged="contentChanged = true"
       @tiptapUpdate="tiptapUpdate"
       @tiptapBlur="tiptapBlur"
-      @contentChanged="contentChanged = true"
     >
       <template v-slot:left-btn>
         <q-btn flat dense size=sm icon="mdi-chevron-left" @click="uiStore.active_note_id = void 0" />

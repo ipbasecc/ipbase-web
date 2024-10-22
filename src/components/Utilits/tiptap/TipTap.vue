@@ -399,7 +399,7 @@ const init = () => {
     },
     // triggered on every change
     onUpdate: async () => {
-      emit("contentChanged", true);
+      emit("contentChanged", true);uploadFiles, tiptapBlur
       await nextTick();
       tiptapUpdate();
     },
@@ -420,20 +420,6 @@ const init = () => {
   });
 };
 
-const menu = ref();
-const uiConfig = ref({
-  withSaveBtb: withSaveBtbRef.value,
-  withImageBtb: withImageBtb.value,
-  withAttachBtb: withAttachBtb.value,
-})
-watchEffect(() => {
-  uiConfig.value.withSaveBtb = withSaveBtbRef.value;
-  if(editor.value){
-    const { editorMenu } = useTiptap(editor, uiConfig.value);
-    menu.value = editorMenu;
-  }
-})
-
 const sourceContent = ref();
 const setSourceContent = () => {
   sourceContent.value = editor.value && editor.value.getJSON();
@@ -448,6 +434,20 @@ const { files, open, reset, onChange } = useFileDialog({
   accept: "image/*", // Set to accept only image files
   directory: false, // Select directories instead of files if set true
 });
+
+const menu = ref();
+const uiConfig = ref({
+  withSaveBtb: withSaveBtbRef.value,
+  withImageBtb: withImageBtb.value,
+  withAttachBtb: withAttachBtb.value,
+})
+watchEffect(() => {
+  uiConfig.value.withSaveBtb = withSaveBtbRef.value;
+  if(editor.value){
+    const { editorMenu } = useTiptap(editor, uiConfig.value, uploadFiles, tiptapBlur);
+    menu.value = editorMenu;
+  }
+})
 
 const me = computed(() => userStore.me);
 const batchInserImage = async (_files) => {
@@ -516,6 +516,7 @@ const json = computed(() => editor.value && editor.value.getJSON());
 const html = computed(() => editor.value && editor.value.getHTML());
 
 const tiptapBlur = () => {
+  console.log('tiptapBlur');
   
   if(!isEditable.value || !contentChanged.value) return;
   const cur = JSON.stringify(json.value);

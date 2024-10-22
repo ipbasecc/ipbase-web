@@ -27,6 +27,8 @@
                 :square="true"
                 :withSaveBtb="true"
                 :withImageBtb="true"
+                :contentChanged
+                @contentChanged="contentChanged = true"
                 contentStyle="max-height: unset"
                 @tiptapBlur="tiptapBlur"
             />
@@ -70,10 +72,12 @@ onMounted(() => {
         team.value.introduce = DEFAULT_INTRODUCE;
     }
 })
+const contentChanged = ref(false);
 const update = async () => {  
   const res = await updateTeam(team.value?.id, params.value);
   if (res?.data) {
     teamStore.team.introduce = res.data.introduce;
+    contentChanged.value = false
   }
 };
 

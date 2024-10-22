@@ -73,6 +73,8 @@
         :toolbarHeight="34"
         styleClass="q-py-sm q-px-md"
         class="undrag"
+        :contentChanged
+        @contentChanged="contentChanged = true"
         @tiptapBlur="tiptapBlur"
         @click.stop="content_channging = true"
         @keydown.esc="content_channging = false"
@@ -574,6 +576,7 @@ const _setScore = async (val) => {
 
 const content_channging = ref(false);
 const loading = ref(false);
+const contentChanged = ref(false);
 const tiptapBlur = async (val) => {
   if (loading.value) return;
   const isChanged = !isEqual(cardRef.value.jsonContent, val);
@@ -588,6 +591,7 @@ const tiptapBlur = async (val) => {
   const res = await updateJsonContent(cardRef.value, val);
   if (res) {
     loading.value = true;
+    contentChanged.value = true;
   }
 };
 
