@@ -19,7 +19,7 @@
             </q-toolbar-title>
             <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
-        <q-card-section v-if="team" class="q-space q-pa-none">
+        <q-card-section v-if="team" class="q-space q-pa-none overflow-hidden">
             <TipTap
                 :editable="useAuths('modify', ['team'])"
                 :jsonContent="team.introduce"
