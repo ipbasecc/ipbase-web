@@ -43,16 +43,13 @@
               <q-item v-if="!isExternal" class="q-px-sm">
                 <q-item-section>
                   <div class="row no-wrap items-center">
-                    <q-btn
-                      dense
-                      flat
-                      no-caps
-                      padding="xs sm"
+                    <q-btn dense flat no-caps
+                      padding="xs sm" align="left"
                       icon-right="mdi-chevron-down"
-                      class="no-wrap font-bold-600 q-space"
+                      class="no-wrap font-bold-600"
                       :style="`max-width: ${navDrawerWidth - 40}px`"
                     >
-                      <span class="text-limit">{{ team.display_name }}</span>
+                      <span class="text-limit q-pr-sm">{{ team.display_name }}</span>
                       <TeamMenu v-if="!userStatus_byTeam" :team />
                     </q-btn>
                     <q-space />
