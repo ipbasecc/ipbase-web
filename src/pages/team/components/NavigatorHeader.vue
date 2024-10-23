@@ -1,7 +1,7 @@
 <template>
     <q-header>
       <q-bar
-        class="border-bottom"
+        class="border-bottom q-pr-none"
         :class="`${
           $q.dark.mode ? 'bg-darker text-white' : 'bg-primary-dark text-grey-1'
         } ${$q.platform.is.electron ? 'q-electron-drag' : ''}`"
@@ -104,37 +104,27 @@
           </q-btn>
         </template>
         <AccountMenu v-else />
-        <!--        <q-btn icon="check" dense @click="$q.dark.toggle()" />-->
-
-        <q-separator spaced inset vertical />
-        <section v-if="isElectron" class="full-height row no-wrap items-center">
-          <q-btn
-            dense square
-            size="sm"
-            icon="mdi-window-minimize"
-            class="full-height"
-            padding="0 12px"
-            @click="minimize()"
-          />
-          <q-btn dense square size="sm" class="full-height" padding="0 12px" @click="toggleMaximize()">
-            <WindowToggle
-              v-if="isMax"
-              :color="$q.dark.mode ? 'white' : 'black'"
+        <!-- <q-btn icon="check" dense @click="$q.dark.toggle()" /> -->
+        <template  v-if="isElectron">
+          <q-separator spaced inset vertical />
+          <section class="full-height row no-wrap items-center q-pa-xs">
+            <q-btn dense square size="sm" icon="mdi-window-minimize"
+              class="full-height" padding="0 12px"
+              @click="minimize()"
             />
-            <q-icon v-else name="mdi-window-maximize" />
-          </q-btn>
-          <q-btn
-            dense square
-            size="sm"
-            icon="close"
-            class="full-height"
-            padding="0 12px"
-            @mouseenter="hoverClose = true"
-            :class="hoverClose ? 'bg-negative' : ''"
-            @mouseleave="hoverClose = false"
-            @click="closeApp()"
-          />
-        </section>
+            <q-btn dense square size="sm" class="full-height" padding="0 12px" @click="toggleMaximize()">
+              <WindowToggle v-if="isMax" :color="$q.dark.mode ? 'white' : 'black'" />
+              <q-icon v-else name="mdi-window-maximize" />
+            </q-btn>
+            <q-btn dense square size="sm" icon="close"
+              class="full-height" padding="0 12px"
+              @mouseenter="hoverClose = true"
+              :class="hoverClose ? 'bg-negative' : ''"
+              @mouseleave="hoverClose = false"
+              @click="closeApp()"
+            />
+          </section>
+        </template>
       </q-bar>
       <TeamNotification v-if="uiStore.showTeamNotification && teamStore.team?.notification" />
     </q-header>

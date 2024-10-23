@@ -30,6 +30,8 @@ export async function $server() {
   const _cacheInfo = await localforage.getItem('serverInfo');
   if(_cacheInfo) {
     oldVersion = _cacheInfo.version.name;
+    serverInfo.value = _cacheInfo;
+    return _cacheInfo //临时提前，后续需要补充版本升级方案
   }
   let _url = await localforage.getItem('backend_url') || process.env.BACKEND_URI;
   const server = await fetchServerInfo(_url);
