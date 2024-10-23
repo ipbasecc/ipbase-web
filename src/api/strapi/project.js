@@ -65,12 +65,12 @@ export async function getProjects(page, per_page) {
     return error;
   }
 }
-export async function getCards(team_id, page, per_page) {
-  if (!page || !per_page) {
+export async function getCards(team_id, start, limit) {
+  if (start < 0 || limit < 0) {
     Notify.create($t('need_pagination_info'));
     return;
   }
-  let options = `?team_id=${team_id}&page=${page}&per_page=${per_page}`;
+  let options = `?team_id=${team_id}&start=${start}&limit=${limit}`;
   try {
     const res = await api.get(`cards${options}`);
     if (res) {
@@ -81,12 +81,12 @@ export async function getCards(team_id, page, per_page) {
     return error;
   }
 }
-export async function getFollowedCards(team_id, page, per_page) {
-  if (!page || !per_page) {
+export async function getFollowedCards(team_id, start, limit) {
+  if (start < 0 || limit < 0) {
     Notify.create($t('need_pagination_info'));
     return;
   }
-  let options = `?team_id=${team_id}&page=${page}&per_page=${per_page}`;
+  let options = `?team_id=${team_id}&start=${start}&limit=${limit}`;
   try {
     const res = await api.get(`follows${options}`);
     if (res) {

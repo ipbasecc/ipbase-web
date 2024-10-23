@@ -1,6 +1,5 @@
 <template>
-  <div
-    v-if="axisData"
+  <div v-if="axisData"
     v-bind="$attrs"
     class="absolute-full"
     ref="quadrantChartRef"
@@ -91,24 +90,26 @@ const onResize = (size) => {
 let axisData = ref([]);
 
 const cards = ref([]);
-const cards_page = ref(1);
-const cards_per_page = ref(5);
+const start = ref(0);
+const limit = ref(5);
 const total_cards = ref();
-const cards_hasMore = computed(
-  () =>
-    total_cards.value &&
-    total_cards.value > cards_page.value * cards_per_page.value
-);
+const cards_hasMore = computed(() => total_cards.value < cards.value?.length);
+
 const team_id = computed(() => teamStore.team?.id);
 const getCardsFn = async () => {
   const process = (_data) => {
     total_cards.value = _data.total;
     cards.value = [...cards.value, ..._data.cards];
   };
+
+  const _cache = await localforage.getItem("cards");
+  if(_cache){
+    process(_cache)
+  }
   const res = await getCards(
     team_id.value,
-    cards_page.value,
-    cards_per_page.value
+    start.value,
+    limit.value
   );
   if (res?.data) {
     process(res?.data);
@@ -116,29 +117,28 @@ const getCardsFn = async () => {
   }
 };
 const getMoreCardsFn = async () => {
-  cards_page.value++;
+  start.value = cards.value?.length || 0;
   await getCardsFn(teamStore.init?.id);
 };
 
 const followedCards = ref([]);
-const followedCards_page = ref(1);
-const followedCards_per_page = ref(5);
+const followedCards_start = ref(0);
+const followedCards_limit = ref(5);
 const total_followedCards = ref();
-const followedCards_hasMore = computed(
-  () =>
-    total_followedCards.value &&
-    total_followedCards.value >
-      followedCards_page.value * followedCards_per_page.value
-);
+const followedCards_hasMore = computed(() => total_followedCards.value < followedCards.value?.length);
 const getFollowedCardsCardsFn = async () => {
   const process = (_data) => {
     total_followedCards.value = _data.total;
     followedCards.value = [...followedCards.value, ..._data.cards];
   };
+  const _cache = await localforage.getItem('followedCards');
+  if(_cache){
+    process(_cache)
+  }
   const res = await getFollowedCards(
     team_id.value,
-    followedCards_page.value,
-    followedCards_per_page.value
+    followedCards_start.value,
+    followedCards_limit.value
   );
   if (res?.data) {
     process(res?.data);
@@ -149,7 +149,7 @@ const getFollowedCardsCardsFn = async () => {
   }
 };
 const getMoreFollowedCardsFn = async () => {
-  followedCards_page.value++;
+  followedCards_start.value = followedCards.value?.length || 0;
   await getFollowedCardsCardsFn(teamStore.init?.id);
 };
 
