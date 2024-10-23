@@ -1,10 +1,10 @@
 <template>
     <q-header>
       <q-bar
-        class="border-bottom q-pr-none"
+        class="border-bottom"
         :class="`${
           $q.dark.mode ? 'bg-darker text-white' : 'bg-primary-dark text-grey-1'
-        } ${$q.platform.is.electron ? 'q-electron-drag' : ''}`"
+        } ${$q.platform.is.electron ? 'q-electron-drag q-pr-none' : ''}`"
         style="height: 2.5rem"
       >
         <div v-if="uiStore.app === 'teams'"

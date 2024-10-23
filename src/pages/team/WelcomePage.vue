@@ -102,7 +102,8 @@ const getCardsFn = async () => {
     cards.value = [...cards.value, ..._data.cards];
   };
 
-  const _cache = await localforage.getItem("cards");
+  const cacheKey = `team_${team_id.value}cards`
+  const _cache = await localforage.getItem(cacheKey);
   if(_cache){
     process(_cache)
   }
@@ -113,7 +114,7 @@ const getCardsFn = async () => {
   );
   if (res?.data) {
     process(res?.data);
-    await localforage.setItem("cards", JSON.parse(JSON.stringify(res?.data)));
+    await localforage.setItem(cacheKey, JSON.parse(JSON.stringify(res?.data)));
   }
 };
 const getMoreCardsFn = async () => {
@@ -131,7 +132,8 @@ const getFollowedCardsCardsFn = async () => {
     total_followedCards.value = _data.total;
     followedCards.value = [...followedCards.value, ..._data.cards];
   };
-  const _cache = await localforage.getItem('followedCards');
+  const cacheKey = `team_${team_id.value}followedCards`
+  const _cache = await localforage.getItem(cacheKey);
   if(_cache){
     process(_cache)
   }
@@ -143,7 +145,7 @@ const getFollowedCardsCardsFn = async () => {
   if (res?.data) {
     process(res?.data);
     await localforage.setItem(
-      "followedCards",
+      cacheKey,
       JSON.parse(JSON.stringify(res?.data))
     );
   }
