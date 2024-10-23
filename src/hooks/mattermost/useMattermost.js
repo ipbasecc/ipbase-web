@@ -135,11 +135,13 @@ const channelIndex = ref()
 const findIndex = (_mm_channel_id) => {
   const index = uiStore.unreads?.channels.findIndex(
     i => i.channel_id === _mm_channel_id)
-  if(index !== -1){
+  if(index > -1){
     channelIndex.value = index
   }
 }
 const updateUnreadCount = (_mm_channel_id) => {
+  // console.log('updateUnreadCount');
+  
   if(!channelIndex.value) return
   const unreadCount = uiStore.unreads.channels[channelIndex.value].msg_count;
   uiStore.unreads.channels[channelIndex.value].msg_count = 0;

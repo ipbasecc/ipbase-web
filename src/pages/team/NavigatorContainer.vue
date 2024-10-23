@@ -105,8 +105,7 @@
       </template>
       <q-page-container>
         <q-page>
-          <div
-            v-if="haveSubNav"
+          <div v-if="haveSubNav"
             class="absolute-left full-height hover-col-resize flex flex-center toggle-container z-max"
             :class="dragWidth ? 'bg-primary ' : ''"
             :style="dragWidth ? 'width: 3px' : 'width: 10px'"
@@ -128,8 +127,7 @@
             </q-icon>
           </div>
           <slot />
-          <div
-            v-if="showBrand && $q.screen.gt.xs"
+          <div v-if="showBrand && $q.screen.gt.xs"
             class="absolute-full flex flex-center"
             :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-3'"
           >

@@ -47,17 +47,14 @@
           ></div>
         </q-item>
         <!-- 团队资讯 -->
-        <q-item
+        <q-item @click="enterSubApp('news')"
           :class="`${
             teamStore?.mm_channel?.id === 'news'
               ? 'border active-listitem'
               : 'border-placeholder op-7'
-          }
-                `"
+          }`"
           class="overflow-hidden radius-xs q-pa-xs hovered-item full-width"
-          clickable
-          v-ripple
-          @click="enterSubApp('news')"
+          clickable v-ripple
         >
           <q-item-section side class="q-pr-sm">
             <q-icon name="mdi-newspaper" :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`" />
@@ -125,10 +122,7 @@
               </q-icon>
             </q-item-section>
             <q-item-section @mouseenter="deEnter = false" class="overflow-hidden">
-              <div class="row no-wrap gap-xs q-pr-xs">
-                <span class="row flex-center">{{ initedChannelByMM.includes(i.name) ? $t(i.name) : i.name }}</span>
-                <q-space />
-              </div>
+              <span>{{ initedChannelByMM.includes(i.name) ? $t(i.name) : i.name }}</span>
               <q-tooltip class="transparent radius-sm">
                 <q-card bordered :class="$q.dark.mode ? 'text-grey-1' : 'text-grey-10'">
                   <q-card-section class="q-py-sm q-px-md">
@@ -140,64 +134,9 @@
                 </q-card>
               </q-tooltip>
             </q-item-section>
-            <q-item-section
-              side
-              class="hover-show transition no-padding"
-              @mouseenter="deEnter = true"
-              @mouseleave="deEnter = false"
-            >
-              <q-btn flat round dense size="sm" icon="more_vert">
-                <q-menu class="radius-sm" @show="heiglight = i.id" @hide="heiglight = void 0">
-                  <q-list
-                    dense
-                    bordered
-                    style="min-width: 12rem"
-                    class="radius-sm q-pa-xs"
-                    :class="
-                      $q.dark.mode
-                        ? 'bg-grey-10 text-grey-1'
-                        : 'bg-white text-grey-10'
-                    "
-                  >
-                    <q-item
-                      clickable v-ripple v-close-popup
-                      class="radius-xs"
-                      @click="editChannel(i)">
-                      <q-item-section side>
-                        <q-icon name="tune" size=sm />
-                      </q-item-section>
-                      <q-item-section>
-                        {{ $t('edit_channel') }}
-                      </q-item-section>
-                    </q-item>
-                    <q-separator spaced />
-                    <q-item
-                      clickable
-                      v-close-popup
-                      class="radius-xs"
-                      @click="inviteFn(i)"
-                    >
-                      <q-item-section side>
-                        <q-icon name="group_add" size=sm />
-                      </q-item-section>
-                      <q-item-section>{{ $t('invite_member') }}</q-item-section>
-                    </q-item>
-                    <q-separator spaced />
-                    <q-item
-                      clickable
-                      v-close-popup
-                      class="radius-xs"
-                      @click="deleteChannelFn(i)"
-                    >
-                      <q-item-section side>
-                        <q-icon name="remove" size=sm />
-                      </q-item-section>
-                      <q-item-section>{{ $t('remove_channel') }}</q-item-section>
-                    </q-item>
-                  </q-list>
-                </q-menu>
-              </q-btn>
-            </q-item-section>
+            <q-popup-proxy context-menu>
+              <ChannelMenu :channel="i" />
+            </q-popup-proxy>
             <div
               v-if="teamStore?.mm_channel?.id === i.mm_channel?.id"
               class="bg-primary absolute-left"
@@ -320,14 +259,8 @@
         </q-item>
       </template>
     </q-list>
-    <q-dialog v-model="invite" persistent>
-      <TeamInvite :byInfo />
-    </q-dialog>
     <q-dialog v-model="openCreateProject" persistent>
       <CreateProject @projectCreated="projectCreated" />
-    </q-dialog>
-    <q-dialog v-model="openEditChannel" persistent>
-      <EditChannel :channel="editTarget" />
     </q-dialog>
   </q-scroll-area>
 </template>
@@ -336,20 +269,17 @@
 import {computed, ref, watch, watchEffect, nextTick, onMounted} from 'vue';
 import {useRoute, useRouter} from "vue-router";
 import {fetch_userPreferences, getTeamMembers,} from "src/hooks/mattermost/useMattermost.js";
-import {getChannelByID, getTeamByID, removeChannel, updateChannel} from 'src/api/strapi/team.js'
+import {getChannelByID, updateChannel} from 'src/api/strapi/team.js'
 import {
-  deleteChannel as deleteMmChannel,
   getChannelByID as getMmChannelByID,
   getChannelUnreads,
   getUnreadsForTeam
 } from "src/api/mattermost.js";
 import {getProjectNav} from "./SideNavigation.js";
-import TeamInvite from "./widgets/TeamInvite.vue";
 import UnreadBlock from 'src/pages/team/components/widgets/UnreadBlock.vue'
 import CreateProject from "./CreateProject.vue";
-import EditChannel from "./EditChannel.vue";
 import {createChannel} from "src/pages/team/hooks/useCreateChannel.js";
-import {debounce, useQuasar} from "quasar";
+import {useQuasar} from "quasar";
 import {teamStore, uiStore} from 'src/hooks/global/useStore.js';
 import {i18n} from 'src/boot/i18n.js';
 import {
@@ -361,6 +291,7 @@ import {
   teamMode
 } from "src/pages/team/hooks/useConfig.js";
 import useProject from 'src/hooks/project/useProject.js';
+import ChannelMenu from './ChannelMenu.vue'
 
 const props = defineProps({
   width: {
@@ -376,7 +307,6 @@ const router = useRouter();
 const route = useRoute();
 const heiglight = ref();
 
-const byInfo = ref();
 const initedChannelByMM = ['town-square', 'off-topic']
 
 const routeName = computed(() => route.name);
@@ -523,8 +453,6 @@ const enterChannel = async (channel) => {
     $q.notify($t('channel_not_join_or_was_blocked'));
     return;
   }
-  teamStore.project = void 0;
-  teamStore.project_id = void 0;
   const _id = channel?.mm_channel?.id;
   if (!_id) return;
   teamStore.$reset_project();
@@ -538,13 +466,6 @@ const enterChannel = async (channel) => {
   if(!$q.screen.gt.xs){
     teamStore.navigatorDrawer = false
   }
-};
-
-const openEditChannel = ref(false);
-const editTarget = ref();
-const editChannel = (channel) => {
-  editTarget.value = channel;
-  openEditChannel.value = true;
 };
 
 const loading = ref(false);
@@ -586,33 +507,6 @@ const updateChannelFn = async (channel) => {
     );
     params.value.data.name = "";
   }
-};
-
-const deleteChannelFn = async (i) => {
-  const curChannelId = route.params?.channel_id;
-  const _mm_channel_id = i.mm_channel.id;
-  if (!_mm_channel_id) return;
-  const removeMmChannel = await deleteMmChannel(_mm_channel_id);
-  if (removeMmChannel) {
-    const res = await removeChannel(i.id);
-    if (res?.data) {
-      teamStore.team.team_channels = teamStore.team.team_channels.filter(
-        (i) => i.id !== res.data.channel_id
-      );
-      if(curChannelId === _mm_channel_id){
-        await router.push("/teams");
-      }
-    }
-  }
-};
-
-const invite = ref(false);
-const inviteFn = (channel) => {
-  invite.value = true;
-  byInfo.value = {
-    by: "channel",
-    channel_id: channel.id,
-  };
 };
 
 const emptyProject = () => {

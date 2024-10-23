@@ -14,6 +14,7 @@
           :color="$q.dark.mode ? 'white' : 'black'"
           @click="backList()"
       />
+      <!-- {{ teamStore.channel?.name }} -->
       <q-space />
       <q-btn
           v-if="strapi_channel_id"
