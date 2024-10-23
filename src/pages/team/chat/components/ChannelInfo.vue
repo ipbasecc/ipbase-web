@@ -11,7 +11,7 @@
             @tiptapBlur="updateChannelInfo"
         />
         <template v-if="useAuths('modify', ['channel']) || useAuths('invite_uris', ['channel']) || useAuths('delete', ['channel'])">
-            <q-separator spaced inset />
+            <q-separator spaced inset class="op-5" />
             <ChannelMenu :channel="teamStore.channel" layout="grid" />
         </template>
     </div>
