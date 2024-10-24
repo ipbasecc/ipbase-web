@@ -107,7 +107,7 @@
         <!-- <q-btn icon="check" dense @click="$q.dark.toggle()" /> -->
         <template  v-if="isElectron">
           <q-separator spaced inset vertical />
-          <section class="full-height row no-wrap items-center q-pa-xs">
+          <section class="full-height row no-wrap items-center" style="padding: 2px">
             <q-btn dense square size="sm" icon="mdi-window-minimize"
               class="full-height" padding="0 12px"
               @click="minimize()"

@@ -27,7 +27,7 @@
       @dblclick="tryEnter"
     >
       <!-- 卡片顶部 -->
-      <div
+      <div v-if="cardRef.type !== 'note'"
         class="row no-wrap items-center q-pa-xs gap-xs border-bottom hovered-item q-px-xs"
         :class="`
           ${
@@ -215,89 +215,87 @@
       <!-- 卡片底部 -->
       <q-card-section
         v-show="cardRef?.expand !== 'collapse'"
-        class="row no-wrap gap-sm items-center q-px-sm q-py-xs border-top hovered-item"
+        class="row no-wrap gap-sm items-center q-px-sm q-py-xs hovered-item"
         :class="`
           ${isDilgMode ? 'dragBar' : ''}
+          ${cardRef.type !== 'note' ? 'border-top' : 'border-bottom'}
         `"
+        :style="cardRef.type === 'note' ? 'order: -1' : ''"
         @dblclick="_enterCard(useAuths('read', ['card']))"
       >
-        <ThreadBtn
-          v-if="
-            cardRef.mm_thread && !teamStore.card && isDilgMode && !isShared
-          "
-          :thread="cardRef.mm_thread"
-          :show="true"
-          @enterThread="enterThread"
-        />
-        <template
-          v-if="show_byPreference?.follow?.value && !isExternal && !isShared"
-        >
-          <overlappingAvatar
-            v-if="cardRef.followed_bies?.length > 0"
-            :members="cardRef.followed_bies"
-            :size="22"
-            @click="unfollowCard(cardRef)"
-            class="undrag cursor-pointer"
+        <template v-if="cardRef.type !== 'note'">
+          <ThreadBtn
+            v-if="
+              cardRef.mm_thread && !teamStore.card && isDilgMode && !isShared
+            "
+            :thread="cardRef.mm_thread"
+            :show="true"
+            @enterThread="enterThread"
+          />
+          <template
+            v-if="show_byPreference?.follow?.value && !isExternal && !isShared"
           >
-            <template #tooltip>
+            <overlappingAvatar
+              v-if="cardRef.followed_bies?.length > 0"
+              :members="cardRef.followed_bies"
+              :size="22"
+              @click="unfollowCard(cardRef)"
+              class="undrag cursor-pointer"
+            >
+              <template #tooltip>
+                <q-tooltip :class="$q.dark.mode ? 'bg-black' : 'bg-white'">
+                  {{ $t('followed_card') }}
+                </q-tooltip>
+              </template>
+            </overlappingAvatar>
+            <q-btn
+              v-if="
+                !is_followed && useAuths('followed_bies', ['card'])
+              "
+              dense
+              round
+              flat
+              size="sm"
+              class="hover-show transition undrag cursor-pointer"
+              icon="bookmark_add"
+              @click="followCard(cardRef)"
+            >
               <q-tooltip :class="$q.dark.mode ? 'bg-black' : 'bg-white'">
                 {{ $t('followed_card') }}
               </q-tooltip>
-            </template>
-          </overlappingAvatar>
-          <q-btn
-            v-if="
-              !is_followed && useAuths('followed_bies', ['card'])
-            "
-            dense
-            round
-            flat
-            size="sm"
-            class="hover-show transition undrag cursor-pointer"
-            icon="bookmark_add"
-            @click="followCard(cardRef)"
+            </q-btn>
+          </template>
+          <q-space />
+          <div v-if="!isDilgMode"
+            class="undrag flex flex-center hover-show transition"
           >
-            <q-tooltip :class="$q.dark.mode ? 'bg-black' : 'bg-white'">
-              {{ $t('followed_card') }}
-            </q-tooltip>
-          </q-btn>
-        </template>
-        <q-space />
-        <div v-if="!isDilgMode"
-          class="undrag flex flex-center hover-show transition"
-        >
-          <q-btn
-            flat
-            dense
-            size="sm"
-            round
-            icon="mdi-import"
-            class="op-5"
-            @click="_enterCard(useAuths('read', ['card']))"
-          />
-        </div>
-        <div v-else
-          class="undrag flex flex-center hover-show transition"
-        >
-          <q-btn
-            flat
-            dense
-            size="sm"
-            round
-            icon="fullscreen"
-            class="op-5"
-            @click="_enterCard(useAuths('read', ['card']))"
-          >
-            <q-tooltip
-              :class="
-                $q.dark.mode ? 'bg-black text-grey-1' : 'bg-white text-grey-10'
-              "
-              class="border"
+            <q-btn
+              flat
+              dense
+              size="sm"
+              round
+              icon="mdi-import"
+              class="op-5"
+              @click="_enterCard(useAuths('read', ['card']))"
+            />
+          </div>
+          <div v-else class="undrag flex flex-center hover-show transition">
+            <q-btn flat dense size="sm" round
+              icon="fullscreen" class="op-5"
+              @click="_enterCard(useAuths('read', ['card']))"
             >
-              {{ $t('view_detial') }}
-            </q-tooltip>
-          </q-btn>
-        </div>
+              <q-tooltip
+                :class="
+                  $q.dark.mode ? 'bg-black text-grey-1' : 'bg-white text-grey-10'
+                "
+                class="border"
+              >
+                {{ $t('view_detial') }}
+              </q-tooltip>
+            </q-btn>
+          </div>
+        </template>
+        <q-space v-else />
         <q-icon v-if="!isShared || (isShared && color_marker)"
           :name="
             color_marker && show_byPreference?.color_marker?.value
@@ -313,7 +311,7 @@
         >
           <q-menu v-if="!isShared" class="shadow-24">
             <q-list bordered dense class="radius-sm q-pa-xs text-no-wrap">
-              <template v-if="!content_channging">
+              <template v-if="!content_channging && cardRef.type !== 'note'">
                 <q-item class="radius-xs">
                   <q-item-section>
                     <div class="row no-wrap gap-sm">
@@ -381,7 +379,7 @@
                   useAuths('color_marker', ['card'])
                 "
               >
-                <q-separator spaced class="op-5" />
+                <q-separator v-if="cardRef.type !== 'note'" spaced class="op-5" />
                 <q-item>
                   <q-item-section>
                     <div class="row no-wrap items-center gap-sm">
@@ -839,6 +837,7 @@ watchEffect(() => {
   }
 })
 const _enterCard = async (auth) => {
+  if(cardRef.value?.type === 'note') return
   if (!isDilgMode.value) {
     teamStore.card = cardRef.value;
     teamStore.activedCard_id = cardRef.value?.id;

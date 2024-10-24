@@ -26,7 +26,7 @@
       />
     </template>
     <CreateColumn
-      :card :_for :layout :dense="todogroups?.length > 0"
+      :card :_for :layout :dense="todogroups?.length > 0 && !teamStore.card"
       :createStyle="todogroups?.length > 0 ? 'normal' : 'init_create'"
       @todogroupCreated="todogroupCreated"
     />
