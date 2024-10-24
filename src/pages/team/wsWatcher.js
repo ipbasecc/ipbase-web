@@ -159,7 +159,7 @@ export default function useWatcher() {
             groups: board.groups?.map(group => {
               return {
                 ...group,
-                kanbans: group.kanbans?.map(async(kanban) => {
+                kanbans: group.kanbans?.map((kanban) => {
                   if (kanban.id === Number(data.id)) {
                     return data;
                   } else {

@@ -30,29 +30,19 @@
                   {{ element.name === 'Initial_Group' ? $t(element.name) : element.name }}
                 </span>
                 <div class="absolute-right z-fab q-mr-xs q-py-sm hover-show transition undrag">
-                  <q-btn
-                    v-if="
+                  <q-btn v-if="
                       useAuths('name', ['group']) ||
                       useAuths('delete', ['group'])
                     "
-                    dense
-                    flat
-                    size="sm"
-                    round
-                    icon="more_vert"
+                    dense flat size="sm" round icon="more_vert"
                   >
                     <q-menu class="radius-sm shadow-24">
                       <q-list dense bordered class="radius-sm q-pa-xs">
-                        <q-item
-                          v-if="useAuths('name', ['group'])"
+                        <q-item v-if="useAuths('name', ['group'])"
                           class="no-padding"
                         >
-                          <q-input
-                            v-model="element.name"
-                            dense
-                            square
-                            filled
-                            type="text"
+                          <q-input v-model="element.name"
+                            dense square filled type="text"
                             class="radius-xs overflow-hidden"
                             @keyup.enter="
                               updateGroupFn(element.id, element, 'rename')
@@ -62,16 +52,8 @@
                             "
                           >
                             <template v-slot:append>
-                              <q-btn
-                                flat
-                                round
-                                dense
-                                size="sm"
-                                icon="check"
-                                v-close-popup
-                                @click="
-                                  updateGroupFn(element.id, element, 'rename')
-                                "
+                              <q-btn flat round dense size="sm" icon="check" v-close-popup
+                                @click="updateGroupFn(element.id, element, 'rename')"
                               />
                             </template>
                           </q-input>

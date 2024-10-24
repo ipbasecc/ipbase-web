@@ -141,7 +141,7 @@ const toggleEmoji = (i) => {
   str = str.replace(emojiRegex, "");
 
   if (i !== "") {
-    params.value.data.title = i + " " + str;
+    params.value.data.title = i + " " + str.trimStart();
   } else {
     params.value.data.title = str;
   }
