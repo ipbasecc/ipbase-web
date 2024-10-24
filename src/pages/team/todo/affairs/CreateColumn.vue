@@ -20,7 +20,7 @@
             </template>
           </q-input>
         </div>
-        <q-btn v-else-if="dense"
+        <q-btn v-else-if="dense && !card"
           dense rounded :padding="show_label ? 'xs md' : 'xs'" flat icon="mdi-plus" size="sm" class="undrag hover-show transition"
           :label="show_label ? _for === 'personal_kanbanTodo' ? $t('create_person_todogroup') : $t('create_todogroup') : ''"
           @mouseenter="show_label = true" @mouseleave="show_label = false"
