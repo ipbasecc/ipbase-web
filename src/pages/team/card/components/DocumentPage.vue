@@ -42,9 +42,9 @@ const updateDocumentFn = async (val) => {
   
   if (!val) return;
   let params = {
-    project_id: teamStore.project.id,
-    document_id: current_documentRef.value.id,
-    card_id: teamStore.card.id,
+    project_id: teamStore.project?.id,
+    document_id: current_documentRef.value?.id,
+    card_id: teamStore.card?.id,
     data: {
       jsonContent: val,
     },
@@ -54,15 +54,19 @@ const updateDocumentFn = async (val) => {
 };
 
 const count = ref(8);
-let intervalId = null;
 const autoSave = (val) => {
-  // console.log('tiptapUpdate autoSave');
-
-  intervalId = setInterval(async () => {
+  let intervalId = setInterval(async () => {
     count.value--;
-    if (count.value === 0) {
+    // console.log('tiptapUpdate autoSave', count.value);
+    if (count.value < 1) {
+      // console.log('Clearing interval');
       clearInterval(intervalId);
-      await updateDocumentFn(val);
+      try {
+        await updateDocumentFn(val);
+        // console.log('Document updated');
+      } catch (error) {
+        console.error('Error updating document', error);
+      }
     }
   }, 1000);
 };

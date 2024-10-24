@@ -162,16 +162,20 @@ const updateDocumentFn = async () => {
   }
 };
 
-const count = ref(15);
-let intervalId = null;
-const autoSave = () => {
-  // console.log('tiptapUpdate autoSave');
-
-  intervalId = setInterval(async () => {
+const count = ref(8);
+const autoSave = (val) => {
+  let intervalId = setInterval(async () => {
     count.value--;
-    if (count.value === 0) {
+    // console.log('tiptapUpdate autoSave', count.value);
+    if (count.value < 1) {
+      // console.log('Clearing interval');
       clearInterval(intervalId);
-      await updateDocumentFn();
+      try {
+        await updateDocumentFn();
+        // console.log('Document updated');
+      } catch (error) {
+        console.error('Error updating document', error);
+      }
     }
   }, 1000);
 };
@@ -179,7 +183,7 @@ const autoSave = () => {
 const tiptapUpdate = (val) => {
   // console.log('tiptapUpdate', val);
   jsonContent.value = val;
-  count.value = 15;
+  count.value = 8;
   autoSave();
 };
 const tiptapBlur = async (val) => {
