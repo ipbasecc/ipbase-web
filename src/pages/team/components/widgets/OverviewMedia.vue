@@ -13,7 +13,7 @@
     </q-responsive>
     <template v-if="activeVersion?.media">
       <template v-if="activeVersion.media.url &&
-          filetype(activeVersion?.media.url) === 'image'
+          filetype(activeVersion?.media.url, activeVersion?.media.ext) === 'image'
         "
       >
         <q-img

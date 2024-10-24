@@ -1,6 +1,5 @@
 <template>
-  <q-card
-    bordered
+  <q-card bordered
     class="column no-wrap"
     :class="`
       ${$q.dark.mode ? 'bg-grey-10 text-grey-1' : 'bg-grey-1 text-grey-10'}
@@ -8,29 +7,19 @@
     `"
     :style="!$q.screen.gt.xs ? 'height: 100vh' : ''"
   >
-    <q-bar
-      dark
-      class="transparent border-bottom"
-      style="height: 2.3rem"
-    >
+    <q-bar class="transparent border-bottom" style="height: 2.3rem">
       <span class="font-medium">{{ $t('project_settings') }}</span>
       <q-space />
       <q-btn dense flat round icon="close" v-close-popup />
     </q-bar>
     <div class="q-space row no-wrap overflow-hidden">
-      <q-list
-        class="border-right q-pa-sm"
-        style="min-width: 9rem"
+      <q-list class="border-right q-pa-sm" style="min-width: 9rem"
         :class="
           $q.dark.mode ? 'bg-grey-10 text-grey-1' : 'bg-grey-1 text-grey-10'
         "
       >
-        <q-item
-          v-for="i in setting_items"
-          :key="i.val"
-          clickable
-          v-ripple
-          dense
+        <q-item v-for="i in setting_items" :key="i.val"
+          clickable v-ripple dense
           class="radius-xs q-mt-xs"
           :class="
             settingforRef === i.val

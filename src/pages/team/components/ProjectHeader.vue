@@ -30,7 +30,7 @@
           transition-hide="slide-up"
           :maximized="!$q.screen.gt.xs"
         >
-          <div v-if="$q.screen.gt.xs" class="q-pt-xl" style="min-width: 61dvw; min-height: 560px">
+          <div v-if="$q.screen.gt.xs" class="q-pt-xl" style="min-width: 61dvw; min-height: 61dvh">
             <ProjectSetting />
           </div>
           <ProjectSetting v-else />

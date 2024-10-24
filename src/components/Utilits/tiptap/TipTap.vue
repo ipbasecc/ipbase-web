@@ -516,7 +516,7 @@ const json = computed(() => editor.value && editor.value.getJSON());
 const html = computed(() => editor.value && editor.value.getHTML());
 
 const tiptapBlur = () => {
-  console.log('tiptapBlur');
+  // console.log('tiptapBlur');
   
   if(!isEditable.value || !contentChanged.value) return;
   const cur = JSON.stringify(json.value);
