@@ -9,7 +9,12 @@ export default function useSocket(cardRef){
       if(teamStore.team?.id === Number(team_id)){
         if(val.value.event === 'todogroup:created'){
           if(cardRef.value.id === Number(card_id)){
-            cardRef.value.todogroups.push(data);
+            const index = cardRef.value.todogroups.findIndex(i => i.id === data.id)
+            if(index > -1){
+              cardRef.value.todogroups[index] = data
+            } else {
+              cardRef.value.todogroups.push(data);
+            }
           }
         }
         if(val.value.event === 'todogroup:updated'){

@@ -1,6 +1,6 @@
 <template>
     <div :style="layout === 'row' ? `flex: 0 0 ${uiStore.columnWidth}px` : ''"
-    :class="layout === 'row' ? '' : new_column_ing ? 'fit' : 'fit flex flex-center'">
+    :class="layout === 'row' ? '' : new_column_ing || dense ? 'fit' : 'fit flex flex-center'">
         <div v-if="new_column_ing" class="q-pa-xs radius-xs border"
           :class="layout === 'row' ? 'q-mb-xl' : 'full-width'"
         >

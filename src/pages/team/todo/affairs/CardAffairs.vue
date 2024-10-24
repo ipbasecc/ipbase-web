@@ -26,7 +26,7 @@
       />
     </template>
     <CreateColumn
-      :card :_for :layout
+      :card :_for :layout :dense="todogroups?.length > 0"
       :createStyle="todogroups?.length > 0 ? 'normal' : 'init_create'"
       @todogroupCreated="todogroupCreated"
     />
@@ -76,7 +76,9 @@ const dragTodogroup_sort = async () => {
   }
 };
 const todogroupCreated = (val) => {
-  todogroups.value.push(val);
+  if (!card) {
+    todogroups.value.push(val);
+  }
 }
 const todogroupDeleted = (_id) => {  
   const index = todogroups.value.findIndex((i) => i.id === _id);
