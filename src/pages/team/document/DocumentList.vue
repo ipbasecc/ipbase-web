@@ -289,9 +289,7 @@ const create = async () => {
 
   let res = await createDocument(params);
   if (res?.data) {
-    if (by_info.value?.by === "user") {
-      process_createdData(res.data);
-    }
+    process_createdData(res.data);
     creating.value = false;
     loading.value = false;
     createDocument_title.value = null;

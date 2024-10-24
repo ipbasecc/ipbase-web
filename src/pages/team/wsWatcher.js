@@ -569,16 +569,25 @@ export default function useWatcher() {
       }
       
       if(val.value.event === 'document:created'){
+        console.log('document:created', val.value);
         if(teamStore.project?.id === Number(project_id)){
           if(teamStore.project.project_documents?.length > 0){
-            teamStore.project.project_documents.push(data);
+            const index = teamStore.project.project_documents.findIndex(i => i.id === data.id)
+            if(index === -1){
+              teamStore.project.project_documents.push(data);
+            }
           } else {
             teamStore.project.project_documents = [data]
           }
         }
         if(teamStore.card?.id === Number(card_id)){
+          console.log('document:created');
+          
           if(teamStore.card.card_documents?.length > 0){
-            teamStore.card.card_documents.push(data);
+            const index = teamStore.card.card_documents.findIndex(i => i.id === data.id)
+            if(index === -1){
+              teamStore.card.card_documents.push(data);
+            }
           } else {
             teamStore.card.card_documents = [data]
           }
