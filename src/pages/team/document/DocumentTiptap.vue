@@ -8,7 +8,7 @@
       (by_info.user_id ||
         useAuths('jsonContent', ['card', 'card_document']))
     "
-    :need="'json'"
+    need="json"
     :square="true"
     :withSaveBtb="!saving"
     :withImageBtb="true"
@@ -164,7 +164,9 @@ const updateDocumentFn = async () => {
 
 const count = ref(15);
 let intervalId = null;
-const startCountdown = () => {
+const autoSave = () => {
+  // console.log('tiptapUpdate autoSave');
+
   intervalId = setInterval(async () => {
     count.value--;
     if (count.value === 0) {
@@ -174,13 +176,14 @@ const startCountdown = () => {
   }, 1000);
 };
 
-const tiptapUpdate = async (val) => {
+const tiptapUpdate = (val) => {
+  // console.log('tiptapUpdate', val);
   jsonContent.value = val;
   count.value = 15;
-  startCountdown();
+  autoSave();
 };
 const tiptapBlur = async (val) => {
-  console.log("tiptapBlur", val);
+  // console.log("tiptapBlur", val);
   jsonContent.value = val;
   await updateDocumentFn();
 };

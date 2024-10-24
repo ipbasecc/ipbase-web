@@ -399,7 +399,9 @@ const init = () => {
     },
     // triggered on every change
     onUpdate: async () => {
-      emit("contentChanged", true);uploadFiles, tiptapBlur
+      // console.log('triggered onUpdate');
+      
+      emit("contentChanged", true);
       await nextTick();
       tiptapUpdate();
     },
@@ -539,6 +541,8 @@ defineExpose({
 })
 
 const tiptapUpdate = () => {
+  // console.log('contentChanged.value', contentChanged.value, isEditable.value);
+  
   if(!isEditable.value || !contentChanged.value) return;
   if (needRef.value === "html") {
     emit("tiptapUpdate", html.value);

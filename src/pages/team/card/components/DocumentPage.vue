@@ -10,6 +10,7 @@
     :contentChanged
     @contentChanged="contentChanged = true"
     @tiptapBlur="updateDocumentFn"
+    @tiptapUpdate="tiptapUpdate"
     @click.stop="content_channging = true"
     @keydown.esc="content_channging = false"
   />
@@ -37,7 +38,7 @@ const contentChanged = ref(false);
 
 const emit = defineEmits(["documentChanged"]);
 const updateDocumentFn = async (val) => {
-  console.log('updateDocumentFn',val);
+  // console.log('updateDocumentFn',val);
   
   if (!val) return;
   let params = {
@@ -50,6 +51,26 @@ const updateDocumentFn = async (val) => {
   };
   await updateDocument(current_documentRef.value.id, params);
   contentChanged.value = false;
+};
+
+const count = ref(8);
+let intervalId = null;
+const autoSave = (val) => {
+  // console.log('tiptapUpdate autoSave');
+
+  intervalId = setInterval(async () => {
+    count.value--;
+    if (count.value === 0) {
+      clearInterval(intervalId);
+      await updateDocumentFn(val);
+    }
+  }, 1000);
+};
+
+const tiptapUpdate = (val) => {
+  // console.log('tiptapUpdate', val);
+  count.value = 8;
+  autoSave(val);
 };
 </script>
 
