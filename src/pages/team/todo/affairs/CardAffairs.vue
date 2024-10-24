@@ -1,36 +1,36 @@
 <template>
-    <VueDraggable v-model="todogroups"
-      :animation="300" :delay="50"
-      :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
-      handle=".dragBar" filter=".undrag" group="todogroup"
-      chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
-      class="gap-sm no-wrap"
-      :class="`
-        ${layout === 'row' ? 'row' : 'column'}
-        ${dense ? 'q-pa-xs' : 'q-pa-sm'}
-        ${todogroups?.length > 0 ? 'bordered' : 'flex-center'}
-      `"
-      :style="layout === 'row' ? `height: ${mainArea?.height}px;` : ''"
-      @start="dragStart" @sort="dragTodogroup_sort" @end="dragEnd"
-    >
-      <template v-if="todogroups?.length > 0">
-        <GroupContiner v-for="group in todogroups" :key="group.id"
-          :group="group"
-          :card
-          :_for
-          :layout
-          :displayType
-          :dense
-          :uiOptions
-          @todogroupDeleted="todogroupDeleted"
-        />
-      </template>
-      <CreateColumn
-        :card :_for :layout :dense
-        :createStyle="todogroups?.length > 0 ? 'normal' : 'init_create'"
-        @todogroupCreated="todogroupCreated"
+  <VueDraggable v-model="todogroups"
+    :animation="300" :delay="50"
+    :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
+    handle=".dragBar" filter=".undrag" group="todogroup"
+    chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
+    class="gap-sm no-wrap"
+    :class="`
+      ${layout === 'row' ? 'row' : 'column'}
+      ${dense ? 'q-pa-xs' : 'q-pa-sm'}
+      ${todogroups?.length > 0 ? 'bordered' : 'flex-center fit'}
+    `"
+    :style="layout === 'row' ? `height: ${mainArea?.height}px;` : ''"
+    @start="dragStart" @sort="dragTodogroup_sort" @end="dragEnd"
+  >
+    <template v-if="todogroups?.length > 0">
+      <GroupContiner v-for="group in todogroups" :key="group.id"
+        :group="group"
+        :card
+        :_for
+        :layout
+        :displayType
+        :dense
+        :uiOptions
+        @todogroupDeleted="todogroupDeleted"
       />
-    </VueDraggable>
+    </template>
+    <CreateColumn
+      :card :_for :layout
+      :createStyle="todogroups?.length > 0 ? 'normal' : 'init_create'"
+      @todogroupCreated="todogroupCreated"
+    />
+  </VueDraggable>
 </template>
 
 <script setup>

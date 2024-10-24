@@ -1,7 +1,8 @@
 <template>
-    <div :style="layout === 'row' ? `flex: 0 0 ${uiStore.columnWidth}px` : ''">
+    <div :style="layout === 'row' ? `flex: 0 0 ${uiStore.columnWidth}px` : ''"
+    :class="layout === 'row' ? '' : new_column_ing ? 'fit' : 'fit flex flex-center'">
         <div v-if="new_column_ing" class="q-pa-xs radius-xs border"
-          :class="layout === 'row' ? 'q-mb-xl' : ''"
+          :class="layout === 'row' ? 'q-mb-xl' : 'full-width'"
         >
           <q-input v-model="params.data.name"
             :placeholder="`${$t('create_person_todogroup')}`"
@@ -35,15 +36,23 @@
         >
           {{ _for === 'personal_kanbanTodo' ? $t('create_person_todogroup') : $t('create_todogroup')}}
         </div>
-        <q-responsive v-else-if="createStyle === 'init_create'" :ratio="16/9">
-          <div class="flex flex-center">
-            <q-btn flat icon="add"
-              :label="_for === 'personal_kanbanTodo' ? $t('create_person_todogroup') : $t('create_todogroup')"
-              class="border"
-              @click="new_column_ing = true"
-            />
-          </div>
-        </q-responsive>
+        <template v-else-if="createStyle === 'init_create'">
+          <q-responsive v-if="!card" :ratio="16/9" class="full-width">
+            <div class="flex flex-center">
+              <q-btn flat icon="add"
+                :label="_for === 'personal_kanbanTodo' ? $t('create_person_todogroup') : $t('create_todogroup')"
+                class="border"
+                @click="new_column_ing = true"
+              />
+            </div>
+          </q-responsive>
+
+          <q-btn v-else flat icon="add"
+                :label="_for === 'personal_kanbanTodo' ? $t('create_person_todogroup') : $t('create_todogroup')"
+                class="border"
+                @click="new_column_ing = true"
+              />
+        </template>
     </div>
 </template>
 

@@ -207,6 +207,7 @@
           :hideToolbar="true"
           :dense="true"
           :uiOptions
+          :class="cardRef?.todogroups?.length === 0 ? 'absolute-full' : ''"
           _for="card"
           layout="column"
         />
