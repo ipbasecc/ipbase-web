@@ -6,7 +6,7 @@
         v-ripple
         class="radius-xs hovered-item"
     >
-        <OwnerCard :userData="i.attributes" :userId="i.id" :cardType="`user_card`" />
+        <OwnerCard :userData="i.attributes" :userId="i.id" cardType="user_card" />
         <q-tooltip v-if="!i.attributes.user_channel?.data?.id">
             {{ $t('user_have_no_channel') }}
         </q-tooltip>

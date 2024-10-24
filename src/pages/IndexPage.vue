@@ -1,9 +1,7 @@
 <template>
   <NavigatorContainer>
     <div class="absolute-full column items-center" :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-2'">
-      <div
-        class="container limit full-width q-space row no-wrap gap-md q-pa-md overflow-hidden"
-      >
+      <div class="container limit full-width q-space row no-wrap gap-md q-pa-md overflow-hidden">
         <div class="column no-wrap gap-sm" style="flex: 0 0 12rem;">
           <q-list bordered class="q-pa-sm radius-sm" :class="$q.dark.mode ? 'bg-grey-9' : 'bg-white'">
             <q-item clickable v-ripple

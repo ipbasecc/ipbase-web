@@ -72,7 +72,7 @@
         <AutoAvatar :attributes="userDataRef"/>
     </q-item-section>
     <q-item-section @click="channelId && $router.push(`/brand/${channelId}`)">
-        {{ userDataRef.username }} - {{followsIds.includes(userIdRef)}}
+        {{ userDataRef.username }}
     </q-item-section>
     <q-item-section v-if="isLogged && !is_current_user" side class="hover-show">
         <q-btn
