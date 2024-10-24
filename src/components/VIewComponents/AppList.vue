@@ -43,7 +43,7 @@
           >
             <div style="width: 3px; background-color: var(--q-primary)"></div>
           </div>
-          <q-tooltip class="transparent">
+          <q-tooltip class="transparent" anchor="top end" self="top start" :offset="[-5, 4]">
             <q-card bordered>
               <q-card-section :class="$q.dark.mode ? 'text-grey-1' : 'text-grey-10'">
                 <div class="font-x-large font-bold-600">{{ $t(i.label) }}</div>
