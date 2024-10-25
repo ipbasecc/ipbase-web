@@ -6,10 +6,10 @@
     square
     :need="'json'"
     :clickOutsideSave="true"
-    :class="
-      contentAuth
-      ? 'border radius-sm overflow-hidden '
-        : 'overflow-hidden'
+    :show_toolbar="false"
+    :class="contentAuth
+      ? 'border radius-sm overflow-hidden'
+      : 'overflow-hidden'
     "
     contentStyle="height: 100%"
     :styleClass="teamStore.shareInfo ? 'q-px-sm' : 'q-pa-md'"
