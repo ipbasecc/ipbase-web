@@ -10,6 +10,7 @@
     :contentChanged
     @contentChanged="contentChanged = true"
     @tiptapBlur="updateDocumentFn"
+    @tiptapSave="tiptapSave"
     @tiptapUpdate="tiptapUpdate"
     @click.stop="content_channging = true"
     @keydown.esc="content_channging = false"
@@ -48,7 +49,7 @@ const emit = defineEmits(["documentChanged"]);
 const updateDocumentFn = async (val) => {  
   if (!val) return;
   update_params.value.data.jsonContent = val;
-  await updateDocument(current_documentRef.value.id, params);
+  await updateDocument(current_documentRef.value.id, update_params.value);
   contentChanged.value = false;
 };
 
@@ -75,6 +76,10 @@ const tiptapUpdate = (val) => {
   // console.log('tiptapUpdate', val);
   count.value = 8;
   autoSave(val);
+};
+const tiptapSave = (val) => {
+  console.log('tiptapSave', val);
+  updateDocumentFn(val);
 };
 </script>
 

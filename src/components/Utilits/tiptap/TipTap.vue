@@ -446,7 +446,7 @@ const uiConfig = ref({
 watchEffect(() => {
   uiConfig.value.withSaveBtb = withSaveBtbRef.value;
   if(editor.value){
-    const { editorMenu } = useTiptap(editor, uiConfig.value, uploadFiles, tiptapBlur);
+    const { editorMenu } = useTiptap(editor, uiConfig.value, uploadFiles, tiptapBlur, tiptapSave);
     menu.value = editorMenu;
   }
 })
@@ -534,6 +534,25 @@ const tiptapBlur = () => {
     emit("tiptapBlur", md.value);
   }
 };
+
+const getContent = () => {
+  if (needRef.value === "html") {
+    return html.value;
+  }
+  if (needRef.value === "json") {
+    return json.value;
+  }
+  if (needRef.value === "md") {
+    return md.value;
+  }
+};
+
+const tiptapSave = () => {
+  const content = getContent();
+  if(content){
+    emit("tiptapSave", getContent())
+  }
+}
 
 defineExpose({
   tiptapBlur,

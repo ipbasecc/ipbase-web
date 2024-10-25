@@ -1,5 +1,5 @@
 
-export default function useTiptap(editor, uiConfig, uploadFiles, tiptapBlur) {
+export default function useTiptap(editor, uiConfig, uploadFiles, tiptapBlur, tiptapSave) {
   const editorMenu = [
     {
       type: "Botton",
@@ -277,7 +277,7 @@ export default function useTiptap(editor, uiConfig, uploadFiles, tiptapBlur) {
       class: "",
       activeClass: "",
       always_show: true,
-      handler: () => tiptapBlur(),
+      handler: () => tiptapSave(),
     },
   ];
   return {

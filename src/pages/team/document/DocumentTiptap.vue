@@ -20,6 +20,7 @@
     @contentChanged="contentChanged = true"
     @tiptapUpdate="tiptapUpdate"
     @tiptapBlur="tiptapBlur"
+    @tiptapSave="tiptapSave"
     @tiptapReady="tiptapReady()"
     @tiptapDestroy="tiptapDestroy()"
   >
@@ -27,6 +28,7 @@
       <q-btn dense flat icon="mdi-chevron-left" @click="close" />
     </template>
     <template v-slot:more_btn>
+      <q-btn color="primary" icon="save" @click="tiptapSave" />
       <div v-if="saving" class="row no-wrap gap-sm flex-center q-px-md">
         <q-spinner
           size="1em"
@@ -189,6 +191,11 @@ const tiptapUpdate = (val) => {
 };
 const tiptapBlur = async (val) => {
   // console.log("tiptapBlur", val);
+  jsonContent.value = val;
+  await updateDocumentFn();
+};
+const tiptapSave = async (val) => {
+  console.log("tiptapSave", val);
   jsonContent.value = val;
   await updateDocumentFn();
 };
