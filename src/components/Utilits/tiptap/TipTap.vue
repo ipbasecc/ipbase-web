@@ -146,6 +146,8 @@ import Placeholder from "@tiptap/extension-placeholder";
 import { Color } from "@tiptap/extension-color";
 import Image from "@tiptap/extension-image";
 import { Markdown } from "tiptap-markdown";
+import { onKeyStroke } from "@vueuse/core";
+import { useQuasar } from "quasar";
 
 import { Extension, markPasteRule } from '@tiptap/core'
 import { Blockquote } from '@tiptap/extension-blockquote'
@@ -184,6 +186,7 @@ import { useI18n } from 'vue-i18n';
 import BubbleMenuContent from './BubbleMenu.vue'
 
 const { t } = useI18n();
+const $q = useQuasar();
 
 const props = defineProps({
   show_toolbar: {
@@ -553,6 +556,13 @@ const tiptapSave = () => {
     emit("tiptapSave", getContent())
   }
 }
+const ControlKey = computed(() => {
+  return $q.platform.is.mac ? "metaKey" : "ctrlKey"; // todo，这里需要验证meteKey是否正确
+})
+onKeyStroke([ControlKey.value, "s"], (e) => {
+  e.preventDefault();
+  tiptapSave();
+});
 
 defineExpose({
   tiptapBlur,
