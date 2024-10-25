@@ -36,25 +36,25 @@ const current_documentRef = toRef(props, "current_document");
 const content_channging = ref(false);
 const contentChanged = ref(false);
 
+const update_params = ref({
+  project_id: teamStore.project?.id,
+  document_id: current_documentRef.value?.id,
+  card_id: teamStore.card?.id,
+  data: {
+    jsonContent: "",
+  },
+})
 const emit = defineEmits(["documentChanged"]);
-const updateDocumentFn = async (val) => {
-  // console.log('updateDocumentFn',val);
-  
+const updateDocumentFn = async (val) => {  
   if (!val) return;
-  let params = {
-    project_id: teamStore.project?.id,
-    document_id: current_documentRef.value?.id,
-    card_id: teamStore.card?.id,
-    data: {
-      jsonContent: val,
-    },
-  };
+  update_params.value.data.jsonContent = val;
   await updateDocument(current_documentRef.value.id, params);
   contentChanged.value = false;
 };
 
 const count = ref(8);
 const autoSave = (val) => {
+  update_params.value.data.jsonContent = val;
   let intervalId = setInterval(async () => {
     count.value--;
     // console.log('tiptapUpdate autoSave', count.value);
@@ -62,7 +62,7 @@ const autoSave = (val) => {
       // console.log('Clearing interval');
       clearInterval(intervalId);
       try {
-        await updateDocumentFn(val);
+        await updateDocumentFn(update_params.value.data.jsonContent);
         // console.log('Document updated');
       } catch (error) {
         console.error('Error updating document', error);

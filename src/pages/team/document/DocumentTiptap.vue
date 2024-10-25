@@ -165,6 +165,7 @@ const updateDocumentFn = async () => {
 const count = ref(8);
 const autoSave = (val) => {
   let intervalId = setInterval(async () => {
+    jsonContent.value = val;
     count.value--;
     // console.log('tiptapUpdate autoSave', count.value);
     if (count.value < 1) {
