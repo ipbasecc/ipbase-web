@@ -1,5 +1,5 @@
 <template>
-    <q-header>
+    <q-header class="z-max">
       <q-bar
         class="border-bottom"
         :class="`${
