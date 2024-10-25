@@ -15,6 +15,7 @@
     :styleClass="teamStore.shareInfo ? 'q-px-sm' : 'q-pa-md'"
     :contentChanged
     @contentChanged="contentChanged = true"
+    @tiptapSave="tiptapSave"
     @tiptapBlur="tiptapBlur"
   />
 </template>
@@ -72,6 +73,12 @@ const tiptapBlur = async (val) => {
     await update_jsonContent(val);
   }
 };
+
+const tiptapSave = (val) => {
+  console.log('tiptapSave');
+  
+  update_jsonContent(val)
+}
 
 const update_jsonContent = async (val) => {
   change_ing.value = true;
