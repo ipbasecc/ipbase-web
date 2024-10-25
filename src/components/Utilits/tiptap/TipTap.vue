@@ -128,6 +128,7 @@ import {
   onBeforeMount,
   onBeforeUnmount,
   onMounted,
+  onUnmounted,
   ref,
   toRef,
   toRefs,
@@ -441,13 +442,11 @@ const { files, open, reset, onChange } = useFileDialog({
 });
 
 const menu = ref();
-const uiConfig = ref({
-  withSaveBtb: withSaveBtbRef.value,
-  withImageBtb: withImageBtb.value,
-  withAttachBtb: withAttachBtb.value,
-})
+const uiConfig = ref({})
 watchEffect(() => {
   uiConfig.value.withSaveBtb = withSaveBtbRef.value;
+  uiConfig.value.withImageBtb = withImageBtb.value;
+  uiConfig.value.withAttachBtb = withAttachBtb.value;
   if(editor.value){
     const { editorMenu } = useTiptap(editor, uiConfig.value, uploadFiles, tiptapBlur, tiptapSave);
     menu.value = editorMenu;
@@ -483,6 +482,10 @@ const setCursorToEnd = () => {
 onMounted(() => {
   setCursorToEnd();
 });
+
+onUnmounted(() => {
+  teamStore.active_document = null;
+})
 
 const autoSetContent = () => {
   if (jsonContentRef.value || contentRef.value) {

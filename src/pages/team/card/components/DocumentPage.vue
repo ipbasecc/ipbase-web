@@ -8,13 +8,22 @@
     styleClass="q-pa-md"
     class="fit"
     :contentChanged
+    :withSaveBtb="false"
     @contentChanged="contentChanged = true"
     @tiptapBlur="updateDocumentFn"
     @tiptapSave="tiptapSave"
     @tiptapUpdate="tiptapUpdate"
-    @click.stop="content_channging = true"
-    @keydown.esc="content_channging = false"
-  />
+  >
+    <template v-slot:more_btn>
+      <q-btn flat dense size="sm" class="q-mr-md" :color="saving ? 'primary' : ''" :disable="saving" @click="tiptapSave">
+        <q-spinner-dots v-if="saving"
+          size="1em"
+          :thickness="2"
+        />
+        <q-icon v-else name="save" />
+      </q-btn>
+    </template>
+  </TipTap>
 </template>
 
 <script setup>
@@ -34,8 +43,8 @@ const props = defineProps({
 });
 
 const current_documentRef = toRef(props, "current_document");
-const content_channging = ref(false);
 const contentChanged = ref(false);
+const saving = ref(false);
 
 const update_params = ref({
   project_id: teamStore.project?.id,
@@ -47,10 +56,12 @@ const update_params = ref({
 })
 const emit = defineEmits(["documentChanged"]);
 const updateDocumentFn = async (val) => {  
-  if (!val) return;
+  if (!val || !contentChanged.value || saving.value) return;
+  saving.value = true
   update_params.value.data.jsonContent = val;
   await updateDocument(current_documentRef.value.id, update_params.value);
   contentChanged.value = false;
+  saving.value = false
 };
 
 const count = ref(8);

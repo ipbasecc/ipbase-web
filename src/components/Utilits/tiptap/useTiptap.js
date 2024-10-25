@@ -276,7 +276,7 @@ export default function useTiptap(editor, uiConfig, uploadFiles, tiptapBlur, tip
       icon: "save",
       class: "",
       activeClass: "",
-      always_show: true,
+      always_show: false,
       handler: () => tiptapSave(),
     },
   ];

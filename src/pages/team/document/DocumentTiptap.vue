@@ -28,14 +28,13 @@
       <q-btn dense flat icon="mdi-chevron-left" @click="close" />
     </template>
     <template v-slot:more_btn>
-      <q-btn color="primary" icon="save" @click="tiptapSave" />
-      <div v-if="saving" class="row no-wrap gap-sm flex-center q-px-md">
-        <q-spinner
+      <q-btn flat dense size="sm" class="q-mr-md" :color="saving ? 'primary' : ''" :disable="saving" @click="tiptapSave">
+        <q-spinner-dots v-if="saving"
           size="1em"
           :thickness="2"
         />
-        保存中...
-      </div>
+        <q-icon v-else name="save" />
+      </q-btn>
     </template>
     <template v-if="islocked && !readOnly" v-slot:locker>
       <div class="absolute-full bg-black op-5" />
@@ -195,7 +194,7 @@ const tiptapBlur = async (val) => {
   await updateDocumentFn();
 };
 const tiptapSave = async (val) => {
-  console.log("tiptapSave", val);
+  // console.log("tiptapSave", val);
   jsonContent.value = val;
   await updateDocumentFn();
 };
