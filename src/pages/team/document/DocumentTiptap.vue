@@ -10,8 +10,9 @@
     "
     need="json"
     :square="true"
-    :withSaveBtb="!saving"
-    :withImageBtb="true"
+    :withSaveBtn="true"
+    :saving
+    :withImageBtn="true"
     :contentStyle="contentStyle"
     :autofocus="!islocked"
     :contentChanged
@@ -26,15 +27,6 @@
   >
     <template v-if="showClose" v-slot:left-btn>
       <q-btn dense flat icon="mdi-chevron-left" @click="close" />
-    </template>
-    <template v-slot:more_btn>
-      <q-btn flat dense size="sm" class="q-mr-md" :color="saving ? 'primary' : ''" :disable="saving" @click="tiptapSave">
-        <q-spinner-dots v-if="saving"
-          size="1em"
-          :thickness="2"
-        />
-        <q-icon v-else name="save" />
-      </q-btn>
     </template>
     <template v-if="islocked && !readOnly" v-slot:locker>
       <div class="absolute-full bg-black op-5" />
@@ -121,9 +113,9 @@ const toggleReadOnly = () => {
 const islocked = computed(() => document.value?.is_locked);
 
 const saving = ref(false);
-const withSaveBtb = ref(true);
+const withSaveBtn = ref(true);
 watchEffect(() => {
-  withSaveBtb.value = !saving.value
+  withSaveBtn.value = !saving.value
 })
 const jsonContent = ref({});
 const contentChanged = ref(false)

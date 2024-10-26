@@ -25,8 +25,8 @@
                 :jsonContent="team.introduce"
                 :need="'json'"
                 :square="true"
-                :withSaveBtb="true"
-                :withImageBtb="true"
+                :withSaveBtn="true"
+                :withImageBtn="true"
                 :contentChanged
                 @contentChanged="contentChanged = true"
                 contentStyle="max-height: unset"

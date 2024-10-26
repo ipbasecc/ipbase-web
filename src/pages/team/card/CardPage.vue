@@ -352,8 +352,8 @@
                   <DocumentBody
                     v-if="teamStore.active_document"
                     :current_document="teamStore.active_document"
-                    :withSaveBtb="true"
-                    :withImageBtb="true"
+                    :withSaveBtn="true"
+                    :withImageBtn="true"
                     :by_info="byInfo"
                   />
                 </q-scroll-area>
@@ -468,8 +468,8 @@
             <q-scroll-area v-if="teamStore.active_document" class="fit">
               <DocumentBody
                   :current_document="teamStore.active_document"
-                  :withSaveBtb="true"
-                  :withImageBtb="true"
+                  :withSaveBtn="true"
+                  :withImageBtn="true"
                   :by_info="byInfo"
               />
             </q-scroll-area>

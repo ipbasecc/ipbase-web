@@ -112,8 +112,8 @@
               <DocumentBody
                 v-if="teamStore.active_document"
                 :current_document="teamStore.active_document"
-                :withSaveBtb="true"
-                :withImageBtb="true"
+                :withSaveBtn="true"
+                :withImageBtn="true"
                 :by_info="byInfo"
               />
               <DocumentList

@@ -8,21 +8,13 @@
     styleClass="q-pa-md"
     class="fit"
     :contentChanged
-    :withSaveBtb="false"
+    :withSaveBtn="true"
+    :saving
     @contentChanged="contentChanged = true"
     @tiptapBlur="updateDocumentFn"
     @tiptapSave="tiptapSave"
     @tiptapUpdate="tiptapUpdate"
   >
-    <template v-slot:more_btn>
-      <q-btn flat dense size="sm" class="q-mr-md" :color="saving ? 'primary' : ''" :disable="saving" @click="tiptapSave">
-        <q-spinner-dots v-if="saving"
-          size="1em"
-          :thickness="2"
-        />
-        <q-icon v-else name="save" />
-      </q-btn>
-    </template>
   </TipTap>
 </template>
 
@@ -65,8 +57,7 @@ const updateDocumentFn = async (val) => {
 };
 
 const count = ref(8);
-const autoSave = (val) => {
-  update_params.value.data.jsonContent = val;
+const autoSave = () => {
   let intervalId = setInterval(async () => {
     count.value--;
     // console.log('tiptapUpdate autoSave', count.value);
@@ -85,12 +76,16 @@ const autoSave = (val) => {
 
 const tiptapUpdate = (val) => {
   // console.log('tiptapUpdate', val);
+  update_params.value.data.jsonContent = val;
   count.value = 8;
   autoSave(val);
 };
-const tiptapSave = (val) => {
-  console.log('tiptapSave', val);
-  updateDocumentFn(val);
+const tiptapSave = async (val) => {
+  if(val){
+    update_params.value.data.jsonContent = val
+  }
+  // console.log('tiptapSave', update_params.value.data.jsonContent);
+  await updateDocumentFn(update_params.value.data.jsonContent);
 };
 </script>
 

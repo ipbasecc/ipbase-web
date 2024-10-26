@@ -3,7 +3,7 @@
         <TipTap
             :editable="useAuths('jsonContent', ['channel'])"
             :jsonContent="teamStore.channel?.jsonContent"
-            :withSaveBtb="true"
+            :withImageBtn="true"
             need="json"
             class="q-space"
             :contentChanged

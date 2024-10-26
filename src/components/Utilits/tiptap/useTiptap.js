@@ -1,5 +1,5 @@
 
-export default function useTiptap(editor, uiConfig, uploadFiles, tiptapBlur, tiptapSave) {
+export default function useTiptap(editor, uiConfig, uploadFiles, tiptapBlur, tiptapSave, saving) {
   const editorMenu = [
     {
       type: "Botton",
@@ -248,11 +248,11 @@ export default function useTiptap(editor, uiConfig, uploadFiles, tiptapBlur, tip
     },
     {
       type: "Botton",
-      disable: !uiConfig.withImageBtb,
+      disable: !uiConfig.withImageBtn,
       icon: "image",
       class: "",
       activeClass: "",
-      always_show: true,
+      always_show: uiConfig.withImageBtn,
       handler: () => open(),
     },
     {
@@ -266,17 +266,17 @@ export default function useTiptap(editor, uiConfig, uploadFiles, tiptapBlur, tip
     },
     {
       type: "|",
-      disable: !uiConfig.withSaveBtb,
-      always_show: false,
+      disable: !uiConfig.withSaveBtn,
+      always_show: uiConfig.withSaveBtn,
     },
     {
-      type: "Botton",
-      disable: !uiConfig.withSaveBtb,
+      type: "save",
+      disable: !uiConfig.withSaveBtn,
       label: "Save",
       icon: "save",
       class: "",
       activeClass: "",
-      always_show: false,
+      always_show: uiConfig.withSaveBtn,
       handler: () => tiptapSave(),
     },
   ];

@@ -49,7 +49,7 @@
                     <TipTap
                         :editable="useAuths('create', ['news'])"
                         :jsonContent="teamStore.adding_news?.jsonContent"
-                        :withSaveBtb="true"
+                        :withImageBtn="true"
                         need="json"
                         @tiptapBlur="syncContent"
                     />
@@ -58,7 +58,7 @@
                     <TipTap
                         :editable="useAuths('modify', ['news'])"
                         :jsonContent="teamStore.edit_news?.jsonContent"
-                        :withSaveBtb="true"
+                        :withImageBtn="true"
                         need="json"
                         :contentChanged
                         @contentChanged="contentChanged = true"

@@ -75,6 +75,7 @@ const tiptapBlur = async (val) => {
 };
 
 const tiptapSave = (val) => {
+  if(!contentChanged.value) return
   console.log('tiptapSave');
   
   update_jsonContent(val)

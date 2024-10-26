@@ -7,8 +7,8 @@
       class="absolute-full"
       styleClass="q-pa-md"
       contentStyle="width: 100%; max-width: 46rem;"
-      :withSaveBtb="true"
-      :withImageBtb="true"
+      :withSaveBtn="true"
+      :withImageBtn="true"
       need="json"
       :contentChanged
       @contentChanged="contentChanged = true"

@@ -90,6 +90,14 @@
               </q-card>
             </q-popup-proxy>
           </q-btn>
+
+          <q-btn v-else-if="i.type === 'save' && i.always_show" flat dense size="sm" class="q-mr-md" :color="saving ? 'primary' : ''" :disable="saving" @click="tiptapSave">
+            <q-spinner-dots v-if="saving"
+              size="1em"
+              :thickness="2"
+            />
+            <q-icon v-else name="save" />
+          </q-btn>
           <q-space v-else-if="i.type === 'space'" />
         </template>
         <slot name="more_btn"></slot>
@@ -138,6 +146,7 @@ import {
   watchEffect
 } from "vue";
 import useTiptap from './useTiptap.js'
+import { teamStore } from "src/hooks/global/useStore.js";
 
 import { Editor, EditorContent, BubbleMenu } from "@tiptap/vue-3";
 import TaskItem from "@tiptap/extension-task-item";
@@ -247,11 +256,11 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  withSaveBtb: {
+  withSaveBtn: {
     type: Boolean,
     default: false,
   },
-  withImageBtb: {
+  withImageBtn: {
     type: Boolean,
     default: false,
   },
@@ -281,12 +290,16 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  saving: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const contentRef = toRef(props, "content");
 const jsonContentRef = toRef(props, "jsonContent");
-const withSaveBtbRef = toRef(props, "withSaveBtb");
-const { withImageBtb, withAttachBtb, contentChanged } = toRefs(props);
+const withSaveBtnRef = toRef(props, "withSaveBtn");
+const { withImageBtn, withAttachBtb, contentChanged, saving } = toRefs(props);
 const isEditable = toRef(props, "editable");
 
 const needRef = toRef(props, "need");
@@ -444,11 +457,11 @@ const { files, open, reset, onChange } = useFileDialog({
 const menu = ref();
 const uiConfig = ref({})
 watchEffect(() => {
-  uiConfig.value.withSaveBtb = withSaveBtbRef.value;
-  uiConfig.value.withImageBtb = withImageBtb.value;
+  uiConfig.value.withSaveBtn = withSaveBtnRef.value;
+  uiConfig.value.withImageBtn = withImageBtn.value;
   uiConfig.value.withAttachBtb = withAttachBtb.value;
   if(editor.value){
-    const { editorMenu } = useTiptap(editor, uiConfig.value, uploadFiles, tiptapBlur, tiptapSave);
+    const { editorMenu } = useTiptap(editor, uiConfig.value, uploadFiles, tiptapBlur, tiptapSave, saving);
     menu.value = editorMenu;
   }
 })
@@ -480,11 +493,13 @@ const setCursorToEnd = () => {
   editor.value?.commands.focus("end");
 };
 onMounted(() => {
-  setCursorToEnd();
+  // setCursorToEnd();
 });
 
 onUnmounted(() => {
-  teamStore.active_document = null;
+  if(teamStore.active_document){
+    teamStore.active_document = null;
+  }
 })
 
 const autoSetContent = () => {
@@ -556,7 +571,8 @@ const getContent = () => {
 const tiptapSave = () => {
   const content = getContent();
   if(content){
-    emit("tiptapSave", getContent())
+    // console.log('getContent', content)
+    emit("tiptapSave", content)
   }
 }
 const ControlKey = computed(() => {
