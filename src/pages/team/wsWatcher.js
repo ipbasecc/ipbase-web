@@ -605,19 +605,30 @@ export default function useWatcher() {
           const { updator } = val.value?.data;
           if (!focused.value) {
             teamStore.active_document = data;
-          } else if(updator !== teamStore.init?.id) {
-            $q.notify({
-              color: 'positive',
-              position: 'top',
-              message: '当前文档有更新，是否显示最新内容？',
-              timeout: 0,
-              closeBtn: true,
-              actions: [
-                { label: 'Reply', noCaps: true, color: 'yellow', handler: () => {
-                  teamStore.active_document = data;
-                }},
-              ]
-            })
+          } else {
+            if(updator !== teamStore.init?.id) {
+              $q.notify({
+                color: 'positive',
+                position: 'top',
+                message: '当前文档有更新，是否显示最新内容？',
+                timeout: 0,
+                closeBtn: true,
+                actions: [
+                  { label: 'Reply', noCaps: true, color: 'yellow', handler: () => {
+                    teamStore.active_document = data;
+                  }},
+                ]
+              })
+            } else {
+              // 更新除了jsonContent字段外的其它字段内容
+              for (const key in data) {
+                // 检查字段是否不是jsonContent
+                if (key !== 'jsonContent') {
+                  // 将data的字段值赋给teamStore.active_document的对应字段
+                  teamStore.active_document[key] = data[key];
+                }
+              }
+            }
           }
         }
         if(teamStore.project?.id === Number(project_id)){

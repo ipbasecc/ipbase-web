@@ -1,111 +1,121 @@
-# 易乎 APP
+# YiHu APP (IPBase)
 
-易乎 APP（ipbase）前端项目
+## Introduction
+YiHu APP (IPBase) is a "boundaryless collaboration platform" application that extends from social interaction to collaboration, integrating communication, social networking, project management, and self-media operations. Its design goal is to provide customers with an integrated collaboration platform that overcomes geographical barriers and cognitive gaps, enabling the formation of collaborative teams and realizing team collaboration management, relationship maintenance, and community building.
 
-> 易乎 APP 是一款致力于解决团队线上调度协作的工具，让您轻松跨越地域阻隔，建立全球团队；
-> 软件基于 Strapi + Quasar 打造，具体：Strapi + PostgreSQL + Redis + Mattermost + Quasar(vue 前端框架)
+### Application URLs:
+> Mainland China: https://app.yihu.team 
+> International Site: https://app.ipbase.cc 
 
-官方网址：
+### Demo Video
+[Production Introduction Video](https://www.youtube.com/watch?v=xP1KFOq4qN0) 
 
-> https://yihu.team
+## Application Features
+1. **Communication**: Based on Mattermost's communication features, supporting channels, groups, private chats, and other communication methods, with message reply, pin, favorite, and follow functions;
+2. **Collaboration**: Supports kanban, classrooms, documents, files, planning, and other collaboration methods, with task management, project management, self-media operations, and other functions;
+3. **Social**: Social continuation based on collaboration, aiming to maintain social scenarios related to collaboration;
+4. **Self-media Services**: Personal channels can publish articles, videos, audio, etc., and support fan interaction, comments, likes, and other functions;
 
-## 演示视频
-> https://www.bilibili.com/video/BV1BWeYeKEbZ/?spm_id_from=333.999.0.0
-## 部署文档
-> [部署文档](./deploy.md)
-
-
-## 功能说明
-应用通过频道、团队的形式组织和管理人员、任务，你可以通过应用提供的讨论、看板、课堂、文档、文件、规划等模块对任务进行管理，同时应用也提供了丰富的权限管理，可以针对团队、频道、项目、卡片进行独立的权限控制，从而实现精细化的权限管理；
-
-1. 特色功能：
-   1. **离散式沟通**：项目内可以针对每个卡片、代办、文档完成讨论，而无须在一个讨论窗口内针对所有事务讨论，您可以很轻易的在卡片界面或者对应代办的“更多”按钮内找到开启讨论的按钮；
-   2. **增强型看板**：看板内卡片 UI 根据每个卡片的“重要度”“紧急度”有对应的视觉设计，同时可以在“看板”“列表”“四象限”三种形态间切换，在“四象限”形态下，您可以直观的对所有任务的执行来排序
-   3. **多类型卡片**：每个卡片均有三种类型，可以按需创建或转换，你可以实现复杂任务、代办、备忘等管理；
-   4. **自定义存储**：你可以创建自己的 Azure Blob 存储（仅限文件功能），从而不必使用官方的 OSS 存储；
-   5. **混合成员私有内容**：针对看板、卡片，成员可以关联自己的代办，以便自己对对应工作自我安排，而该内容也仅限成员自己可见；
-2. 结构：团队 -> 频道 + 项目；
-3. 核心功能：项目，包含：讨论、看板、课堂、文档、文件、规划；
-   1. 讨论：继承自 Mattermost 功能，可以自由创建频道，可以对每条消息发表回复，并置顶、收藏、关注等；
-   2. 看板：以卡片形式对事务进行组织，结构为 board -> group -> kanban -> column -> card;每个结构体均可以创建多个，卡片分为 task、note、todo 三种类型，前端可以自由选择创建或者相互转换；
-   3. 课堂：看板 Board 的特殊类型：classroom，通过类型在前端按照制定 UI 来呈现看板数据，本质就是看板，后期会制定更多的 Board 类型以满足不同的场景需求，从而衍生出更多的功能模块，也会加入支付模块，以满足私域运营的需要；
-   4. 文档：简单的文档功能;
-   5. 文件：团队网盘，默认使用 OSS，同时用户可以创建自定义 Azure Blob 存储，从而使用自己的存储服务；
-   6. 规划：使用 ej2 组件完成的 schedule 功能，如果是商业使用，注意要获取官方授权
-   7. 卡片：
-      1. 类型：task - 任务、note - 笔记、todo - 代办；
-      2. 功能：继承讨论、看板、文档、文件、规划到每个卡片；
-   8. 注意：Azure 存储和规划功能，使用了 ej2 组件，如果是商业使用注意获取官方授权，或者自行替换；
-4. 权限判断：团队、频道、项目、卡片均有独立的权限系统，可以独立控制，同时本层权限未定义时将继承上层权限，本层权限存在时本层权限优先
-
-## 重要说明：
-
-1. 软件尚在早期开发中，请勿用于生产环境，否则造成任何损失或法律纠纷本人均不承担任何责任！
-2. 开发不易，请尊重他人的知识劳动成果，以下情形请联系获取授权：
-   1. 6 人以上团队使用
-   2. SAAS 产品集成或独立销售
-3. 请勿删除产品中的品牌、版权信息、声明;
-4. 如果要用来运营赚钱、转售、修改后转售、待运营，记得找我分点好处费，不然律师函警告🐶
-
-## QQ群
-![QQ群](https://airspace.oss-cn-shanghai.aliyuncs.com/images/QQGroup.jpg "QQ群")
----
-
-## 适合场景
-
-1. **自媒体团队**：“快节奏”“高产出”“跨地域”“高度自由”是自媒体团队天生的特点，本产品“离散式沟通”的特殊设计正是面向团队沟通中“信息繁杂”“更新快、响应快、确定性低”的问题而设计，你可以针对具体的任务、代办单独讨论，也可以对讨论内容进行标注、收藏、置顶,使用本产品您可以轻易的对任务进行规划、分解，并且将人、事、责、产打通、关联；
-2. **私域经营**：参考下文功能说明，平台本身按照 团队、频道、项目的结构设计，每个层级都可以实现独立的角色与权限控制，层级越深，也越能提供更多服务，天然就是一个销售漏斗设计，你可以将粉丝引流到团队中，在公共频道完成大体量日常维护，并将特定需求的用户分流到具体的项目中，以提供个性化服务，后期我们也会加入支付功能，以便实现更多商业化场景；
-3. **项目管理**：您可以借助产品功能，跨越地域限制对团队、项目的人、事、产完成沟通、调度、评级（未来版本）；
-4. **大型团队**：您可以将产品部署到内网，如果企业规模较大，按照事务将人力分割到不同的团队中，实现独立管理；也可以按照项目将人力分割到不同项目中，从而完成内部管理，从而杜绝企业数据泄漏的风险
+## Suitable Scenarios
+1. **Self-media Teams**: "Fast-paced," "high-output," "cross-regional," and "highly free" are the innate characteristics of self-media teams. This product's special design of "dispersed communication" is aimed at the issues of "complex information," "fast updates, quick responses, and low certainty" in team communication. You can discuss specific tasks and to-dos separately, and also mark, collect, and pin discussion content. With this product, you can easily plan and decompose tasks, and connect people, events, responsibilities, and outcomes;
+2. **Private Domain Operation**: Refer to the functional description below. The platform itself is designed according to the structure of teams, channels, and projects. Each level can achieve independent role and permission control. The deeper the level, the more services it can provide, and it is naturally a sales funnel design. You can guide fans into the team, complete large-scale daily maintenance in public channels, and divert users with specific needs to specific projects to provide personalized services. We will also add payment functions later to realize more commercial scenarios;
+3. **Project Management**: You can use the product's features to communicate, schedule, and rate (future version) people, events, and outcomes of teams and projects across regions;
+4. **Large Teams**: You can deploy the product to the intranet. If the enterprise is large, you can divide human resources into different teams according to affairs to achieve independent management; you can also divide human resources into different projects to complete internal management, thus preventing the risk of enterprise data leakage.
 
 ---
 
-## 部署说明
+## Feature Description
 
-> 详细部署说明请参考 [部署文档](./deploy.md)
-> 本产品部署稍嫌繁琐，但并不高深，需要仔细处理，软件运行需要部署前端和后端，请按照说明逐步操作，否则可能引发错误！
+1. Special Features:
+   1. **Dispersed Communication**: Within a project, discussions can be conducted for each card, to-do, and document without discussing all affairs in one discussion window. You can easily find the button to start a discussion on the card interface or the "More" button corresponding to the to-do;
+   2. **Enhanced Kanban**: The card UI in the kanban is visually designed according to the "importance" and "urgency" of each card, and it can be switched among "kanban," "list," and "quadrant" forms. In the "quadrant" form, you can intuitively sort all tasks for execution;
+   3. **Multi-type Cards**: Each card has three types and can be created or converted as needed, allowing you to manage complex tasks, to-dos, and memos;
+   4. **Custom Storage**: You can create your own Azure Blob storage (only for file functions), so you don't have to use the official OSS storage;
+   5. **Hybrid Member Private Content**: For kanbans and cards, members can associate their own to-dos to arrange their work privately, and this content is only visible to the members themselves;
+2. Structure: Team -> Channels + Projects;
+3. Core Features: Projects, including: Discussion, Kanban, Classroom, Document, File, Planning;
+   1. Discussion: Inherited from Mattermost features, you can freely create channels, and reply to each message, as well as pin, collect, and follow;
+   2. Kanban: Organize affairs in the form of cards, with the structure of board -> group -> kanban -> column -> card; each structure can create multiple, cards are divided into task, note, and todo types, and the front end can freely choose to create or convert;
+   3. Classroom: A special type of kanban board: classroom, presented on the front end according to the designated UI to display board data, essentially a kanban, and more board types will be established later to meet different scenario needs, thus deriving more functional modules, and a payment module will be added to meet the needs of private domain operations;
+   4. Document: A simple document function, Tiptap is introduced for editing and presentation;
+   5. File: Team cloud disk, default use OSS, while users can create custom Azure Blob storage, so they can use their own storage services;
+   6. Planning: The schedule function completed by ej2 components, if used commercially, pay attention to obtaining official authorization;
+   7. Cards:
+      1. Types: task - task, note - note, todo - to-do;
+      2. Functions: Inherit discussion, kanban, document, file, planning for each card;
+   8. Note: Azure storage and planning functions use ej2 components, if used commercially, pay attention to obtaining official authorization or replace them yourself;
+4. Permission Judgment: Teams, channels, projects, and cards all have independent permission systems that can be controlled independently. When the permissions at this level are not defined, they will inherit the permissions from the upper level. When the permissions at this level exist, the permissions at this level take precedence.
 
-1. 部署 Mattermost
-   > 请参考官方文档：https://docs.mattermost.com/guides/deployment.html
-   > 根据你的平台选择对应的方案部署，注意：（a）如果使用 PostgreSQL，请务必按照官方步骤配置数据库；（b）如果你需要独立使用 Mattermost，并且想要使用其 AI 功能，必须选择 PostgreSQL 数据库；（c）务必正确配置好反代，否则 Mattermost websocket 服务无法连接平台功能将大量无法使用
-2. 部署 Strapi
-   拉取后端源码后，自行修改配置文件中的相关字段，之后运行(可以根据自己的包管理工具自行安装依赖)
+## QQ Group
+![QQ Group](https://airspace.oss-cn-shanghai.aliyuncs.com/images/QQGroup.jpg "QQ Group")
+
+---
+
+## Suitable Scenarios
+
+1. **Self-media Teams**: "Fast-paced," "high-output," "cross-regional," and "highly free" are the innate characteristics of self-media teams. This product's special design of "dispersed communication" is aimed at the issues of "complex information," "fast updates, quick responses, and low certainty" in team communication. You can discuss specific tasks and to-dos separately, and also mark, collect, and pin discussion content. With this product, you can easily plan and decompose tasks, and connect people, events, responsibilities, and outcomes;
+2. **Private Domain Operation**: Refer to the functional description below. The platform itself is designed according to the structure of teams, channels, and projects. Each level can achieve independent role and permission control. The deeper the level, the more services it can provide, and it is naturally a sales funnel design. You can guide fans into the team, complete large-scale daily maintenance in public channels, and divert users with specific needs to specific projects to provide personalized services. We will also add payment functions later to realize more commercial scenarios;
+3. **Project Management**: You can use the product's features to communicate, schedule, and rate (future version) people, events, and outcomes of teams and projects across regions;
+4. **Large Teams**: You can deploy the product to the intranet. If the enterprise is large, you can divide human resources into different teams according to affairs to achieve independent management; you can also divide human resources into different projects to complete internal management, thus preventing the risk of enterprise data leakage.
+
+---
+
+## Deployment Instructions
+
+> For detailed deployment instructions, please refer to the [deployment document](./deploy.md)
+> The deployment of this product is slightly troublesome but not profound. It requires careful handling. The software operation requires the deployment of both the front end and the back end. Please follow the instructions step by step, otherwise, it may cause errors!
+
+1. Deploy Mattermost
+   > Please refer to the official documentation: https://docs.mattermost.com/guides/deployment.html 
+   > Choose the corresponding plan according to your platform for deployment, note: (a) if using PostgreSQL, be sure to configure the database according to the official steps; (b) if you need to use Mattermost independently and want to use its AI features, you must choose the PostgreSQL database; (c) be sure to configure the reverse proxy correctly, otherwise, the Mattermost websocket service cannot connect to the platform functions and many will not be available.
+2. Deploy Strapi
+   After pulling the backend source code, modify the relevant fields in the configuration file, and then run (you can install dependencies according to your own package management tool)
    ```bash
    yarn
    ```
-   或者你可以使用
+   Or you can use
    ```bash
-   npm install --force
-   pnpm install  #可能存在部分依赖遗漏
-   cnpm install --force
+   npm install
+   pnpm install
+   cnpm install
    ```
-   之后运行
+   Then run
    ```bash
    yarn develop
    ```
-   经过上一步折腾之后，如果运行依然报缺少依赖，我的方案是：
+   After the previous step, if the operation still reports a lack of dependencies, my solution is:
    ```bash
    pnpm install
-   npm install --froce
+   npm install
    yarn
    ```
-   根据提示打开网页，创建管理员账号，并准备完成接下来的配置
-3. 部署前端
-   拉取前端代码，安装依赖(参考上一步)
-4. 配置
-   复制源码中的 .env.example 为 .env 文件，按照其中的说明逐步配置，牵扯到 Strapi 内部资源时，请在 Strapi 内上传必要的文件，并获取 ID 后配置 .env 中的字段，后端配置请务必按照 .env 文件内的说明完整配置，否则可能引发功能缺失或 bug
-5. 安全加固
-   请自行配置 Strapi 中间件、插件设置、邮件配置等内容，例如您可以开启注册邮件确认、跨域设置、注册字段限制等，自行设置 Mattermost 中的跨域设置、邮件配置、SSL 配置等，您也可以修改前端代码，开启 cloudflare 中的真人识别，这需要您自行申请 cloudflare 相关 API；
-6. 部署
-   > 1. 后端：上传源码到服务器，执行`yarn build`编译，之后执行`yarn start`启动服务，你也可以使用其它工具或者宝塔面板之后的运维工具来管理 node 项目；
-   > 2. 前端: 本地编译`quasar build`，之后上传 dist 目录下对应类型文件夹下文件到服务器即可，推荐使用`quasar build -m pwa`将前端打包为 pwa 应用，以便将静态资源缓存到用户本地；
-   > 3. 注意事项：（a）如果使用的是 Apache 服务器，注意配置 vue 的路由模式；（b）部署完 Mattermost 后务必先登陆 Mattermost 并确保反代、websocket 连接均正常
+   Follow the prompts to open the web page, create an administrator account, and prepare for the next configuration.
+3. Deploy Frontend
+   Pull the frontend code and install dependencies (refer to the previous step).
+4. Configuration
+   Copy the .env.example in the source code to .env file, and configure it step by step according to the instructions. When it involves Strapi internal resources, please upload the necessary files in Strapi and get the ID after configuring the fields in .env. The backend configuration must be fully configured according to the instructions in the .env file, otherwise, it may cause functional loss or bugs.
+5. Security Reinforcement
+   Please configure Strapi middleware, plugin settings, email configuration, etc., by yourself. For example, you can enable email confirmation for registration, cross-domain settings, registration field restrictions, etc. Set up Mattermost's cross-domain settings, email configuration, SSL configuration, etc., by yourself. You can also modify the frontend code to enable Cloudflare's human recognition, which requires you to apply for Cloudflare's related APIs by yourself.
+6. Deployment
+   > 1. Backend: Upload the source code to the server, execute `yarn build` to compile, and then execute `yarn start` to start the service. You can also use other tools or post-maintenance tools like the Bta panel to manage Node projects;
+   > 2. Frontend: Compile locally with `quasar build`, and then upload the files in the corresponding type folder under the dist directory to the server. It is recommended to use `quasar build -m pwa` to package the frontend as a pwa application, so that static resources can be cached locally;
+   > 3. Notes: (a) if using an Apache server, pay attention to configuring Vue's routing mode; (b) after deploying Mattermost, be sure to log in to Mattermost first and ensure that the reverse proxy and websocket connections are normal.
 
-## 其它说明：
+## Other Instructions:
 
-由于产品在开发迭代时经历多次修正，当您阅读源码时可能会发现，前端中其实包含了四个大的功能：
+Since the product has undergone many corrections during development and iteration, when you read the source code, you may find that the frontend actually includes four major functions:
 
-1. 团队，这也是最终呈现的产品；
-2. 项目：如果您愿意，可以对源码进行少量修改即可提取出一个独立的项目管理产品，它包含了您在最终产品中看到的“项目”部分的全部或部分功能，您可能需要一些修改才能使其正常工作；
-3. chat：他是一个基于 Quasar 的 Mattermost 前端，您也可以将其提取为一个独立的产品，从而实现对 Mattermost web 端的 vue 重构，注意您需要结合 team 文件夹内有关 chat 的部分对该内容进行升级，事实上在后期我对聊天组件进行了大量的修改，并没有同步到此，您需要手动完成这里的修改；
-4. 资讯：您可能注意到有关用户个人频道的代码，我会在后期的迭代部分对此处进行重构，您也可以对此进行相关的测试和修改，从而提取出一个类似掘金、36Kr 那样的资讯站点，每个用户都拥有自己的频道，可以发布文章、视频、音频、专辑等
+1. Team, which is the final product presented;
+2. Project: If you wish, you can extract an independent project management product with a few modifications to the source code. It includes all or part of the "Project" section you see in the final product. You may need some modifications to make it work properly;
+3. Chat: It is a Mattermost frontend based on Quasar. You can also extract it as an independent product to achieve a Vue reconstruction of the Mattermost web end. Note that you need to combine the chat-related parts in the team folder to upgrade this content. In fact, I made a lot of modifications to the chat component later and did not synchronize it here. You need to complete the modifications manually;
+4. Information: You may notice the code related to the user's personal channel. I will refactor this part in the later iteration. You can also test and modify it to extract an information site similar to Jinshan and 36Kr, where each user has their own channel and can publish articles, videos, audio, albums, etc.
+
+## Acknowledgements:
+
+PostgreSQL: https://www.postgresql.org 
+Strapi: https://strapi.io 
+Mattermost: https://mattermost.com 
+Quasar: https://quasar.dev 
+Tiptap: https://tiptap.dev 
+Ej2: https://www.syncfusion.com
+
