@@ -4,8 +4,8 @@
 易乎APP(IPBase) 是一款社交向协作延伸的“无界协作平台”应用，兼具通讯、社交、项目管理、自媒体运营功能，其设计目标是为客户提供一个整合协作对象、实现无地域阻碍、无认知隔阂组建协作团队，并实现团队协作管理，关系维护，社区建设的综合性平台应用。
 
 ### 应用网址：
-> 国际站点: https://app.ipbase.cc
-> 中国大陆：https://app.yihu.team
+- 国际站点: https://app.ipbase.cc
+- 中国大陆：https://app.yihu.team
 
 
 ### 演示视频
@@ -112,9 +112,9 @@
 
 ## 鸣谢：
 
-PostgreSQL： https://www.postgresql.org
-Strapi： https://strapi.io
-Mattermost： https://mattermost.com
-Quasar： https://quasar.dev
-Tiptap: https://tiptap.dev
-Ej2： https://www.syncfusion.com
+- PostgreSQL： https://www.postgresql.org
+- Strapi： https://strapi.io
+- Mattermost： https://mattermost.com
+- Quasar： https://quasar.dev
+- Tiptap: https://tiptap.dev
+- Ej2： https://www.syncfusion.com
