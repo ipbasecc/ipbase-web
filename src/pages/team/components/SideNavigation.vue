@@ -233,7 +233,7 @@
                   lines="2"
                   class="text-grey-5"
                 >
-                  {{ project.description }} - {{ uiStore.navDrawerWidth }}
+                  {{ project.description }}
                 </q-item-label>
               </q-item-section>
               <UnreadBlock v-if="project.auth?.read" :mm_channel_id="project.mm_channel?.id" />
