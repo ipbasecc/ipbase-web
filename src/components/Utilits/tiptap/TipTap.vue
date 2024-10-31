@@ -463,7 +463,7 @@ watchEffect(() => {
   uiConfig.value.withImageBtn = withImageBtn.value;
   uiConfig.value.withAttachBtb = withAttachBtb.value;
   if(editor.value){
-    const { editorMenu } = useTiptap(editor, uiConfig.value, uploadFiles, tiptapBlur, tiptapSave, saving);
+    const { editorMenu } = useTiptap(editor, uiConfig.value, uploadFiles, tiptapBlur, tiptapSave, saving, open);
     menu.value = editorMenu;
   }
 })
