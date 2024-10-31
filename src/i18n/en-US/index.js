@@ -423,6 +423,8 @@ export default {
   cant_view_private_card_tip: 'This card has been set as private, and only card members can view its contents',
 
   remove_this_kanban: 'remove this kanban',
+  remove_this_chapter: 'remove this chapter',
+  remove_this_reel: 'remove this reel',
   add_new: 'add new',
   miss: 'miss',
   not_support_upload_dir: 'unsupport upload directory',

@@ -423,6 +423,8 @@ export default {
   cant_view_private_card_tip: 'Diese Karte wurde auf privat gesetzt, nur Kartenmitglieder können den Inhalt anzeigen',
 
   remove_this_kanban: 'Dieses Kanban entfernen',
+  remove_this_chapter: 'Diesen Abschnitt entfernen',
+  remove_this_reel: 'Diese Rolle entfernen',
   add_new: 'Neues hinzufügen',
   miss: 'Fehlen',
   not_support_upload_dir: 'Ordner-Uploads werden hier nicht unterstützt',

@@ -422,6 +422,8 @@ export default {
   cant_view_private_card_tip: '该卡片已被设置为私有，只有卡片成员可查看其内容',
 
   remove_this_kanban: '移除此看板',
+  remove_this_chapter: '移除此章节',
+  remove_this_reel: '移除此轨',
   add_new: '添加新',
   miss: '缺少',
   not_support_upload_dir: '此处不支持上传文件夹',
