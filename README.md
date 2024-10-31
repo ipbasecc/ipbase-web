@@ -10,6 +10,12 @@ YiHu APP (IPBase) is a "boundaryless collaboration platform" application that ex
 ### Demo Video
 [Production Introduction Video](https://www.youtube.com/watch?v=xP1KFOq4qN0) 
 
+![Task Management](https://blob.ipbase.cc/kanban.png "Task Management")
+![Quadrant View](https://blob.ipbase.cc/Quadrant.png "Quadrant View")
+![Quick Chat](https://blob.ipbase.cc/Task_chat.png "Quick Chat")
+![Task detial](https://blob.ipbase.cc/Task_detial.png "Task detial")
+![Video Segment Management](https://blob.ipbase.cc/Segment.png "Video Segment Management")
+
 ## Application Features
 1. **Communication**: Based on Mattermost's communication features, supporting channels, groups, private chats, and other communication methods, with message reply, pin, favorite, and follow functions;
 2. **Collaboration**: Supports kanban, classrooms, documents, files, planning, and other collaboration methods, with task management, project management, self-media operations, and other functions;

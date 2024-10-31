@@ -11,6 +11,12 @@
 ### 演示视频
 [产品说明](https://player.bilibili.com/player.html?isOutside=true&aid=113397119064415&bvid=BV1bMSVYUEzF&cid=26539262393&p=1)
 
+![任务管理](https://blob.ipbase.cc/kanban_CN.png "任务管理")
+![四象限视图](https://blob.ipbase.cc/Quadrant_CN.png "四象限视图")
+![快捷沟通](https://blob.ipbase.cc/Task_chat_CN.png "快捷沟通")
+![任务详情](https://blob.ipbase.cc/Task_detial_CN.png "任务详情")
+![剪辑镜头管理](https://blob.ipbase.cc/Segment_CN.png "剪辑镜头管理")
+
 ## 应用功能
 1. **通讯**：基于Mattermost的通讯功能，支持频道、群组、私聊等多种通讯方式，支持消息回复、置顶、收藏、关注等功能；
 2. **协作**：支持看板、课堂、文档、文件、规划等多种协作方式，支持任务管理、项目管理、自媒体运营等功能；
