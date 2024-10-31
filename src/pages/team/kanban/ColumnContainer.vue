@@ -250,7 +250,7 @@
           @mouseup="setDragscroll = false"
           @dblclick.stop="CreateCardFn(columnRef.id)"
         >
-          <q-popup-proxy context-menu class="radius-sm shadow-12">
+          <q-popup-proxy v-if="teamStore?.kanban?.type === 'kanban'" context-menu class="radius-sm shadow-12">
             <q-list bordered dense class="q-pa-xs radius-sm">
               <q-item clickable v-ripple class="radius-xs">
                 <q-item-section>{{ $t('create_card') }}</q-item-section>
