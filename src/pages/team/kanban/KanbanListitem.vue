@@ -99,9 +99,8 @@
 <script setup>
 import { computed, ref, toRef } from "vue";
 import { kanbanUpdate, kanbanDelete } from "src/api/strapi/project.js";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 
-import { userStore, teamStore, uiStore } from "src/hooks/global/useStore.js";
+import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 
 const props = defineProps({
   kanban: {

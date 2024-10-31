@@ -73,6 +73,7 @@
         :project_id="project_id"
         :kanban_id="kanban_id"
         :view_model="view_modelRef"
+        belong="project_cardKanban"
       />
     </div>
   </div>
