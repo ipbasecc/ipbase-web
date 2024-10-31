@@ -115,6 +115,8 @@
         :class="styleClass ? styleClass : 'q-pa-md'"
         :editor="editor"
         :style="contentStyle"
+        @mouseenter="onMouseEnter"
+        @mouseleave="onMouseLeave"
       />
     </template>
     <div
@@ -575,12 +577,23 @@ const tiptapSave = () => {
     emit("tiptapSave", content)
   }
 }
+const enable_shortcut = ref(false);
+const onMouseEnter = () => {
+  enable_shortcut.value = true;
+}
+const onMouseLeave = () => {
+  enable_shortcut.value = false;
+}
 const ControlKey = computed(() => {
   return $q.platform.is.mac ? "metaKey" : "ctrlKey"; // todo，这里需要验证meteKey是否正确
 })
 onKeyStroke([ControlKey.value, "s"], (e) => {
-  e.preventDefault();
-  tiptapSave();
+  if(!enable_shortcut.value) return;
+  // console.log('onKeyStroke Tiptap', e);
+  if (e[ControlKey.value] && e.key === 's') {
+    e.preventDefault();
+    tiptapSave();
+  }
 });
 
 defineExpose({

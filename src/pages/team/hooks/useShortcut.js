@@ -5,6 +5,7 @@ import { teamStore, uiStore } from "src/hooks/global/useStore";
 export default function shortcut() {
   onKeyStroke(["shiftKey", "<"], (e) => {
     if (uiStore.disable_shortcut) return;
+    if (!e['shiftKey'] || e.key !== '<') return;
     e.preventDefault();
     if (uiStore.navigatorDrawer && teamStore.team) {
       uiStore.navigatorDrawer = false;
@@ -18,6 +19,7 @@ export default function shortcut() {
   });
   onKeyStroke(["shiftKey", ">"], (e) => {
     if (uiStore.disable_shortcut) return;
+    if (!e['shiftKey'] || e.key !== '>') return;
     e.preventDefault();
     if (!uiStore.isFocusMode && !uiStore.projectLeftDrawer) {
       uiStore.projectLeftDrawer = true;
@@ -31,6 +33,7 @@ export default function shortcut() {
   });
   onKeyStroke(["shiftKey", "/"], (e) => {
     if (uiStore.disable_shortcut) return;
+    if (!e['shiftKey'] || e.key !== '/') return;
     e.preventDefault();
     if (uiStore.activeReel && teamStore.card) {
       uiStore.segmentDrawer = !uiStore.segmentDrawer;

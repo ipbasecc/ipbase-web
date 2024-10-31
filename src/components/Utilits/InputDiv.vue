@@ -218,6 +218,7 @@ function handler(mutationRecords) {
 
 // 修改onKeyStroke监听器，添加saveSelection调用
 onKeyStroke(["ctrlKey", "z"], (e) => {
+  if (!e['ctrlKey'] || e.key !== 'z') return;
   e.preventDefault();
   undo();
 });
