@@ -385,6 +385,8 @@ export default {
 
   remove_this_group: 'remove this group',
   new_kanban: 'new kanban',
+  new_reel: 'new reel',
+  new_classroom: 'new course',
   kanban_name: 'kanban name',
   new_group: 'new group',
   group_name: 'group name',

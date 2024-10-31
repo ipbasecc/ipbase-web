@@ -384,6 +384,8 @@ export default {
 
   remove_this_group: '移除此分组',
   new_kanban: '新看板',
+  new_reel: '新轨',
+  new_classroom: '新课堂',
   kanban_name: '看板名称',
   new_group: '新分组',
   group_name: '分组名称',

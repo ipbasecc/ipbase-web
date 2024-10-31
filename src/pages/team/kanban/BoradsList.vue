@@ -69,7 +69,9 @@
                             <q-item-section side
                               ><q-icon name="mdi-plus"
                             /></q-item-section>
-                            <q-item-section>{{ $t('new_kanban')}}</q-item-section>
+                            <q-item-section v-if="teamStore.kanban?.type === 'kanban'">{{ $t('new_kanban') }}</q-item-section>
+                            <q-item-section v-if="teamStore.kanban?.type === 'segment'">{{ $t('new_reel') }}</q-item-section>
+                            <q-item-section v-if="teamStore.kanban?.type === 'classroom'">{{ $t('new_classroom') }}</q-item-section>
                           </q-item>
                         </template>
                         <template v-if="useAuths('delete', ['group'])">

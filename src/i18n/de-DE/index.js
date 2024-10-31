@@ -385,6 +385,7 @@ export default {
 
   remove_this_group: 'Diese Gruppe entfernen',
   new_kanban: 'Neues Kanban',
+  new_reel: 'Neue Klassenraum',  
   kanban_name: 'Kanban-Name',
   new_group: 'Neue Gruppe',
   group_name: 'Gruppenname',
