@@ -19,7 +19,7 @@
       </q-item>
       <div class="q-space" @click="setSection(void 0)" />
     </q-list>
-    <q-scroll-area class="q-space tiptap q-pa-md">
+    <q-scroll-area class="q-space tiptap" :class="showVideo ? '' : 'q-pa-md'">
       <div v-if="!showVideo" v-html="MDRender(section)" />
       <IntroductionVideo v-else />
     </q-scroll-area>
@@ -59,7 +59,7 @@ const $q = useQuasar();
 const { t } = useI18n();
 const section = ref();
 const sections = [
-  // { label: t("video"), val: "video" },
+  { label: t("video"), val: "video" },
   { label: t("overview"), val: "overview" },
   { label: t("team"), val: "team" },
   { label: t("navigation_threads"), val: "navigation_threads" },

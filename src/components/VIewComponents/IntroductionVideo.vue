@@ -1,11 +1,10 @@
 <template>
-  IntroductionVideo
   <Artplayer
     :option="{
       ...videoOption,
       url: url,
     }"
-    class="fit"
+    class="absolute-full"
   />
 </template>
 <script setup>
@@ -26,5 +25,5 @@ const props = defineProps({
     },
   },
 });
-const url = "";
+const url = "https://blob.ipbase.cc/IPBase-Introduction.mp4";
 </script>

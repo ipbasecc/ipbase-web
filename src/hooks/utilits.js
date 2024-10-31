@@ -46,23 +46,23 @@ export function genCardName(i, length) {
 
 export function calcCoordinate(cards) {
   function deleteField(arr) {
-    // 遍历数组的每个元素
-    for (let item of arr) {
+    // 使用map创建数组的副本，并应用修改
+    return arr.map(item => {
+      // 创建item的副本，避免直接修改原始对象
+      let newItem = { ...item };
       // 如果元素中有name属性
-      if (item.hasOwnProperty("name")) {
-        // 如果name属性的值为空
-        if (!item.name) {
-          // 删除name属性
-          delete item.name;
-        } else {
-          // 否则，删除jsonContent属性
-          delete item.jsonContent;
-        }
+      if (newItem.hasOwnProperty("name") && newItem.name) {
+        // 如果name属性的值不为空，则删除jsonContent属性
+        delete newItem.jsonContent;
+      } else if (newItem.hasOwnProperty("name")) {
+        // 如果name属性的值为空，则删除name属性
+        delete newItem.name;
       }
-    }
-    // 返回修改后的数组
-    return arr;
+      // 返回修改后的新对象
+      return newItem;
+    });
   }
+  
   // 转换eCharts需要的数据
   function transform(arr, props) {
     // 创建一个空数组，用于存放结果
@@ -83,7 +83,6 @@ export function calcCoordinate(cards) {
             // 否则，就直接使用该值
             values.push(item[prop]);
           }
-          // values.push(item[prop]);
         }
       }
       // 将新数组放入结果数组中
@@ -92,7 +91,9 @@ export function calcCoordinate(cards) {
     // 返回结果数组
     return result;
   }
-  let arr = deleteField(cards);
+  
+  // 使用deleteField函数处理cards数组，并确保不修改原始数组
+  let arr = deleteField([...cards]); // 使用扩展运算符创建cards的副本
   let props = [
     "urgency",
     "importance",

@@ -1,4 +1,4 @@
-# YiHu APP (IPBase)
+# IPBase
 
 ## Introduction
 YiHu APP (IPBase) is a "boundaryless collaboration platform" application that extends from social interaction to collaboration, integrating communication, social networking, project management, and self-media operations. Its design goal is to provide customers with an integrated collaboration platform that overcomes geographical barriers and cognitive gaps, enabling the formation of collaborative teams and realizing team collaboration management, relationship maintenance, and community building.

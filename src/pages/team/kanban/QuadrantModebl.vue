@@ -21,11 +21,9 @@ import { ref, watch, watchEffect, toRefs, computed } from "vue";
 import { calcCoordinate } from "src/hooks/utilits.js";
 
 import QuadrantChart from "src/pages/team/kanban/QuadrantChart.vue";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
-
 import QuadrantBackgroud from "src/pages/team/card/components/QuadrantBackgroud.vue";
 import { filterCardsByString } from "src/hooks/utilits.js";
-import { userStore, teamStore } from "src/hooks/global/useStore.js";
+import { teamStore } from "src/hooks/global/useStore.js";
 
 const props = defineProps({
   kanban_data: {
