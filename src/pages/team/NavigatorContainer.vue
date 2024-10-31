@@ -32,7 +32,7 @@
           side="left"
           v-model="uiStore.navigatorDrawer"
           :breakpoint="640"
-          :width="navDrawerWidth"
+          :width="uiStore.navDrawerWidth"
           class="border-right"
         >
           <div v-if="uiStore.app === 'teams' || uiStore.app === 'threads'"
@@ -47,7 +47,7 @@
                       padding="xs sm" align="left"
                       icon-right="mdi-chevron-down"
                       class="no-wrap font-bold-600"
-                      :style="`max-width: ${navDrawerWidth - 40}px`"
+                      :style="`max-width: ${uiStore.navDrawerWidth - 40}px`"
                     >
                       <span class="text-limit q-pr-sm">{{ team.display_name }}</span>
                       <TeamMenu v-if="!userStatus_byTeam" :team />
@@ -83,7 +83,7 @@
               </div>
               <SideNavigation v-else-if="enable_project || enable_channel"
                 class="q-space"
-                :width="navDrawerWidth"
+                :width="uiStore.navDrawerWidth"
                 :class="isExternal ? 'q-pt-sm' : ''"
               />
             </template>
@@ -197,7 +197,6 @@ const haveSubNav = computed(() => {
 const toggleNavDrawer = () => {
   uiStore.navigatorDrawer = !uiStore.navigatorDrawer;
 };
-const navDrawerWidth = ref(210);
 
 const { x } = useMouse({ touch: false });
 const navDrawerMinWidth = ref(180);
@@ -211,7 +210,7 @@ const position = reactive({
 const handleMouseDown = () => {
   position.x = x.value;
   dragWidth.value = true;
-  _ori_width.value = navDrawerWidth.value;
+  _ori_width.value = uiStore.navDrawerWidth;
   uiStore.dragging = true;
 };
 const handleMouseUp = () => {
@@ -226,11 +225,11 @@ const handleMouseMove = () => {
     _ori_width.value + deltaX >= navDrawerMinWidth.value &&
     _ori_width.value + deltaX <= navDrawerMaxWidth.value
   ) {
-    navDrawerWidth.value = _ori_width.value + deltaX;
+    uiStore.navDrawerWidth = _ori_width.value + deltaX;
   } else if (_ori_width.value + deltaX > navDrawerMaxWidth.value) {
-    navDrawerWidth.value = navDrawerMaxWidth.value;
+    uiStore.navDrawerWidth = navDrawerMaxWidth.value;
   } else if (_ori_width.value + deltaX === navDrawerMaxWidth.value) {
-    navDrawerWidth.value = navDrawerMinWidth.value;
+    uiStore.navDrawerWidth = navDrawerMinWidth.value;
   } else if (_ori_width.value + deltaX < 50) {
     uiStore.navigatorDrawer = false;
   }

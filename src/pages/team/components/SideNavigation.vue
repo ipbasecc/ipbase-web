@@ -81,6 +81,7 @@
               ${heiglight === i.id ? 'border' : 'border-placeholder'}
             `"
             class="radius-xs q-pa-xs hovered-item full-width"
+            :style="`width: ${uiStore.navDrawerWidth - 16}px;`"
             @click="enterChannel(i)"
           >
             <q-item-section side class="q-pr-sm" @mouseenter="deEnter = false">
@@ -210,6 +211,7 @@
               } ${project.auth && !project.auth?.read ? 'op-5' : ''}`"
               class="radius-xs q-pa-xs full-width"
               @click="enterProject(project)"
+              :style="`width: ${uiStore.navDrawerWidth - 16}px;`"
             >
               <q-item-section side style="width: 44px" class="q-pr-sm">
                 <q-img
@@ -228,10 +230,10 @@
                 <q-item-label
                   v-if="project.description"
                   caption
-                  lines="1"
+                  lines="2"
                   class="text-grey-5"
                 >
-                  {{ project.description }}
+                  {{ project.description }} - {{ uiStore.navDrawerWidth }}
                 </q-item-label>
               </q-item-section>
               <UnreadBlock v-if="project.auth?.read" :mm_channel_id="project.mm_channel?.id" />
