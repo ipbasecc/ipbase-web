@@ -86,8 +86,8 @@
                 >
                   <q-item-section side><q-icon name="remove" /></q-item-section>
                   <q-item-section v-if="teamStore.kanban?.type === 'kanban'">{{ $t('remove_this_kanban') }}</q-item-section>
-                  <q-item-section v-if="teamStore.kanban?.type === 'segment'">{{ $t('remove_this_chapter') }}</q-item-section>
-                  <q-item-section v-if="teamStore.kanban?.type === 'classroom'">{{ $t('remove_this_reel') }}</q-item-section>
+                  <q-item-section v-if="teamStore.kanban?.type === 'segment'">{{ $t('remove_this_reel') }}</q-item-section>
+                  <q-item-section v-if="teamStore.kanban?.type === 'classroom'">{{ $t('remove_this_chapter') }}</q-item-section>
                 </q-item>
               </template>
             </q-list>
