@@ -82,11 +82,18 @@ const onDrop = async (e) => {
             "__strapi_userMatedate"
           );
           if (__strapi_userMatedate) {
-            __strapi_userMatedate.profile.avatar.data.attributes.url =
-              strapi_avatar.data.avatar.url;
+            if(__strapi_userMatedate.profile?.avatar){
+              __strapi_userMatedate.profile.avatar.data.attributes.url =
+                strapi_avatar.data.avatar.url;
+            } else {
+              __strapi_userMatedate.profile = {
+                avatar: strapi_avatar
+              }
+            }
+            const _cacheVal = JSON.parse(JSON.stringify(__strapi_userMatedate))
             await localforage.setItem(
               "__strapi_userMatedate",
-              __strapi_userMatedate
+              _cacheVal
             );
           }
         }

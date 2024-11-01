@@ -308,7 +308,9 @@ onBeforeMount(() => {
   cover.value = userStore.cover;
   brand.value = userStore.brand;
   self_tags.value = userStore.self_tags;
-  delete userStore.config.id
+  if(userStore.config?.id){
+    delete userStore.config.id
+  }
 })
 const update_params = ref({
   data: {

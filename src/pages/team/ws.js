@@ -4,7 +4,7 @@ import { $server } from 'src/boot/server.js'
 import { i18n } from 'src/boot/i18n.js';
 const $t = i18n.global.t;
 
-const TYPE = process.env.DEV ? 'ws' : 'wss'
+const TYPE = process.env.DEV ? 'wss' : 'wss'
 let token = localStorage.getItem("mmtoken");
 let ws;
 let reConnectCount = 0;
