@@ -38,7 +38,11 @@
         :width="leftDrawerWidth"
       >
         <BoradsList v-if="showBoard" />
-        <ChatList v-else-if="teamStore.navigation === 'chat'" />
+        <template v-else-if="teamStore.navigation === 'chat'">
+          <ChatList />
+          <q-space />
+          <StartMeet :project="teamStore.project" />
+        </template>
         <StorageList v-else-if="teamStore.navigation === 'storage' && teamStore.project?.storages"
           :storages="teamStore.project?.storages"
           :by_info="byInfo"
@@ -106,7 +110,11 @@
             <router-view v-show="$q.screen.gt.xs || !uiStore.showMainContentList" />
             <template v-if="!$q.screen.gt.xs && uiStore.showMainContentList">
               <BoradsList v-if="showBoard" />
-              <ChatList v-if="teamStore.navigation === 'chat'" />
+              <template v-if="teamStore.navigation === 'chat'">
+                <ChatList />
+                <q-space />
+                <StartMeet :project="teamStore.project" />
+              </template>
               <StorageList v-if="teamStore.navigation === 'storage' && teamStore.project?.storages"
                 :storages="teamStore.project?.storages"
                 :by_info="byInfo"
@@ -152,6 +160,7 @@ import { findRoles } from 'src/pages/team/hooks/useMember.js'
 import SideNavigation from "pages/team/components/SideNavigation.vue";
 import TeamList from "pages/team/components/TeamList.vue";
 import BudgetList from './budget/BudgetList.vue'
+import StartMeet from 'src/components/meet/StartMeet.vue'
 
 const route = useRoute();
 const router = useRouter();

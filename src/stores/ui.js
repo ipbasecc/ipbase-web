@@ -160,6 +160,9 @@ export default defineStore("ui", {
     ],
     active_note_id: void 0,
     can_drag_apps: ["teams", "chats", 'affairs', 'brand', 'notebooks'],
+    meet: void 0,
+    init_meet: false,
+    show_meet: false,
   }),
   actions: {
     $reset() {

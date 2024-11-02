@@ -142,7 +142,7 @@ watch(
 const fill_userStore = () => {
   // me字段
   userStore.me = me.value;
-  userStore.followed = me.value.profile?.avatar?.data?.attributes.url;
+  userStore.followed = me.value?.profile?.avatar?.data?.attributes?.url;
   // Mattermost profile
   userStore.mm_profile = me.value.mm_profile;
   // 是否登录了

@@ -8,6 +8,7 @@
       <q-btn v-if="$q.screen.gt.xs" flat icon="menu" padding="xs" @click="toggleleftDrawer()" />
       <q-btn v-else flat icon="mdi-chevron-left" padding="xs" @click="backHome()" />
       <template v-if="teamStore.project">
+        <q-btn v-if="teamStore.project?.meeting" flat dense round color="red" icon="radio_button_checked" @click="toggleMeet()" />
         <ProjectNavigation />
         <q-space />
         <MembersIndicator
@@ -83,6 +84,13 @@ const membersForAvatar = computed(
 const router = useRouter()
 const backHome = () => {
   router.push('/teams')
+}
+
+const toggleMeet = () => {
+  if(!uiStore.init_meet){
+    uiStore.init_meet = true
+  }
+  uiStore.show_meet = !uiStore.show_meet
 }
 
 onBeforeMount(async() => {

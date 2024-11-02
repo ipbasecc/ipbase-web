@@ -73,6 +73,7 @@
           </q-card-section>
         </q-card>
       </div>
+      <MeetPage v-if="uiStore.init_meet" v-show="uiStore.show_meet" />
     </template>
   </template>
   <q-dialog v-model="connect_refused" persistent v-bind="$attrs">
@@ -116,6 +117,7 @@ import AppNotification from 'src/pages/team/components/AppNotification.vue'
 import { useSocket } from 'src/pages/team/hooks/useSocket.js'
 
 import { isTokenExpired } from 'src/hooks/utilits.js'
+import MeetPage from 'src/pages/team/meet/MeetPage.vue'
 
 getUserData();
 useSocket();

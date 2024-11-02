@@ -9,16 +9,12 @@
 import {
   ref,
   toRefs,
-  watch,
   onBeforeMount,
   onBeforeUnmount,
   provide,
 } from "vue";
 import { useRouter } from "vue-router";
-import { findCard } from "src/api/strapi/project.js";
-
 import BgBrand from "src/components/VIewComponents/BgBrand.vue";
-import localforage from "localforage";
 
 import {
   getProjectCache,

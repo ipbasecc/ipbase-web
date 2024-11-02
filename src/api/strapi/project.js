@@ -1041,3 +1041,41 @@ export async function attachProjectBudget(_project_id, params) {
     return error;
   }
 }
+
+
+// 会议
+
+
+export async function startMeet(project_id) {
+  try {
+    const res = await api.post(`projects/${project_id}/start_meet`);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+export async function endMeet(project_id) {
+  try {
+    const res = await api.post(`projects/${project_id}/end_meet`);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+/**
+ * 
+ * @param {Object} params { project_id: Number}
+ * @returns 
+ */
+export async function projectMeetAuth(params) {
+  try {
+    const res = await api.post(`jitsi/project_meet_auth`, params);
+    return res;
+  } catch (error) {
+    return error;
+  }
+}
