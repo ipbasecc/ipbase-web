@@ -736,5 +736,8 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   create_note: 'Notiz erstellen',
   open_related_course: 'Verwandten Kurs öffnen',
   notebooks: 'Notizen',
-  app_notebooks_purpose: 'Verlinkte Notizen'
+  app_notebooks_purpose: 'Verlinkte Notizen',
+  start_meet: 'Meeting starten',
+  join_meet: 'Meeting beitreten',
+  meet_no_auth: 'Sie haben keine Berechtigung, an diesem Meeting teilzunehmen'
 };

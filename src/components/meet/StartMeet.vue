@@ -1,7 +1,7 @@
 <template>
     <div class="full-width q-pa-sm">
-        <q-btn v-if="!uiStore.meet && !teamStore.project?.meeting" color="primary" class="full-width" label="start_meet" @click="startMeet" />
-        <q-btn v-else color="primary" label="join_meet" class="full-width" @click="joinMeet" />
+        <q-btn v-if="!uiStore.meet && !teamStore.project?.meeting" color="primary" class="full-width" :label="$t('start_meet')" @click="startMeet" />
+        <q-btn v-else color="primary" :label="$t('join_meet')" class="full-width" @click="joinMeet" />
     </div>
 </template>
 

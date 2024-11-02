@@ -737,5 +737,8 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   create_note: 'Create Note',
   open_related_course: 'Open Related Course',
   notebooks: 'Notebooks',
-  app_notebooks_purpose: 'Link Notes'
+  app_notebooks_purpose: 'Link Notes',
+  start_meet: 'Start Meeting',
+  join_meet: 'Join Meeting',
+  meet_no_auth: 'You do not have permission to join this meeting'
 }

@@ -739,5 +739,9 @@ export default {
   create_note: '创建笔记',
   open_related_course: '打开关联课程',
   notebooks: '笔记',
-  app_notebooks_purpose: '链接笔记'
+  app_notebooks_purpose: '链接笔记',
+
+  start_meet: '发起会议',
+  join_meet: '加入会议',
+  meet_no_auth: '您无权参与此会议'
 };

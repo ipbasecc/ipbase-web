@@ -7,7 +7,7 @@
         </ul>
     </span>
     <div v-else-if="meetAuth === false" class="fit absolute-full flex flex-center">
-        您无权参与此会议
+        {{ $t('meet_no_auth') }}
     </div>
     <div v-else v-bind="$attrs" ref="jitsiContainer" />
 </template>
