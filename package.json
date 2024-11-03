@@ -18,6 +18,16 @@
     "test:component": "cross-env NODE_ENV=test cypress open --component",
     "test:component:ci": "cross-env NODE_ENV=test cypress run --component"
   },
+  "build": {
+    "electronBuilder": {
+      "electronPermissions": [
+        "desktopCapture",
+        "media",
+        "screen",
+        "mediaDevices"
+      ]
+    }
+  },
   "dependencies": {
     "@apollo/client": "^3.11.8",
     "@blocksuite/blocks": "^0.14.0",
@@ -25,6 +35,7 @@
     "@blocksuite/store": "^0.14.0",
     "@coleqiu/vue-drag-select": "^2.0.5",
     "@electron/remote": "^2.1.2",
+    "@jitsi/electron-sdk": "^6.0.47",
     "@quasar/app-vite": "2.0.0-beta.21",
     "@quasar/extras": "^1.16.12",
     "@syncfusion/ej2-base": "^26.2.10",

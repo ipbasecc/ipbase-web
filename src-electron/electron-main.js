@@ -7,6 +7,7 @@ import {
   net,
   session,
   globalShortcut,
+  desktopCapturer,
 } from "electron";
 import windowStateKeeper from "electron-window-state";
 import path from "path";
@@ -21,6 +22,8 @@ initialize(); // <-- add this
 const platform = process.platform || os.platform();
 
 const currentDir = fileURLToPath(new URL(".", import.meta.url));
+
+const SCREEN_SHARE_GET_SOURCES = "ScreenCapture";
 
 let mainWindow;
 
@@ -81,9 +84,9 @@ function unregisterGlobalShortcuts() {
 function createWindow() {
   let mainWindowState = windowStateKeeper({
     defaultWidth: 1200,
-    defaultHeight: 800
+    defaultHeight: 800,
   });
-  
+
   const csp = `
     default-src 'none';
     script-src 'self' 'unsafe-inline';
@@ -135,7 +138,7 @@ function createWindow() {
     mainWindow.loadFile("index.html");
   }
   // // mainWindow.webContents.setZoomFactor(1.5);
-  mainWindow.once('ready-to-show', () => {
+  mainWindow.once("ready-to-show", () => {
     mainWindow.webContents.setZoomFactor(zoom);
   });
   // disable default menu of system
@@ -225,6 +228,39 @@ app.on("ready", () => {
   createWindow();
 });
 
+ipcMain.handle("ScreenCapture", async (_event, options) => {
+  try {
+    const sources = await desktopCapturer.getSources(options);
+    return sources.map((item) => ({
+      ...item,
+      thumbnail: {
+        dataUrl: item.thumbnail.toDataURL(),
+      },
+    }));
+  } catch (error) {
+    console.error("Failed to get desktop sources:", error);
+    throw error; // Ensure the error is thrown to be caught in the preload script
+  }
+});
+
+// Quit when all windows are closed, except on macOS. There, it's common
+// for applications and their menu bar to stay active until the user quits
+// explicitly with Cmd + Q.
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
+  ipcMain.removeHandler(SCREEN_SHARE_GET_SOURCES);
+});
+
+app.on("activate", () => {
+  // On OS X it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
+});
+
 let stoped = [];
 const inStoped = (item) => {
   return (stoped?.length > 0 && stoped.find((i) => __is(i, item))) || void 0;
@@ -299,25 +335,34 @@ ipcMain.on("stop-download", async (event, fileInfo) => {
 });
 ipcMain.on("clearCache", async (event) => {
   const webContents = mainWindow.webContents;
-  webContents.session.clearStorageData({
-    storages: ['cache','indexedDB','localstorage','sessionStorage','webSQL'],
-  }, () => {
-    mainWindow.webContents.send('cacheCleared');
-  });
+  webContents.session.clearStorageData(
+    {
+      storages: [
+        "cache",
+        "indexedDB",
+        "localstorage",
+        "sessionStorage",
+        "webSQL",
+      ],
+    },
+    () => {
+      mainWindow.webContents.send("cacheCleared");
+    }
+  );
 });
 
 function getWindowsVersion() {
-  if (process.platform !== 'win32') {
-    throw new Error('Not running on Windows');
+  if (process.platform !== "win32") {
+    throw new Error("Not running on Windows");
   }
 
   const version = os.release();
-  const [major, minor, build] = version.split('.').map(Number);
+  const [major, minor, build] = version.split(".").map(Number);
 
   return { major, minor, build };
 }
 
 // 将方法暴露给渲染进程
-ipcMain.on('get-windows-version', (event) => {
+ipcMain.on("get-windows-version", (event) => {
   event.returnValue = getWindowsVersion();
 });

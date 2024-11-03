@@ -298,6 +298,10 @@ export default configure((ctx) => {
         productName: "IPBase",
         copyright: "Copyright © 2024 IPBase",
         asar: true,
+        // protocols: {
+        //   name: "ipbase-protocol",
+        //   schemes: ["ipbase", "wss", "ws"]
+        // },
         // files: [
         //   'dist/electron/**/*'
         // ],
@@ -323,12 +327,13 @@ export default configure((ctx) => {
         win: {
           target: "msi",
           icon: fileURLToPath(new URL("./src-electron/icons/icon.ico", import.meta.url)),
+          requestedExecutionLevel: "requireAdministrator"
         },
         linux: {
           icon: "build/icons",
           target: ["rpm", "deb", "appImage", "snap"],
           // target: ["rpm"],
-          category: "Network",
+          category: "Network;WebBrowser"
         },
       },
 

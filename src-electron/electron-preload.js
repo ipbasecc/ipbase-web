@@ -79,3 +79,16 @@ contextBridge.exposeInMainWorld('osAPI', {
     }
   }
 });
+
+contextBridge.exposeInMainWorld('jitsiAPI', {
+  // getDesktopSources: (options) => ipcRenderer.invoke(SCREEN_SHARE_GET_SOURCES, options)
+
+  getDesktopSources: async (options) => {
+    try {
+      return await ipcRenderer.invoke('ScreenCapture', options);
+    } catch (error) {
+      console.error('Error obtaining desktop sources:', error);
+      throw error; // Re-throw the error if you want to handle it further up
+    }
+  }
+})

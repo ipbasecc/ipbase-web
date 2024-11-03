@@ -16,8 +16,9 @@
 import { teamStore, uiStore } from 'src/hooks/global/useStore';
 import { onMounted, useTemplateRef, ref, onBeforeUnmount, computed, watch } from 'vue';
 import useMeet from './useMeet.js';
+import { useQuasar } from 'quasar';
 
-
+const $q = useQuasar();
 const { roomName, displayName } = defineProps({
   roomName: {
     type: String,
@@ -31,7 +32,7 @@ const { roomName, displayName } = defineProps({
 const emit = defineEmits(['meetEnded'])
 
 const jitsiContainer = useTemplateRef('jitsiContainer');
-let meet
+const meet = ref();
 const meetSite = process.env.MEET_SITE
 const meetAuth = ref(void 0)
 
@@ -56,7 +57,6 @@ const createMeet = async () => {
   document.head.appendChild(script);
 
   async function initJitsiMeet() {
-    // Jitsi Meet API 加载完成后，创建一个新的 JitsiMeetExternalAPI 实例
     const options = {
         roomName: roomName, // 替换为你的会议室名称
         jwt: jitsi_token,
@@ -113,10 +113,21 @@ const createMeet = async () => {
             // DEFAULT_BACKGROUND: '#474747',// 背景颜色
             DEFAULT_LOCAL_DISPLAY_NAME: 'me',
         },
+        sandbox: 'allow-scripts allow-same-origin allow-popups allow-forms allow-downloads'
     };
-    meet = new JitsiMeetExternalAPI(meetSite, options);
+    
+    meet.value = new JitsiMeetExternalAPI(meetSite, options);
+    if($q.platform.is.electron){
+      meet.value.on("_requestDesktopSources", async (request, callback) => {
+        const { options } = request;
+        window.jitsiAPI.getDesktopSources(options)
+            .then(sources => callback({ sources }))
+            .catch((error) => callback({ error }));
+      });
+    }
+    
     // 监听会议结束事件
-    meet.addEventListeners({
+    meet.value.addEventListeners({
         // 当用户离开会议时触发
         videoConferenceLeft: handleConferenceLeft,
         // 当会议被终止时触发
@@ -124,6 +135,7 @@ const createMeet = async () => {
         // 可选：监听参与者离开事件
         participantLeft: handleParticipantLeft,
     });
+
   }
 }
 
@@ -142,28 +154,28 @@ const handleConferenceLeft = (data) => {
 const handleReadyToClose = () => {
   emit('meetEnded', data);
   // 执行清理操作
-  if (meet) {
-    meet.dispose();
-    meet = null;
+  if (meet.value) {
+    meet.value.dispose();
+    meet.value = null;
   }
 }
 
 // 可选：处理参与者离开事件
 const handleParticipantLeft = (participant) => {
-  console.log('Participant left:', participant);
+  // console.log('Participant left:', participant);
 }
 
 // 清理会议实例的函数
 const cleanupMeet = () => {
-  if (meet) {
+  if (meet.value) {
     // 移除所有事件监听器
-    meet.removeEventListener('videoConferenceLeft', handleConferenceLeft);
-    meet.removeEventListener('readyToClose', handleReadyToClose);
-    meet.removeEventListener('participantLeft', handleParticipantLeft);
+    meet.value.removeEventListener('videoConferenceLeft', handleConferenceLeft);
+    meet.value.removeEventListener('readyToClose', handleReadyToClose);
+    meet.value.removeEventListener('participantLeft', handleParticipantLeft);
     
     // 销毁实例
-    meet.dispose();
-    meet = null;
+    meet.value.dispose();
+    meet.value = null;
   }
 }
 
