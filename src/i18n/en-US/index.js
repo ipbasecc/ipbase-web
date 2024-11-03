@@ -740,5 +740,28 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   app_notebooks_purpose: 'Link Notes',
   start_meet: 'Start Meeting',
   join_meet: 'Join Meeting',
-  meet_no_auth: 'You do not have permission to join this meeting'
+  meet_no_auth: 'You do not have permission to join this meeting',
+
+
+
+  tiptap_menu_Text: 'Text',
+  tiptap_menu_Text_description: 'Just start typing with plain text.',
+  tiptap_menu_TodoList: 'To-do List',
+  tiptap_menu_TodoList_description: 'Track tasks with a to-do list.',
+  tiptap_menu_H1: 'Heading 1',
+  tiptap_menu_H1_description: 'Big section heading.',
+  tiptap_menu_H2: 'Heading 2',
+  tiptap_menu_H2_description: 'Medium section heading.',
+  tiptap_menu_H3: 'Heading 3',
+  tiptap_menu_H3_description: 'Small section heading.',
+  tiptap_menu_BulletList: 'Bullet List',
+  tiptap_menu_BulletList_description: 'Create a simple bullet list.',
+  tiptap_menu_NumberedList: 'Numbered List',
+  tiptap_menu_NumberedList_description: 'Create a list with numbering.',
+  tiptap_menu_Quote: 'Quote',
+  tiptap_menu_Quote_description: 'Capture a quote.',
+  tiptap_menu_Code: 'Code',
+  tiptap_menu_Code_description: 'Capture a code snippet.',
+  tiptap_menu_Image: 'Image',
+  tiptap_menu_Image_description: 'Upload an image from your computer.',
 }

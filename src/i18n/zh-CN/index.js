@@ -743,5 +743,28 @@ export default {
 
   start_meet: '发起会议',
   join_meet: '加入会议',
-  meet_no_auth: '您无权参与此会议'
+  meet_no_auth: '您无权参与此会议',
+
+
+  tiptap_menu_Text: '文本',
+  tiptap_menu_Text_description: '直接开始输入纯文本。',
+  tiptap_menu_TodoList: '待办列表',
+  tiptap_menu_TodoList_description: '使用待办列表跟踪任务。',
+  tiptap_menu_H1: '标题1',
+  tiptap_menu_H1_description: '大节标题。',
+  tiptap_menu_H2: '标题2',
+  tiptap_menu_H2_description: '中节标题。',
+  tiptap_menu_H3: '标题3',
+  tiptap_menu_H3_description: '小节标题。',
+  tiptap_menu_BulletList: '无序列表',
+  tiptap_menu_BulletList_description: '创建简单的无序列表。',
+  tiptap_menu_NumberedList: '有序列表',
+  tiptap_menu_NumberedList_description: '创建带编号的列表。',
+  tiptap_menu_Quote: '引用',
+  tiptap_menu_Quote_description: '捕获引用。',
+  tiptap_menu_Code: '代码',
+  tiptap_menu_Code_description: '捕获代码片段。',
+  tiptap_menu_Image: '图片',
+  tiptap_menu_Image_description: '从计算机上传图片。',
+
 };

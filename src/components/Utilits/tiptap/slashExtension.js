@@ -18,6 +18,9 @@ import {
 } from "lucide-vue-next";
 import SlashCommandList from "./CommandsList.vue";
 import { startImageUpload } from "./plugins/upload-images";
+import {i18n} from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 const Command = Extension.create({
   name: "slash-command",
@@ -45,8 +48,8 @@ const Command = Extension.create({
 const getSuggestionItems = ({ query }) => {
   return [
     {
-      title: "Text",
-      description: "Just start typing with plain text.",
+      title: $t('tiptap_menu_Text'),
+      description: $t('tiptap_menu_Text_description'),
       searchTerms: ["p", "paragraph"],
       icon: Text,
       command: ({ editor, range }) => {
@@ -59,8 +62,8 @@ const getSuggestionItems = ({ query }) => {
       },
     },
     {
-      title: "To-do List",
-      description: "Track tasks with a to-do list.",
+      title: $t('tiptap_menu_TodoList'),
+      description: $t('tiptap_menu_TodoList_description'),
       searchTerms: ["todo", "task", "list", "check", "checkbox"],
       icon: CheckSquare,
       command: ({ editor, range }) => {
@@ -68,8 +71,8 @@ const getSuggestionItems = ({ query }) => {
       },
     },
     {
-      title: "Heading 1",
-      description: "Big section heading.",
+      title: $t('tiptap_menu_H1'),
+      description: $t('tiptap_menu_H1_description'),
       searchTerms: ["title", "big", "large"],
       icon: Heading1,
       command: ({ editor, range }) => {
@@ -82,8 +85,8 @@ const getSuggestionItems = ({ query }) => {
       },
     },
     {
-      title: "Heading 2",
-      description: "Medium section heading.",
+      title: $t('tiptap_menu_H2'),
+      description: $t('tiptap_menu_H2_description'),
       searchTerms: ["subtitle", "medium"],
       icon: Heading2,
       command: ({ editor, range }) => {
@@ -96,8 +99,8 @@ const getSuggestionItems = ({ query }) => {
       },
     },
     {
-      title: "Heading 3",
-      description: "Small section heading.",
+      title: $t('tiptap_menu_H3'),
+      description: $t('tiptap_menu_H3_description'),
       searchTerms: ["subtitle", "small"],
       icon: Heading3,
       command: ({ editor, range }) => {
@@ -110,8 +113,8 @@ const getSuggestionItems = ({ query }) => {
       },
     },
     {
-      title: "Bullet List",
-      description: "Create a simple bullet list.",
+      title: $t('tiptap_menu_BulletList'),
+      description: $t('tiptap_menu_BulletList_description'),
       searchTerms: ["unordered", "point"],
       icon: List,
       command: ({ editor, range }) => {
@@ -119,8 +122,8 @@ const getSuggestionItems = ({ query }) => {
       },
     },
     {
-      title: "Numbered List",
-      description: "Create a list with numbering.",
+      title: $t('tiptap_menu_NumberedList'),
+      description: $t('tiptap_menu_NumberedList_description'),
       searchTerms: ["ordered"],
       icon: ListOrdered,
       command: ({ editor, range }) => {
@@ -128,8 +131,8 @@ const getSuggestionItems = ({ query }) => {
       },
     },
     {
-      title: "Quote",
-      description: "Capture a quote.",
+      title: $t('tiptap_menu_Quote'),
+      description: $t('tiptap_menu_Quote_description'),
       searchTerms: ["blockquote"],
       icon: TextQuote,
       command: ({ editor, range }) =>
@@ -142,16 +145,16 @@ const getSuggestionItems = ({ query }) => {
           .run(),
     },
     {
-      title: "Code",
-      description: "Capture a code snippet.",
+      title: $t('tiptap_menu_Code'),
+      description: $t('tiptap_menu_Code_description'),
       searchTerms: ["codeblock"],
       icon: Code,
       command: ({ editor, range }) =>
         editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
     },
     {
-      title: "Image",
-      description: "Upload an image from your computer.",
+      title: $t('tiptap_menu_Image'),
+      description: $t('tiptap_menu_Image_description'),
       searchTerms: ["photo", "picture", "media"],
       icon: Image,
       command: ({ editor, range }) => {
