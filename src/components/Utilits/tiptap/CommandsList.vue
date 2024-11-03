@@ -1,111 +1,140 @@
 <template>
-  <q-list v-if="items.length" bordered dense class="radius-sm q-pa-xs"
-  :class="$q.dark.mode ? 'bg-grey-9 text-white' : 'bg-grey-1 text-black'">
-    <q-item v-for="(item, index) in items" :key="index" clickable @click="selectItem(index)"
-    class="radius-xs">
+  <q-list v-if="items.length > 0" bordered class="q-pa-xs radius-sm">
+    <q-item v-for="(item, index) in items" :key="index" clickable v-ripple
+    class="radius-xs"
+    :class="index === selectedIndex ? 'bg-primary text-white' : ''"
+    @click="selectItem(index)">
+      <q-item-section avatar>
+        <LoadingCircle v-if="item.title === 'Continue writing' && isLoading" />
+        <component v-else :is="item.icon" size="18" />
+      </q-item-section>
       <q-item-section>
-        <q-item-label>{{ item }}</q-item-label>
+        <q-item-label>{{ item.title }}</q-item-label>
+        <q-item-label caption lines="2">{{ item.description }}</q-item-label>
       </q-item-section>
     </q-item>
   </q-list>
 </template>
-  
-<script>
-  export default {
-    props: {
-      items: {
-        type: Array,
-        required: true,
-      },
-  
-      command: {
-        type: Function,
-        required: true,
-      },
-    },
-  
-    data() {
-      return {
-        selectedIndex: 0,
-      }
-    },
-  
-    watch: {
-      items() {
-        this.selectedIndex = 0
-      },
-    },
-  
-    methods: {
-      onKeyDown({ event }) {
-        if (event.key === 'ArrowUp') {
-          this.upHandler()
-          return true
-        }
-  
-        if (event.key === 'ArrowDown') {
-          this.downHandler()
-          return true
-        }
-  
-        if (event.key === 'Enter') {
-          this.enterHandler()
-          return true
-        }
-  
-        return false
-      },
-  
-      upHandler() {
-        this.selectedIndex = ((this.selectedIndex + this.items.length) - 1) % this.items.length
-      },
-  
-      downHandler() {
-        this.selectedIndex = (this.selectedIndex + 1) % this.items.length
-      },
-  
-      enterHandler() {
-        this.selectItem(this.selectedIndex)
-      },
-  
-      selectItem(index) {
-        const item = this.items[index]
-  
-        if (item) {
-          this.command(item)
-        }
-      },
-    },
+
+<script setup>
+import { inject, ref, watch } from "vue";
+import LoadingCircle from "./icons/loadingCircle.vue";
+import { useCompletion } from "ai/vue";
+import { getPrevText } from "./lib/editor.js";
+
+const props = defineProps({
+  items: {
+    type: Array,
+    required: true,
+  },
+  command: {
+    type: Function,
+    required: true,
+  },
+  editor: {
+    type: Object,
+    required: true,
+  },
+  range: {
+    type: Object,
+    required: true,
+  },
+});
+
+const selectedIndex = ref(0);
+
+const { complete, isLoading } = useCompletion({
+  id: "novel-vue",
+  api: inject('completionApi'),
+  onResponse: (_) => {
+    props.editor.chain().focus().deleteRange(props.range).run();
+  },
+  onFinish: (_prompt, completion) => {
+    // highlight the generated text
+    props.editor.commands.setTextSelection({
+      from: props.range.from,
+      to: props.range.from + completion.length,
+    });
+  },
+  onError: (e) => {
+    console.error(e);
+  },
+});
+
+const commandListContainer = ref();
+
+const navigationKeys = ["ArrowUp", "ArrowDown", "Enter"];
+function onKeyDown(e) {
+  if (navigationKeys.includes(e.key)) {
+    e.preventDefault();
+    if (e.key === "ArrowUp") {
+      selectedIndex.value =
+        (selectedIndex.value + props.items.length - 1) % props.items.length;
+      scrollToSelected();
+      return true;
+    }
+    if (e.key === "ArrowDown") {
+      selectedIndex.value = (selectedIndex.value + 1) % props.items.length;
+      scrollToSelected();
+      return true;
+    }
+    if (e.key === "Enter") {
+      selectItem(selectedIndex.value);
+      return true;
+    }
+    return false;
   }
-</script>
-  
-<style lang="scss">
-  .items {
-    padding: 0.2rem;
-    position: relative;
-    border-radius: 0.5rem;
-    background: #FFF;
-    color: rgba(0, 0, 0, 0.8);
-    overflow: hidden;
-    font-size: 0.9rem;
-    box-shadow:
-      0 0 0 1px rgba(0, 0, 0, 0.05),
-      0px 10px 20px rgba(0, 0, 0, 0.1),
-    ;
+}
+
+watch(
+  () => props.items,
+  () => {
+    selectedIndex.value = 0;
   }
-  
-  .item {
-    display: block;
-    margin: 0;
-    width: 100%;
-    text-align: left;
-    background: transparent;
-    border-radius: 0.4rem;
-    border: 1px solid transparent;
-    padding: 0.2rem 0.4rem;
-  
-    &.is-selected {
-      border-color: #000;
+);
+
+defineExpose({
+  onKeyDown,
+});
+
+function selectItem(index) {
+  const item = props.items[index];
+
+  if (item) {
+    if (item.title === "Continue writing") {
+      if (isLoading.value) return;
+      complete(
+        getPrevText(props.editor, {
+          chars: 5000,
+          offset: 1,
+        })
+      );
+    } else {
+      props.command(item);
     }
   }
-</style>
+}
+
+function updateScrollView(container, item) {
+  const containerHeight = container.offsetHeight;
+  const itemHeight = item ? item.offsetHeight : 0;
+
+  const top = item.offsetTop;
+  const bottom = top + itemHeight;
+
+  if (top < container.scrollTop) {
+    container.scrollTop -= container.scrollTop - top + 5;
+  } else if (bottom > containerHeight + container.scrollTop) {
+    container.scrollTop += bottom - containerHeight - container.scrollTop + 5;
+  }
+}
+
+function scrollToSelected() {
+  const container = commandListContainer.value;
+  const item = container?.children[selectedIndex.value];
+
+  if (container && item) {
+    updateScrollView(container, item);
+  }
+}
+</script>

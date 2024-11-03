@@ -19,7 +19,7 @@
 <script setup>
 import { onMounted, ref, useTemplateRef, computed, watchEffect } from 'vue';
 import { uiStore } from "src/hooks/global/useStore.js";
-import TipTap from '../components/Utilits/tiptap/TipTap.vue'
+import TipTap from 'src/components/Utilits/tiptap/TipTap.vue'
 
 onMounted(() => {
     uiStore.pageLoaded = true;

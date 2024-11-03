@@ -155,6 +155,12 @@ const routes = [
         },
       },
       {
+        path: "/teams/test",
+        component: () => import("src/pages/team/TestPage.vue"),
+        name: "team_test",
+        props: true,
+      },
+      {
         path: "/teams/:team_id/external",
         component: () => import("src/pages/team/ExternalPage.vue"),
         name: "team_projects_external_homepage",
