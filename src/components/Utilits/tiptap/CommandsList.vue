@@ -1,5 +1,5 @@
 <template>
-  <div class="row no-wrap gap-sm q-pa-xs border radius-sm">
+  <q-card bordered class="row no-wrap gap-sm q-pa-xs">
     <q-list dense class="q-pa-xs radius-sm">
       <q-item v-for="(item, index) in items" :key="index" clickable v-ripple
       class="radius-xs"
@@ -52,14 +52,11 @@
         </q-list>
       </q-scroll-area>
     </div>
-  </div>
+</q-card>
 </template>
 
 <script setup>
-import { inject, ref, watch, computed, onMounted, nextTick } from "vue";
-import LoadingCircle from "./icons/loadingCircle.vue";
-import { useCompletion } from "ai/vue";
-import { getPrevText } from "./lib/editor.js";
+import { ref, watch, computed, onMounted, nextTick } from "vue";
 
 // Props 定义
 const props = defineProps({

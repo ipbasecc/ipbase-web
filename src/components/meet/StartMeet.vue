@@ -1,7 +1,13 @@
 <template>
-    <div class="full-width q-pa-sm">
-        <q-btn v-if="!uiStore.meet && !teamStore.project?.meeting" color="primary" class="full-width" :label="$t('start_meet')" @click="startMeet" />
-        <q-btn v-else color="primary" :label="$t('join_meet')" class="full-width" @click="joinMeet" />
+    <div>
+        <q-btn v-if="!uiStore.meet && !teamStore.project?.meeting"
+        color="positive" class="full-width" @click="startMeet">
+        <div class="row no-wrap items-center gap-md">
+            <MeetIcon color="#efefef" />
+            <span class="font-small">{{ $t('start_meet') }}</span>
+        </div>
+        </q-btn>
+        <q-btn v-else color="negative" :label="$t('join_meet')" class="full-width" @click="joinMeet" />
     </div>
 </template>
 
@@ -9,6 +15,7 @@
 import { uiStore, teamStore } from "src/hooks/global/useStore.js";
 import { startMeet as startProjectMeet } from 'src/api/strapi/project.js'
 import useMeet from './useMeet.js';
+import MeetIcon from 'src/pages/team/components/widgets/icons/MeetIcon.vue'
 
 
 const { project } = defineProps({

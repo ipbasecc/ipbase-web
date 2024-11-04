@@ -89,7 +89,7 @@ async function initJitsiMeet(jitsi_token) {
                 'hangup',
                 'help',
                 'highlight',
-                'invite',
+                // 'invite',
                 'linktosalesforce',
                 'livestreaming',
                 'microphone',
@@ -129,14 +129,16 @@ async function initJitsiMeet(jitsi_token) {
       });
     }
     
-    // 监听会议结束事件
+    // 更新事件监听
     meet.value.addEventListeners({
-        // 当用户离开会议时触发
+        // 现有的事件
         videoConferenceLeft: handleConferenceLeft,
-        // 当会议被终止时触发
         readyToClose: handleReadyToClose,
-        // 可选：监听参与者离开事件
         participantLeft: handleParticipantLeft,
+        // 添加连接状态事件
+        connectionEstablished: handleConnectionEstablished,
+        connectionFailed: handleConnectionFailed,
+        participantKickedOut: handleParticipantKickedOut
     });
 }
 
@@ -166,6 +168,26 @@ const handleParticipantLeft = (participant) => {
   // console.log('Participant left:', participant);
 }
 
+// 添加新的事件处理函数
+const handleConnectionEstablished = () => {
+    console.log('Connection established');
+    // 可以在这里处理重连成功的逻辑
+};
+
+const handleConnectionFailed = (error) => {
+    console.log('Connection failed:', error);
+    // 可以在这里处理连接失败的逻辑
+};
+
+const handleParticipantKickedOut = (params) => {
+    // params.kicked.id - 被踢出的参与者ID
+    // params.kicker.id - 执行踢出操作的参与者ID
+    if (params.kicked.local) {
+        // 本地用户被踢出
+        handleConferenceLeft();
+    }
+};
+
 // 清理会议实例的函数
 const cleanupMeet = () => {
   if (meet.value) {
@@ -173,6 +195,9 @@ const cleanupMeet = () => {
     meet.value.removeEventListener('videoConferenceLeft', handleConferenceLeft);
     meet.value.removeEventListener('readyToClose', handleReadyToClose);
     meet.value.removeEventListener('participantLeft', handleParticipantLeft);
+    meet.value.removeEventListener('connectionEstablished', handleConnectionEstablished);
+    meet.value.removeEventListener('connectionFailed', handleConnectionFailed);
+    meet.value.removeEventListener('participantKickedOut', handleParticipantKickedOut);
     
     // 销毁实例
     meet.value.dispose();
@@ -192,12 +217,6 @@ onMounted(() => {
 // 组件卸载前清理资源
 onBeforeUnmount(() => {
   cleanupMeet();
-  
-  // 如果需要，也可以移除外部API脚本
-  const script = document.querySelector('script[src*="external_api.js"]');
-  if (script) {
-    script.remove();
-  }
 });
 
 </script>
