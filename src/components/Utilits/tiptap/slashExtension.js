@@ -49,7 +49,7 @@ const getSuggestionItems = ({ query }) => {
   return [
     {
       title: 'Text',
-      icon: 'mdi-text',
+      icon: 'mdi-cursor-text',
       children: [
         {
           title: $t('tiptap_menu_Text'),
@@ -113,7 +113,7 @@ const getSuggestionItems = ({ query }) => {
     },
     {
       title: 'List',
-      icon: 'mdi-list',
+      icon: 'mdi-format-list-bulleted-type',
       children: [
         {
           title: $t('tiptap_menu_BulletList'),
@@ -146,7 +146,7 @@ const getSuggestionItems = ({ query }) => {
     },
     {
       title: 'Block',
-      icon: 'mdi-block',
+      icon: 'mdi-selection',
       children: [
         {
           title: $t('tiptap_menu_Quote'),
@@ -174,7 +174,7 @@ const getSuggestionItems = ({ query }) => {
     },
     {
       title: 'Insert',
-      icon: 'mdi-insert',
+      icon: 'mdi-upload',
       children: [
         {
           title: $t('tiptap_menu_Image'),
@@ -198,37 +198,50 @@ const getSuggestionItems = ({ query }) => {
         },
       ]
     }
-  ].filter((item) => {
-    if (typeof query === "string" && query.length > 0) {
-      const search = query.toLowerCase();
-      return (
-        item.title.toLowerCase().includes(search) ||
-        item.description.toLowerCase().includes(search) ||
-        (item.searchTerms &&
-          item.searchTerms.some((term) => term.includes(search)))
-      );
-    }
-    return true;
-  });
+  ];
 };
 
 const renderItems = () => {
   let component = null;
   let popup = null;
+  let currentEditor = null;
+
+  const cleanUp = () => {
+    popup?.[0].destroy();
+    component?.destroy();
+    component = null;
+    popup = null;
+  };
+
+  const handleClose = () => {
+    cleanUp();
+    if (currentEditor) {
+      setTimeout(() => {
+        currentEditor.commands.focus();
+      }, 0);
+    }
+  };
 
   return {
     onStart: (props) => {
+      currentEditor = props.editor;
+
+      const handleGlobalEscape = (e) => {
+        if (e.key === 'Escape' && (component || popup)) {
+          handleClose();
+          e.preventDefault();
+        }
+      };
+      document.addEventListener('keydown', handleGlobalEscape);
+
       component = new VueRenderer(SlashCommandList, {
         props: {
-          items: props.items,
-          command: (commandProps) => {
-            commandProps.command({
-              editor: props.editor,
-              range: props.range,
-            });
-          },
-          editor: props.editor,
-          range: props.range,
+          ...props,
+          onClose: handleClose,
+          command: (item) => {
+            props.command(item);
+            handleClose();
+          }
         },
         editor: props.editor,
       });
@@ -245,20 +258,20 @@ const renderItems = () => {
         interactive: true,
         trigger: "manual",
         placement: "bottom-start",
+        onShow() {
+          setTimeout(() => {
+            component?.ref?.searchInput?.focus();
+          }, 0);
+        },
+        onHidden() {
+          document.removeEventListener('keydown', handleGlobalEscape);
+          handleClose();
+        }
       });
     },
     onUpdate: (props) => {
-      component?.updateProps({
-        items: props.items,
-        command: (commandProps) => {
-          commandProps.command({
-            editor: props.editor,
-            range: props.range,
-          });
-        },
-        editor: props.editor,
-        range: props.range,
-      });
+      currentEditor = props.editor;
+      component?.updateProps(props);
 
       popup &&
         popup[0].setProps({
@@ -267,14 +280,18 @@ const renderItems = () => {
     },
     onKeyDown: (props) => {
       if (props.event.key === "Escape") {
-        popup?.[0].hide();
+        handleClose();
+        props.event.preventDefault();
         return true;
       }
-      return component?.instance?.exposed?.onKeyDown(props.event);
+
+      if (component?.ref) {
+        return component.ref.onKeyDown(props.event);
+      }
+      return false;
     },
     onExit: () => {
-      popup?.[0].destroy();
-      component?.destroy();
+      handleClose();
     },
   };
 };
@@ -283,6 +300,18 @@ const SlashCommand = Command.configure({
   suggestion: {
     items: getSuggestionItems,
     render: renderItems,
+    allow: ({ editor, range }) => {
+      const { $from } = editor.state.selection;
+      
+      const textBefore = $from.nodeBefore?.text;
+      
+      if (!textBefore) {
+        return true;
+      }
+      
+      const textBeforeSlash = textBefore.slice(0, -1);
+      return !textBeforeSlash.trim();
+    },
   },
 });
 

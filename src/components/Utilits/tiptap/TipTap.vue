@@ -186,7 +186,7 @@ import Underline from '@tiptap/extension-underline'
 import Superscript from '@tiptap/extension-superscript'
 import Subscript from '@tiptap/extension-subscript'
 
-import SlashCommand from "./slashExtension_copy.js";
+import SlashCommand from "./slashExtension.js";
 
 import "prismjs";
 import "prismjs/themes/prism.css";
@@ -391,7 +391,7 @@ const init = () => {
       // },
     },
     extensions: [
-      // TextStyle,
+      TextStyle,
       Color,
       TaskList,
       TaskItem.configure({
