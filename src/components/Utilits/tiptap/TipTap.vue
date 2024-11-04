@@ -187,7 +187,7 @@ import Subscript from '@tiptap/extension-subscript'
 
 import Commands from './commands.js'
 import suggestion from './suggestion.js'
-import SlashCommand from "./slashExtension.js";
+import SlashCommand from "./slashExtension_copy.js";
 
 import "prismjs";
 import "prismjs/themes/prism.css";

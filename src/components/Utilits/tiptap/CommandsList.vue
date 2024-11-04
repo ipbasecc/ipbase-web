@@ -1,26 +1,33 @@
 <template>
-  <q-list v-if="items.length > 0" bordered class="q-pa-xs radius-sm">
-    <q-item v-for="(item, index) in items" :key="index" clickable v-ripple
-    class="radius-xs"
-    :class="index === selectedIndex ? 'bg-primary text-white' : ''"
-    @click="selectItem(index)">
-      <q-item-section avatar>
-        <LoadingCircle v-if="item.title === 'Continue writing' && isLoading" />
-        <component v-else :is="item.icon" size="18" />
-      </q-item-section>
-      <q-item-section>
-        <q-item-label>{{ item.title }}</q-item-label>
-        <q-item-label caption lines="2">{{ item.description }}</q-item-label>
-      </q-item-section>
-    </q-item>
-  </q-list>
+  <div class="row no-wrap gap-sm border radius-sm">
+    <q-list dense class="q-pa-xs radius-sm">
+      <q-item v-for="(item, index) in menuItems" :key="index" clickable v-ripple
+      class="radius-xs"
+      :class="index === selectedParentIndex ? 'bg-primary text-white' : ''">
+        <q-item-section>{{ item.title }}</q-item-section>
+      </q-item>
+    </q-list>
+    <q-list v-if="menuItems.length > 0" dense class="q-pa-xs radius-sm">
+      <q-item v-for="(item, index) in menuItems" :key="index"
+      class="radius-xs">
+        <q-item-section>
+          <q-item-label>{{ item.title }}</q-item-label>
+          <q-list dense v-for="(child, index) in item.children" :key="index">
+            <q-item clickable v-ripple class="radius-xs"
+            :class="index === selectedChildIndex && menuItems[selectedParentIndex].title === item.title ? 'bg-primary text-white' : ''"
+            @click="selectItem(child)">
+              <q-item-section>{{ child.title }}</q-item-section>
+            </q-item>
+          </q-list>
+        </q-item-section>
+      </q-item>
+    </q-list>
+  </div>
 </template>
 
 <script setup>
-import { inject, ref, watch } from "vue";
-import LoadingCircle from "./icons/loadingCircle.vue";
-import { useCompletion } from "ai/vue";
-import { getPrevText } from "./lib/editor.js";
+import { inject, ref, watch, computed, onMounted, onUnmounted } from "vue";
+import {i18n} from 'src/boot/i18n.js';
 
 const props = defineProps({
   items: {
@@ -40,101 +47,119 @@ const props = defineProps({
     required: true,
   },
 });
+const $t = i18n.global.t;
 
-const selectedIndex = ref(0);
+const selectedParentIndex = ref(0);
+const selectedChildIndex = ref(0);
+const isRightSideActive = ref(false);
 
-const { complete, isLoading } = useCompletion({
-  id: "novel-vue",
-  api: inject('completionApi'),
-  onResponse: (_) => {
-    props.editor.chain().focus().deleteRange(props.range).run();
-  },
-  onFinish: (_prompt, completion) => {
-    // highlight the generated text
-    props.editor.commands.setTextSelection({
-      from: props.range.from,
-      to: props.range.from + completion.length,
+const flattenedChildren = computed(() => {
+  let items = [];
+  menuItems.forEach((parent, parentIndex) => {
+    parent.children.forEach((child, childIndex) => {
+      items.push({
+        parentIndex,
+        childIndex,
+        item: child
+      });
     });
-  },
-  onError: (e) => {
-    console.error(e);
-  },
+  });
+  return items;
 });
 
-const commandListContainer = ref();
-
-const navigationKeys = ["ArrowUp", "ArrowDown", "Enter"];
-function onKeyDown(e) {
-  if (navigationKeys.includes(e.key)) {
-    e.preventDefault();
-    if (e.key === "ArrowUp") {
-      selectedIndex.value =
-        (selectedIndex.value + props.items.length - 1) % props.items.length;
-      scrollToSelected();
-      return true;
-    }
-    if (e.key === "ArrowDown") {
-      selectedIndex.value = (selectedIndex.value + 1) % props.items.length;
-      scrollToSelected();
-      return true;
-    }
-    if (e.key === "Enter") {
-      selectItem(selectedIndex.value);
-      return true;
-    }
-    return false;
+const currentFlatIndex = computed(() => {
+  let index = 0;
+  for (let i = 0; i < selectedParentIndex.value; i++) {
+    index += menuItems[i].children.length;
   }
-}
-
-watch(
-  () => props.items,
-  () => {
-    selectedIndex.value = 0;
-  }
-);
-
-defineExpose({
-  onKeyDown,
+  return index + selectedChildIndex.value;
 });
 
-function selectItem(index) {
-  const item = props.items[index];
-
-  if (item) {
-    if (item.title === "Continue writing") {
-      if (isLoading.value) return;
-      complete(
-        getPrevText(props.editor, {
-          chars: 5000,
-          offset: 1,
-        })
-      );
+const handleKeyDown = (event) => {
+  if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    isRightSideActive.value = true;
+  } else if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    isRightSideActive.value = false;
+  } else if (event.key === 'ArrowUp') {
+    event.preventDefault();
+    if (isRightSideActive.value) {
+      const currentIndex = currentFlatIndex.value;
+      if (currentIndex > 0) {
+        const prevItem = flattenedChildren.value[currentIndex - 1];
+        selectedParentIndex.value = prevItem.parentIndex;
+        selectedChildIndex.value = prevItem.childIndex;
+      }
     } else {
-      props.command(item);
+      if (selectedParentIndex.value > 0) {
+        selectedParentIndex.value--;
+        selectedChildIndex.value = 0;
+      }
+    }
+  } else if (event.key === 'ArrowDown') {
+    event.preventDefault();
+    if (isRightSideActive.value) {
+      const currentIndex = currentFlatIndex.value;
+      if (currentIndex < flattenedChildren.value.length - 1) {
+        const nextItem = flattenedChildren.value[currentIndex + 1];
+        selectedParentIndex.value = nextItem.parentIndex;
+        selectedChildIndex.value = nextItem.childIndex;
+      }
+    } else {
+      if (selectedParentIndex.value < menuItems.length - 1) {
+        selectedParentIndex.value++;
+        selectedChildIndex.value = 0;
+      }
     }
   }
-}
+};
 
-function updateScrollView(container, item) {
-  const containerHeight = container.offsetHeight;
-  const itemHeight = item ? item.offsetHeight : 0;
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown);
+  selectedParentIndex.value = 0;
+  selectedChildIndex.value = 0;
+  isRightSideActive.value = false;
+});
 
-  const top = item.offsetTop;
-  const bottom = top + itemHeight;
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown);
+});
 
-  if (top < container.scrollTop) {
-    container.scrollTop -= container.scrollTop - top + 5;
-  } else if (bottom > containerHeight + container.scrollTop) {
-    container.scrollTop += bottom - containerHeight - container.scrollTop + 5;
+const menuItems = props.items;
+
+const flatItems = computed(() => {
+  return menuItems.flatMap(item => item.children);
+});
+
+// 暴露 onKeyDown 方法给父组件
+defineExpose({
+  onKeyDown: (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const currentItem = flattenedChildren.value[currentFlatIndex.value];
+      if (currentItem) {
+        // 直接执行 item 中的 command 方法
+        currentItem.item.command({
+          editor: props.editor,
+          range: props.range
+        });
+        return true;
+      }
+    }
+    handleKeyDown(event);
+    return true;
   }
-}
+});
 
-function scrollToSelected() {
-  const container = commandListContainer.value;
-  const item = container?.children[selectedIndex.value];
-
-  if (container && item) {
-    updateScrollView(container, item);
+// 修改 selectItem 方法
+function selectItem(item) {
+  if (item) {
+    // 直接执行 item 的 command 方法
+    item.command({
+      editor: props.editor,
+      range: props.range
+    });
   }
 }
 </script>
