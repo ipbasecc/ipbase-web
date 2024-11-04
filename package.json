@@ -30,6 +30,7 @@
     "@quasar/extras": "^1.16.12",
     "@syncfusion/ej2-base": "^26.2.10",
     "@syncfusion/ej2-icons": "^26.2.10",
+    "@syncfusion/ej2-locale": "^27.1.55",
     "@syncfusion/ej2-schedule": "^26.2.12",
     "@syncfusion/ej2-vue-filemanager": "^26.2.11",
     "@syncfusion/ej2-vue-navigations": "^26.2.12",

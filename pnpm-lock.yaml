@@ -41,6 +41,9 @@ importers:
       '@syncfusion/ej2-icons':
         specifier: ^26.2.10
         version: 26.2.10
+      '@syncfusion/ej2-locale':
+        specifier: ^27.1.55
+        version: 27.1.55
       '@syncfusion/ej2-schedule':
         specifier: ^26.2.12
         version: 26.2.14
@@ -2202,6 +2205,9 @@ packages:
 
   '@syncfusion/ej2-lists@26.2.14':
     resolution: {integrity: sha512-8tQdVIzbHYcCjxYns57etpoJvTTp3lMY2bExbD4agZij1mdgGv/PMdp29RepcnSZMw6FsX6Eqp2hriXzrwL6Lg==}
+
+  '@syncfusion/ej2-locale@27.1.55':
+    resolution: {integrity: sha512-tZB/0qHv8bKp0PaR74Vwq5BQrgWk7sFUiLdZzgavyX0aFxkWbXNQPFfmnT2qM0LfL0WQvuDMQRsJMBOrbKZUoQ==}
 
   '@syncfusion/ej2-navigations@26.2.12':
     resolution: {integrity: sha512-SAFkU75y/SZTSsrE+NyWX/+1HqyYr2sqARFAqXKu87mfYDsxVjsroSXQuDEbwRRujCr3reR0znEkW/zQ+RM5mA==}
@@ -9723,6 +9729,8 @@ snapshots:
       '@syncfusion/ej2-buttons': 26.2.10
       '@syncfusion/ej2-data': 26.2.14
       '@syncfusion/ej2-popups': 26.2.11
+
+  '@syncfusion/ej2-locale@27.1.55': {}
 
   '@syncfusion/ej2-navigations@26.2.12':
     dependencies:

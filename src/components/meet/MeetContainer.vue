@@ -17,6 +17,7 @@ import { teamStore, uiStore } from 'src/hooks/global/useStore';
 import { onMounted, useTemplateRef, ref, onBeforeUnmount, computed, watch } from 'vue';
 import useMeet from './useMeet.js';
 import { useQuasar } from 'quasar';
+import { preloadMeetAPI, isMeetAPILoaded } from 'src/utils/meetLoader';
 
 const $q = useQuasar();
 const { roomName, displayName } = defineProps({
@@ -43,20 +44,22 @@ const createMeet = async () => {
         return
     }
     meetAuth.value = true
-  // 确保外部 API 脚本已加载
-  const script = document.createElement('script');
-  script.src = `https://${meetSite}/external_api.js`;
-  script.async = true;
-  script.onload = () => {
-    // 脚本加载完成后，初始化 Jitsi Meet
-    initJitsiMeet();
-  };
-  script.onerror = () => {
-    console.error('Failed to load the Jitsi Meet API script');
-  };
-  document.head.appendChild(script);
 
-  async function initJitsiMeet() {
+    try {
+        // 检查 API 是否已加载，如果没有则等待加载
+        if (!isMeetAPILoaded()) {
+            await preloadMeetAPI(meetSite);
+        }
+        // API 已加载，直接初始化
+        await initJitsiMeet(jitsi_token);
+    } catch (error) {
+        console.error('Failed to initialize Jitsi Meet:', error);
+        errorMsg.value = 'Failed to load Jitsi Meet API';
+    }
+}
+
+// 移除原有的 script 创建代码，直接定义 initJitsiMeet
+async function initJitsiMeet(jitsi_token) {
     const options = {
         roomName: roomName, // 替换为你的会议室名称
         jwt: jitsi_token,
@@ -135,8 +138,6 @@ const createMeet = async () => {
         // 可选：监听参与者离开事件
         participantLeft: handleParticipantLeft,
     });
-
-  }
 }
 
 // 处理会议结束事件

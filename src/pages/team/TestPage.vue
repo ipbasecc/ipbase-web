@@ -4,7 +4,7 @@
             <q-toolbar class="gap-sm">
                 <q-toolbar-title> Title </q-toolbar-title>
                 <q-space />
-                <q-btn color="primary" no-caps label="join_meet" @click="join_meet" />
+                <q-btn color="primary" no-caps label="join_meet" />
             </q-toolbar>
         </q-header>
 

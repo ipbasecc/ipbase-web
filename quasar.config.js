@@ -56,6 +56,7 @@ export default configure((ctx) => {
       "dexie",
       "ej2",
       "oss",
+      "meet"
       // 'addressbar-color',
       // 'localforage'
       // { path: 'websocket', server: false }
