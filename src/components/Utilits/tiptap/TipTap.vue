@@ -166,7 +166,8 @@ import { Blockquote } from '@tiptap/extension-blockquote'
 import { Bold,  } from '@tiptap/extension-bold'
 import { BulletList,  } from '@tiptap/extension-bullet-list'
 import { Code } from '@tiptap/extension-code'
-import { CodeBlock,  } from '@tiptap/extension-code-block'
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import { common, createLowlight } from 'lowlight'
 import { Document } from '@tiptap/extension-document'
 import { Dropcursor,  } from '@tiptap/extension-dropcursor'
 import { Gapcursor } from '@tiptap/extension-gapcursor'
@@ -185,8 +186,6 @@ import Underline from '@tiptap/extension-underline'
 import Superscript from '@tiptap/extension-superscript'
 import Subscript from '@tiptap/extension-subscript'
 
-import Commands from './commands.js'
-import suggestion from './suggestion.js'
 import SlashCommand from "./slashExtension_copy.js";
 
 import "prismjs";
@@ -197,6 +196,32 @@ import { confirmUpload } from "src/hooks/utilits/useConfirmUpload.js";
 import { useDropZone } from "@vueuse/core";
 import { useI18n } from 'vue-i18n';
 import BubbleMenuContent from './BubbleMenu.vue'
+
+import javascript from 'highlight.js/lib/languages/javascript.js'
+import css from 'highlight.js/lib/languages/css.js'
+import htmlLang from 'highlight.js/lib/languages/xml.js'
+import python from 'highlight.js/lib/languages/python.js'
+import java from 'highlight.js/lib/languages/java.js'
+import jsonLang from 'highlight.js/lib/languages/json.js'
+import typescript from 'highlight.js/lib/languages/typescript.js'
+import bash from 'highlight.js/lib/languages/bash.js'
+import sql from 'highlight.js/lib/languages/sql.js'
+
+import 'highlight.js/styles/atom-one-dark.css'
+
+const lowlight = createLowlight(common)
+
+lowlight.register('javascript', javascript)
+lowlight.register('js', javascript)
+lowlight.register('css', css)
+lowlight.register('html', htmlLang)
+lowlight.register('python', python)
+lowlight.register('java', java)
+lowlight.register('json', jsonLang)
+lowlight.register('typescript', typescript)
+lowlight.register('ts', typescript)
+lowlight.register('bash', bash)
+lowlight.register('sql', sql)
 
 const { t } = useI18n();
 const $q = useQuasar();
@@ -366,7 +391,7 @@ const init = () => {
       // },
     },
     extensions: [
-      TextStyle,
+      // TextStyle,
       Color,
       TaskList,
       TaskItem.configure({
@@ -379,7 +404,13 @@ const init = () => {
       Bold,
       BulletList,
       Code,
-      CodeBlock,
+      CodeBlockLowlight.configure({
+        lowlight,
+        defaultLanguage: 'javascript',
+        HTMLAttributes: {
+          class: 'code-block'
+        }
+      }),
       Document,
       Dropcursor,
       Gapcursor,
@@ -737,5 +768,53 @@ mark {
 }
 .tiptapBody > div {
   height: 100%;
+}
+
+.code-block {
+  background: #282c34;
+  border-radius: 0.5rem;
+  color: #abb2bf;
+  font-family: 'JetBrainsMono', monospace;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  
+  pre {
+    background: none;
+    color: inherit;
+    font-size: 0.875rem;
+    padding: 0;
+    margin: 0;
+  }
+  
+  code {
+    background: none;
+    color: inherit;
+    font-size: inherit;
+    padding: 0;
+    border: none;
+  }
+}
+
+.code-block::before {
+  content: attr(data-language);
+  color: #666;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  position: relative;
+  top: -0.5rem;
+}
+
+.code-block pre {
+  overflow-x: auto;
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #282c34;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #4b5263;
+    border-radius: 2px;
+  }
 }
 </style>
