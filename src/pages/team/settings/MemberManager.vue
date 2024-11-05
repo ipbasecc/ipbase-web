@@ -166,7 +166,7 @@ import UserAvatar from "src/pages/team/components/user/UserAvatar.vue";
 import { toRefs } from "vue";
 import TeamInvite from "../components/widgets/TeamInvite.vue";
 import {useAuths} from "src/pages/team/hooks/useAuths.js";
-import { teamStore, uiStore } from "src/hooks/global/useStore.js";
+import { teamStore } from "src/hooks/global/useStore.js";
 
 const props = defineProps({
   byInfo: {

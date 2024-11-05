@@ -16,6 +16,7 @@ import schedule from './useSocket/schedule.js'
 import todo from './useSocket/todo.js'
 import column from './useSocket/column.js'
 import memberRole from './useSocket/member-role.js'
+import payment from "./useSocket/payment.js";
 
 export function useSocket() {
   const jwt = JSON.parse(localStorage.getItem("jwt"));
@@ -65,6 +66,7 @@ export function useSocket() {
         todo(socket, processEvent);
         column(socket, processEvent);
         memberRole(socket, processEvent);
+        payment(socket, processEvent)
       });
     }
   });

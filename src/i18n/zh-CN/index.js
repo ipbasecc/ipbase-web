@@ -767,4 +767,5 @@ export default {
   tiptap_menu_Image: '图片',
   tiptap_menu_Image_description: '从计算机上传图片。',
 
+  buy: '购买',
 };

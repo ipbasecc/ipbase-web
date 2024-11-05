@@ -1,10 +1,10 @@
 <template>
-    <q-layout view="hHh lpR fFf">
+    <q-layout view="hHh lpR fFf" container class="absolute-full">
         <q-header class="bg-black text-white">
             <q-toolbar class="gap-sm">
                 <q-toolbar-title> Title </q-toolbar-title>
                 <q-space />
-                <q-btn color="primary" no-caps label="join_meet" @click="join_meet" />
+                <PayButton />
             </q-toolbar>
         </q-header>
 
@@ -20,6 +20,7 @@
 import { onMounted, ref, useTemplateRef, computed, watchEffect } from 'vue';
 import { uiStore } from "src/hooks/global/useStore.js";
 import TipTap from 'src/components/Utilits/tiptap/TipTap.vue'
+import PayButton from 'src/components/order/PayButton.vue'
 
 onMounted(() => {
     uiStore.pageLoaded = true;

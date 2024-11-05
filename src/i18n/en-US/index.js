@@ -764,4 +764,6 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   tiptap_menu_Code_description: 'Capture a code snippet.',
   tiptap_menu_Image: 'Image',
   tiptap_menu_Image_description: 'Upload an image from your computer.',
+
+  buy: 'buy',
 }
