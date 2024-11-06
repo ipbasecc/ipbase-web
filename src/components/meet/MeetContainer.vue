@@ -17,6 +17,7 @@ import { teamStore, uiStore } from 'src/hooks/global/useStore';
 import { onMounted, useTemplateRef, ref, onBeforeUnmount, computed, watch } from 'vue';
 import useMeet from './useMeet.js';
 import { useQuasar } from 'quasar';
+import { preloadMeetAPI, isMeetAPILoaded } from 'src/utils/meetLoader';
 
 const $q = useQuasar();
 const { roomName, displayName } = defineProps({
@@ -43,20 +44,22 @@ const createMeet = async () => {
         return
     }
     meetAuth.value = true
-  // 确保外部 API 脚本已加载
-  const script = document.createElement('script');
-  script.src = `https://${meetSite}/external_api.js`;
-  script.async = true;
-  script.onload = () => {
-    // 脚本加载完成后，初始化 Jitsi Meet
-    initJitsiMeet();
-  };
-  script.onerror = () => {
-    console.error('Failed to load the Jitsi Meet API script');
-  };
-  document.head.appendChild(script);
 
-  async function initJitsiMeet() {
+    try {
+        // 检查 API 是否已加载，如果没有则等待加载
+        if (!isMeetAPILoaded()) {
+            await preloadMeetAPI(meetSite);
+        }
+        // API 已加载，直接初始化
+        await initJitsiMeet(jitsi_token);
+    } catch (error) {
+        console.error('Failed to initialize Jitsi Meet:', error);
+        errorMsg.value = 'Failed to load Jitsi Meet API';
+    }
+}
+
+// 移除原有的 script 创建代码，直接定义 initJitsiMeet
+async function initJitsiMeet(jitsi_token) {
     const options = {
         roomName: roomName, // 替换为你的会议室名称
         jwt: jitsi_token,
@@ -86,7 +89,7 @@ const createMeet = async () => {
                 'hangup',
                 'help',
                 'highlight',
-                'invite',
+                // 'invite',
                 'linktosalesforce',
                 'livestreaming',
                 'microphone',
@@ -126,17 +129,17 @@ const createMeet = async () => {
       });
     }
     
-    // 监听会议结束事件
+    // 更新事件监听
     meet.value.addEventListeners({
-        // 当用户离开会议时触发
+        // 现有的事件
         videoConferenceLeft: handleConferenceLeft,
-        // 当会议被终止时触发
         readyToClose: handleReadyToClose,
-        // 可选：监听参与者离开事件
         participantLeft: handleParticipantLeft,
+        // 添加连接状态事件
+        connectionEstablished: handleConnectionEstablished,
+        connectionFailed: handleConnectionFailed,
+        participantKickedOut: handleParticipantKickedOut
     });
-
-  }
 }
 
 // 处理会议结束事件
@@ -165,6 +168,26 @@ const handleParticipantLeft = (participant) => {
   // console.log('Participant left:', participant);
 }
 
+// 添加新的事件处理函数
+const handleConnectionEstablished = () => {
+    console.log('Connection established');
+    // 可以在这里处理重连成功的逻辑
+};
+
+const handleConnectionFailed = (error) => {
+    console.log('Connection failed:', error);
+    // 可以在这里处理连接失败的逻辑
+};
+
+const handleParticipantKickedOut = (params) => {
+    // params.kicked.id - 被踢出的参与者ID
+    // params.kicker.id - 执行踢出操作的参与者ID
+    if (params.kicked.local) {
+        // 本地用户被踢出
+        handleConferenceLeft();
+    }
+};
+
 // 清理会议实例的函数
 const cleanupMeet = () => {
   if (meet.value) {
@@ -172,6 +195,9 @@ const cleanupMeet = () => {
     meet.value.removeEventListener('videoConferenceLeft', handleConferenceLeft);
     meet.value.removeEventListener('readyToClose', handleReadyToClose);
     meet.value.removeEventListener('participantLeft', handleParticipantLeft);
+    meet.value.removeEventListener('connectionEstablished', handleConnectionEstablished);
+    meet.value.removeEventListener('connectionFailed', handleConnectionFailed);
+    meet.value.removeEventListener('participantKickedOut', handleParticipantKickedOut);
     
     // 销毁实例
     meet.value.dispose();
@@ -191,12 +217,6 @@ onMounted(() => {
 // 组件卸载前清理资源
 onBeforeUnmount(() => {
   cleanupMeet();
-  
-  // 如果需要，也可以移除外部API脚本
-  const script = document.querySelector('script[src*="external_api.js"]');
-  if (script) {
-    script.remove();
-  }
 });
 
 </script>

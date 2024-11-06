@@ -11,6 +11,7 @@
         <q-btn v-if="teamStore.project?.meeting" flat dense round color="red" icon="radio_button_checked" @click="toggleMeet()" />
         <ProjectNavigation />
         <q-space />
+        <StartMeet :project="teamStore.project" class="q-pr-sm" />
         <MembersIndicator
           v-if="teamStore?.project?.id && membersForAvatar && $q.screen.gt.xs"
           :members="membersForAvatar"
@@ -51,6 +52,7 @@ import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 import localforage from "localforage";
 
 import { useRouter } from "vue-router";
+import StartMeet from 'src/components/meet/StartMeet.vue'
 
 const emit = defineEmits(["toggleRightpannel", "toggleleftDrawer"]);
 const toggleleftDrawer = () => {

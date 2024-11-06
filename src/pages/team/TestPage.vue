@@ -5,6 +5,7 @@
                 <q-toolbar-title> Title </q-toolbar-title>
                 <q-space />
                 <PayButton />
+                <q-btn color="primary" no-caps label="join_meet" />
             </q-toolbar>
         </q-header>
 
