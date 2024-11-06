@@ -27,7 +27,7 @@
       @dblclick="tryEnter"
     >
       <!-- 卡片顶部 -->
-      <div v-if="cardRef.type !== 'note'"
+      <div v-if="cardRef.type !== 'note' && cardRef.type !== 'classroom'"
         class="row no-wrap items-center q-pa-xs gap-xs border-bottom hovered-item q-px-xs"
         :class="`
           ${
@@ -149,6 +149,13 @@
             :by_width="true"
             mainStyle="no-padding"
           />
+          <q-img
+            v-else-if="cardRef.cover?.url"
+            :src="cardRef.cover?.url"
+            :ratio="16/9"
+            spinner-color="primary"
+            spinner-size="82px"
+          />
           <q-responsive v-else-if="alwaysShowCover" :ratio="16/5">
             <div class="rounded-borders flex flex-center">
               {{ $t('no_media') }}
@@ -161,6 +168,9 @@
             {{ $t('only_electron') }}
           </div>
         </q-responsive>
+        <template v-if="cardRef.type === 'classroom' && !cardRef.published">
+          <q-chip color="negative" square :label="$t('unpublished')" class="absolute-top-left" />
+        </template>
       </q-card-section>
       <!-- 任务、备忘 -->
       <q-card-section
@@ -224,16 +234,19 @@
         @dblclick="_enterCard(useAuths('read', ['card']))"
       >
         <template v-if="cardRef.type !== 'note'">
+          <span v-if="cardRef.type === 'classroom' && cardRef.name" class="q-pa-sm">
+            {{ cardRef.name }}
+          </span>
           <ThreadBtn
             v-if="
-              cardRef.mm_thread && !teamStore.card && isDilgMode && !isShared
+              cardRef.mm_thread && !teamStore.card && isDilgMode && !isShared && cardRef.type !== 'classroom'
             "
             :thread="cardRef.mm_thread"
             :show="true"
             @enterThread="enterThread"
           />
           <template
-            v-if="show_byPreference?.follow?.value && !isExternal && !isShared"
+            v-if="show_byPreference?.follow?.value && !isExternal && !isShared && cardRef.type !== 'classroom'"
           >
             <overlappingAvatar
               v-if="cardRef.followed_bies?.length > 0"
@@ -530,6 +543,7 @@
     <template v-if="cardRef.type === 'classroom'">
       <ClassPage v-if="!isElectron"
         :card="cardRef"
+        @publishCard="publishCard(cardRef)"
       />
       <q-card v-else bordered class="column">
         <q-toolbar class="bg-deep-orange text-white">
@@ -586,7 +600,8 @@ import {
   unfollowCard,
   updateCardName,
   updateCardThread,
-  updateJsonContent
+  updateJsonContent,
+  publishCard
 } from "src/hooks/team/useCard.js";
 import {isEqual} from "lodash-es";
 import {useProjectCardPreference,colorMarks,cardTypes,preferences,shareProps} from "src/pages/team/hooks/useSettingTemplate.js";
@@ -737,15 +752,17 @@ const color_marker = computed(() => {
   }
 });
 watchEffect(() => {
-  isInCard.value = teamStore.card != null;
+  isInCard.value = teamStore.card?.id === cardRef.value?.id;
 
-  const executorRole = cardRef.value?.member_roles?.find(
-    (i) => i.subject === "executor"
-  );
-  // 一个卡片只能有一个负责人，因此这里可以使用 find 方法
-  executor.value = cardRef.value?.card_members?.find((i) =>
-    i.member_roles.map((j) => j.id)?.includes(executorRole.id)
-  );
+  if(cardRef.value?.type !== 'classroom'){
+    const executorRole = cardRef.value?.member_roles?.find(
+      (i) => i.subject === "executor"
+    );
+    // 一个卡片只能有一个负责人，因此这里可以使用 find 方法
+    executor.value = cardRef.value?.card_members?.find((i) =>
+      i.member_roles.map((j) => j.id)?.includes(executorRole.id)
+    );
+  }
 });
 
 const updateParmars = reactive({

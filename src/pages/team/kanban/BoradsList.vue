@@ -191,10 +191,9 @@ import {
   board_type,
   findBoardByKanban
 } from "./BoradsList.js";
-import { deleteKanbanCache } from "src/hooks/project/useProcess.js";
 
 import { useQuasar } from "quasar";
-import {teamStore, mm_wsStore, userStore, uiStore} from 'src/hooks/global/useStore.js';
+import {teamStore, uiStore} from 'src/hooks/global/useStore.js';
 
 import { i18n } from 'src/boot/i18n.js';
 

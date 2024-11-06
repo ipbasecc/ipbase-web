@@ -211,6 +211,7 @@ export default {
 
   settings: '设置',
   type_name_here: '在此输入名称…',
+  type_price_here: '在此输入价格…',
   cancel: '取消',
   create: '创建',
   no_subtask: '尚无任何子任务',
@@ -768,4 +769,6 @@ export default {
   tiptap_menu_Image_description: '从计算机上传图片。',
 
   buy: '购买',
+  drop_or_pick_cover: '拖拽或点击选择封面',
+  unpublished: '未发布',
 };

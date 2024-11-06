@@ -29,6 +29,8 @@
             </q-menu>
           </q-chip>
           <q-space />
+          <q-btn v-if="teamStore.card?.type === 'classroom' && !teamStore.card?.published" color="negative" class="q-mr-lg"
+          :label="$t('unpublished')" @click="publishCard()" />
           <q-btn @click="toggleRightDrawer()"
             flat dense size="sm" round
             :icon="classExtendIcon()"
@@ -199,7 +201,7 @@ watchEffect(async () => {
   personal_kanbanTodo.value = teamStore.init?.todogroups?.filter(i => i.kanban?.id === teamStore.card?.card_kanban?.id);
   // console.log('personal_kanbanTodo.value 2', personal_kanbanTodo.value);
 });
-const emit = defineEmits(["closeCardList"]);
+const emit = defineEmits(["closeCardList", "publishCard"]);
 
 const rightDrawerWidth = ref(640);
 const rightDrawerOpen = ref(false);
@@ -252,6 +254,9 @@ const set_current_version = (id) => {
 }
 const set_defaultVersion = (id) => {
   overviewRef.value?.set_defaultVersion(id)
+}
+const publishCard = () => {
+  emit('publishCard', teamStore.card?.id)
 }
 const isShared = computed(() => uiStore.isShared)
 const userId = computed(() => teamStore.init?.id);

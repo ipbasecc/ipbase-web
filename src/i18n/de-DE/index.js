@@ -211,6 +211,7 @@ export default {
 
   settings: 'Einstellungen',
   type_name_here: 'Name hier eingeben…',
+  type_price_here: 'Preis hier eingeben…',
   cancel: 'Abbrechen',
   create: 'Erstellen',
   no_subtask: 'Noch keine Unteraufgaben',
@@ -762,4 +763,6 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   tiptap_menu_Image_description: 'Laden Sie ein Bild von Ihrem Computer hoch.',
 
   buy: 'Kaufen',
+  drop_or_pick_cover: 'Ziehen oder Klicken zum Auswählen des Covers',
+  unpublished: 'Unveröffentlicht',
 };

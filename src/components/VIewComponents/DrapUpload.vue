@@ -6,7 +6,7 @@
     } drop-zone_${dom_id}`"
     @click="openFilePicker"
   >
-    {{ $t('click_or_drag_to_upload') }}
+    {{ caption || $t('click_or_drag_to_upload') }}
     <input
       ref="fileInputRef"
       type="file"
@@ -48,6 +48,10 @@ const props = defineProps({
   isOSS: {
     type: Boolean,
     default: false,
+  },
+  caption: {
+    type: String,
+    default: null,
   },
 });
 const emit = defineEmits(["uploaded"]);

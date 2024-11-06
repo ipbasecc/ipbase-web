@@ -116,6 +116,15 @@ export async function updateCardName(card, name) {
     return res;
   }
 }
+
+export async function publishCard(card) {
+  updateParmars.data.published = true;
+
+  let res = await updateCardFn(card.id);
+  if (res) {
+    return res;
+  }
+}
 export async function setCardType(card, val) {
   updateParmars.data.type = val;
   let res = await updateCardFn(card.id);

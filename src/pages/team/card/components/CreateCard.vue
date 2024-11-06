@@ -1,5 +1,4 @@
 <template>
-  <template v-if="props">
     <q-card
       v-if="view_model === 'kanban'"
       v-bind="$attrs"
@@ -23,10 +22,9 @@
           autofocus
           class="full-width"
           @keydown.esc="closeCreate()"
-          @keyup.enter="createCardFn"
-          @keyup.ctrl.enter="createCardFn"
+          @keyup.enter="type_for_create !== 'classroom' && createCardFn"
         >
-          <template v-if="params.data.name" v-slot:append>
+          <template v-if="params.data.name && type_for_create !== 'classroom'" v-slot:append>
             <q-btn
               icon="check"
               dense
@@ -38,6 +36,34 @@
           </template>
         </q-input>
       </q-card-section>
+      <template v-if="type_for_create === 'classroom'">
+        <q-card-section class="border cursor-pointer q-pa-xs">
+          <q-img
+            v-if="cover"
+            :src="cover"
+            :ratio="16/9"
+            spinner-color="primary"
+            spinner-size="82px"
+          />
+          <DrapUpload v-else :isOSS="true" @uploaded="setCover" style="min-height: 8rem;" :caption="$t('drop_or_pick_cover')" />
+        </q-card-section>
+        <q-card-section class="q-pa-xs">
+          <q-input
+            v-model="params.data.price"
+            type="number"
+            :placeholder="$t('type_price_here')"
+            dense
+            square
+            filled
+            class="full-width"
+            @keydown.esc="closeCreate()"
+            @keyup.enter="createCardFn"
+            @keyup.ctrl.enter="createCardFn"
+          >
+            <template #prepend><q-icon color="orange" name="mdi-sale" /></template>
+          </q-input>
+        </q-card-section>
+      </template>
       <template v-else>
         <q-card-section class="column no-wrap q-space q-pa-none card no-padding">
           <TipTap
@@ -74,6 +100,11 @@
       <div v-if="loading" class="absolute-full bg-black op-5 flex flex-center">
         <q-spinner-orbit color="primary" size="2em" />
       </div>
+      <template v-else>
+        <q-card-section class="border-top q-pa-sm">
+          <q-btn color="primary" :label="$t('create')" class="full-width" @click="createCardFn" />
+        </q-card-section>
+      </template>
     </q-card>
 
     <tr v-if="view_model === 'list'" class="hovered-item relative-position" :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-4'">
@@ -143,7 +174,6 @@
       <td class="more no-padding">
       </td>
     </tr>
-  </template>
 </template>
 
 <script setup>
@@ -153,6 +183,7 @@ import { createCard } from "src/api/strapi/project.js";
 import { board_type } from "src/pages/team/kanban/BoradsList.js";
 import { isEqual } from "lodash-es";
 import {uiStore} from "src/hooks/global/useStore";
+import DrapUpload from 'src/components/VIewComponents/DrapUpload.vue'
 
 const props = defineProps({
   column_id: {
@@ -185,6 +216,10 @@ const {
 } = toRefs(props);
 
 // 新建卡片的类型
+/**
+ * 任务看板卡片类型： "task", "note", "todo"
+ * 其它看板卡片类型与board类型一致： 'classroom', 'segment'
+ */
 const type_for_create = computed(() => {
   const _cardType =
     board_type.value === "kanban"
@@ -202,22 +237,32 @@ const type_for_create = computed(() => {
 // 新建表单是不是只需要 name 字段
 const create_with_name = computed(() => {
   const asNames = ["todo", "classroom"];
-  let _asName = false;
+  let _nameOnly = false;
   if (asNames.includes(type_for_create.value)) {
-    _asName = true;
+    _nameOnly = true;
   }
-  return _asName;
+  return _nameOnly;
 });
 
-const params = ref();
+const params = ref({});
+const cover = ref()
+const setCover = (val) => {
+  console.log('setCover', val);
+  if(val?.id){
+    params.value.data.cover = val.id
+    cover.value = val.attributes?.url
+  }
+}
 watchEffect(() => {
   params.value = {
+    ...params.value,
     column_id: column_idRef.value,
     data: {
-      status: "pending",
+      status: type_for_create.value === 'classroom' ? 'completed' : "pending",
       type: type_for_create.value,
       name: "",
       jsonContent: "",
+      price: NaN
     },
   };
 });
@@ -264,7 +309,7 @@ watch([isBlur, isCannel], () => {
   }
 });
 
-const emit = defineEmits(["closeCreate"]);
+const emit = defineEmits(["closeCreate", "created"]);
 
 const createCardFn = async () => {
   console.log('createCardFn 1');
@@ -280,11 +325,12 @@ const createCardFn = async () => {
     if (!params.value.data.name) return;
   }
   console.log('createCardFn 5');
-  let res = await createCard(params.value);
-  if (res?.data) {
+  let {data} = await createCard(params.value);
+  if (data) {
+    if(type_for_create.value === 'classroom'){
+      emit('created', data)
+    }
     closeCreate(); // 父组件关闭创建窗口
-  } else {
-    console.log(res);
   }
 };
 const closeCreate = () => {

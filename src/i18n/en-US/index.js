@@ -211,6 +211,7 @@ export default {
 
   settings: 'settings',
   type_name_here: 'type from here…',
+  type_price_here: 'type price here…',
   cancel: 'cancel',
   create: 'create',
   no_subtask: 'threr no subtask',
@@ -766,4 +767,6 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   tiptap_menu_Image_description: 'Upload an image from your computer.',
 
   buy: 'buy',
+  drop_or_pick_cover: 'Drag or Click to Select Cover',
+  unpublished: 'Unpublished',
 }

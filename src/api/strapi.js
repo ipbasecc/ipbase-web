@@ -284,26 +284,6 @@ export async function checkBlocked(params) {
 /**
  * https://docs.jeequan.com/docs/jeepay/payment_api
  * @param {*} params 文档 - 统一下单数据结构
-*   {
-      "amount": 8,
-      "extParam": "",
-      "mchOrderNo": "mho1624005107281",
-      "subject": "商品标题",
-      "wayCode": "ALI_BAR",
-      "sign": "84F606FA25A6EC4783BECC08D4FDC681",
-      "reqTime": "1624005107",
-      "body": "商品描述",
-      "version": "1.0",
-      "channelExtra": "{\"authCode\":\"280812820366966512\"}",
-      "appId": "60cc09bce4b0f1c0b83761c9",
-      "clientIp": "192.166.1.132",
-      "notifyUrl": "https://www.jeequan.com",
-      "signType": "MD5",
-      "currency": "cny",
-      "returnUrl": "",
-      "mchNo": "M1623984572",
-      "divisionMode": 1
-    }
  * @returns 
  */
 export async function createOrder(params) {

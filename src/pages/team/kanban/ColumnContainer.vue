@@ -670,9 +670,7 @@ const closeCreate = () => {
 };
 const showCreater = ref(false);
 const created = (val) => {
-  if(!mm_wsStore.online){
-    pushCard(val);
-  }
+  pushCard(val);
 }
 const createCannel = () => {
   createCard_in.value = null;
