@@ -1,7 +1,7 @@
 <template>
     <div class="">
         <q-btn color="primary" icon="check" :label="$t('buy')" @click="openCreateOrder()" />
-        <q-dialog v-model="showCreate" persistent>
+        <q-dialog v-model="showCreate">
             <q-card bordered class="column no-wrap" style="min-width: 24rem; min-height: 18rem;">
                 <q-card-section class="q-space column no-wrap q-pa-none" :class="`bg-${color}`">
                     <q-toolbar class="transparent no-padding">
@@ -25,9 +25,16 @@
                         </q-tabs>
                     </q-toolbar>
                     <div class="q-space flex flex-center q-pa-lg">
-                        <div class="q-space flex flex-center q-pa-lg radius-md shadow-12" :class="$q.dark.mode ? 'bg-grey-9' : 'bg-white'">
-                            <QrcodeVue v-if="payData?.data?.payData && state === 0"
+                        <div class="q-space fit column flex-center q-pa-lg radius-md shadow-12" :class="$q.dark.mode ? 'bg-grey-9' : 'bg-white'">
+                            <QrcodeVue v-if="payData?.data?.payData && state === 0 && wayCode === 'WX_NATIVE'"
                             :value="payData?.data?.payData" :size="360" level="H" />
+                            <q-item v-if="payData?.data?.payData && state === 0 && wayCode === 'ALI_PC'"
+                            class="fit">
+                                <q-item-section>
+                                    <q-item-label>{{ ali_pc_payTip.title }}</q-item-label>
+                                    <q-item-label caption lines="2">{{ ali_pc_payTip.desc }}</q-item-label>
+                                </q-item-section>
+                            </q-item>
                             <span v-if="2 === +state">
                                 支付成功
                             </span>
@@ -40,7 +47,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import { createOrder, notiy } from 'src/api/strapi.js'
 import usePayment from './usePayment';
 import { useRoute } from 'vue-router';
@@ -48,6 +55,7 @@ import QrcodeVue from "qrcode.vue";
 import { teamStore } from "src/hooks/global/useStore.js";
 import WxPay from 'src/pages/team/components/widgets/icons/WxPay.vue'
 import AliPay from 'src/pages/team/components/widgets/icons/AliPay.vue'
+import { uid } from 'quasar'
 
 const route = useRoute();
 const { paymentWays } = usePayment();
@@ -64,6 +72,7 @@ const wayCode = ref('WX_NATIVE');
 const payData = ref();
 const payOrderId = ref();
 const color = computed(() => paymentWays.find(i => i.way === wayCode.value)?.color)
+const distroy_order = ref(null);
 
 const params = computed(() => {
     return {
@@ -73,8 +82,13 @@ const params = computed(() => {
         },
         wayCode: wayCode.value,
         currency: 'cny',
+        distroy_order: distroy_order.value
     }
 })
+const ali_pc_payTip = ref({
+    title: '等待支付中...',
+    desc: '请在新开的支付宝页面中完成支付。'
+});
 const createOrderFn = async () => {
     if (!params.value.commodity.subject || typeof params.value.commodity.subject !== 'string') {
         console.error('Invalid subject type. Expected string.');
@@ -94,11 +108,29 @@ const createOrderFn = async () => {
     }
     const {data} = await createOrder(params.value);
     if(data){
-        payData.value = data
+        if(wayCode.value === 'WX_NATIVE'){
+            payData.value = data
+        }
+        if(wayCode.value === 'ALI_PC'){
+            const url = data.data?.payData
+            window.open(url, '_blank');
+        }
         payOrderId.value = data.data.payOrderId
         state.value = 0
+        distroy_order.value = payOrderId.value
     }
 }
+
+watch(wayCode, () => {
+    if(wayCode.value){
+        createOrderFn();
+    }
+})
+
+onBeforeUnmount(() => {
+    distroy_order.value = null;
+})
+
 const state = ref();
 const income = computed(() => teamStore.income);
 watch(income, () => {

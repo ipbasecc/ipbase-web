@@ -134,6 +134,9 @@ import ReelContainer from "./ReelContainer.vue";
 import SegmentPage from "../card/SegmentPage.vue";
 import { i18n } from 'src/boot/i18n.js';
 import { useQuasar } from "quasar";
+import {
+  findCard
+} from "src/api/strapi/project.js";
 
 const $t = i18n.global.t;
 const $q = useQuasar();
@@ -475,9 +478,25 @@ watch(val, async(newVal, oldVal) => {
     }
     if(val.value.event === 'card:updated'){
       if(!kanban.value?.columns) return;
+      if(data.type === 'classroom'){
+        const { data: res } = await findCard(card.id);
+        data = res
+      }
       const column = kanban.value.columns.find(i => i.cards && i.cards.map(j => j.id).includes(Number(card_id)));
       if(column) {
         column.cards = column.cards.map(i => i.id === Number(card_id) ? data : i);
+      } else { // classroom 发布时相对其它人是增加了卡片
+        const index = kanban.value.columns.findIndex(i => i.id === data.column?.id)
+        if(index !== -1){
+          const _cards = kanban.value.columns[index].cards
+          if(_cards?.length > 0){
+            _cards.push(data)
+            const sort = data.column?.cards.map(i => i.id);
+            _cards = sort.map(i => _cards.find(j => j.id === i));
+          } else {
+            _cards = [data]
+          }
+        }
       }
       if(teamStore.card?.id === Number(card_id)){
         teamStore.card = data;

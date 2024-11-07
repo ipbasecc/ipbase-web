@@ -8,12 +8,13 @@
       @mouseenter="uiStore.dragKanbanScrollEnable = false"
       @mouseleave="uiStore.dragKanbanScrollEnable = true"
     >
+    {{params}}
       <q-card-section
         v-if="create_with_name || name_onlyRef"
         class="q-pa-xs"
       >
         <q-input
-          v-model="params.data.name"
+          v-model="name"
           type="text"
           :placeholder="$t('type_name_here')"
           dense
@@ -49,7 +50,7 @@
         </q-card-section>
         <q-card-section class="q-pa-xs">
           <q-input
-            v-model="params.data.price"
+            v-model="price"
             type="number"
             :placeholder="$t('type_price_here')"
             dense
@@ -253,6 +254,9 @@ const setCover = (val) => {
     cover.value = val.attributes?.url
   }
 }
+const price = ref();
+const name = ref();
+const jsonContent = ref();
 watchEffect(() => {
   params.value = {
     ...params.value,
@@ -260,9 +264,9 @@ watchEffect(() => {
     data: {
       status: type_for_create.value === 'classroom' ? 'completed' : "pending",
       type: type_for_create.value,
-      name: "",
-      jsonContent: "",
-      price: NaN
+      name: name.value,
+      jsonContent: jsonContent.value,
+      price: price.value * 100
     },
   };
 });
@@ -272,7 +276,7 @@ const tiptapUpdate = (val) => {
   if (isCannel.value) return;
   console.log("tiptapUpdate");
 
-  params.value.data.jsonContent = val;
+  jsonContent.value = val;
 };
 const loading = ref(false);
 const isCannel = ref(false);
@@ -295,7 +299,7 @@ const tiptapBlur = async (val) => {
     return;
   }
 
-  params.value.data.jsonContent = val;
+  jsonContent.value = val;
   isBlur.value = true;
   contentChanged.value = false;
 };
@@ -318,8 +322,8 @@ const createCardFn = async () => {
   console.log('createCardFn 2');
   if (!name_onlyRef.value && !create_with_name.value) {
     console.log('createCardFn 3');
-    const isChanged = !isEqual(tipta_source, params.value.data.jsonContent);
-    if (!isChanged || !params.value.data.jsonContent) return;
+    const isChanged = !isEqual(tipta_source, jsonContent.value);
+    if (!isChanged || !jsonContent.value) return;
   } else {
     console.log('createCardFn 4');
     if (!params.value.data.name) return;

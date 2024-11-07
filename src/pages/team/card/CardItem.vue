@@ -27,7 +27,7 @@
       @dblclick="tryEnter"
     >
       <!-- 卡片顶部 -->
-      <div v-if="cardRef.type !== 'note' && cardRef.type !== 'classroom'"
+      <div v-if="cardRef.type !== 'note'"
         class="row no-wrap items-center q-pa-xs gap-xs border-bottom hovered-item q-px-xs"
         :class="`
           ${
@@ -234,10 +234,12 @@
         @dblclick="_enterCard(useAuths('read', ['card']))"
       >
         <template v-if="cardRef.type !== 'note'">
-          <div v-if="cardRef.type === 'classroom' && cardRef.name" class="q-px-sm q-space column no-wrap gap-sm undrag">
+          <div v-if="cardRef.type === 'classroom' && cardRef.name"
+          class="q-px-sm q-space column no-wrap gap-sm undrag cursor-pointer"
+          @click="_enterCard(useAuths('read', ['card']))">
             <span>{{ cardRef.name }}</span>
             <div class="">
-              {{ `${$t('price')}: ${cardRef.price}` }}
+              {{ `${$t('price')}: ${cardRef.price / 100}` }}
             </div>
           </div>
           <ThreadBtn
@@ -328,7 +330,7 @@
         >
           <q-menu v-if="!isShared" class="shadow-24 radius-sm">
             <q-list bordered dense class="radius-sm q-pa-xs text-no-wrap">
-              <template v-if="!content_channging && cardRef.type !== 'note' && cardRef.type !== 'classroom'">
+              <template v-if="!content_channging && cardRef.type !== 'note'">
                 <q-item class="radius-xs">
                   <q-item-section>
                     <div class="row no-wrap gap-sm">
@@ -396,7 +398,7 @@
                   useAuths('color_marker', ['card'])
                 "
               >
-                <q-separator v-if="cardRef.type !== 'note' && cardRef.type !== 'classroom'" spaced class="op-5" />
+                <q-separator v-if="cardRef.type !== 'note'" spaced class="op-5" />
                 <q-item>
                   <q-item-section>
                     <div class="row no-wrap items-center gap-sm">
@@ -523,10 +525,6 @@
           class="full-width hover-highlight-lg"
         />
       </template>
-      <div v-if="!cardRef.auth" class="absolute-full flex flex-center hover-show transition">
-        <div class="absolute-full bg-black op-5"></div>
-        <PayButton subject="card" :commodity="cardRef" @buyData="buyData" />
-      </div>
       <!-- 重要度、紧急度 左边框颜色标记 -->
       <div class="absolute-left full-height z-fab"
         :class="`${edgeStyle.highlight ? 'highlight transition' : ''}`"
@@ -551,6 +549,7 @@
     <template v-if="cardRef.type === 'classroom'">
       <ClassPage v-if="!isElectron"
         :card="cardRef"
+        @buyData="buyData"
         @publishCard="publishCard(cardRef)"
       />
       <q-card v-else bordered class="column">
@@ -866,10 +865,8 @@ watchEffect(() => {
     show_cardDetial.value = false;
   }
 })
-const notPaied = computed(() => cardRef.value.type === 'classroom' && !cardRef.value.auth)
 const _enterCard = async (auth) => {
   if(cardRef.value?.type === 'note') return
-  if(notPaied.value) return
   if (!isDilgMode.value) {
     teamStore.card = cardRef.value;
     teamStore.activedCard_id = cardRef.value?.id;
@@ -888,9 +885,7 @@ const tryEnter = async () => {
     await _enterCard(true);
   }
 };
-const buyData = (data) => {
-  console.log('carditem', data);
-  
+const buyData = (data) => {  
   emit('buyData', data)
 };
 

@@ -222,7 +222,6 @@
           chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
           class="q-py-xs radius-sm column gap-sm no-wrap forbid"
           :class="teamStore.cardDragging ? 'q-space' : ''"
-          :orderAuth="useAuths('order', ['card'])"
           @start="dragStart('tasks')"
           @end="dragEnd"
           @sort="onSort"
@@ -234,6 +233,7 @@
               :isCreator_column="isCreator"
               :viewType="'card'"
               :uiOptions="uiOptions"
+              :orderAuth="useAuths('order', ['card'])"
               @buyData="cardChange"
               @cardChange="cardChange"
               @cardDelete="cardDelete"
@@ -638,6 +638,7 @@ const updateCannel = () => {
 };
 
 const emit = defineEmits(["cardChange", "cardDelete", "orderCard"]);
+const sortRes = ref();
 const dragCard_sort = async () => {
   console.log("dragCard_sort", filteredCards.value);
   await nextTick();
@@ -649,7 +650,10 @@ const dragCard_sort = async () => {
     },
   };
 
-  await updateColumn(columnRef.value.id, params);
+  const { data } = await updateColumn(columnRef.value.id, params);
+  if(data){
+    sortRes.value = data
+  }
 };
 const onSort = async () => {
   await dragCard_sort()
@@ -801,6 +805,19 @@ const sync_uiOptions = async () => {
     uiOptions.value = JSON.parse(res);
   }
 };
+
+
+const val = computed(() => teamStore.income);
+watch(val, async(newVal, oldVal) => {
+  if(!newVal || newVal === oldVal) return;
+  const { column_id } = val.value.data;
+  if(columnRef.value.id === Number(column_id)){
+    if(val.value.event === 'column:updated' && sortRes.value){
+      await nextTick();
+      teamStore.income.data.data = sortRes.value;
+    }
+  }
+},{immediate: false, deep: true})
 </script>
 
 <style lang="scss">

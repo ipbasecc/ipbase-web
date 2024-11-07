@@ -1,6 +1,7 @@
 <template>
-  <q-card bordered class="fit q-space no-wrap row radius-sm shadow-focus relative-position">
-    <q-layout v-if="teamStore?.card"
+  <q-card bordered class="fit q-space no-wrap row radius-sm shadow-focus relative-position"
+  :class="ispaied ? '' : 'hovered-item'">
+    <q-layout v-if="ispaied && teamStore?.card"
       view="lHh LpR lFf" container class="q-space"
       @mousemove="handleMouseMove" @mouseup="handleMouseUp"
     >
@@ -167,6 +168,15 @@
         </q-page>
       </q-page-container>
     </q-layout>
+    <div v-else class="absolute-full column flex-center">
+      <q-toolbar class="transparent">
+        <q-space />
+        <q-btn flat round dense icon="close" v-close-popup />
+      </q-toolbar>
+      <div class="q-space row no-wrap gap-md flex-center hover-show transition">
+        <PayButton subject="card" :commodity="card" @buyData="buyData" />
+      </div>
+    </div>
   </q-card>
 </template>
 
@@ -185,6 +195,7 @@ import VersionTogger from './components/VersionTogger.vue'
 import { useMouse } from '@vueuse/core'
 import NotebookList from '../notebook/NotebookList.vue'
 import NoteDetial from '../notebook/note/NoteDetial.vue'
+import PayButton from 'src/components/order/PayButton.vue'
 
 const props = defineProps({
   card: {
@@ -313,10 +324,12 @@ const courses = computed(() => teamStore.kanban?.columns);
 
 const card_members = ref();
 
+const ispaied = ref()
 const getCard = async (card_id) => {
   let res = await findCard(card_id);
 
   if (res?.data) {
+    ispaied.value = res?.data.ispaied
     card_members.value = res.data.card_members;
     teamStore.card = res.data;
     if(card.value?.activeVersion){
@@ -324,6 +337,11 @@ const getCard = async (card_id) => {
     }
     teamStore.cards = [res.data];
   }
+};
+const buyData = (data) => {
+  teamStore.card = data
+  ispaied.value = true
+  emit('buyData', data)
 };
 onMounted(() => {
   if (card.value) {
