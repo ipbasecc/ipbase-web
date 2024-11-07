@@ -234,10 +234,14 @@ const submitRegister = async () => {
     const res = await register(_params);
     if (res?.data) {
       const data = res.data;
-      me.value = data.user;
-      store.logged = true;
-      store.needRefetch = true;
-      step.value = 1;
+      if(data.status_code === 400){
+        error.value = data.message;
+      } else {
+        me.value = data.user;
+        store.logged = true;
+        store.needRefetch = true;
+        step.value = 1;
+      }
       loading.value = false;
     }
   } catch (e) {
@@ -248,7 +252,11 @@ watch(
   error,
   () => {
     if (error.value) {
-      $q.notify(error.value);
+      $q.notify({
+        message: error.value,
+        color: 'negative',
+        position: 'top'
+      });
     }
   },
   { immediate: true, deep: false }

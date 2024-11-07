@@ -429,6 +429,7 @@ watch(
           // 如果是别人发的消息：没有向上翻阅一屏，滚动到底部，否则显示提示消息，点击后滚动到底部
           const sender = message.user_id;
           const scrollInfo = scrollAreaRef.value?.getScroll();
+          if(!scrollInfo) return
           // 滚动条距离底部，当滚动条在底部时，这个距离是一个聊天容器的高度
           const _bottom = scrollInfo.verticalSize - scrollInfo.verticalPosition;
           // 是否向上滚动超过了一屏

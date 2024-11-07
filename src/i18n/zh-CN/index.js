@@ -771,4 +771,6 @@ export default {
   buy: '购买',
   drop_or_pick_cover: '拖拽或点击选择封面',
   unpublished: '未发布',
+  publish: '发布',
+  price: '价格',
 };

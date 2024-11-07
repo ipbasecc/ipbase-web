@@ -339,11 +339,11 @@ const createColumnFn = async () => {
   }
 };
 
-const cardChange = () => {
-  // kanban.value.columns = kanban.value.columns.map(c => ({
-  //     ...c,
-  //     cards: c.cards.map(card => card.id === val.id ? val : card)
-  // }))
+const cardChange = (val) => {
+  kanban.value.columns = kanban.value.columns.map(c => ({
+      ...c,
+      cards: c.cards.map(card => card.id === val.id ? val : card)
+  }))
 };
 const cardDelete = (card_id) => {
   kanban.value.columns = kanban.value.columns.map((c) => ({

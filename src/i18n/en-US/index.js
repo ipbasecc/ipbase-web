@@ -769,4 +769,6 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   buy: 'buy',
   drop_or_pick_cover: 'Drag or Click to Select Cover',
   unpublished: 'Unpublished',
+  publish: 'Publish',
+  price: 'price',
 }

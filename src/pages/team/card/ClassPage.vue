@@ -29,8 +29,8 @@
             </q-menu>
           </q-chip>
           <q-space />
-          <q-btn v-if="teamStore.card?.type === 'classroom' && !teamStore.card?.published" color="negative" class="q-mr-lg"
-          :label="$t('unpublished')" @click="publishCard()" />
+          <q-btn v-if="teamStore.card?.type === 'classroom' && !teamStore.card?.published" icon="mdi-eye" color="positive" class="q-mr-lg border"
+          :label="$t('publish')" @click="publishCard()" />
           <q-btn @click="toggleRightDrawer()"
             flat dense size="sm" round
             :icon="classExtendIcon()"

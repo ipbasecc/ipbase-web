@@ -765,4 +765,6 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   buy: 'Kaufen',
   drop_or_pick_cover: 'Ziehen oder Klicken zum Auswählen des Covers',
   unpublished: 'Unveröffentlicht',
+  publish: 'Veröffentlichen',
+  price: 'Preis',
 };

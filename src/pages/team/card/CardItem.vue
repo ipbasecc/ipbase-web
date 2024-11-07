@@ -18,7 +18,7 @@
     <q-card v-else-if="cardRef && viewTypeRef === 'card'"
       bordered
       flat
-      class="full-width column no-wrap overflow-hidden"
+      class="full-width column no-wrap overflow-hidden hovered-item"
       :class="`${content_channging ? 'focus' : ''}
         ${$q.screen.gt.xs ? 'cardBody' : ''}
         ${actived ? 'border-primary' : ''}
@@ -33,7 +33,7 @@
           ${
             useAuths('order', ['card']) &&
             !name_changing &&
-            isDilgMode
+            isDilgMode && orderAuth
               ? 'dragBar'
               : ''
           }
@@ -225,18 +225,21 @@
       <!-- 卡片底部 -->
       <q-card-section
         v-show="cardRef?.expand !== 'collapse'"
-        class="row no-wrap gap-sm items-center q-px-sm q-py-xs hovered-item"
+        class="row no-wrap gap-sm items-end q-pa-sm q-py-xs hovered-item"
         :class="`
-          ${isDilgMode ? 'dragBar' : ''}
+          ${isDilgMode && orderAuth ? 'dragBar' : ''}
           ${cardRef.type !== 'note' ? 'border-top' : 'border-bottom'}
         `"
         :style="cardRef.type === 'note' ? 'order: -1' : ''"
         @dblclick="_enterCard(useAuths('read', ['card']))"
       >
         <template v-if="cardRef.type !== 'note'">
-          <span v-if="cardRef.type === 'classroom' && cardRef.name" class="q-pa-sm">
-            {{ cardRef.name }}
-          </span>
+          <div v-if="cardRef.type === 'classroom' && cardRef.name" class="q-px-sm q-space column no-wrap gap-sm undrag">
+            <span>{{ cardRef.name }}</span>
+            <div class="">
+              {{ `${$t('price')}: ${cardRef.price}` }}
+            </div>
+          </div>
           <ThreadBtn
             v-if="
               cardRef.mm_thread && !teamStore.card && isDilgMode && !isShared && cardRef.type !== 'classroom'
@@ -292,7 +295,7 @@
               @click="_enterCard(useAuths('read', ['card']))"
             />
           </div>
-          <div v-else class="undrag flex flex-center hover-show transition">
+          <div v-else-if="cardRef.type !== 'classroom'" class="undrag flex flex-center hover-show transition">
             <q-btn flat dense size="sm" round
               icon="fullscreen" class="op-5"
               @click="_enterCard(useAuths('read', ['card']))"
@@ -309,8 +312,9 @@
           </div>
         </template>
         <q-space v-else />
-        <q-icon v-if="!isShared || (isShared && color_marker)"
-          :name="
+        <q-btn v-if="!isShared || (isShared && color_marker)"
+          flat dense size="sm" round
+          :icon="
             color_marker && show_byPreference?.color_marker?.value
               ? 'mdi-checkbox-blank-circle'
               : 'more_vert'
@@ -322,9 +326,9 @@
           "
           class="cursor-pointer undrag"
         >
-          <q-menu v-if="!isShared" class="shadow-24">
+          <q-menu v-if="!isShared" class="shadow-24 radius-sm">
             <q-list bordered dense class="radius-sm q-pa-xs text-no-wrap">
-              <template v-if="!content_channging && cardRef.type !== 'note'">
+              <template v-if="!content_channging && cardRef.type !== 'note' && cardRef.type !== 'classroom'">
                 <q-item class="radius-xs">
                   <q-item-section>
                     <div class="row no-wrap gap-sm">
@@ -392,7 +396,7 @@
                   useAuths('color_marker', ['card'])
                 "
               >
-                <q-separator v-if="cardRef.type !== 'note'" spaced class="op-5" />
+                <q-separator v-if="cardRef.type !== 'note' && cardRef.type !== 'classroom'" spaced class="op-5" />
                 <q-item>
                   <q-item-section>
                     <div class="row no-wrap items-center gap-sm">
@@ -503,7 +507,7 @@
               </template>
             </q-list>
           </q-menu>
-        </q-icon>
+        </q-btn>
       </q-card-section>
       <template v-if="cardRef.expand === 'collapse'">
         <div @dblclick="_enterCard(useAuths('read', ['card']))"
@@ -519,6 +523,10 @@
           class="full-width hover-highlight-lg"
         />
       </template>
+      <div v-if="!cardRef.auth" class="absolute-full flex flex-center hover-show transition">
+        <div class="absolute-full bg-black op-5"></div>
+        <PayButton subject="card" :commodity="cardRef" @buyData="buyData" />
+      </div>
       <!-- 重要度、紧急度 左边框颜色标记 -->
       <div class="absolute-left full-height z-fab"
         :class="`${edgeStyle.highlight ? 'highlight transition' : ''}`"
@@ -615,6 +623,7 @@ import DownloadApp from 'src/components/VIewComponents/DownloadApp.vue'
 import useOverview from 'src/pages/team/hooks/useOverview.js'
 import useSocket from "src/pages/team/card/hooks/useSocket.js";
 import useMember from "src/hooks/team/useMember.js";
+import PayButton from 'src/components/order/PayButton.vue'
 
 const $q = useQuasar();
 const route = useRoute();
@@ -634,6 +643,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  orderAuth: {
+    type: Boolean,
+    default: false,
+  },
   uiOptions: {
     type: Object,
     default() {
@@ -641,7 +654,7 @@ const props = defineProps({
     },
   },
 });
-const { card: cardRef } = toRefs(props);
+const { card: cardRef, orderAuth } = toRefs(props);
 const alwaysShowCover = computed(() => {
   const _navsAlwaysShowCover = ['classroom', 'segment'];
   return _navsAlwaysShowCover.includes(teamStore.navigation);
@@ -772,7 +785,7 @@ const updateParmars = reactive({
 const todoRef = ref();
 
 const name_changing = ref(false);
-const emit = defineEmits(["cardChange", "cardDelete"]);
+const emit = defineEmits(["cardChange", "cardDelete", "buyData"]);
 const _card_statusChange = async (val) => {
   await setStatus(cardRef.value, val);
   if (val === "completed" && cardSize.value?.height > 200) {
@@ -853,8 +866,10 @@ watchEffect(() => {
     show_cardDetial.value = false;
   }
 })
+const notPaied = computed(() => cardRef.value.type === 'classroom' && !cardRef.value.auth)
 const _enterCard = async (auth) => {
   if(cardRef.value?.type === 'note') return
+  if(notPaied.value) return
   if (!isDilgMode.value) {
     teamStore.card = cardRef.value;
     teamStore.activedCard_id = cardRef.value?.id;
@@ -872,6 +887,11 @@ const tryEnter = async () => {
   if (teamStore.shareInfo) {
     await _enterCard(true);
   }
+};
+const buyData = (data) => {
+  console.log('carditem', data);
+  
+  emit('buyData', data)
 };
 
 const toggleExpand = async (card) => {
