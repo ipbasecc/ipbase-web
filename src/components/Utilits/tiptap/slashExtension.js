@@ -48,7 +48,7 @@ const Command = Extension.create({
 const getSuggestionItems = ({ query }) => {
   return [
     {
-      title: 'Text',
+      title: 'tiptap_slash_menu_text',
       icon: 'mdi-cursor-text',
       children: [
         {
@@ -112,7 +112,7 @@ const getSuggestionItems = ({ query }) => {
       ]
     },
     {
-      title: 'List',
+      title: 'tiptap_slash_menu_list',
       icon: 'mdi-format-list-bulleted-type',
       children: [
         {
@@ -145,7 +145,7 @@ const getSuggestionItems = ({ query }) => {
       ]
     },
     {
-      title: 'Block',
+      title: 'tiptap_slash_menu_block',
       icon: 'mdi-selection',
       children: [
         {
@@ -173,7 +173,7 @@ const getSuggestionItems = ({ query }) => {
       ]
     },
     {
-      title: 'Insert',
+      title: 'tiptap_slash_menu_insert',
       icon: 'mdi-upload',
       children: [
         {

@@ -762,6 +762,10 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   tiptap_menu_Code_description: 'Erfassen Sie einen Code-Schnipsel.',
   tiptap_menu_Image: 'Bild',
   tiptap_menu_Image_description: 'Laden Sie ein Bild von Ihrem Computer hoch.',
+  tiptap_slash_menu_text: 'Absatz',
+  tiptap_slash_menu_list: 'Liste',
+  tiptap_slash_menu_block: 'Block',
+  tiptap_slash_menu_insert: 'Einfügen',
 
   buy: 'Kaufen',
   drop_or_pick_cover: 'Ziehen oder Klicken zum Auswählen des Covers',

@@ -8,7 +8,7 @@
         <q-item-section side class="q-pl-sm">
           <q-icon :name="item.icon" size="xs" />
         </q-item-section>
-        <q-item-section class="q-pr-lg">{{ item.title }}</q-item-section>
+        <q-item-section class="q-pr-lg">{{ $t(item.title) }}</q-item-section>
       </q-item>
     </q-list>
     <div class="column no-wrap" style="height: 400px;">

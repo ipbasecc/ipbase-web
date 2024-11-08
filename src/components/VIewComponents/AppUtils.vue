@@ -64,6 +64,7 @@
             v-close-popup
             @click="setLocale(i.val)"
             class="radius-xs"
+            :class="locale === i.val ? 'bg-primary' : ''"
           >
             <q-item-section side>
               <span :class="`fi fi-${i.flag_key}`"></span>

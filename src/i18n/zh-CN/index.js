@@ -768,6 +768,10 @@ export default {
   tiptap_menu_Code_description: '捕获代码片段。',
   tiptap_menu_Image: '图片',
   tiptap_menu_Image_description: '从计算机上传图片。',
+  tiptap_slash_menu_text: '段落',
+  tiptap_slash_menu_list: '列表',
+  tiptap_slash_menu_block: '区块',
+  tiptap_slash_menu_insert: '插入',
 
   buy: '购买',
   drop_or_pick_cover: '拖拽或点击选择封面',
