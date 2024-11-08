@@ -1,6 +1,5 @@
 <template>
-  <q-card bordered class="fit q-space no-wrap row radius-sm shadow-focus relative-position"
-  :class="ispaied ? '' : 'hovered-item'">
+  <q-card v-if="fetched" bordered class="fit q-space no-wrap row radius-sm shadow-focus relative-position">
     <q-layout v-if="ispaied && teamStore?.card"
       view="lHh LpR lFf" container class="q-space"
       @mousemove="handleMouseMove" @mouseup="handleMouseUp"
@@ -173,15 +172,22 @@
         <q-space />
         <q-btn flat round dense icon="close" v-close-popup />
       </q-toolbar>
-      <div class="q-space row no-wrap gap-md flex-center hover-show transition">
-        <PayButton subject="card" :commodity="card" @buyData="buyData" />
+      <div class="q-space row no-wrap gap-md flex-center">
+        <OrderCard :card>
+          <template #buyBtn>
+            <PayButton
+              class="full-width" btnColor="negative"
+              subject="card" :commodity="card" @buyData="buyData"
+            />
+          </template>
+        </OrderCard>
       </div>
     </div>
   </q-card>
 </template>
 
 <script setup>
-import { ref, toRefs, computed, watchEffect, onMounted, reactive } from "vue";
+import { ref, toRefs, computed, watchEffect, onMounted, reactive, useTemplateRef } from "vue";
 import { findCard } from "src/api/strapi/project.js";
 import OverView from "src/pages/team/components/OverView.vue";
 import KanbanContainer from "./KanbanContainer.vue";
@@ -196,6 +202,7 @@ import { useMouse } from '@vueuse/core'
 import NotebookList from '../notebook/NotebookList.vue'
 import NoteDetial from '../notebook/note/NoteDetial.vue'
 import PayButton from 'src/components/order/PayButton.vue'
+import OrderCard from './components/OrderCard.vue'
 
 const props = defineProps({
   card: {
@@ -325,6 +332,7 @@ const courses = computed(() => teamStore.kanban?.columns);
 const card_members = ref();
 
 const ispaied = ref()
+const fetched = ref(false)
 const getCard = async (card_id) => {
   let res = await findCard(card_id);
 
@@ -336,6 +344,7 @@ const getCard = async (card_id) => {
       teamStore.card.activeVersion = teamStore.card.overviews.find(i => i.id === card.value.activeVersion.id)
     }
     teamStore.cards = [res.data];
+    fetched.value = true
   }
 };
 const buyData = (data) => {
@@ -343,9 +352,10 @@ const buyData = (data) => {
   ispaied.value = true
   emit('buyData', data)
 };
-onMounted(() => {
+
+onMounted(async() => {
   if (card.value) {
-    getCard(card.value.id);
+    await getCard(card.value.id);
   }
 })
 
