@@ -1,15 +1,18 @@
 <template>
     <div class="absolute-full column no-wrap" :class="$q.dark.mode ? '' : 'bg-primary-9 text-grey-1'">
         <q-toolbar class="transparent border-bottom">
-            <q-btn flat dense :icon="togglerIcon" @click="toggleList()" />
+            <q-btn flat dense class="q-mr-sm" :icon="targetList !== 'notebooks' ? 'mdi-chevron-left' : 'mdi-book-open-page-variant'"
+            @click="enterLibrary()" />
+            <span v-if="notebook?.name && targetList !== 'notebooks'">{{ notebook.name }}</span>
         </q-toolbar>
         <q-scroll-area class="q-space q-pa-xs">
             <q-list v-if="targetList === 'notebooks'" dense class="column no-wrap gap-xs">
                 <template v-if="notebooks?.length > 0">
-                    <q-item clickable v-ripple v-for="notebook in notebooks" :key="notebook.id"
-                    class="radius-xs hovered-item" @click="enterNotebook(notebook.id)">
-                        <q-item-section>{{ notebook.name }}</q-item-section>
-                        <NotebookItemMenu class="hover-show transition" :notebook="notebook" @cancelUpdate="cancelUpdateFn"
+                    <q-item clickable v-ripple v-for="nb in notebooks" :key="nb.id"
+                    class="radius-xs hovered-item" :class="nb.id === notebook?.id ? 'border active-listitem' : 'border-placeholder op-7'"
+                    @click="enterNotebook(nb)">
+                        <q-item-section>{{ nb.name }}</q-item-section>
+                        <NotebookItemMenu class="hover-show transition" :notebook="nb" @cancelUpdate="cancelUpdateFn"
                         @updated="updated" @deleted="deletedFn" @mouseenter="disableEnter = true" @mouseleave="disableEnter = false" />
                     </q-item>
                 </template>
@@ -23,12 +26,12 @@
                 </q-item>
                 <CreateNotebook v-else @cancelCreate="creating = false" @created="createdFn" />
             </q-list>
-            <NoteList v-else :notebook_id />
+            <NoteList v-else-if="notebook" :notebook_id="notebook.id" />
         </q-scroll-area>
     </div>
 </template>
 <script setup>
-import { ref, watchEffect } from "vue";
+import { ref, watchEffect, onBeforeMount } from "vue";
 import { teamStore, uiStore } from "src/hooks/global/useStore";
 import CreateNotebook from './CreateNotebook.vue'
 import NotebookItemMenu from './NotebookItemMenu.vue'
@@ -40,7 +43,6 @@ const route = useRoute();
 const notebooks = ref([]);
 
 const targetList = ref('notebooks')
-const togglerIcon = ref('mdi-book-open-variant')
 const disableEnter = ref(false)
 watchEffect(() => {
     notebooks.value = teamStore.init.notebooks || [];
@@ -73,26 +75,21 @@ const deletedFn = (val) => {
         router.push(`/notebooks`)
     }
 }
-const toggleList = () => {
-    if(teamStore.notebook){
-        targetList.value = targetList.value === 'notebooks' ? 'note' : 'notebooks'
-    } else {
-        targetList.value = 'notebooks'
-    }
-    togglerIcon.value = targetList.value === 'notebooks' ? 'mdi-note-multiple-outline' : 'mdi-book-open-page-variant'
+const enterLibrary = () => {
+    targetList.value = 'notebooks'
 }
-const notebook_id = ref()
-const enterNotebook = (id) => {
+const notebook = ref()
+const enterNotebook = (_notebook) => {
     if(disableEnter.value) return
     targetList.value = 'note'
-    if(uiStore.app !== 'notebooks') {
-        notebook_id.value = id;
-        return
-    };
-    const { note_id } = route.params;
-    if(!note_id){
-        router.push(`/notebooks/${id}`);
+    notebook.value = _notebook;
+    if(uiStore.app === 'notebooks') {
+        router.push(`/notebooks/${_notebook.id}`);
     }
+}
+const { notebook_id, note_id } = route.params
+if(notebook_id && !note_id){
+    enterNotebook(notebook_id)
 }
 </script>
 

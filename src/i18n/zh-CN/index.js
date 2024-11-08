@@ -780,4 +780,5 @@ export default {
   price: '价格',
   price_free: '免费',
   unsupported_file_format: '不支持此格式文件',
+  app_notebook_title: '我的笔记',
 };

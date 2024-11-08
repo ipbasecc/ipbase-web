@@ -22,7 +22,7 @@
     </q-list>
 </template>
 <script setup>
-import { ref, watchEffect } from "vue";
+import { ref, watch, computed } from "vue";
 import { teamStore, uiStore } from "src/hooks/global/useStore";
 import CreateNote from './CreateNote.vue'
 import NoteitemMenu from './NoteitemMenu.vue'
@@ -34,12 +34,13 @@ const { notebook_id } = defineProps(['notebook_id'])
 const router = useRouter();
 
 const notes = ref([]);
-watchEffect(async() => {
-    if(notebook_id){
-        teamStore.notebook = await getNotebook(notebook_id);
+const _notebook_id = computed(() => notebook_id);
+watch(_notebook_id, async() => {
+    if(_notebook_id.value){
+        teamStore.notebook = await getNotebook(_notebook_id.value);
+        notes.value = teamStore.notebook?.documents || [];
     }
-    notes.value = teamStore.notebook?.documents || [];
-})
+},{immediate: true})
 
 const creating = ref(false);
 const disableEnter = ref(false);

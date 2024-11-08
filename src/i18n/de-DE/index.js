@@ -774,4 +774,5 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   price: 'Preis',
   price_free: 'kostenlos',
   unsupported_file_format: 'nicht unterstütztes Dateiformat',
+  app_notebook_title: 'Meine Notizbücher',
 };

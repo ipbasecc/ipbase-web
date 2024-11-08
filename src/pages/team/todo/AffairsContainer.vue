@@ -1,6 +1,6 @@
 <template>
   <div class="column no-wrap">
-    <q-bar v-if="!hideToolbar" class="transparent border-bottom q-px-xs" style="height: 36px">
+    <q-bar v-if="!hideToolbar && todogroups?.length > 0" class="transparent border-bottom q-px-xs" style="height: 36px">
       <q-btn-group flat class="border">
         <q-btn v-for="i in viewModels" :key="i.val"
           dense padding="4px 10px"
@@ -36,11 +36,12 @@
 </template>
 
 <script setup>
-import { ref, toRefs } from "vue";
+import { ref, onBeforeMount, onBeforeUnmount } from "vue";
 import ScrollBody from './affairs/ScrollBody.vue'
 import CardAffairs from './affairs/CardAffairs.vue'
 import AffairsBody from './affairs/AffairsBody.vue'
 import QuadrantView from './affairs/QuadrantView.vue';
+import { teamStore, uiStore } from "src/hooks/global/useStore";
 
 const { todogroups, _for = 'personal', card, hideToolbar, layout = 'row', displayType = 'todo', dense = false } = defineProps({
     todogroups: Array,
@@ -67,6 +68,16 @@ const viewModel = ref('kanban');
 const setViewModel = (model) => {
     viewModel.value = model;
 }
+const navigatorDrawerState = ref()
+onBeforeMount(() => {
+  if(teamStore.init?.todogroups?.length === 0){
+    navigatorDrawerState.value = uiStore.navigatorDrawer
+    uiStore.navigatorDrawer = false
+  }
+})
+onBeforeUnmount(() => {
+  uiStore.navigatorDrawer = navigatorDrawerState.value
+})
 </script>
 
 <style scoped></style>
