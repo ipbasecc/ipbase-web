@@ -904,6 +904,7 @@ const toggleExpand = async (card) => {
 };
 
 const expandCard = async (card) => {
+  if(!cardRef.value?.expand) return
   cardRef.value.expand = "expand";
   await cacheExpand(card, "expand");
 };

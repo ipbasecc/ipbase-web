@@ -483,33 +483,18 @@ watch(val, async(newVal, oldVal) => {
       if(!kanban.value?.columns) return;
 
       const applyCardData = (cardData) => {
-        const column = kanban.value.columns.find(i => i.cards && i.cards.map(j => j.id).includes(Number(card_id)));
-        if(column) {
-          column.cards = column.cards.map(i => i.id === Number(card_id) ? cardData : i);
-        } else { // classroom 发布时相对其它人是增加了卡片
-          const index = kanban.value.columns.findIndex(i => i.id === cardData.column?.id)
-          if(index !== -1){
-            const _cards = kanban.value.columns[index].cards
-            if(_cards?.length > 0){
-              _cards.push(cardData)
-              const sort = cardData.column?.cards.map(i => i.id);
-              _cards = sort.map(i => _cards.find(j => j.id === i));
-            } else {
-              _cards = [cardData]
-            }
-          }
+        const _column = kanban.value?.columns?.find(i => i.id === Number(column_id));
+        
+        if(_column) {
+          _column.cards = data.cards.map(i => i === Number(card_id) ? cardData : _column.cards.find(j => j.id === i));
         }
         if(teamStore.card?.id === Number(card_id)){
           teamStore.card = cardData;
         }
       }
-      if(data.type === 'classroom'){
-        const res = await findCard(data.id);
-        if(res?.data){
-          applyCardData(res.data)
-        }
-      } else {
-        applyCardData(data)
+      const res = await findCard(data.id);
+      if(res?.data){
+        applyCardData(res.data)
       }
     }
 

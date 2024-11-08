@@ -69,7 +69,7 @@ export default function useSocket(cardRef){
         }
     
         if(teamStore.card?.id === cardRef.value?.id){
-          teamStore.card.todogroups = cardRef.value.todogroups;
+          teamStore.card.todogroups = cardRef.value?.todogroups;
         }
       }
     });

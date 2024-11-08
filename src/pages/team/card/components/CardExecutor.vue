@@ -98,7 +98,7 @@ const authBase = computed(() => {
   let res;
   let isInCard;
   if (teamStore.card) {
-    const members = teamStore.card.card_members.map((i) => i.by_user.id);
+    const members = teamStore.card.card_members?.map((i) => i.by_user.id);
     isInCard = members?.includes(userId.value);
   }
   if (isInCard) {

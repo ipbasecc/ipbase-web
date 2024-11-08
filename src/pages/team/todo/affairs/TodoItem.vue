@@ -54,7 +54,7 @@
             </div>
         </template>
     </div>
-    <div class="absolute-right q-pa-xs undrag hover-show transition">
+    <div class="absolute-right q-pa-xs undrag todo-menu-btn transition">
         <q-btn flat dense size="sm" round icon="mdi-dots-vertical" >
             <q-menu class="radius-sm shadow-24">
                 <TodoMenu
@@ -234,6 +234,12 @@ watch(mm_wsStore, () => {
 }
 .todo-item:hover {
     border: 1px solid rgb(201, 201, 201);
+}
+.todo-item .todo-menu-btn {
+  opacity: 0;
+}
+.todo-item:hover .todo-menu-btn {
+  opacity: 1;
 }
 .edge-highlight {
   width: 5px;

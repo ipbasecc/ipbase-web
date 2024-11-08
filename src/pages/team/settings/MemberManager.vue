@@ -116,7 +116,7 @@
     </template>
     <div v-else>{{ $t('no_premission_to_view') }}</div>
     <q-dialog v-model="addFromTeam" persistent>
-      <q-card bordered style="min-width: 24rem;">
+      <q-card bordered style="min-width: 24rem; min-height: 32rem;">
         <q-card-section class="border-bottom row items-center">
           {{ $t('add_member_from_team') }}
           <q-space />

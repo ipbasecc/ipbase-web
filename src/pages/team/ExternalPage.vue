@@ -92,7 +92,7 @@ import {
   getProjectCache,
   putProjectCache,
 } from "src/hooks/project/useProcess.js";
-import { getOneProject, getCards } from "src/api/strapi/project.js";
+import { getOneProject, getCards, findCard } from "src/api/strapi/project.js";
 
 import {
   teamStore,
@@ -316,7 +316,7 @@ onBeforeMount(() => {
 const val = computed(() => teamStore.income);
 watch(val, async(newVal, oldVal) => {
   if(!newVal || newVal === oldVal) return;
-  const { team_id, card_id, data } = val.value.data;
+  const { team_id, card_id, data, updator } = val.value.data;
   if(teamStore.team?.id === Number(team_id)){
 
     const isMine = data.card_members?.map(i => i.by_user.id).includes(teamStore.init?.id);
@@ -332,9 +332,14 @@ watch(val, async(newVal, oldVal) => {
     }
     if(val.value.event === 'card:updated'){
       if(isMine){
-        const index = cards.value.findIndex(i => i.id === Number(card_id));
-        if(index !== -1){
-          cards.value[index] = data;
+        if(updator !== teamStore.init?.id){
+          const index = cards.value.findIndex(i => i.id === Number(card_id));
+          if(index !== -1){
+            const res = await findCard(card_id);
+            if(res?.data){
+              cards.value[index] = res.data;
+            }
+          }
         }
       }
     }

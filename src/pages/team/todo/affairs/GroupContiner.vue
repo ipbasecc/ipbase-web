@@ -1,11 +1,11 @@
 <template>
   <div class="column no-wrap gap-xs radius-xs" :style="columnStyle">
-    <div data-no-dragscroll class="column-header row no-wrap items-center q-px-sm hovered-item"
+    <div data-no-dragscroll class="column-header row no-wrap items-center q-px-sm todogroup-root"
       :class="dense ? '' : 'q-pt-xs'">
       <span class="dragBar q-space">{{ group.name }}</span>
-      <q-btn dense round flat icon="mdi-plus" size="sm" class="undrag hover-show transition"
+      <q-btn dense round flat icon="mdi-plus" size="sm" class="undrag todogroup-btn transition"
         @click="toggleCreatetodo()" />
-      <q-btn flat dense size="sm" round icon="mdi-dots-vertical" class="hover-show transition"
+      <q-btn flat dense size="sm" round icon="mdi-dots-vertical" class="todogroup-btn transition"
         :class="$q.screen.gt.sm ? 'undrag' : ''">
         <q-menu class="radius-sm shadow-24" ref="todogroupMenuRef">
           <GroupMenu :group :card :_for @todogroupUpdated="todogroupUpdated" @cancelUpdate="cancelUpdate" @todogroupDeleted="todogroupDeleted" />
@@ -92,4 +92,11 @@
   };
 </script>
 
-<style scoped></style>
+<style scoped>
+.todogroup-root .todogroup-btn{
+  opacity: 0;
+}
+.todogroup-root:hover .todogroup-btn{
+  opacity: 1;
+}
+</style>
