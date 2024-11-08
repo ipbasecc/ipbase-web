@@ -95,13 +95,15 @@ const todogroupDeleted = (_id) => {
 }
 
 const dragStart = (e) => {
-    target.value = e.data    
+    target.value = e.data
     uiStore.dragKanbanScrollEnable = false;
+    uiStore.todoDragging = true;
 }
 
 const dragEnd = (e) => {
     newIndex.value = e.newIndex
     uiStore.dragKanbanScrollEnable = true;
+    uiStore.todoDragging = false;
 }
 </script>
 

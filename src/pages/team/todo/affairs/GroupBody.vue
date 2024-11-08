@@ -81,11 +81,11 @@ const hidecompletedTodo = (i) => {
 
 const dragStart = () => {
   uiStore.dragKanbanScrollEnable = false;
-  uiStore.dragging = true;
+  uiStore.todoDragging = true;
 }
 const dragEnd = () => {
   uiStore.dragKanbanScrollEnable = true;
-  uiStore.dragging = false;
+  uiStore.todoDragging = false;
 }
 const todo_sort = async (e) => {
   // console.log('todo_sort', e);

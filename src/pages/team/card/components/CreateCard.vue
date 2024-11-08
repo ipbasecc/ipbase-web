@@ -66,7 +66,7 @@
           </q-input>
         </q-card-section>
       </template>
-      <template v-else>
+      <template v-else-if="type_for_create === 'note' || type_for_create === 'task'">
         <q-card-section class="column no-wrap q-space q-pa-none card no-padding">
           <TipTap
             :square="true"
@@ -102,7 +102,7 @@
       <div v-if="loading" class="absolute-full bg-black op-5 flex flex-center">
         <q-spinner-orbit color="primary" size="2em" />
       </div>
-      <template v-else>
+      <template v-else-if="teamStore.navigation === 'classroom'">
         <q-card-section class="border-top q-pa-sm">
           <q-btn color="primary" :label="$t('create')" class="full-width" @click="createCardFn" />
         </q-card-section>
@@ -184,7 +184,7 @@ import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
 import { createCard } from "src/api/strapi/project.js";
 import { board_type } from "src/pages/team/kanban/BoradsList.js";
 import { isEqual } from "lodash-es";
-import {uiStore} from "src/hooks/global/useStore";
+import {teamStore, uiStore} from "src/hooks/global/useStore";
 import DrapUpload from 'src/components/VIewComponents/DrapUpload.vue'
 
 const props = defineProps({

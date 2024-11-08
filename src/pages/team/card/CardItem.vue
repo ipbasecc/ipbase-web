@@ -150,7 +150,7 @@
             mainStyle="no-padding"
           />
           <q-img
-            v-else-if="cardRef.cover?.url"
+            v-else-if="cardRef.cover?.url && cardRef.type === 'classroom'"
             :src="cardRef.cover?.url"
             :ratio="16/9"
             spinner-color="primary"
@@ -203,7 +203,7 @@
         v-if="cardRef.type === 'todo' && cardRef.type !== 'classroom'"
         class="column no-wrap q-pa-none overflow-hidden relative-position"
         :class="
-          uiStore.dragging
+          uiStore.todoDragging
             ? 'border-dashed border-op-sm bg-primary-active'
             : 'border-placeholder'
         "

@@ -91,6 +91,7 @@ export default defineStore("ui", {
     edittingCard: void 0,
     isShared: false,
     dragging: false, // 正在拖拽排序
+    todoDragging: false, // 正在拖拽排序
     draggingScroll: false, // 正在拖拽横向滚动
     appDrawer: true,
     navigatorDrawer: true,
