@@ -27,7 +27,7 @@
       @dblclick="tryEnter"
     >
       <!-- 卡片顶部 -->
-      <div v-if="cardRef.type !== 'note'"
+      <div v-if="cardRef.type !== 'note' && cardRef.type !== 'classroom'"
         class="row no-wrap items-center q-pa-xs gap-xs border-bottom hovered-item q-px-xs"
         :class="`
           ${
@@ -229,6 +229,7 @@
         :class="`
           ${isDilgMode && orderAuth ? 'dragBar' : ''}
           ${cardRef.type !== 'note' ? 'border-top' : 'border-bottom'}
+          ${cardRef.type === 'classroom' ? `absolute-full bg-gradient-bottom-${$q.dark.mode ? 'black' : 'white'}` : ''}
         `"
         :style="cardRef.type === 'note' ? 'order: -1' : ''"
         @dblclick="_enterCard(useAuths('read', ['card']))"
@@ -238,8 +239,12 @@
           class="q-px-sm q-space column no-wrap gap-sm undrag cursor-pointer"
           @click="_enterCard(useAuths('read', ['card']))">
             <span>{{ cardRef.name }}</span>
-            <div class="">
-              {{ `${$t('price')}: ${cardRef.price / 100}` }}
+            <div class="text-positive">
+              <template v-if="cardRef.price > 0">
+                <span class="font-small">￥</span>
+                <span class="font-medium font-bold-600">{{ `${cardRef.price / 100}` }}</span>
+              </template>
+              <span v-else class="border q-px-sm q-py-xs radius-xs">{{ $t('price_free') }}</span>
             </div>
           </div>
           <ThreadBtn
@@ -297,7 +302,7 @@
               @click="_enterCard(useAuths('read', ['card']))"
             />
           </div>
-          <div v-else-if="cardRef.type !== 'classroom'" class="undrag flex flex-center hover-show transition">
+          <div v-else class="undrag flex flex-center hover-show transition">
             <q-btn flat dense size="sm" round
               icon="fullscreen" class="op-5"
               @click="_enterCard(useAuths('read', ['card']))"
@@ -335,7 +340,6 @@
                   <q-item-section>
                     <div class="row no-wrap gap-sm">
                       <q-btn
-                        v-if="cardRef.type === 'task'"
                         flat
                         dense
                         size="sm"
@@ -349,11 +353,11 @@
                         "
                       >
                         <q-tooltip>
-                          <span class="font-medium">{{ $t('task_detial') }}</span>
+                          <span class="font-medium">{{ cardRef.type !== 'classroom' ? $t('task_detial') : $t('course_detial') }}</span>
                         </q-tooltip>
                       </q-btn>
                       <q-btn
-                        v-if="useAuths('name', ['card'])"
+                        v-if="useAuths('name', ['card']) && cardRef.type !== 'classroom'"
                         flat
                         dense
                         size="sm"
@@ -368,26 +372,28 @@
                           <span class="font-medium">{{ $t('rename_card') }}</span>
                         </q-tooltip>
                       </q-btn>
-                      <q-space />
-                      <q-btn
-                        v-if="!cardRef.disable_share"
-                        flat
-                        dense
-                        size="sm"
-                        stack
-                        icon="share"
-                        class="op-5"
-                        padding="sm"
-                        v-close-popup
-                        @click="shareCard()"
-                      />
-                      <ThreadBtn
-                        v-if="cardRef.mm_thread && isDilgMode"
-                        :thread="cardRef.mm_thread"
-                        :show="true"
-                        :rounded="false"
-                        @enterThread="enterThread"
-                      />
+                      <template v-if="cardRef.type !== 'classroom'">
+                        <q-space />
+                        <q-btn
+                          v-if="!cardRef.disable_share"
+                          flat
+                          dense
+                          size="sm"
+                          stack
+                          icon="share"
+                          class="op-5"
+                          padding="sm"
+                          v-close-popup
+                          @click="shareCard()"
+                        />
+                        <ThreadBtn
+                          v-if="cardRef.mm_thread && isDilgMode"
+                          :thread="cardRef.mm_thread"
+                          :show="true"
+                          :rounded="false"
+                          @enterThread="enterThread"
+                        />
+                      </template>
                     </div>
                   </q-item-section>
                 </q-item>
@@ -398,7 +404,7 @@
                   useAuths('color_marker', ['card'])
                 "
               >
-                <q-separator v-if="cardRef.type !== 'note'" spaced class="op-5" />
+                <q-separator v-if="cardRef.type !== 'note' && cardRef.type !== 'classoom'" spaced class="op-5" />
                 <q-item>
                   <q-item-section>
                     <div class="row no-wrap items-center gap-sm">

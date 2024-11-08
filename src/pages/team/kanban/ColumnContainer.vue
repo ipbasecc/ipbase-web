@@ -508,6 +508,7 @@ import CardItem from "src/pages/team/card/CardItem.vue";
 import RowCardItem from "src/pages/team/card/RowCardItem.vue";
 import CreateCard from "src/pages/team/card/components/CreateCard.vue";
 import StatusMenu from "src/pages/team/components/user/StatusMenu.vue";
+import { filterCardsByString } from "src/hooks/utilits.js";
 
 import { useQuasar } from "quasar";
 import {

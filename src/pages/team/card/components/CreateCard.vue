@@ -8,7 +8,6 @@
       @mouseenter="uiStore.dragKanbanScrollEnable = false"
       @mouseleave="uiStore.dragKanbanScrollEnable = true"
     >
-    {{params}}
       <q-card-section
         v-if="create_with_name || name_onlyRef"
         class="q-pa-xs"

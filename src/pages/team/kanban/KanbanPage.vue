@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHr LpR lFr" container>
-    <q-header v-if="kanban_id && !uiStore.activeReel && ((!teamStore.kanban_rightDrawer && !$q.screen.gt.xs) || $q.screen.gt.xs)" class="transparent">
+    <q-header v-if="show_header" class="transparent">
       <q-bar
         class="border-bottom gap-sm q-pr-none overflow-hidden"
         :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-1'"
@@ -20,49 +20,51 @@
           </q-tooltip>
         </q-btn>
         <q-space />
-        <q-btn v-if="$q.screen.gt.md && view_model === 'kanban'" dense icon="flip"
-         :color="uiStore.splitterView ? 'primary' : $q.dark.mode ? 'white' : 'black'" :flat="!uiStore.splitterView"
-         @click="toggleSplitterView()">
-          <q-tooltip class="border font-medium" :class="$q.dark.mode ? 'bg-dark text-white' : 'bg-white text-black'">
-            {{ $t('splite_kanban_tip') }}
-          </q-tooltip>
-        </q-btn>
-        <q-btn-group v-if="show_viewModel_togger && $q.screen.gt.xs" flat class="border">
+        <template v-if="teamStore.navigation !== 'classroom'">
+          <q-btn v-if="$q.screen.gt.md && view_model === 'kanban'" dense icon="flip"
+          :color="uiStore.splitterView ? 'primary' : $q.dark.mode ? 'white' : 'black'" :flat="!uiStore.splitterView"
+          @click="toggleSplitterView()">
+            <q-tooltip class="border font-medium" :class="$q.dark.mode ? 'bg-dark text-white' : 'bg-white text-black'">
+              {{ $t('splite_kanban_tip') }}
+            </q-tooltip>
+          </q-btn>
+          <q-btn-group v-if="show_viewModel_togger && $q.screen.gt.xs" flat class="border">
+            <q-btn
+              v-for="i in view_models"
+              :key="i.val"
+              dense
+              padding="4px 10px"
+              :disable="uiStore.splitterView"
+              :label="$t(i.label)"
+              :icon="i.icon"
+              :color="view_model === i.val ? 'primary' : ''"
+              :class="
+                view_model === i.val
+                  ? 'text-white'
+                  : $q.dark.mode
+                  ? 'text-grey-3'
+                  : 'text-grey-10'
+              "
+              @click="set_view_model(i.val)"
+            />
+          </q-btn-group>
           <q-btn
-            v-for="i in view_models"
-            :key="i.val"
-            dense
-            padding="4px 10px"
-            :disable="uiStore.splitterView"
-            :label="$t(i.label)"
-            :icon="i.icon"
-            :color="view_model === i.val ? 'primary' : ''"
-            :class="
-              view_model === i.val
-                ? 'text-white'
+            v-if="teamStore.kanban_rightDrawer !== 'drop_kanban'"
+            :flat="teamStore.kanban_rightDrawer !== 'private_todos'"
+            dense unelevated icon="task_alt"
+            :color="
+              teamStore.kanban_rightDrawer === 'private_todos'
+                ? 'positive'
                 : $q.dark.mode
-                ? 'text-grey-3'
-                : 'text-grey-10'
+                ? 'white'
+                : 'black'
             "
-            @click="set_view_model(i.val)"
+            :class="
+              teamStore.kanban_rightDrawer === 'private_todos' ? '' : 'op-7'
+            "
+            @click="toggleRightDrawer('private_todos')"
           />
-        </q-btn-group>
-        <q-btn
-          v-if="teamStore.kanban_rightDrawer !== 'drop_kanban'"
-          :flat="teamStore.kanban_rightDrawer !== 'private_todos'"
-          dense unelevated icon="task_alt"
-          :color="
-            teamStore.kanban_rightDrawer === 'private_todos'
-              ? 'positive'
-              : $q.dark.mode
-              ? 'white'
-              : 'black'
-          "
-          :class="
-            teamStore.kanban_rightDrawer === 'private_todos' ? '' : 'op-7'
-          "
-          @click="toggleRightDrawer('private_todos')"
-        />
+        </template>
         <q-input
           v-model="teamStore.filter_txt"
           type="text"
@@ -226,6 +228,11 @@ const setTip = () => {
     showDeleteTip.value = true
   }
 }
+const show_header = computed(() => {
+  return kanban_id.value
+    && !uiStore.activeReel
+    && ((!teamStore.kanban_rightDrawer && !$q.screen.gt.xs) || $q.screen.gt.xs)
+})
 const personal_kanbanTodo = ref();
 watchEffect(async () => {
   personal_kanbanTodo.value = teamStore.init?.todogroups?.filter(i => i.kanban?.id === teamStore.kanban?.id) || []

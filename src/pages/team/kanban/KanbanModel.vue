@@ -478,28 +478,35 @@ watch(val, async(newVal, oldVal) => {
     }
     if(val.value.event === 'card:updated'){
       if(!kanban.value?.columns) return;
-      if(data.type === 'classroom'){
-        const { data: res } = await findCard(card.id);
-        data = res
-      }
-      const column = kanban.value.columns.find(i => i.cards && i.cards.map(j => j.id).includes(Number(card_id)));
-      if(column) {
-        column.cards = column.cards.map(i => i.id === Number(card_id) ? data : i);
-      } else { // classroom 发布时相对其它人是增加了卡片
-        const index = kanban.value.columns.findIndex(i => i.id === data.column?.id)
-        if(index !== -1){
-          const _cards = kanban.value.columns[index].cards
-          if(_cards?.length > 0){
-            _cards.push(data)
-            const sort = data.column?.cards.map(i => i.id);
-            _cards = sort.map(i => _cards.find(j => j.id === i));
-          } else {
-            _cards = [data]
+
+      const applyCardData = (cardData) => {
+        const column = kanban.value.columns.find(i => i.cards && i.cards.map(j => j.id).includes(Number(card_id)));
+        if(column) {
+          column.cards = column.cards.map(i => i.id === Number(card_id) ? cardData : i);
+        } else { // classroom 发布时相对其它人是增加了卡片
+          const index = kanban.value.columns.findIndex(i => i.id === cardData.column?.id)
+          if(index !== -1){
+            const _cards = kanban.value.columns[index].cards
+            if(_cards?.length > 0){
+              _cards.push(cardData)
+              const sort = cardData.column?.cards.map(i => i.id);
+              _cards = sort.map(i => _cards.find(j => j.id === i));
+            } else {
+              _cards = [cardData]
+            }
           }
         }
+        if(teamStore.card?.id === Number(card_id)){
+          teamStore.card = cardData;
+        }
       }
-      if(teamStore.card?.id === Number(card_id)){
-        teamStore.card = data;
+      if(data.type === 'classroom'){
+        const res = await findCard(data.id);
+        if(res?.data){
+          applyCardData(res.data)
+        }
+      } else {
+        applyCardData(data)
       }
     }
 

@@ -113,13 +113,15 @@ export function filterCardsByString(string, cards) {
   } else {
     // 定义一个空数组，用于存放筛选后的cards
     let filteredCards = [];
+    // 将搜索字符串转换为小写
+    const lowerCaseString = string.toLowerCase();
     // 遍历cards列表中的每个card
     for (let card of cards) {
       // 获取card的name和jsonContent字段
       let name = card.name;
       let jsonContent = card.jsonContent;
-      // 判断name是否包含指定的字符串，如果是，将card添加到filteredCards数组中
-      if (name?.includes(string)) {
+      // 判断name是否包含指定的字符串（忽略大小写），如果是，将card添加到filteredCards数组中
+      if (name?.toLowerCase().includes(lowerCaseString)) {
         filteredCards.push(card);
       } else {
         // 如果name不包含指定的字符串，创建一个Tiptap的Editor实例，用于处理jsonContent
@@ -133,9 +135,9 @@ export function filterCardsByString(string, cards) {
             }),
           ], // 这里可以根据您使用的扩展进行修改
         });
-        // 获取jsonContent的HTML格式，然后判断是否包含指定的字符串，如果是，将card添加到filteredCards数组中
+        // 获取jsonContent的HTML格式，然后判断是否包含指定的字符串（忽略大小写），如果是，将card添加到filteredCards数组中
         let htmlContent = editor.getHTML();
-        if (htmlContent.includes(string)) {
+        if (htmlContent.toLowerCase().includes(lowerCaseString)) {
           filteredCards.push(card);
         }
         // 销毁Editor实例，释放资源

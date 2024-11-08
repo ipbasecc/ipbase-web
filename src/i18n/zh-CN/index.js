@@ -157,6 +157,7 @@ export default {
   followe_this_card: '关注了此卡片',
   view_detial: '查看详情',
   task_detial: '任务详情',
+  course_detial: '课程详情',
   rename_card: '重命名卡片',
   change_to: '修改为：',
   status: '状态',
@@ -773,4 +774,5 @@ export default {
   unpublished: '未发布',
   publish: '发布',
   price: '价格',
+  price_free: '免费',
 };

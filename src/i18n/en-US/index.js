@@ -157,6 +157,7 @@ export default {
   followe_this_card: 'followed this card',
   view_detial: 'view detial',
   task_detial: 'task detial',
+  course_detial: 'Course Details',
   rename_card: 'rename card',
   change_to: 'change to：',
   status: 'status',
@@ -771,4 +772,5 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   unpublished: 'Unpublished',
   publish: 'Publish',
   price: 'price',
+  price_free: 'free',
 }

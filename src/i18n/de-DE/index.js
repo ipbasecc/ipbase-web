@@ -157,6 +157,7 @@ export default {
   followe_this_card: 'Diese Karte gefolgt',
   view_detial: 'Details anzeigen',
   task_detial: 'Aufgabendetails',
+  course_detial: 'Kursdetails',
   rename_card: 'Karte umbenennen',
   change_to: 'Ändern in:',
   status: 'Status',
@@ -767,4 +768,5 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   unpublished: 'Unveröffentlicht',
   publish: 'Veröffentlichen',
   price: 'Preis',
+  price_free: 'kostenlos',
 };
