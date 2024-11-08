@@ -155,6 +155,7 @@
             :ratio="16/9"
             spinner-color="primary"
             spinner-size="82px"
+            class="radius-xs"
           />
           <q-responsive v-else-if="alwaysShowCover" :ratio="16/5">
             <div class="rounded-borders flex flex-center">

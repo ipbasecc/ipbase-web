@@ -390,6 +390,9 @@ const dragscrollend = () => {
   
 };
 
+const kanbanCards = computed(() => teamStore.kanban?.columns?.map(i => i.cards).flat(2) || []);
+const dropKanbanCards = computed(() => teamStore.dropKanban?.columns.map(i => i.cards).flat(2) || []);
+const allCards = computed(() => [...kanbanCards.value, ...dropKanbanCards.value])
 const val = computed(() => teamStore.income);
 watch(val, async(newVal, oldVal) => {
   if(!newVal || newVal === oldVal) return;
@@ -520,9 +523,14 @@ watch(val, async(newVal, oldVal) => {
     }
 
     if(val.value.event === 'column:updated'){
+      // 如果是当前用户执行的修改，直接用返回的数据赋值
+      const { updator } = val.value.data;
+      if(updator === teamStore.init.id) return
+
+      //如果接收到ws的更新数据，按方法执行
       const index = kanban.value.columns?.findIndex(i => i.id === Number(data.id));
       if(index > -1){
-        kanban.value.columns[index] = data;
+        updateColumn(index, data)
         syncKanbanStore(kanban.value);
       }
     }
@@ -536,6 +544,33 @@ watch(val, async(newVal, oldVal) => {
     }
   }
 },{immediate: true, deep: true})
+
+// 更新kanban的列
+const updateColumn = async (index, data) => {
+    const existingColumn = kanban.value.columns[index];
+    
+    // 自身字段使用ws返回的数据直接更新
+    for (const key in data) {
+        if (existingColumn.hasOwnProperty(key)) {
+            existingColumn[key] = data[key];
+        }
+    }
+    // ws只会推送card id的数组，card内容使用当前已存在的card组装，如果有不存在的card，向后端获取后再组装
+    if(data.cardSort?.length > 0){
+      const allCardIds = allCards.value.map(card => card.id);
+      const missingSortedCards = data.cardSort.filter(sortedCardId => !allCardIds.includes(sortedCardId));
+      if (missingSortedCards.length > 0) {
+        const fetchMissingCards = await Promise.all(missingSortedCards.map(async (cardId) => {
+          const res = await findCard(cardId);
+          return res?.data;
+        }));
+        allCards.value.push(...fetchMissingCards);
+      }
+      kanban.value.columns[index].cards = data.cardSort.map(i => allCards.value.find(card => card.id === i))
+    }
+    
+    kanban.value.columns[index] = existingColumn;
+};
 
 </script>
 <style scoped></style>

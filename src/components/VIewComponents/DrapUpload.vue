@@ -194,11 +194,9 @@ const handleDrop = (e) => {
       return;
     }
     let files = [];
-    const allowedFormats = allowedFormats.value;
-
     for (let i = 0; i < items_asfile.length; i++) {
       if (items_asfile[i].type !== "") {
-        if (!allowedFormats.includes(items_asfile[i].type)) {
+        if (!allowedFormats.value.includes(items_asfile[i].type)) {
           $q.notify({
             type: 'negative',
             message: t('unsupported_file_format'),

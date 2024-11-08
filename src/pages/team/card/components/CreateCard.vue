@@ -46,7 +46,7 @@
             spinner-size="82px"
           />
           <DrapUpload v-else :isOSS="true"
-          :allowedFormats="['image/*']"
+          :allowedFormats="['image/jpg','image/jpeg','image/png','image/svg','image/webp',]"
           @uploaded="setCover" style="min-height: 8rem;" :caption="$t('drop_or_pick_cover')" />
         </q-card-section>
         <q-card-section class="q-pa-xs">

@@ -653,7 +653,9 @@ const dragCard_sort = async () => {
 
   const { data } = await updateColumn(columnRef.value.id, params);
   if(data){
-    sortRes.value = data
+    // sortRes.value = data
+    await nextTick();
+    columnRef.value = data
   }
 };
 const onSort = async () => {
@@ -806,19 +808,6 @@ const sync_uiOptions = async () => {
     uiOptions.value = JSON.parse(res);
   }
 };
-
-
-const val = computed(() => teamStore.income);
-watch(val, async(newVal, oldVal) => {
-  if(!newVal || newVal === oldVal) return;
-  const { column_id } = val.value.data;
-  if(columnRef.value.id === Number(column_id)){
-    if(val.value.event === 'column:updated' && sortRes.value){
-      await nextTick();
-      teamStore.income.data.data = sortRes.value;
-    }
-  }
-},{immediate: false, deep: true})
 </script>
 
 <style lang="scss">
