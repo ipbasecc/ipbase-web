@@ -332,6 +332,7 @@
               : 'grey'
           "
           class="cursor-pointer undrag"
+          :class="!color_marker ? 'hover-show transition' : ''"
         >
           <q-menu v-if="!isShared" class="shadow-24 radius-sm">
             <q-list bordered dense class="radius-sm q-pa-xs text-no-wrap">
