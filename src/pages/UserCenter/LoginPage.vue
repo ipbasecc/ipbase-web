@@ -220,11 +220,11 @@ const me = ref();
 
 const isLogined = ref(false);
 
-let strapi_jwt = computed(() => localStorage.getItem("jwt"));
-let mm_token = computed(() => localStorage.getItem("mmtoken"));
 onMounted(async() => {
+  let strapi_jwt = localStorage.getItem("jwt");
+  let mm_token = localStorage.getItem("mmtoken");
   await nextTick();
-  if (strapi_jwt.value && mm_token.value) {
+  if (strapi_jwt && mm_token) {
     isLogined.value = true;
     router.push("/teams");
   } else {

@@ -124,7 +124,7 @@ const restoreLocal = async () => {
   const _init = await localforage.getItem("init");
   if(_init?.config?.lang){
     locale.value = _init?.config?.lang
-    console.log('locale.value', locale.value);
+    // console.log('locale.value', locale.value);
     await setLocale(locale.value)
   } else {
     const _locale = await localforage.getItem("locale");

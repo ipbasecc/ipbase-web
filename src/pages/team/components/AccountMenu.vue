@@ -306,12 +306,6 @@ getUserStatusFn();
 // 注销动作开始
 const confirmOut = ref(false);
 const logout = async () => {
-  if(userStore.viewed?.length > 0){
-    localStorage.setItem(
-      "isViewedIds",
-      JSON.stringify(userStore.viewed.map((i) => i.id))
-    ); //将userStore中已阅读ID清单存入本地存储
-  }
   userStore.$reset(); //重置store
   channelStore.$reset();
   teamStore.$reset_project();
@@ -359,12 +353,6 @@ const setStatus = async (val) => {
   }
 };
 
-const toUserCenter = () => {
-  if (!is_development.value) return;
-  localforage.setItem("last_module", "user_center").then(() => {
-    router.push("/userinfo");
-  });
-};
 const toTeamHome = () => {
   localforage.setItem("last_module", "teams").then(() => {
     router.push("/teams");
@@ -378,11 +366,6 @@ const createTeam = () => {
 
 const show_settings = ref(false);
 
-watchEffect(() => {
-  if(!userStore?.logged){
-    router.push("/login");
-  }
-})
 </script>
 
 <style lang="scss" scoped></style>

@@ -148,7 +148,10 @@ const hasToken = computed(() => {
   let _mm_token = localStorage.getItem('mmtoken');
   return _strapi_jwt && _mm_token
 })
-onBeforeMount(async() => {
+
+const initFn  = async () => {
+  console.log('init', teamStore.init);
+  
   // 检查jwt是否过期
   // 过期后：electron发送清理消息并跳转到登陆，其他直接清理并登陆
   let isExpired
@@ -160,7 +163,7 @@ onBeforeMount(async() => {
     toLogin();
   } else {
     uiStore.pageLoaded = true;
-    if(!teamStore.init){
+    if(!teamStore.init || !teamStore.team){
       await loginAndInit();
       if(teamStore.init && !teamStore.init.default_team){
         const cache = await localforage.getItem('default_team');
@@ -172,7 +175,11 @@ onBeforeMount(async() => {
     }
     await checkNotification();
   }
-})
+}
+const inited = computed(() => teamStore.init);
+watch(inited, async() => {
+  await initFn()
+},{immediate: true,deep: true})
 
 // 开发环境下，关闭 仅electron可用模式
 onMounted(async () => {
