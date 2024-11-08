@@ -10,7 +10,7 @@
     <input
       ref="fileInputRef"
       type="file"
-      accept="image/*"
+      :accept="allowedFormats"
       style="display: none"
       @change="handleFileChange"
     />
@@ -53,9 +53,15 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  allowedFormats: {
+    type: Array,
+    default: () => {
+      return ['image/*']
+    },
+  }
 });
 const emit = defineEmits(["uploaded"]);
-const { multiple, isAvatar, isOSS, isMattermost } = toRefs(props);
+const { multiple, isAvatar, isOSS, isMattermost, allowedFormats } = toRefs(props);
 
 const dropZone = ref(null);
 const dom_id = uid(); // 如果一个页面中引用了两次本组件，那么会有一个失效，因此这里给dom加上uid
@@ -188,9 +194,19 @@ const handleDrop = (e) => {
       return;
     }
     let files = [];
+    const allowedFormats = allowedFormats.value;
 
     for (let i = 0; i < items_asfile.length; i++) {
       if (items_asfile[i].type !== "") {
+        if (!allowedFormats.includes(items_asfile[i].type)) {
+          $q.notify({
+            type: 'negative',
+            message: t('unsupported_file_format'),
+            position: 'top'
+          });
+          showUpdateArea.value = false;
+          return;
+        }
         files.push(items_asfile[i]);
       }
     }

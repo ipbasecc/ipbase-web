@@ -775,4 +775,5 @@ export default {
   publish: '发布',
   price: '价格',
   price_free: '免费',
+  unsupported_file_format: '不支持此格式文件',
 };

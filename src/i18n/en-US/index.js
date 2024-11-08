@@ -773,4 +773,5 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   publish: 'Publish',
   price: 'price',
   price_free: 'free',
+  unsupported_file_format: 'unsupported file format',
 }

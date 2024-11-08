@@ -769,4 +769,5 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   publish: 'Veröffentlichen',
   price: 'Preis',
   price_free: 'kostenlos',
+  unsupported_file_format: 'nicht unterstütztes Dateiformat',
 };
