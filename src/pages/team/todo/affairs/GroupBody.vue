@@ -11,7 +11,7 @@
     @mouseleave="uiStore.dragKanbanScrollEnable = true"
   >
     <div v-for="todo in modelValue.todos" :key="todo.id" v-show="hidecompletedTodo(todo)"
-    class="relative-position hovered-item column no-wrap gap-sm">
+    class="relative-position card-todo column no-wrap gap-sm">
       <TodoItem
         :todo="todo"
         :card
@@ -21,7 +21,9 @@
         class=""
         @todoDeleted="todoDeleted"
       />
-      <div v-if="!openCreatetodo && !uiStore.dragging" class="absolute-bottom row q-px-md undrag hover-show transition bg-primary overflow-show" style="height: 1px;">
+      <div v-if="!openCreatetodo && !uiStore.dragging"
+      class="absolute-bottom row q-px-md undrag card-todo-create transition bg-primary overflow-show"
+      style="height: 1px;">
           <q-space />
           <q-btn color="primary" icon="mdi-plus" round size="0.4rem" style="transform: translateY(-50%);"
             @click="toggleCreatetodo(todo)"
@@ -136,4 +138,10 @@ const todoDeleted = (id) => {
 </script>
 
 <style scoped>
+.card-todo .card-todo-create {
+  opacity: 0;
+}
+.card-todo:hover .card-todo-create {
+  opacity: 1;
+}
 </style>

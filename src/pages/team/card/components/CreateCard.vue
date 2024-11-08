@@ -249,7 +249,7 @@ const create_with_name = computed(() => {
 const params = ref({});
 const cover = ref()
 const setCover = (val) => {
-  console.log('setCover', val);
+  // console.log('setCover', val);
   if(val?.id){
     params.value.data.cover = val.id
     cover.value = val.attributes?.url
