@@ -47,8 +47,10 @@ const {
 async function uploadFile(file, username, id) {
   // 检查file参数是否是一个File对象
   if (file instanceof File) {
+    console.log('file', file);
+    
     // 浏览器 获取文件大小，并转化为m单位，四舍五入到整数
-    let fileSize = Math.round(file.size / 1024 / 1024);
+    let fileSize = Math.round(file.size / 1024);
     try {
       // 等待OSS.uploadFile方法的结果
       let res = await OSS.uploadFile(
@@ -58,7 +60,6 @@ async function uploadFile(file, username, id) {
       );
       // 构造一个包含文件信息的对象
       if (res) {
-        // console.log(res);
         uploadFileParams.value = {
           url: res.res.requestUrls[0].split("?")[0],
           name: file.name,
@@ -70,6 +71,7 @@ async function uploadFile(file, username, id) {
           folderPath: "/",
           ext: "." + file.name.slice(file.name.lastIndexOf(".") + 1),
         };
+        console.log('uploadFileParams.value', uploadFileParams.value);
         const { data } = await uploadFileMutate();
         if (data) {
           // console.log("文件更新到strapi", data);

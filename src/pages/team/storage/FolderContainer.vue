@@ -7,6 +7,7 @@
         @mouseleave="showUpdateArea = false"
         @click="clickColumn()"
       >
+      <!-- {{selected}} -->
         <q-list
           v-if="masterList"
           dense
@@ -128,8 +129,7 @@
                   </q-btn>
                 </div>
               </q-item-section>
-              <q-menu
-                v-if="openItemMenu === i.id"
+              <q-menu v-if="openItemMenu === i.id"
                 class="radius-sm"
                 context-menu
               >
@@ -466,12 +466,25 @@ const clickItem = (i, index) => {
 
 const removeItem = (i) => {
   // console.log('removeItem',i);
-  if (i.file) {
-    removeFile(i);
-  } else {
-    removeFolder(i);
+  const removeFn = (_i) => {
+    if (_i.file) {
+      removeFile(_i);
+    } else {
+      if(teamStore.active_folder === _i.id){
+        clickColumn()
+      }
+      removeFolder(_i);
+    }
+    emit("removeItem", _i);
   }
-  emit("removeItem", i);
+  if(isSelected(i.id)){
+    selected.value?.map((item) => {
+      removeFn(item);
+    })
+  } else {
+    removeFn(i);
+    selected.value = []
+  }
 };
 const removeFile = async (file) => {
   let remove = await deleteStorageFile(file.id);
