@@ -4,14 +4,12 @@
             <q-toolbar class="gap-sm">
                 <q-toolbar-title> Title </q-toolbar-title>
                 <q-space />
-                <PayButton />
-                <q-btn color="primary" no-caps label="join_meet" />
             </q-toolbar>
         </q-header>
 
         <q-page-container>
-            <q-page class="q-pa-md">
-                <TipTap />
+            <q-page class="q-pa-md flex flex-center">
+                <q-btn color="primary" no-caps label="Create Folder" @click="creatFolder()" />
             </q-page>
         </q-page-container>
     </q-layout>
@@ -20,9 +18,18 @@
 <script setup>
 import { onMounted, ref, useTemplateRef, computed, watchEffect } from 'vue';
 import { uiStore } from "src/hooks/global/useStore.js";
-import TipTap from 'src/components/Utilits/tiptap/TipTap.vue'
-import PayButton from 'src/components/order/PayButton.vue'
+import { folderService } from 'src/api/strapi/services/folderService.js'
 
+
+const creatFolder = async () => {
+    const params = {
+        name: 'test create',
+        parentId: null
+    }
+    const res = await folderService.createFolder(params)
+    console.log(res);
+    
+}
 onMounted(() => {
     uiStore.pageLoaded = true;
 });

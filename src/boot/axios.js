@@ -18,7 +18,7 @@ const setAPI = async () => {
   if(http_api_endpoint && http_api_endpoint !== "") {
     REST_API = http_api_endpoint
   } else {
-    REST_API =process.env.REST_API || 'https://api.yihu.team/api'
+    REST_API =process.env.REST_API || 'https://backend.yihu.team/api/'
   }
   if(REST_API){
     api = axios.create({

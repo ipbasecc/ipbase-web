@@ -667,13 +667,15 @@ export default function useWatcher() {
 
       if(val.value.event === 'storage:created'){
         if(teamStore.project?.id === Number(project_id)){
-          const index = teamStore.project.storages.findIndex(i => i.id === Number(data.id));
-          if(index !== -1){
-            teamStore.project.storages[index].sub_folders.push(data);
+          let storages = teamStore.project.storages;
+          if(storages?.length > 0){
+            storages.push(data)
+          } else {
+            storages = [data]
           }
         }
         if(teamStore.card?.id === Number(card_id)){
-          teamStore.card.storage.sub_folders.push(data);
+          teamStore.card.storage = data;
         }
       }
 
