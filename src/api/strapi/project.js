@@ -1079,3 +1079,24 @@ export async function projectMeetAuth(params) {
     return error;
   }
 }
+
+// 付费内容
+
+
+/** 
+    要求前端提供数据格式：
+    {
+        subject: 'card', //购买的商品类型，
+        data: {
+            check_ids: [***] // 需要检查的商品id的数组
+        }
+    }
+*/
+export async function checkCardsPayStates(params) {
+  try {
+    const res = await api.post(`/cards/check_paied`, params);
+    return res;
+  } catch (error) {
+    return error;
+  }
+}

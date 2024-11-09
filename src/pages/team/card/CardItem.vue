@@ -236,17 +236,11 @@
         @dblclick="_enterCard(useAuths('read', ['card']))"
       >
         <template v-if="cardRef.type !== 'note'">
-          <div v-if="cardRef.type === 'classroom' && cardRef.name"
+          <div v-if="cardRef.type === 'classroom'"
           class="q-px-sm q-space column no-wrap gap-sm undrag cursor-pointer"
           @click="_enterCard(useAuths('read', ['card']))">
-            <span>{{ cardRef.name }}</span>
-            <div class="text-positive">
-              <template v-if="cardRef.price > 0">
-                <span class="font-small">￥</span>
-                <span class="font-medium font-bold-600">{{ `${cardRef.price / 100}` }}</span>
-              </template>
-              <span v-else class="border q-px-sm q-py-xs radius-xs">{{ $t('price_free') }}</span>
-            </div>
+            <span v-if="cardRef.name">{{ cardRef.name }}</span>
+            <PayState :card="cardRef" />
           </div>
           <ThreadBtn
             v-if="
@@ -631,6 +625,7 @@ import useOverview from 'src/pages/team/hooks/useOverview.js'
 import useSocket from "src/pages/team/card/hooks/useSocket.js";
 import useMember from "src/hooks/team/useMember.js";
 import PayButton from 'src/components/order/PayButton.vue'
+import PayState from './components/PayState.vue'
 
 const $q = useQuasar();
 const route = useRoute();

@@ -134,9 +134,7 @@ import ReelContainer from "./ReelContainer.vue";
 import SegmentPage from "../card/SegmentPage.vue";
 import { i18n } from 'src/boot/i18n.js';
 import { useQuasar } from "quasar";
-import {
-  findCard
-} from "src/api/strapi/project.js";
+import { findCard } from "src/api/strapi/project.js";
 
 const $t = i18n.global.t;
 const $q = useQuasar();
@@ -482,6 +480,22 @@ watch(val, async(newVal, oldVal) => {
     if(val.value.event === 'card:updated'){
       if(!kanban.value?.columns) return;
 
+      /**
+       * ws收到数据：
+       * {
+            team_id: ctx.default_team?.id, // 团队ID
+            card_id: card_id, // card ID
+            updator: user_id, // 更新卡片的用户的ID
+            column_id: belongedInfo.belonged_column?.id, // 卡片所在分栏的ID
+            data: { // 重构的卡片数据
+                id: card_id,
+                cards: belongedInfo.belonged_column?.cards?.map(i => i.id), // 卡片所在分栏的所有卡片ID，用来根据此内容重建分栏内卡片、排序
+                message: 'refetch card datam please' // 提示消息
+            }
+        }
+       * @param cardData 根据后端返回的数据获取到card的数据，因为ws不能根据角色推送不同的内容，因此只会推送card的id，前端再去获取
+       * 
+       */
       const applyCardData = (cardData) => {
         const _column = kanban.value?.columns?.find(i => i.id === Number(column_id));
         

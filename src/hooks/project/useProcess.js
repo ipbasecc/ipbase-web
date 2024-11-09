@@ -1,7 +1,8 @@
 import { db } from "src/boot/dexie.js";
-import { getOneKanban, getProjects } from "src/api/strapi/project.js";
+import { getOneKanban, getProjects, checkCardsPayStates } from "src/api/strapi/project.js";
 import { useGetProject } from "src/hooks/project/useGetProject.js";
 import { nextTick } from "vue";
+import { teamStore } from "../global/useStore";
 
 const processVal = (data) => {
   // if (data != null || data != undefined || data != NaN || !data) {
@@ -141,6 +142,25 @@ export async function putKanbanCache(val) {
 export async function getKanban(kanban_id) {
   let res = await getOneKanban(kanban_id);
   if (res?.data) {
+    if(teamStore.navigation === 'classroom'){
+      if (res?.data?.columns?.length > 0) {
+        const cardIds = res.data.columns.flatMap(column => column.cards?.map(card => card.id) || []);
+        const params = {
+          subject: 'card',
+          data: {
+            check_ids: cardIds
+          }
+        }
+        const payStates = await checkCardsPayStates(params);
+        // console.log(payStates);
+        
+        res.data.columns.forEach(column => {
+          column.cards.forEach(card => {
+            card.payState = payStates.data?.find(i => i.card_id === card.id);
+          });
+        });
+      }
+    }
     await _putKanbanCache(res?.data);
     return res.data;
   }
