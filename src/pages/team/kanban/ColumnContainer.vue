@@ -199,6 +199,7 @@
           </q-menu>
         </q-btn>
       </q-btn-group>
+
       <CreateCard
         v-if="
           createCard_in === columnRef.id && useAuths('create', ['card'])
@@ -522,7 +523,6 @@ import { board_type } from "src/pages/team/kanban/BoradsList.js";
 import {
   userStore,
   teamStore,
-  mm_wsStore,
   uiStore,
 } from "src/hooks/global/useStore.js";
 import { useMagicKeys } from "@vueuse/core";

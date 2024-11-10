@@ -191,6 +191,7 @@
       :key="activeVersion.id"
       :mediaWidth="mediaWidth"
       :activeVersion
+      :isClassroom
       :auth="useAuths('media', ['overview'])"
       :fitContainer="true"
       class="absolute-full flex flex-center"

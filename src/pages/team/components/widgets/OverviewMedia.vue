@@ -83,22 +83,27 @@
     >
       <div class="absolute-full flex flex-center q-pa-xl">
         <q-card bordered flat style="min-width: 22rem">
-          <StrapiUpload
-            :label="upload_label"
-            :max-files="1"
-            :readonly="!auth"
-            class="full-width"
-            @uploaded="fileUploaded"
-          ></StrapiUpload>
-          <q-card-section class="row no-wrap q-pa-xs border-top">
-            <q-btn
-              flat
-              dense
-              padding="xs md"
-              :label="$t('cancel')"
-              @click="media_change_ing = false"
-            />
-            <q-space />
+          <template v-if="!isClassroom">
+            <StrapiUpload
+              :label="upload_label"
+              :max-files="1"
+              :readonly="!auth"
+              class="full-width"
+              @uploaded="fileUploaded"
+            ></StrapiUpload>
+            <q-card-section class="row no-wrap q-pa-xs border-top">
+              <q-btn
+                flat
+                dense
+                padding="xs md"
+                :label="$t('cancel')"
+                @click="media_change_ing = false"
+              />
+              <q-space />
+            </q-card-section>
+          </template>
+          <q-card-section v-else>
+            <span>{{ $t('no_media') }}</span>
           </q-card-section>
         </q-card>
       </div>
@@ -128,7 +133,7 @@ const props = defineProps({
   },
   isClassroom: {
     type: Boolean,
-    default: false,
+    default: void 0,
   },
   mediaWidth: {
     type: Number,
@@ -143,7 +148,7 @@ const props = defineProps({
     default: false,
   },
 });
-const { activeVersion } = toRefs(props);
+const { activeVersion, isClassroom, auth } = toRefs(props);
 const { quality } = useOverview(activeVersion.value);
 const isShared = computed(() => uiStore.isShared)
 const upload_label = computed(() =>

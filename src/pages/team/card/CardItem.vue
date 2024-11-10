@@ -1,5 +1,6 @@
 <template>
   <div v-if="cardRef.expand"
+    v-show="!cardRef.pulled"
     :key="`card-${cardRef.id}`"
     class="flex flex-center"
     :class="`
@@ -536,6 +537,7 @@
     <!-- 对话框中，需要使用esc来取消输入框的聚焦状态，这里关闭组件的esc事件 -->
     <q-dialog
       v-model="show_cardDetial"
+      ref="card_detial"
       :full-height="$q.screen.gt.sm"
       :full-width="$q.screen.gt.sm"
       :maximized="!$q.screen.gt.sm"
@@ -553,6 +555,7 @@
         :card="cardRef"
         @buyData="buyData"
         @publishCard="publishCard(cardRef)"
+        @pulledCard="pulledCard(cardRef)"
       />
       <q-card v-else bordered class="column">
         <q-toolbar class="bg-deep-orange text-white">
@@ -582,7 +585,7 @@
 </template>
 
 <script setup>
-import {computed, reactive, ref, toRef, toRefs, watch, watchEffect, nextTick, onMounted} from "vue";
+import {computed, reactive, ref, toRef, toRefs, watch, watchEffect, nextTick, onMounted, useTemplateRef} from "vue";
 import {useMagicKeys} from "@vueuse/core";
 import StatusMenu from "src/pages/team/components/user/StatusMenu.vue";
 import CardPage from "./CardPage.vue";
@@ -610,7 +613,8 @@ import {
   updateCardName,
   updateCardThread,
   updateJsonContent,
-  publishCard
+  publishCard,
+  pulledCard
 } from "src/hooks/team/useCard.js";
 import {isEqual} from "lodash-es";
 import {useProjectCardPreference,colorMarks,cardTypes,preferences,shareProps} from "src/pages/team/hooks/useSettingTemplate.js";
@@ -624,7 +628,6 @@ import DownloadApp from 'src/components/VIewComponents/DownloadApp.vue'
 import useOverview from 'src/pages/team/hooks/useOverview.js'
 import useSocket from "src/pages/team/card/hooks/useSocket.js";
 import useMember from "src/hooks/team/useMember.js";
-import PayButton from 'src/components/order/PayButton.vue'
 import PayState from './components/PayState.vue'
 
 const $q = useQuasar();
@@ -784,9 +787,10 @@ const updateParmars = reactive({
   project_id: route.params.project_id,
   data: {},
 });
-const todoRef = ref();
 
 const name_changing = ref(false);
+
+
 const emit = defineEmits(["cardChange", "cardDelete", "buyData"]);
 const _card_statusChange = async (val) => {
   await setStatus(cardRef.value, val);

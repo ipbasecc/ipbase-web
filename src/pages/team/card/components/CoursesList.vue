@@ -16,11 +16,12 @@
               :class="i.id === teamStore.card?.id ? $q.dark.mode ? 'bg-grey-9' : 'bg-grey-4' : ''"
               @click="toggleCousrse(i)"
             >
-              <q-item-section side>
-                  <q-icon name="mdi-play-circle" class="transition"
-                  :class="i.id === teamStore.card?.id ? '' : 'op-0'" />
-              </q-item-section>
               <q-item-section>{{ i.name }}</q-item-section>
+              <q-item-section side>
+                  <q-icon v-if="i.id === teamStore.card?.id" name="mdi-play-circle" class="transition"
+                  :class="i.id === teamStore.card?.id ? '' : 'op-0'" />
+                  <PayState v-else :card="i" :dense="true" />
+              </q-item-section>
             </q-item>
         </q-list>
       </q-expansion-item>
@@ -31,6 +32,7 @@
 import { ref, toRefs, computed } from 'vue'
 import { teamStore } from 'src/hooks/global/useStore';
 import { useQuasar } from 'quasar'
+import PayState from './PayState.vue'
 
 const $q = useQuasar()
 
@@ -40,10 +42,11 @@ const props = defineProps({
     default: () => []
   }
 })
+const emit = defineEmits(['toggleCousrse'])
 const { courses } = toRefs(props)
 const toggleCousrse = (course) => {
     if(teamStore.card?.id === course.id) return
-    teamStore.card = course
+    emit('toggleCousrse', course)
 }
 
 const getOpenStatus = (course) => {

@@ -1,6 +1,6 @@
 <template>
   <q-card v-if="fetched" bordered class="fit q-space no-wrap row radius-sm shadow-focus relative-position">
-    <q-layout v-if="ispaied && teamStore?.card"
+    <q-layout v-if="teamStore?.card"
       view="lHh LpR lFf" container class="q-space"
       @mousemove="handleMouseMove" @mouseup="handleMouseUp"
     >
@@ -11,41 +11,47 @@
         >
           <q-btn v-if="uiStore.app === 'teams'" dense flat icon="menu" @click="toggleLeftDrawer" />
           <q-space />
-          <q-chip v-if="activeVersion && teamStore.card?.overviews.filter(o => o.media)?.length > 1"
-            outline dense flat color="primary" clickable class="q-px-sm no-shadow"
-            :label="activeVersion.name === 'Initial_Version' ? $t(activeVersion.name) : activeVersion.name"
-          >
-            <q-menu 
-            transition-show="jump-down"
-            transition-hide="jump-up"
-            :transition-duration="200">
-              <VersionTogger
-                :overviews="teamStore.card?.overviews"
-                :authBase
-                :overView_attachedTo="teamStore.card"
-                @set_current_version="set_current_version"
-                @set_defaultVersion="set_defaultVersion"
-              />
-            </q-menu>
-          </q-chip>
-          <q-space />
-          <q-btn v-if="teamStore.card?.type === 'classroom' && !teamStore.card?.published" icon="mdi-eye" color="positive" class="q-mr-lg border"
-          :label="$t('publish')" @click="publishCard()" />
-          <q-btn @click="toggleRightDrawer()"
-            flat dense size="sm" round
-            :icon="classExtendIcon()"
-            :class="rightDrawerOpen ? '' : 'op-5'"
-            :color="rightDrawerOpen ? 'positive' : ''"
-          />
-          <q-separator spaced inset vertical />
+          <template v-if="hasDetialAuth">
+            <q-chip v-if="activeVersion && teamStore.card?.overviews.filter(o => o.media)?.length > 1"
+              outline dense flat color="primary" clickable class="q-px-sm no-shadow"
+              :label="activeVersion.name === 'Initial_Version' ? $t(activeVersion.name) : activeVersion.name"
+            >
+              <q-menu 
+              transition-show="jump-down"
+              transition-hide="jump-up"
+              :transition-duration="200">
+                <VersionTogger
+                  :overviews="teamStore.card?.overviews"
+                  :authBase
+                  :overView_attachedTo="teamStore.card"
+                  @set_current_version="set_current_version"
+                  @set_defaultVersion="set_defaultVersion"
+                />
+              </q-menu>
+            </q-chip>
+            <q-space />
+            <template v-if="teamStore.card?.isCreator">
+              <q-btn v-if="!teamStore.card?.published" icon="mdi-eye" color="positive" class="q-mr-lg border"
+              :label="$t('publish')" @click="publishCard()" />
+              <q-btn v-else icon="mdi-cart-off" color="negative" class="q-mr-lg border"
+              :label="$t('pulled')" @click="pulledCard()" />
+            </template>
+            <q-btn @click="toggleRightDrawer()"
+              flat dense size="sm" round
+              :icon="classExtendIcon()"
+              :class="rightDrawerOpen ? '' : 'op-5'"
+              :color="rightDrawerOpen ? 'positive' : ''"
+            />
+            <q-separator spaced inset vertical />
+          </template>
           <q-btn dense round flat icon="close" size="sm" v-close-popup />
         </q-bar>
       </q-header>
       <q-drawer v-if="uiStore.app === 'teams'" v-model="leftDrawerOpen"
-        side="left" :width="200" :breakpoint="500"
-        :class="$q.dark.mode ? 'bg-darker border-right' : 'bg-grey-1 text-grey-10 border-right'"
+        side="left" :width="leftDrawerWidth" :breakpoint="500"
+        :class="$q.dark.mode ? 'bg-darker border-right' : 'bg-white text-grey-10 border-right'"
       >
-        <CoursesList :courses />
+        <CoursesList :courses @toggleCousrse="toggleCousrse" />
       </q-drawer>
       <q-drawer v-if="rightDrawerOpen"
         :key="teamStore.card?.id"
@@ -54,7 +60,7 @@
         :overlay="drawerOverlay"
         :width="rightDrawerWidth"
         class="border-left column no-wrap"
-        :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-1'"
+        :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-2'"
       >
         <q-bar class="transparent border-bottom" style="height: 36px;">
           <q-tabs v-model="current_classExtend"
@@ -157,37 +163,62 @@
 
       <q-page-container>
         <q-page :key="teamStore.card?.id" class="column flex-center"
-        :class="$q.dark.mode ? 'bg-dark text-grey-1' : 'bg-grey-1 text-grey-10'"
+        :class="$q.dark.mode ? 'bg-dark text-grey-1' : 'bg-grey-3 text-grey-10'"
         :style-fn="resetHeight">
-          <KeepAlive>
-            <OverView wasAttached_to="card" ref="overviewRef"
-              :onlyMedia="true"
-            />
-          </KeepAlive>
+          <template v-if="hasDetialAuth">
+            <KeepAlive>
+              <!-- <OverView wasAttached_to="card" ref="overviewRef"
+                :onlyMedia="true"
+              /> -->
+            </KeepAlive>
+          </template>
+          <div v-else class="absolute-full column flex-center">
+            <div class="q-space row no-wrap gap-md flex-center">
+              <q-card v-if="teamStore.card?.message" bordered>
+                <q-card-section>
+                  <div class="text-h6">{{ teamStore.card?.message }}</div>
+                </q-card-section>
+              </q-card>
+              <OrderCard v-else :card>
+                <template #buyBtn>
+                  <PayButton
+                    class="full-width" btnColor="negative"
+                    subject="card" :commodity="card" @buyData="buyData"
+                  />
+                </template>
+              </OrderCard>
+            </div>
+          </div>
         </q-page>
       </q-page-container>
     </q-layout>
-    <div v-else class="absolute-full column flex-center">
-      <q-toolbar class="transparent">
-        <q-space />
-        <q-btn flat round dense icon="close" v-close-popup />
-      </q-toolbar>
-      <div class="q-space row no-wrap gap-md flex-center">
-        <OrderCard :card>
-          <template #buyBtn>
-            <PayButton
-              class="full-width" btnColor="negative"
-              subject="card" :commodity="card" @buyData="buyData"
-            />
-          </template>
-        </OrderCard>
-      </div>
-    </div>
+    <q-dialog v-model="cant_publish" position="top">
+      <q-card style="width: 350px">
+        <q-card-section class="row items-center no-wrap">
+          <div>
+            <div class="text-weight-bold">{{ $t('cant_published_no_media_tip') }}</div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="show_pulled_dlg" persistent>
+      <q-card bordered>
+        <q-card-section class="row items-center no-wrap">
+          <q-icon name="mdi-information" color="deep-orange" size="xl" />
+          <span class="q-ml-sm">{{ $t('pulled_card_tip') }}</span>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat :label="$t('cancel')" color="primary" v-close-popup />
+          <q-space />
+          <q-btn :label="$t('confirm')" color="primary" v-close-popup @click="pulledCard()" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-card>
 </template>
 
 <script setup>
-import { ref, toRefs, computed, watchEffect, onMounted, reactive, useTemplateRef } from "vue";
+import { ref, toRefs, computed, watchEffect, onMounted, reactive, onUnmounted } from "vue";
 import { findCard } from "src/api/strapi/project.js";
 import OverView from "src/pages/team/components/OverView.vue";
 import KanbanContainer from "./KanbanContainer.vue";
@@ -203,7 +234,9 @@ import NotebookList from '../notebook/NotebookList.vue'
 import NoteDetial from '../notebook/note/NoteDetial.vue'
 import PayButton from 'src/components/order/PayButton.vue'
 import OrderCard from './components/OrderCard.vue'
+import { useQuasar } from "quasar";
 
+const $q = useQuasar();
 const props = defineProps({
   card: {
     type: Object,
@@ -219,7 +252,7 @@ watchEffect(async () => {
   personal_kanbanTodo.value = teamStore.init?.todogroups?.filter(i => i.kanban?.id === teamStore.card?.card_kanban?.id);
   // console.log('personal_kanbanTodo.value 2', personal_kanbanTodo.value);
 });
-const emit = defineEmits(["closeCardList", "publishCard"]);
+const emit = defineEmits(["closeCardList", "publishCard", "pulledCard", "isPulledCard"]);
 
 const rightDrawerWidth = ref(640);
 const rightDrawerOpen = ref(false);
@@ -232,7 +265,7 @@ const toggleLeftDrawer = () => {
 };
 
 const { x } = useMouse({ touch: false })
-const leftDrawerWidth = ref(180);
+const leftDrawerWidth = ref(240);
 const leftDrawerMinWidth = ref(360);
 const leftDrawerMaxWidth = ref(1280);
 const _ori_width = ref()
@@ -273,8 +306,23 @@ const set_current_version = (id) => {
 const set_defaultVersion = (id) => {
   overviewRef.value?.set_defaultVersion(id)
 }
+const cant_publish = ref(false)
 const publishCard = () => {
-  emit('publishCard', teamStore.card?.id)
+  const medias = teamStore.card?.overviews?.filter(i => i.media);  
+  if(medias?.length === 0){
+    cant_publish.value = true
+  } else {
+    emit('publishCard', teamStore.card?.id)
+  }
+}
+
+const show_pulled_dlg = ref(false);
+const pulledCard = () => {
+  if(show_pulled_dlg.value){
+    emit('pulledCard', teamStore.card?.id)
+  } else {
+    show_pulled_dlg.value = true
+  }
 }
 const isShared = computed(() => uiStore.isShared)
 const userId = computed(() => teamStore.init?.id);
@@ -331,13 +379,12 @@ const courses = computed(() => teamStore.kanban?.columns);
 
 const card_members = ref();
 
-const ispaied = ref()
+const hasDetialAuth = computed(() => teamStore.card?.hasDetialAuth)
 const fetched = ref(false)
 const getCard = async (card_id) => {
   let res = await findCard(card_id);
 
   if (res?.data) {
-    ispaied.value = res?.data.ispaied
     card_members.value = res.data.card_members;
     teamStore.card = res.data;
     if(card.value?.activeVersion){
@@ -349,9 +396,12 @@ const getCard = async (card_id) => {
 };
 const buyData = (data) => {
   teamStore.card = data
-  ispaied.value = true
   emit('buyData', data)
 };
+
+const toggleCousrse = async (cousrse) => {
+  await getCard(cousrse.id);
+}
 
 onMounted(async() => {
   if (card.value) {

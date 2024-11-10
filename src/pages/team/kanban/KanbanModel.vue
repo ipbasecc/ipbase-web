@@ -451,7 +451,7 @@ watch(val, async(newVal, oldVal) => {
     }
     if(val.value.event === 'card:deleted'){
       const syncRemove = () => {
-        const column = kanban.value.columns.find(i => i.cards?.map(j => j.id).includes(Number(card_id)));
+        const column = kanban.value?.columns?.find(i => i.cards?.map(j => j.id).includes(Number(card_id)));
         if(column) {
           const isInColumn = column.cards.find(i => i.id === Number(card_id));
           if(isInColumn){
@@ -478,8 +478,26 @@ watch(val, async(newVal, oldVal) => {
       }
     }
     if(val.value.event === 'card:updated'){
+      // console.log('card:updated start');
       if(!kanban.value?.columns) return;
-
+      const _column = kanban.value?.columns?.find(i => i.id === Number(column_id));
+      if(data.pulled_card_id && data.card_data){
+        const index = _column?.cards.findIndex(i => i.id === data.pulled_card_id)
+        if(index !== -1){
+          // 修改字段，不能直接赋值，如果此时正开着卡片，会被直接关闭
+          Object.keys(data.card_data).forEach(key => {
+            _column.cards[index][key] = data.card_data[key];
+          });
+          _column.cards[index].pulled = true
+          delete _column.cards[index].overviews
+          delete _column.cards[index].storage
+        }
+        if(teamStore.card?.id === Number(card_id)){
+          teamStore.card = data.card_data;
+        }
+        return
+      }
+      
       /**
        * ws收到数据：
        * {
@@ -497,18 +515,28 @@ watch(val, async(newVal, oldVal) => {
        * 
        */
       const applyCardData = (cardData) => {
-        const _column = kanban.value?.columns?.find(i => i.id === Number(column_id));
+        // console.log('card:updated applyCardData');
         
-        if(_column) {
-          _column.cards = data.cards.map(i => i === Number(card_id) ? cardData : _column.cards.find(j => j.id === i));
-        }
-        if(teamStore.card?.id === Number(card_id)){
-          teamStore.card = cardData;
+        if(_column?.cards) {
+          const cardIndex = _column.cards.findIndex(i => i.id === cardData.id);
+          if(cardIndex !== -1){
+            Object.keys(cardData).forEach(key => {
+              if(cardData[key] !== undefined) {
+                _column.cards[cardIndex][key] = cardData[key];
+              }
+            });
+          }
         }
       }
-      const res = await findCard(data.id);
-      if(res?.data){
-        applyCardData(res.data)
+      if(_column){
+        const res = await findCard(data.id);
+        if(res?.data){
+          console.log('card:updated findCard');
+          applyCardData(res.data)
+        }
+        if(teamStore.card?.id === Number(card_id)){
+          teamStore.card = res.data;
+        }
       }
     }
 
