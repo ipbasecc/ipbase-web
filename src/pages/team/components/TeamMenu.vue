@@ -21,7 +21,7 @@
       </q-item>
       <q-item
         v-if="useAuths('manageMember', ['team'])"
-        @click="memberManager = true"
+        @click="openMemberManager = true"
         clickable
         v-close-popup
         class="radius-xs"
@@ -122,7 +122,7 @@
   <q-dialog v-model="createing" persistent>
     <CreateTeam @cannelCreate="createing = false" />
   </q-dialog>
-  <q-dialog v-model="memberManager" persistent>
+  <q-dialog v-model="openMemberManager" persistent>
     <q-card
       bordered
       style="min-width: 640px; max-height: 80vh; min-height: 50vh"
@@ -194,7 +194,7 @@ const menu = ref(null);
 const invite = ref(false);
 const setNotification = ref(false);
 const createing = ref(false);
-const memberManager = ref(false);
+const openMemberManager = ref(false);
 const teamSettings = ref(false);
 
 const byInfo = ref({

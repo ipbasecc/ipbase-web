@@ -34,6 +34,8 @@ export default {
   navigation_News: "Team Information",
   channel: 'channel',
   project: 'project',
+  community_channel: "Community Channel",
+  collaboration_project: "Collaboration Project",
   video: "Video",
   create_project: 'create project',
   shortcut_table_header_desc: "Function",
@@ -122,6 +124,7 @@ export default {
   edit: 'edit',
   no_video: 'there no video here',
   no_media: 'no media',
+  no_cover: 'no cover',
   unread: 'unread',
   new_tag: 'new tag',
   user_have_no_channel: 'this user don not create any channel',
@@ -629,7 +632,8 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   projects_teamFunc: 'Projects',
   disable_teamFunc_labe: 'Disable Team Function',
   no_disable_teamFunc: 'No disabled functions',
-  team_toOne_mode_tip: 'Disabled: Creating new projects, channels, and unrelated cards',
+  team_toOne_mode_tip: 'Aiming to provide services to users, disable community-related functions',
+  team_toMany_mode_tip: 'Aiming to operate in a private domain, maintaining community, providing services, selling products, and collaborating on projects',
   team_disableProjects_tip: 'The project function will be unavailable',
   team_disableChanel_tip: 'The channel function will be unavailable',
 
@@ -773,6 +777,7 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
 
   buy: 'buy',
   drop_or_pick_cover: 'Drag or Click to Select Cover',
+  drop_or_pick_logo: 'Drag or Click to Select Logo',
   unpublished: 'Unpublished',
   publish: 'Publish',
   pulled: 'Take down',
@@ -785,4 +790,9 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   paied: 'Already Purchased',
   pulled_card_tip: 'After being pulled, the content will be invisible, but it will not affect the access of the buyer. The pulled content will no longer consume project storage space!',
   cant_published_no_media_tip: 'No content included, cannot publish',
+
+  logo_section: 'Logo',
+  name_section: 'Name',
+  mode_section: 'Mode',
+  funcition_section: 'Functions',
 }

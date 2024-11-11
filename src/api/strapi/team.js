@@ -30,6 +30,36 @@ export async function getTeamByID(team_id) {
     }
   }
 }
+// 获取指定团队成员
+/**
+ * 
+ * @param {Number} team_id  //团队ID
+ * @param {Number} offset  //起始索引
+ * @param {Number} limit //页大小
+ * @returns 
+    *  return {
+        members,
+        totalCount,
+        hasMore
+      };
+ */
+export async function getTeamMembers(team_id, offset, limit) {
+  try {
+    let options = '';
+    if (offset) options += `?offset=${offset}`;
+    if (limit) options += `&limit=${limit}`;
+    const res = await api.get(`teams/${team_id}/members${options}`);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return error;
+    } else {
+      console.log(error);
+    }
+  }
+}
 
 // 创建团队
 export async function createTeam_strapi(params) {

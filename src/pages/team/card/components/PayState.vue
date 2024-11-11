@@ -1,5 +1,5 @@
 <template>
-    <div class="text-positive">
+    <div v-if="cardState" class="text-positive">
         <template v-if="!dense">
             <template v-if="card.price > 0">
                 <span v-if="cardState?.isCreator" class="font-medium font-bold-600">
@@ -27,5 +27,5 @@
 <script setup>
 import {computed } from 'vue'
     const { card, dense } = defineProps(['card', 'dense']);
-    const cardState = computed(() => card.payState.cardState);    
+    const cardState = computed(() => card.payState?.cardState);    
 </script>

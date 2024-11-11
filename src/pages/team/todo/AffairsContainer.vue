@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount, onBeforeUnmount } from "vue";
+import { ref, nextTick, watch, computed, onBeforeMount, onBeforeUnmount } from "vue";
 import ScrollBody from './affairs/ScrollBody.vue'
 import CardAffairs from './affairs/CardAffairs.vue'
 import AffairsBody from './affairs/AffairsBody.vue'
@@ -68,16 +68,6 @@ const viewModel = ref('kanban');
 const setViewModel = (model) => {
     viewModel.value = model;
 }
-const navigatorDrawerState = ref()
-onBeforeMount(() => {
-  if(teamStore.init?.todogroups?.length === 0){
-    navigatorDrawerState.value = uiStore.navigatorDrawer
-    uiStore.navigatorDrawer = false
-  }
-})
-onBeforeUnmount(() => {
-  uiStore.navigatorDrawer = navigatorDrawerState.value
-})
 </script>
 
 <style scoped></style>

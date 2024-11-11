@@ -34,6 +34,8 @@ export default {
   navigation_News: "团队资讯",
   channel: "频道",
   project: "项目",
+  community_channel: "社群频道",
+  collaboration_project: "协作项目",
   video: "视频",
   create_project: "新建项目",
   shortcut_table_header_desc: "功能",
@@ -122,6 +124,7 @@ export default {
   edit: '编辑',
   no_video: '没有视频',
   no_media: '没有媒体',
+  no_cover: '没有封面',
   unread: '未读',
   new_tag: '新标签',
   user_have_no_channel: '该用户没有创建自己的频道',
@@ -628,7 +631,8 @@ export default {
   projects_teamFunc: '项目功能',
   disable_teamFunc_labe: '禁用功能',
   no_disable_teamFunc: '无禁用功能',
-  team_toOne_mode_tip: '禁用：新建项目、频道、非相关卡片',
+  team_toOne_mode_tip: '以向用户提供服务为目的，禁用社群相关功能',
+  team_toMany_mode_tip: '以私域经营为目的，维护社群、提供服务、销售产品、项目协作',
   team_disableProjects_tip: '项目功能将不可用',
   team_disableChanel_tip: '频道功能将不可用',
 
@@ -775,6 +779,7 @@ export default {
 
   buy: '购买',
   drop_or_pick_cover: '拖拽或点击选择封面',
+  drop_or_pick_logo: '拖拽或点击选择Logo',
   unpublished: '未发布',
   publish: '发布',
   pulled: '下架',
@@ -787,4 +792,9 @@ export default {
   paied: '已购',
   pulled_card_tip: '下架后内容将不可见，不影响以购买者访问，下架内容不再消耗项目存储空间！',
   cant_published_no_media_tip: '没有包含任何内容，不能发布',
+
+  logo_section: '标志',
+  name_section: '名称',
+  mode_section: '模式',
+  funcition_section: '功能开关',
 };

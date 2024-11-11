@@ -23,17 +23,8 @@
               class="radius-xs"
             />
             <DrapUpload v-else :isOSS="true" class="radius-md border-xs border-dashed border-primary"
-            :allowedFormats="['image/jpg','image/jpeg','image/png','image/svg','image/webp',]"
+            :allowedFormats="uiStore.allowedFormatsImage"
             @uploaded="fileUploaded" style="min-height: 8rem;" :caption="$t('drop_or_pick_cover')" />
-            <!-- <UploadFile
-              :label="$t('project_overview')"
-              accept=".jpeg,.png,.jpg,.webp"
-              :maxFiles="1"
-              :autoUpload="true"
-              :bordered="false"
-              @fileUploaded="fileUploaded"
-              :class="'full-width border-dotted border-op-sm q-pa-sm'"
-            /> -->
           </q-card-section>
           <q-card-section class="q-pt-none">
             <div class="column no-wrap gap-md">
@@ -101,7 +92,7 @@
 import { ref, computed } from "vue";
 import UploadFile from "src/components/Utilits/UploadFile.vue";
 import { createProjectFn } from "src/pages/team/hooks/useCreateProject.js";
-import { teamStore } from "src/hooks/global/useStore.js";
+import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 import DrapUpload from 'src/components/VIewComponents/DrapUpload.vue'
 
 const project_type = ref("P");

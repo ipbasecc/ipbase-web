@@ -153,14 +153,15 @@
           <q-img
             v-else-if="cardRef.cover?.url && cardRef.type === 'classroom'"
             :src="cardRef.cover?.url"
-            :ratio="16/9"
+            :ratio="16/7"
             spinner-color="primary"
             spinner-size="82px"
             class="radius-xs"
           />
-          <q-responsive v-else-if="alwaysShowCover" :ratio="16/5">
+          <q-responsive v-else-if="alwaysShowCover"
+          :ratio="16/5">
             <div class="rounded-borders flex flex-center">
-              {{ $t('no_media') }}
+              {{ $t('no_cover') }}
             </div>
           </q-responsive>
 
@@ -170,7 +171,7 @@
             {{ $t('only_electron') }}
           </div>
         </q-responsive>
-        <template v-if="cardRef.type === 'classroom' && !cardRef.published">
+        <template v-if="show_unpublished_chip">
           <q-chip color="negative" square :label="$t('unpublished')" class="absolute-top-left" />
         </template>
       </q-card-section>
@@ -712,7 +713,18 @@ const isElectron = computed(() => {
 const cardMembers = computed(() => cardRef.value?.card_members || []);
 const { _isCreator } = useMember();
 const isCreator = computed(() => {
+  if(cardRef.value?.type === 'classroom'){
+    return cardRef.value?.creator?.id === teamStore.init?.id
+  }
   return _isCreator(userStore.userId, cardMembers.value, cardRef.value?.member_roles)
+})
+const show_unpublished_chip = computed(() => {
+  /**
+   * 是课程
+   * 未发布
+   * 是作者
+   */
+  return cardRef.value?.type === 'classroom' && !cardRef.value?.published && isCreator.value
 })
 const isInCard = ref(false);
 const multiple_versions = computed(() => cardRef.value?.overviews?.length > 1);

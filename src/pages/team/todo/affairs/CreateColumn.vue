@@ -39,7 +39,7 @@
         <template v-else-if="createStyle === 'init_create'">
           <q-responsive v-if="!card" :ratio="16/9" class="full-width">
             <div class="flex flex-center">
-              <q-btn flat icon="add"
+              <q-btn icon="add" color="primary"
                 :label="_for === 'personal_kanbanTodo' ? $t('create_person_todogroup') : $t('create_todogroup')"
                 class="border"
                 @click="new_column_ing = true"

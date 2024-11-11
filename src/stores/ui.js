@@ -126,6 +126,9 @@ export default defineStore("ui", {
       "zip", "rar", "7z", "tar", "gz", "lz4",
       "doc", "docx", "ppt", "pptx", "xls", "xlsx", "csv", "txt", "pdf", "md", "mdx"
     ],
+    allowedFormatsImage: ['image/jpg', 'image/jpeg', 'image/png', 'image/svg', 'image/webp'],
+    allowedFormatsVideo: ['video/mp4', 'video/m4v', 'video/mov', 'video/flv', 'video/webm'],
+    allowedFormatsFile: ['text/plain', 'application/zip', 'application/tar', 'application/gzip'],
     unsupportFiles: [],
     showUnsupportFiles: false,
     only_electron: ['classroom'],

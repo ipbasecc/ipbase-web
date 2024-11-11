@@ -83,7 +83,7 @@
     >
       <div class="absolute-full flex flex-center q-pa-xl">
         <q-card bordered flat style="min-width: 22rem">
-          <template v-if="!isClassroom">
+          <template v-if="!isClassroom || teamStore.card?.payState?.cardState?.isCreator">
             <StrapiUpload
               :label="upload_label"
               :max-files="1"

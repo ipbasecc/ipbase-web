@@ -45,7 +45,7 @@
                   />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>{{ i.by_user.username }}</q-item-label>
+                  <q-item-label>{{ i.by_user?.username }}</q-item-label>
                 </q-item-section>
                 <q-item-section
                   v-if="
@@ -135,7 +135,7 @@
                   />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>{{ i.by_user.username }}</q-item-label>
+                  <q-item-label>{{ i.by_user?.username }}</q-item-label>
                 </q-item-section>
                 <q-item-section side>
                   <q-btn dense flat round icon="mdi-plus"
@@ -150,7 +150,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watchEffect, watch } from "vue";
+import { computed, ref, watchEffect, onBeforeMount } from "vue";
 import {
   setTeamRoleFn,
   setChannelRoleFn,
@@ -160,6 +160,8 @@ import {
   new_roles_IDs,
   set_new_roles_IDs
 } from "./MemberManager.js";
+
+import { getTeamMembers } from "src/api/strapi/team.js"
 
 import { __dict } from "src/hooks/dict.js";
 import UserAvatar from "src/pages/team/components/user/UserAvatar.vue";
@@ -199,21 +201,21 @@ const authBase = computed(() => {
   let isInTeam;
   let isInChannel;
   if (teamStore.card) {
-    const members = teamStore.card?.card_members?.map((i) => i.by_user.id);
+    const members = teamStore.card?.card_members?.map((i) => i.by_user?.id);
     isInCard = members?.includes(userId.value);
   }
   if (teamStore.project) {
     const members = teamStore.project?.project_members?.map(
-      (i) => i.by_user.id
+      (i) => i.by_user?.id
     );
     isInProject = members?.includes(userId.value);
   }
   if (teamStore.team) {
-    const members = teamStore.team?.members?.map((i) => i.by_user.id);
+    const members = teamStore.team?.members?.map((i) => i.by_user?.id);
     isInTeam = members?.includes(userId.value);
   }
   if (teamStore.channel) {
-    const members = teamStore.channel?.members?.map((i) => i.by_user.id);
+    const members = teamStore.channel?.members?.map((i) => i.by_user?.id);
     isInChannel = members?.includes(userId.value);
   }
   if (byInfo.value?.by === "card" && isInCard) {
@@ -246,6 +248,28 @@ const authBase = computed(() => {
   }
   return res;
 });
+
+const limit = 20;
+const offset = ref(1);
+const totalCount = ref();
+const hasMore = ref(false);
+onBeforeMount(async() => {
+  // todo 待完善分页查询
+  if(byInfo.value.team_id){    
+    teamStore.team.members = []
+    const team_id = byInfo.value.team_id
+    const { data } = await getTeamMembers(team_id, offset.value, limit);
+    if(data?.members){      
+      if(Array.isArray(teamStore.team?.members)){
+        teamStore.team.members.push(...data.members)
+      } else {
+        teamStore.team.members = data
+      }
+    }
+    totalCount.value = data.totalCount;
+    hasMore.value = data.hasMore
+  }
+})
 
 const addFromTeam = ref(false);
 const toggleAddFromeTeam = () => {
@@ -322,10 +346,12 @@ const __members = computed(() => {
 
 watchEffect(
   () => {
+    console.log('__members', __members);
+    
     const adminRole = member_roles.value?.find((i) => i.subject === "admin");
     admin_members.value = adminRole?.id
       ? __members.value?.filter((i) =>
-          i.member_roles.map((j) => j.id).includes(adminRole?.id)
+          i.member_roles?.map((j) => j.id).includes(adminRole?.id)
         )
       : [];
 
@@ -334,14 +360,14 @@ watchEffect(
     );
     unconfirmed_members.value = unconfirmedRole?.id
       ? __members.value?.filter((i) =>
-          i.member_roles.map((j) => j.id).includes(unconfirmedRole?.id)
+          i.member_roles?.map((j) => j.id).includes(unconfirmedRole?.id)
         )
       : [];
 
     const blockedRole = member_roles.value?.find((i) => i.subject === "blocked");
     blocked_members.value = blockedRole?.id
       ? __members.value?.filter((i) =>
-          i.member_roles.map((j) => j.id).includes(blockedRole?.id)
+          i.member_roles?.map((j) => j.id).includes(blockedRole?.id)
         )
       : [];
     const externalRole = member_roles.value?.find(
@@ -349,14 +375,14 @@ watchEffect(
     );
     external_members.value = externalRole?.id
       ? __members.value?.filter((i) =>
-          i.member_roles.map((j) => j.id).includes(externalRole?.id)
+          i.member_roles?.map((j) => j.id).includes(externalRole?.id)
         )
       : [];
 
     const isProtected = (_userId) => {
-      const userMember = __members.value?.find((i) => i.by_user.id === _userId);
+      const userMember = __members.value?.find((i) => i.by_user?.id === _userId);
       const allRoles_of_member = member_roles.value?.filter((i) =>
-        userMember.member_roles.map((j) => j.id)?.includes(i.id)
+        userMember.member_roles?.map((j) => j.id)?.includes(i.id)
       );
 
       return allRoles_of_member
@@ -365,7 +391,7 @@ watchEffect(
     };
     confirmed_members.value = __members.value?.filter(
       (i) =>
-        !isProtected(i.by_user.id) &&
+        !isProtected(i.by_user?.id) &&
         !admin_members.value.map((j) => j.id).includes(i.id) &&
         !unconfirmed_members.value.map((j) => j.id).includes(i.id) &&
         !blocked_members.value.map((j) => j.id).includes(i.id) &&

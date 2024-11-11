@@ -1,10 +1,10 @@
 <template>
     <div>
-        <q-btn v-if="!uiStore.meet && !teamStore.project?.meeting"
+        <q-btn v-if="!uiStore.meet && !teamStore.project?.meeting" :dense="$q.screen.lt.md"
         color="positive" class="full-width" @click="startMeet">
         <div class="row no-wrap items-center gap-md">
             <MeetIcon color="#efefef" />
-            <span class="font-small">{{ $t('start_meet') }}</span>
+            <span v-if="$q.screen.gt.sm" class="font-small">{{ $t('start_meet') }}</span>
         </div>
         </q-btn>
         <q-btn v-else color="negative" :label="$t('join_meet')" class="full-width" @click="joinMeet" />

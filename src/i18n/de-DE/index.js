@@ -34,6 +34,8 @@ export default {
   navigation_News: "Team-Information",
   channel: "Kanal",
   project: "Projekt",
+  community_channel: "Gemeinschaftskanal",
+  collaboration_project: "Kooperationsprojekt",
   video: "Video",
   create_project: "Projekt erstellen",
   shortcut_table_header_desc: "Funktion",
@@ -122,6 +124,7 @@ export default {
   edit: 'Bearbeiten',
   no_video: 'Kein Video',
   no_media: 'Keine Medien',
+  no_cover: 'Kein Cover',
   unread: 'Ungelesen',
   new_tag: 'Neuer Tag',
   user_have_no_channel: 'Dieser Benutzer hat keinen eigenen Kanal erstellt',
@@ -628,7 +631,8 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   projects_teamFunc: 'Projektfunktion',
   disable_teamFunc_labe: 'Deaktivieren',
   no_disable_teamFunc: 'Keine deaktivierten Funktionen',
-  team_toOne_mode_tip: 'Deaktiviert: Neue Projekte, Kanäle und nicht zugeordnete Karten erstellen',
+  team_toOne_mode_tip: 'Mit dem Ziel, den Nutzern Dienstleistungen anzubieten, werden die sozialen Funktionen deaktiviert',
+  team_toMany_mode_tip: 'Mit dem Ziel, im privaten Bereich zu operieren, werden die sozialen Funktionen, Dienstleistungen, Produktverkäufe und Projektzusammenarbeiten aufrechterhalten',
   team_disableProjects_tip: 'Die Projektfunktion ist nicht verfügbar',
   team_disableChanel_tip: 'Die Kanalfunktion ist nicht verfügbar',
 
@@ -769,6 +773,7 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
 
   buy: 'Kaufen',
   drop_or_pick_cover: 'Ziehen oder Klicken zum Auswählen des Covers',
+  drop_or_pick_logo: 'Ziehen oder Klicken zum Auswählen des Logos',
   unpublished: 'Unveröffentlicht',
   publish: 'Veröffentlichen',
   pulled: 'Produkt aus dem Verkauf nehmen',
@@ -781,4 +786,9 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   paied: 'Erworben',
   pulled_card_tip: 'Nach der Deaktivierung wird der Inhalt nicht mehr sichtbar, beeinträchtigt jedoch nicht den Zugriff für Käufer, deaktivierte Inhalte verbrauchen auch nicht mehr Speicherplatz des Projekts！',
   cant_published_no_media_tip: 'Kein Inhalt enthalten, kann nicht veröffentlicht werden',
+
+  logo_section: 'Logo',
+  name_section: 'Name',
+  mode_section: 'Mode',
+  funcition_section: 'Functions',
 };

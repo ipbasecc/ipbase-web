@@ -167,9 +167,9 @@
         :style-fn="resetHeight">
           <template v-if="hasDetialAuth">
             <KeepAlive>
-              <!-- <OverView wasAttached_to="card" ref="overviewRef"
+              <OverView wasAttached_to="card" ref="overviewRef"
                 :onlyMedia="true"
-              /> -->
+              />
             </KeepAlive>
           </template>
           <div v-else class="absolute-full column flex-center">

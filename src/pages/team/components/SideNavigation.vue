@@ -1,150 +1,154 @@
 <template>
   <q-scroll-area>
-    <q-list :dense="$q.screen.gt.sm" class="column gap-xs q-px-sm">
+    <q-list class="column gap-xs">
       <template v-if="$q.screen.gt.xs">
-        <!-- 讨论主题-->
-        <q-item v-if="enable_threads"
-          :class="`${
-            teamStore?.mm_channel?.id === 'threads'
-              ? 'border active-listitem'
-              : 'border-placeholder op-7'
-          }`"
-          class="overflow-hidden radius-xs q-pa-xs hovered-item full-width"
-          clickable
-          v-ripple
-          @click="enterSubApp('threads')"
-        >
-          <q-item-section side class="q-pr-sm">
-            <q-icon name="speaker_notes" :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`" />
-          </q-item-section>
-          <q-item-section class="overflow-hidden"> {{ $t('navigation_threads') }} </q-item-section>
-          <div
-            v-if="teamStore?.mm_channel?.id === 'threads'"
-            class="bg-primary absolute-left"
-            style="width: 3px"
-          ></div>
-        </q-item>
-        <!-- 事务沙盘-->
-        <q-item v-if="enable_dashboard"
-          :class="`${
-            teamStore?.mm_channel?.id === 'teams' || route.name === 'teams'
-              ? 'border active-listitem'
-              : 'border-placeholder op-7'
-          }`"
-          class="overflow-hidden radius-xs q-pa-xs hovered-item full-width"
-          clickable
-          v-ripple
-          @click="enterSubApp('teams')"
-        >
-          <q-item-section side class="q-pr-sm">
-            <q-icon name="mdi-chart-bubble" :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`" />
-          </q-item-section>
-          <q-item-section class="overflow-hidden"> {{ $t('navigation_Quadrant') }} </q-item-section>
-          <div
-            v-if="teamStore?.mm_channel?.id === 'teams'"
-            class="bg-primary absolute-left"
-            style="width: 3px"
-          ></div>
-        </q-item>
-        <!-- 团队资讯 -->
-        <q-item @click="enterSubApp('news')"
-          :class="`${
-            teamStore?.mm_channel?.id === 'news'
-              ? 'border active-listitem'
-              : 'border-placeholder op-7'
-          }`"
-          class="overflow-hidden radius-xs q-pa-xs hovered-item full-width"
-          clickable v-ripple
-        >
-          <q-item-section side class="q-pr-sm">
-            <q-icon name="mdi-newspaper" :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`" />
-          </q-item-section>
-          <q-item-section class="overflow-hidden"> {{ $t('navigation_News') }} </q-item-section>
-          <div
-            v-if="teamStore?.mm_channel?.id === 'teams'"
-            class="bg-primary absolute-left"
-            style="width: 3px"
-          ></div>
-        </q-item>
-      </template>
-      <template v-if="enable_channel">
-        <q-item-label header class="q-pa-sm non-selectable text-white font-bold-600">
-          {{ $t('channel') }}
-        </q-item-label>
-        <template v-if="team.team_channels?.length > 0">
-          <q-item v-for="i in team.team_channels"
-            :key="i.id" clickable v-ripple
-            :class="`${teamStore?.mm_channel?.id === i.mm_channel?.id
-              ? 'border active-listitem'
-              : 'op-7'}
-              ${i.auth && !i.auth?.read ? 'op-4' : ''}
-              ${heiglight === i.id ? 'border' : 'border-placeholder'}
-            `"
-            class="radius-xs q-pa-xs hovered-item full-width"
-            :style="`width: ${uiStore.navDrawerWidth - 16}px;`"
-            @click="enterChannel(i)"
+        <q-list :dense="$q.screen.gt.sm" class="q-px-sm">
+          <!-- 讨论主题-->
+          <q-item v-if="enable_threads"
+            :class="`${
+              teamStore?.mm_channel?.id === 'threads'
+                ? 'border active-listitem'
+                : 'border-placeholder op-7'
+            }`"
+            class="overflow-hidden radius-xs q-pa-xs hovered-item full-width"
+            clickable
+            v-ripple
+            @click="enterSubApp('threads')"
           >
-            <q-item-section side class="q-pr-sm" @mouseenter="deEnter = false">
-              <q-icon :name="i.mm_channel?.type === 'O' ? 'mdi-pound' : 'mdi-pound-box'"
-                :size="$q.screen.gt.sm ? '' : 'md'"
-                :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`"
-                @mouseenter="deEnter = true"
-                @mouseleave="deEnter = false"
-              >
-                <q-menu class="radius-sm">
-                  <q-list dense bordered class="radius-sm q-pa-xs">
-                    <q-item
-                      clickable
-                      v-close-popup
-                      class="radius-xs"
-                      @click.stop="setChannelType('O', i)"
-                    >
-                      <q-item-section side
-                        ><q-icon name="mdi-pound" :color="`grey-1${$q.dark.mode ? '' : '0'}`"
-                      /></q-item-section>
-                      <q-item-section>{{ $t('public_channel') }}</q-item-section>
-                    </q-item>
-                    <q-item
-                      clickable
-                      v-close-popup
-                      class="radius-xs"
-                      @click.stop="setChannelType('P', i)"
-                    >
-                      <q-item-section side
-                        ><q-icon name="mdi-pound-box" :color="`grey-1${$q.dark.mode ? '' : '0'}`"
-                      /></q-item-section>
-                      <q-item-section>{{ $t('private_channel') }}</q-item-section>
-                    </q-item>
-                  </q-list>
-                </q-menu>
-                <q-tooltip :class="`border ${$q.dark.mode ? 'bg-black' : 'bg-white'}`">
-                  {{ i.mm_channel?.type === 'O' ? $t('public_channel') : $t('private_channel') }}
-                </q-tooltip>
-              </q-icon>
+            <q-item-section side class="q-pr-sm">
+              <q-icon name="speaker_notes" :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`" />
             </q-item-section>
-            <q-item-section @mouseenter="deEnter = false" class="overflow-hidden">
-              <span>{{ initedChannelByMM.includes(i.name) ? $t(i.name) : i.name }}</span>
-              <q-tooltip class="transparent radius-sm">
-                <q-card bordered :class="$q.dark.mode ? 'text-grey-1' : 'text-grey-10'">
-                  <q-card-section class="q-py-sm q-px-md">
-                    <div class="font-large">{{ initedChannelByMM.includes(i.name) ? $t(i.name) : i.name }}</div>
-                  </q-card-section>
-                  <q-card-section v-if="i.purpose" class="border-top font-medium q-py-sm q-px-md op-5">
-                    {{ i.purpose }}
-                  </q-card-section>
-                </q-card>
-              </q-tooltip>
-            </q-item-section>
-            <q-popup-proxy context-menu>
-              <ChannelMenu :channel="i" />
-            </q-popup-proxy>
+            <q-item-section class="overflow-hidden"> {{ $t('navigation_threads') }} </q-item-section>
             <div
-              v-if="teamStore?.mm_channel?.id === i.mm_channel?.id"
+              v-if="teamStore?.mm_channel?.id === 'threads'"
               class="bg-primary absolute-left"
               style="width: 3px"
             ></div>
-            <UnreadBlock :mm_channel_id="i.mm_channel?.id" />
           </q-item>
+          <!-- 事务沙盘-->
+          <q-item v-if="enable_dashboard"
+            :class="`${
+              teamStore?.mm_channel?.id === 'teams' || route.name === 'teams'
+                ? 'border active-listitem'
+                : 'border-placeholder op-7'
+            }`"
+            class="overflow-hidden radius-xs q-pa-xs hovered-item full-width"
+            clickable
+            v-ripple
+            @click="enterSubApp('teams')"
+          >
+            <q-item-section side class="q-pr-sm">
+              <q-icon name="mdi-chart-bubble" :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`" />
+            </q-item-section>
+            <q-item-section class="overflow-hidden"> {{ $t('navigation_Quadrant') }} </q-item-section>
+            <div
+              v-if="teamStore?.mm_channel?.id === 'teams'"
+              class="bg-primary absolute-left"
+              style="width: 3px"
+            ></div>
+          </q-item>
+          <!-- 团队资讯 -->
+          <q-item @click="enterSubApp('news')"
+            :class="`${
+              teamStore?.mm_channel?.id === 'news'
+                ? 'border active-listitem'
+                : 'border-placeholder op-7'
+            }`"
+            class="overflow-hidden radius-xs q-pa-xs hovered-item full-width"
+            clickable v-ripple
+          >
+            <q-item-section side class="q-pr-sm">
+              <q-icon name="mdi-newspaper" :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`" />
+            </q-item-section>
+            <q-item-section class="overflow-hidden"> {{ $t('navigation_News') }} </q-item-section>
+            <div
+              v-if="teamStore?.mm_channel?.id === 'teams'"
+              class="bg-primary absolute-left"
+              style="width: 3px"
+            ></div>
+          </q-item>
+        </q-list>
+      </template>
+      <template v-if="enable_channel">
+        <q-item-label header class="q-pa-sm non-selectable op-6 q-mt-md">
+          {{ $t('community_channel') }}
+        </q-item-label>
+        <template v-if="team.team_channels?.length > 0">
+          <q-list :dense="$q.screen.gt.sm" class="q-px-sm">
+            <q-item v-for="i in team.team_channels"
+              :key="i.id" clickable v-ripple
+              :class="`${teamStore?.mm_channel?.id === i.mm_channel?.id
+                ? 'border active-listitem'
+                : 'op-7'}
+                ${i.auth && !i.auth?.read ? 'op-4' : ''}
+                ${heiglight === i.id ? 'border' : 'border-placeholder'}
+              `"
+              class="radius-xs q-pa-xs hovered-item full-width"
+              :style="`width: ${uiStore.navDrawerWidth - 16}px;`"
+              @click="enterChannel(i)"
+            >
+              <q-item-section side class="q-pr-sm" @mouseenter="deEnter = false">
+                <q-icon :name="i.mm_channel?.type === 'O' ? 'mdi-pound' : 'mdi-pound-box'"
+                  :size="$q.screen.gt.sm ? '' : 'md'"
+                  :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`"
+                  @mouseenter="deEnter = true"
+                  @mouseleave="deEnter = false"
+                >
+                  <q-menu class="radius-sm">
+                    <q-list dense bordered class="radius-sm q-pa-xs">
+                      <q-item
+                        clickable
+                        v-close-popup
+                        class="radius-xs"
+                        @click.stop="setChannelType('O', i)"
+                      >
+                        <q-item-section side
+                          ><q-icon name="mdi-pound" :color="`grey-1${$q.dark.mode ? '' : '0'}`"
+                        /></q-item-section>
+                        <q-item-section>{{ $t('public_channel') }}</q-item-section>
+                      </q-item>
+                      <q-item
+                        clickable
+                        v-close-popup
+                        class="radius-xs"
+                        @click.stop="setChannelType('P', i)"
+                      >
+                        <q-item-section side
+                          ><q-icon name="mdi-pound-box" :color="`grey-1${$q.dark.mode ? '' : '0'}`"
+                        /></q-item-section>
+                        <q-item-section>{{ $t('private_channel') }}</q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-menu>
+                  <q-tooltip :class="`border ${$q.dark.mode ? 'bg-black' : 'bg-white'}`">
+                    {{ i.mm_channel?.type === 'O' ? $t('public_channel') : $t('private_channel') }}
+                  </q-tooltip>
+                </q-icon>
+              </q-item-section>
+              <q-item-section @mouseenter="deEnter = false" class="overflow-hidden">
+                <span>{{ initedChannelByMM.includes(i.name) ? $t(i.name) : i.name }}</span>
+                <q-tooltip class="transparent radius-sm">
+                  <q-card bordered :class="$q.dark.mode ? 'text-grey-1' : 'text-grey-10'">
+                    <q-card-section class="q-py-sm q-px-md">
+                      <div class="font-large">{{ initedChannelByMM.includes(i.name) ? $t(i.name) : i.name }}</div>
+                    </q-card-section>
+                    <q-card-section v-if="i.purpose" class="border-top font-medium q-py-sm q-px-md op-5">
+                      {{ i.purpose }}
+                    </q-card-section>
+                  </q-card>
+                </q-tooltip>
+              </q-item-section>
+              <q-popup-proxy context-menu>
+                <ChannelMenu :channel="i" />
+              </q-popup-proxy>
+              <div
+                v-if="teamStore?.mm_channel?.id === i.mm_channel?.id"
+                class="bg-primary absolute-left"
+                style="width: 3px"
+              ></div>
+              <UnreadBlock :mm_channel_id="i.mm_channel?.id" />
+            </q-item>
+          </q-list>
         </template>
         <q-item
           v-else-if="!openCreateChannel"
@@ -196,69 +200,71 @@
       </template>
 
       <template v-if="enable_project">
-        <q-item-label header class="q-pa-sm non-selectable text-white font-bold-600"
+        <q-item-label header class="q-pa-sm non-selectable op-6 q-mt-md"
           :class="$q.screen.gt.xs ? 'text-grey-1' : `text-grey-1${$q.dark.mode ? '' : '0'}`"
-        >{{ $t('project') }}</q-item-label>
-        <template v-if="team.projects?.length > 0">
-          <template v-for="project in team.projects" :key="project.id">
-            <q-item
-              clickable
-              v-ripple
-              :class="`${
-                teamStore?.project?.id === project.id
-                  ? 'border active-listitem'
-                  : 'border-placeholder op-7'
-              } ${project.auth && !project.auth?.read ? 'op-5' : ''}`"
-              class="radius-xs q-pa-xs full-width"
-              @click="enterProject(project)"
-              :style="`width: ${uiStore.navDrawerWidth - 16}px;`"
-            >
-              <q-item-section side style="width: 44px" class="q-pr-sm">
-                <q-img
-                  :src="getThumbnail(project)"
-                  :ratio="1"
-                  sizes="24"
-                  spinner-color="primary"
-                  spinner-size="24px"
-                  class="radius-xs"
-                />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>
-                  {{ project.name }}
-                </q-item-label>
-                <q-item-label
-                  v-if="project.description"
-                  caption
-                  lines="2"
-                  class="text-grey-5"
-                >
-                  {{ project.description }}
-                </q-item-label>
-              </q-item-section>
-              <UnreadBlock v-if="project.auth?.read" :mm_channel_id="project.mm_channel?.id" />
-              <div
-                v-if="teamStore?.project?.id === project.id"
-                class="bg-primary absolute-left"
-                style="width: 3px"
-              ></div>
-            </q-item>
+        >{{ $t('collaboration_project') }}</q-item-label>
+        <q-list :dense="$q.screen.gt.sm" class="q-px-sm">
+          <template v-if="team.projects?.length > 0">
+            <template v-for="project in team.projects" :key="project.id">
+              <q-item
+                clickable
+                v-ripple
+                :class="`${
+                  teamStore?.project?.id === project.id
+                    ? 'border active-listitem'
+                    : 'border-placeholder op-7'
+                } ${project.auth && !project.auth?.read ? 'op-5' : ''}`"
+                class="radius-xs q-pa-xs full-width"
+                @click="enterProject(project)"
+                :style="`width: ${uiStore.navDrawerWidth - 16}px;`"
+              >
+                <q-item-section side style="width: 44px" class="q-pr-sm">
+                  <q-img
+                    :src="getThumbnail(project)"
+                    :ratio="1"
+                    sizes="24"
+                    spinner-color="primary"
+                    spinner-size="24px"
+                    class="radius-xs"
+                  />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>
+                    {{ project.name }}
+                  </q-item-label>
+                  <q-item-label
+                    v-if="project.description"
+                    caption
+                    lines="2"
+                    class="text-grey-5"
+                  >
+                    {{ project.description }}
+                  </q-item-label>
+                </q-item-section>
+                <UnreadBlock v-if="project.auth?.read" :mm_channel_id="project.mm_channel?.id" />
+                <div
+                  v-if="teamStore?.project?.id === project.id"
+                  class="bg-primary absolute-left"
+                  style="width: 3px"
+                ></div>
+              </q-item>
+            </template>
           </template>
-        </template>
-        <q-item
-          v-else
-          clickable
-          v-ripple
-          class="border-dashed radius-xs q-pa-xs hovered-item overflow-hidden full-width"
-          @click="createProject()"
-        >
-          <q-item-section side>
-            <q-icon name="add" />
-          </q-item-section>
-          <q-item-section class="overflow-hidden">
-            <q-item-label>{{ $t('create_project') }}</q-item-label>
-          </q-item-section>
-        </q-item>
+          <q-item
+            v-else
+            clickable
+            v-ripple
+            class="border-dashed radius-xs q-pa-xs hovered-item overflow-hidden full-width"
+            @click="createProject()"
+          >
+            <q-item-section side>
+              <q-icon name="add" />
+            </q-item-section>
+            <q-item-section class="overflow-hidden">
+              <q-item-label>{{ $t('create_project') }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
       </template>
     </q-list>
     <q-dialog v-model="openCreateProject" persistent>
