@@ -151,53 +151,53 @@
             </q-item>
           </q-list>
         </template>
-        <q-item
-          v-else-if="!openCreateChannel"
-          clickable
-          v-ripple
-          class="border-dashed radius-xs q-pa-xs hovered-item overflow-hidden full-width"
-          @click="openCreateChannel = true"
-        >
-          <q-item-section side>
-            <q-icon name="add" />
-          </q-item-section>
-          <q-item-section class="overflow-hidden">
-            <q-item-label>{{ $t('create_channel') }}</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item
-          v-else
-          clickable
-          class="radius-xs"
-          :class="openCreateChannel ? 'no-padding' : ''"
-        >
-          <q-item-section>
-            <q-input
-              v-model="createChannelparams.data.name"
-              outlined
-              filled
-              dense
-              type="text"
-              :aria-placeholder="`${$t('channel_name')}`"
-              class="radius-xs overflow-hidden"
-              @keyup.enter="createChannelFn()"
-              @keyup.esc="openCreateChannel = false"
-            >
-              <template #prepend><q-icon name="forum" size="sm" /></template>
-              <template v-if="createChannelparams.data.name" #append>
-                <q-btn
-                  flat
-                  round
-                  dense
-                  size="sm"
-                  icon="check"
-                  v-close-popup
-                  @click="createChannelFn()"
-                />
-              </template>
-            </q-input>
-          </q-item-section>
-        </q-item>
+        <q-list v-else :dense="$q.screen.gt.sm" class="q-px-sm">
+          <q-item v-if="!openCreateChannel"
+            clickable
+            v-ripple
+            class="border-dashed radius-xs q-pa-xs hovered-item overflow-hidden full-width"
+            @click="openCreateChannel = true"
+          >
+            <q-item-section side>
+              <q-icon name="add" />
+            </q-item-section>
+            <q-item-section class="overflow-hidden">
+              <q-item-label>{{ $t('create_channel') }}</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item v-else
+            clickable
+            class="radius-xs"
+            :class="openCreateChannel ? 'no-padding' : ''"
+          >
+            <q-item-section>
+              <q-input
+                v-model="createChannelparams.data.name"
+                outlined
+                filled
+                dense
+                type="text"
+                :aria-placeholder="`${$t('channel_name')}`"
+                class="radius-xs overflow-hidden"
+                @keyup.enter="createChannelFn()"
+                @keyup.esc="openCreateChannel = false"
+              >
+                <template #prepend><q-icon name="forum" size="sm" /></template>
+                <template v-if="createChannelparams.data.name" #append>
+                  <q-btn
+                    flat
+                    round
+                    dense
+                    size="sm"
+                    icon="check"
+                    v-close-popup
+                    @click="createChannelFn()"
+                  />
+                </template>
+              </q-input>
+            </q-item-section>
+          </q-item>
+        </q-list>
       </template>
 
       <template v-if="enable_project">
@@ -255,7 +255,7 @@
             v-else
             clickable
             v-ripple
-            class="border-dashed radius-xs q-pa-xs hovered-item overflow-hidden full-width"
+            class="border-dashed radius-xs q-mx-xs q-pa-xs hovered-item overflow-hidden full-width"
             @click="createProject()"
           >
             <q-item-section side>
