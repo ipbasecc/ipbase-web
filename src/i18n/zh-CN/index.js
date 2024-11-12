@@ -334,6 +334,7 @@ export default {
   password_not_same: '新密码与确认密码不一致',
   password_is_same: '新密码与旧密码相同，没有必要更新',
   password_cant_same: '新密码不能与旧密码相同',
+  change_success: '修改成功',
 
   dark_mode: '深色',
   light_mode: '亮色',

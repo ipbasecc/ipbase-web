@@ -1,6 +1,6 @@
 <template>
   <template v-if="teamStore.init">
-    <div v-if="!teamStore.init.initialization && hasToken" class="absolute-full radius-xs overflow-hidden"
+    <div v-if="!teamStore.init.initialization" class="absolute-full radius-xs overflow-hidden"
     :style="$q.screen.gt.md ? 'padding: 10vh 10vw' : 'padding: 0'">
         <InitializationUser class="fit" @Initialized="Initialized" />
     </div>
@@ -142,13 +142,6 @@ const checkNotification = async () => {
   }
 }
 
-// 必须有token时才判断要不要显示初始化用户组件
-const hasToken = computed(() => {
-  let _strapi_jwt = localStorage.getItem('jwt');
-  let _mm_token = localStorage.getItem('mmtoken');
-  return _strapi_jwt && _mm_token
-})
-
 const initFn  = async () => {
   console.log('init', teamStore.init);
   
@@ -188,6 +181,8 @@ onMounted(async () => {
   }
 })
 const Initialized = (val) => {
+  console.log('Initialized', val);
+  
   teamStore.init.initialization = val;
 }
 const needLogin = computed(() => 

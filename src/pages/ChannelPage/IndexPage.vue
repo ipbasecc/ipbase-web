@@ -34,7 +34,7 @@
   import useWorkStore from 'src/stores/work.js';
   import useChannelStore from 'src/stores/channel.js';
   import useStore from 'src/stores/user.js';
-import NavigatorContainer from '../team/NavigatorContainer.vue'
+  import NavigatorContainer from '../team/NavigatorContainer.vue'
 
   const workStore = useWorkStore();
   const channelStore = useChannelStore();

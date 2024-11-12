@@ -10,7 +10,7 @@
             square
             filled
             v-model="changePasswordParams.currentPassword"
-            type="text"
+            type="password"
             :label="$t('old_password')"
             class="radius-xs overflow-hidden"
           >
@@ -24,7 +24,7 @@
             square
             filled
             v-model="changePasswordParams.password"
-            type="text"
+            type="password"
             :label="$t('new_password')"
             class="radius-xs overflow-hidden"
           >
@@ -38,7 +38,7 @@
             square
             filled
             v-model="changePasswordParams.passwordConfirmation"
-            type="text"
+            type="password"
             :label="$t('confirm_password')"
             class="radius-xs overflow-hidden"
           >
@@ -54,6 +54,10 @@
         <q-btn color="primary" :label="$t('confirm')" @click="changePasswordFn()" />
       </q-item-section>
     </q-item>
+    <div v-if="success" class="absolute-full flex flex-center">
+      <div class="absolute-full bg-black op-5" />
+      <span class="q-pa-md radius-sm bg-positive text-white z-fab">{{ $t('change_success') }}</span>
+    </div>
   </q-list>
 </template>
 
@@ -62,6 +66,7 @@ import { ref } from "vue";
 import { changePassword } from "src/api/strapi.js";
 import { useQuasar } from "quasar";
 import { i18n } from 'src/boot/i18n.js';
+import { login as mmLogin } from "src/api/mattermost.js";
 
 const $t = i18n.global.t;
 
@@ -71,6 +76,7 @@ const changePasswordParams = ref({
   password: "",
   passwordConfirmation: "",
 });
+const success = ref(false)
 const changePasswordFn = async () => {
   if (
     changePasswordParams.value.passwordConfirmation !==
@@ -89,6 +95,16 @@ const changePasswordFn = async () => {
       if (res?.data) {
         const jwt = res.data.jwt;
         localStorage.setItem("jwt", JSON.stringify(jwt));
+
+        const loginParmars = ref({
+          login_id: res.data.user.email,
+          password: changePasswordParams.value.password,
+        });
+        await mmLogin(loginParmars.value);
+        success.value = true
+        changePasswordParams.value.currentPassword = ''
+        changePasswordParams.value.password = ''
+        changePasswordParams.value.passwordConfirmation = ''
       }
       if (
         res.response?.data?.error?.message ===

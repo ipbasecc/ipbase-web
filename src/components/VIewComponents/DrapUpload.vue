@@ -87,14 +87,15 @@ const onDrop = async (e) => {
         };
         let strapi_avatar = await updateUserAvatar(parmars);
         if (strapi_avatar) {
+          console.log('strapi_avatar', strapi_avatar);
+          
           userStore.avatar = strapi_avatar.data.avatar.id;
           let __strapi_userMatedate = await localforage.getItem(
             "__strapi_userMatedate"
           );
           if (__strapi_userMatedate) {
             if(__strapi_userMatedate.profile?.avatar){
-              __strapi_userMatedate.profile.avatar.data.attributes.url =
-                strapi_avatar.data.avatar.url;
+              __strapi_userMatedate.profile.avatar = strapi_avatar.data.avatar
             } else {
               __strapi_userMatedate.profile = {
                 avatar: strapi_avatar

@@ -70,7 +70,8 @@
         </q-list>
       </template>
       <template v-if="enable_channel">
-        <q-item-label header class="q-pa-sm non-selectable op-6 q-mt-md">
+        <q-item-label header class="q-pa-sm non-selectable op-6 q-mt-md"
+        :class="$q.screen.gt.xs ? 'text-grey-1' : `text-grey-1${$q.dark.mode ? '' : '0'}`">
           {{ $t('community_channel') }}
         </q-item-label>
         <template v-if="team.team_channels?.length > 0">
@@ -376,11 +377,12 @@ const mm_team = computed(() => teamStore?.team?.mm_team);
 const page = ref(0);
 const per_page = ref(60);
 
-onMounted(async() => {
-  await nextTick();
-  if (mm_team.value) {
-    await fetch_userPreferences();
+watch(mm_team, async(newVal, oldVal) => {
+  if (newVal?.id !== oldVal?.id) {
+
+    await fetch_userPreferences(); // todo fixme: 被触发了两次
     await getTeamMembers(mm_team.value?.id, page.value, per_page.value);
+    
     let mm_channels = []
     const mm_uid = localStorage.getItem("mmUserId")
     if(team.value?.team_channels?.length > 0 && enable_channel.value){
@@ -416,7 +418,7 @@ onMounted(async() => {
     }
 
   }
-})
+},{immediate:true,deep:false})
 const enterProject = async (project) => {
   if (project?.auth && !project?.auth?.read) {
     $q.notify($t('project_not_join_or_was_blocked'));
@@ -541,12 +543,4 @@ const createProject = () => {
 const projectCreated = (val) => {
   openCreateProject.value = false;
 };
-
-const callbackChannelRefreshEvents = [
-  'channel_created',
-  'channel_deleted',
-  'channel_updated',
-  'channel_converted',
-]
-
 </script>

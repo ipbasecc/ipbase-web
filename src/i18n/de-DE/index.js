@@ -335,6 +335,7 @@ export default {
   password_not_same: 'Neues Passwort und Bestätigung stimmen nicht überein',
   password_is_same: 'Neues Passwort ist identisch zum Alten, es gibt keinen Grund für ein Update',
   password_cant_same: 'Neues Passwort darf nicht identisch zum Alten sein',
+  change_success: 'Änderung erfolgreich',
   
   dark_mode: 'Dunkel',
   light_mode: 'Hell',

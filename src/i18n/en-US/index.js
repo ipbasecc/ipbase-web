@@ -335,6 +335,7 @@ export default {
   password_not_same: 'new password and confirm password not same',
   password_is_same: 'new password and old password is same, no need change',
   password_cant_same: 'new password and old password can not same',
+  change_success: 'Change successful',
 
   dark_mode: 'dark mode',
   light_mode: 'light mode',
