@@ -8,7 +8,7 @@
       :class="$q.dark.mode ? 'bg-grey-10 text-grey-1' : 'bg-white text-grey-10'"
     >
       <q-item
-        v-if="useAuths('invite_uris', ['team'])"
+        v-if="(teamStore.team?.config?.mode === 'toMany' || _isCurTeamCreator()) && useAuths('invite_uris', ['team'])"
         clickable
         v-close-popup
         @click="inviteFn()"
@@ -56,11 +56,11 @@
         <q-item-section>{{ $t('set_team_notification') }}</q-item-section>
       </q-item>
       <q-separator
-        v-if="
+        v-if="(teamStore.team?.config?.mode === 'toMany' || _isCurTeamCreator()) && (
           useAuths('invite_uris', ['team']) ||
           useAuths('manageMember', ['team']) || 
           useAuths('modify', ['team'])
-        "
+        )"
         spaced
       />
       <q-item
@@ -178,7 +178,9 @@ import { teamStore, uiStore, userStore } from "src/hooks/global/useStore.js";
 import { useRouter } from "vue-router";
 import AboutTeam from '../AboutTeam.vue'
 import SetNotification from './SetNotification.vue'
+import useMember from 'src/hooks/team/useMember.js'
 
+const { _isCurTeamCreator } = useMember();
 const $q = useQuasar();
 const props = defineProps({
   team: {

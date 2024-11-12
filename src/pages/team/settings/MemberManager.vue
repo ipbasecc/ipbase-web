@@ -1,7 +1,7 @@
 <template>
   <div class="fit column q-space">
     <template v-if="authBase && __members && member_roles">
-      <div v-if="byInfo.by !== 'card'" class="q-pa-md">
+      <div v-if="can_invite" class="q-pa-md">
         <q-btn-group dense unelevated class="full-width">
           <q-btn color="primary" class="q-space"
             :disable="!useAuths('invite_uris', [authBase.collection], auth?.members, auth?.roles)"
@@ -169,6 +169,9 @@ import { toRefs } from "vue";
 import TeamInvite from "../components/widgets/TeamInvite.vue";
 import {useAuths} from "src/pages/team/hooks/useAuths.js";
 import { teamStore } from "src/hooks/global/useStore.js";
+import useMember from 'src/hooks/team/useMember.js'
+
+const { _isCurTeamCreator } = useMember();
 
 const props = defineProps({
   byInfo: {
@@ -187,6 +190,7 @@ const props = defineProps({
 const { byInfo, auth } = toRefs(props);
 const userId = computed(() => teamStore.init?.id);
 
+const can_invite = computed(() => (_isCurTeamCreator() || teamStore.team?.config?.mode === 'toMany') && byInfo.value?.by !== 'card')
 const open_invite = ref(false);
 const inviteTarget = ref(null);
 const inviteFn = (project) => {
