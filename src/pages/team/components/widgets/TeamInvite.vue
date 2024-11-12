@@ -190,7 +190,9 @@ const genInviteFn = async () => {
     if (byInfo.value?.by === "project") {
       joinTarget = `project_id=${byInfo.value?.project_id}`;
     }
-    invite_uri.value = `${APP_URI}/join?${joinTarget}&invite_code=${invite_code}`;
+    const payload = `${joinTarget}&invite_code=${invite_code}`;
+    const encodedPayload = btoa(payload);
+    invite_uri.value = `${APP_URI}/join?code=${encodedPayload}`;
     gen_ing.value = false;
   }
 };

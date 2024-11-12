@@ -88,7 +88,15 @@ import { uiStore } from 'src/hooks/global/useStore.js';
 const route = useRoute();
 const router = useRouter();
 
-const { team_id, channel_id, project_id, invite_code } = route.query;
+const { code } = route.query;
+const decodedCode = atob(code);
+const queryParams = new URLSearchParams(decodedCode);
+const team_id = queryParams.get('team_id');
+const channel_id = queryParams.get('channel_id');
+const project_id = queryParams.get('project_id');
+const invite_code = queryParams.get('invite_code');
+
+
 const target = computed(() => {
   return (
     (team_id && "团队") || (channel_id && "聊天频道") || (project_id && "项目")
@@ -126,6 +134,7 @@ const getMe = async () => {
 };
 getMe();
 onBeforeMount(() => {
+  console.log(team_id, channel_id, project_id, invite_code);
   uiStore.pageLoaded = true
 })
 
