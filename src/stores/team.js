@@ -93,7 +93,10 @@ export default defineStore("team", {
       return state.team?.level_detail.card_number_limit < state.team?.statistics?.cards_number; // 计算属性
     },
     teamMembersExceeded: (state) => {
-      return state.team?.level_detail.team_members_limit !== -1 && state.team?.level_detail.team_members_limit < state.team?.statistics?.member_number; // 计算属性
+      if(state.team?.level_detail.team_members_limit === -1){
+        return false
+      }
+      return state.team?.level_detail?.team_members_limit < state.team?.statistics?.member_number;
     },
     singal_file_limit: (state) => {
       const limit = state.team?.level_detail?.singal_file_limit;

@@ -2,7 +2,7 @@
   <div class="fit column q-space">
     <template v-if="authBase && __members && member_roles">
       <div v-if="can_invite" class="q-pa-md">
-        <q-chip v-if="!teamStore.teamMembersExceeded && show_member_exceeded_tip"
+        <q-chip v-if="teamStore.teamMembersExceeded && show_member_exceeded_tip"
           v-model="show_member_exceeded_tip" color="info" outline size="md"
           class="full-width border q-pa-md" :label="$t('team_members_exceeded_tip')" removable
         />
@@ -285,7 +285,7 @@ const addFromTeam = ref(false);
 const toggleAddFromeTeam = () => {
   addFromTeam.value = !addFromTeam.value;
 };
-const sliceNumber = computed(() => teamStore.level_detail.team_members_limit === -1 ? 0 : teamStore.level_detail.team_members_limit)
+const sliceNumber = computed(() => teamStore.level_detail.team_members_limit === -1 ? teamStore.level_detail.team_members_limit.length : teamStore.level_detail.team_members_limit)
 const project_members = computed(() => teamStore.project?.project_members?.slice(0, sliceNumber.value));
 const card_members = computed(() => teamStore.card?.card_members);
 const team_members_not_in_card = computed(() => team_members.value.filter(i => !card_members.value.map(j => j.id).includes(i.id)));
