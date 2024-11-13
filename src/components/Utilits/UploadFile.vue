@@ -5,15 +5,17 @@
     :accept="accept"
     :autoUpload="autoUpload"
     :bordered
+    :max-total-size="MaxTotalSize"
     @filesOfUploaded="fileUploaded"
     :class="classRef"
   />
 </template>
 <script setup>
-import { ref, inject } from "vue";
+import { ref, inject, computed } from "vue";
 import OssUploader from "src/components/Utilits/OssUploader.vue";
 import { createUploadFile } from "src/apollo/api/api.js";
 import { toRefs } from "vue";
+import { teamStore } from "src/hooks/global/useStore";
 
 const props = defineProps({
   label: {
@@ -23,10 +25,6 @@ const props = defineProps({
   accept: {
     type: String,
     default: ".jpg,.png,.mp4,.mov,.m4v,.jpeg,.png,.webp,.svg,.avi",
-  },
-  MaxTotalSize: {
-    type: Number,
-    default: 20480000000,
   },
   maxFiles: {
     type: Number,
@@ -61,9 +59,13 @@ const { class: classRef } = toRefs(props);
 
 const emit = defineEmits(["fileUploaded"]);
 
-const imageType = inject("imageType");
-
 const fileId = ref();
+const MaxTotalSize = computed(() => {
+  const limit = teamStore.level_detail?.singal_file_limit;
+  if (limit === -1) return null;
+  if (limit > 0) return limit * 1024 * 1024 * 1024;
+  return 1 * 1024 * 1024 * 1024;
+})
 
 const uploadFileParams = ref({
   url: "",

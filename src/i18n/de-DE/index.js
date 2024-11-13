@@ -694,6 +694,8 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   splite_kanban_right_view_tip: 'Bitte wählen Sie eine Tafel aus der Liste auf der rechten Seite.',
   add_member_from_team: 'Aus dem Team hinzufügen',
   add_member_by_invite_link: 'Durch Einladungslink hinzufügen',
+  team_members_exceeded: 'Die Anzahl der Teammitglieder ist überschritten. Bitte kontaktieren Sie den Teamadministrator, um den bezahlten Plan zu aktualisieren.',
+  team_members_exceeded_tip: 'Da die Anzahl der Mitglieder das Limit überschritten hat, werden einige Mitglieder nicht angezeigt',
 
   version_updated_notify: 'Die Anwendung wurde aktualisiert. Bitte verwenden Sie "Shift + F5" oder "Strg + Umschalt + R" zum Neuladen der Anwendung.',
   delete_card_warning: 'Löschen Sie den aktuellen Inhalt.',
@@ -792,4 +794,11 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   name_section: 'Name',
   mode_section: 'Mode',
   funcition_section: 'Functions',
+
+
+  storage_capactiy_exceeded: 'Speicherkapazität des Teamdateisystems überschritten, bitte kontaktieren Sie den Administrator, um das Abonnement zu aktualisieren',
+  storageCapacityExceeded_notify_title: 'Abonnement überschritten',
+  storageCapacityExceeded_notify_message: 'Teamdateispeicher überschritten, bitte kontaktieren Sie den Administrator, um das Abonnement zu aktualisieren',
+  cardNumberExceeded_notify_title: 'Abonnement überschritten',
+  cardNumberExceeded_notify_message: 'Teamkartenanzahl überschritten, bitte kontaktieren Sie den Administrator, um das Abonnement zu aktualisieren',
 };

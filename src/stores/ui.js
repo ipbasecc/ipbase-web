@@ -167,6 +167,8 @@ export default defineStore("ui", {
     meet: void 0,
     init_meet: false,
     show_meet: false,
+    show_subscription: false,
+    dialogNotify: null,
   }),
   actions: {
     $reset() {

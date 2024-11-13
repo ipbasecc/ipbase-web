@@ -1,33 +1,31 @@
 <template>
-  <q-uploader
+  <q-uploader v-if="!teamStore.storageCapacityExceeded"
     flat
+    v-bind="$attrs"
     :bordered="bordered"
     :multiple="maxFiles !== 1"
     :accept="accept"
-    :max-total-size="MaxTotalSize"
     :max-files="maxFiles"
     :label="label"
     :readonly="readonly"
-    :color="
-      color
-        ? color
-        : readonly
-        ? $q.dark.mode
-          ? 'grey-8'
-          : 'grey-4'
+    :color="color || readonly
+        ? ($q.dark.mode ? 'grey-8' : 'grey-4')
         : 'primary'
     "
     :class="classRef"
     class="overflow-hidden"
     @added="addFiles"
   />
+  <div v-else class="flex flex-center" style="min-width: 24rem; min-height: 8rem;">
+    {{ $t('storage_capactiy_exceeded') }}
+  </div>
 </template>
 
 <script setup>
 import { ref, toRefs } from "vue";
 import { confirmUpload } from "src/hooks/utilits/useConfirmUpload.js";
 import localforage from "localforage";
-import { userStore } from "src/hooks/global/useStore.js";
+import { teamStore, userStore } from "src/hooks/global/useStore.js";
 
 const props = defineProps({
   label: {
@@ -37,10 +35,6 @@ const props = defineProps({
   accept: {
     type: String,
     default: ".jpg,.png,.mp4,.mov,.m4v,.jpeg,.png,.webp,.svg,.avi",
-  },
-  MaxTotalSize: {
-    type: Number,
-    default: 20480000000,
   },
   maxFiles: {
     type: Number,
@@ -80,7 +74,6 @@ const emit = defineEmits(["uploaded"]);
 const {
   maxFiles,
   accept,
-  MaxTotalSize,
   label,
   readonly,
   class: classRef,
@@ -95,7 +88,7 @@ if (!me.value) {
   });
 }
 const addFiles = async (val) => {
-  console.log("complateFiles", val);
+  // console.log("complateFiles", val);
   let res = await confirmUpload(val, me.value);
   if (res) {
     emit("uploaded", res);

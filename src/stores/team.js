@@ -76,7 +76,32 @@ export default defineStore("team", {
     income: null,
     notebook: null,
     note: null,
+    level_detail: null,
+    singal_file_limit: null,
+    storageCapacityExceeded: false,
+    cardNumberExceeded: false,
+    teamMembersExceeded: false,
   }),
+  getters: {
+    level_detail: (state) => {
+      return state.team?.level_detail; // 计算属性
+    },
+    storageCapacityExceeded: (state) => {
+      return state.team?.level_detail.team_storage_max_limit > state.team?.statistics?.storage_size; // 计算属性
+    },
+    cardNumberExceeded: (state) => {
+      return state.team?.level_detail.card_number_limit < state.team?.statistics?.cards_number; // 计算属性
+    },
+    teamMembersExceeded: (state) => {
+      return state.team?.level_detail.team_members_limit !== -1 && state.team?.level_detail.team_members_limit < state.team?.statistics?.member_number; // 计算属性
+    },
+    singal_file_limit: (state) => {
+      const limit = state.team?.level_detail?.singal_file_limit;
+      if (limit === -1) return null;
+      if (limit > 0) return limit * 1024 * 1024 * 1024;
+      return 1 * 1024 * 1024 * 1024;
+    },
+  },
   actions: {
     $reset() {
       this.teams = null;
@@ -162,6 +187,9 @@ export default defineStore("team", {
       this.channel = null;
       this.mm_channel = null;
       this.direct_user = null;
-    }
+    },
+    setTeam(team) {
+      this.team = team;
+    },
   },
 });

@@ -90,7 +90,6 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import UploadFile from "src/components/Utilits/UploadFile.vue";
 import { createProjectFn } from "src/pages/team/hooks/useCreateProject.js";
 import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 import DrapUpload from 'src/components/VIewComponents/DrapUpload.vue'

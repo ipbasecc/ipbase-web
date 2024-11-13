@@ -1,13 +1,11 @@
 <template>
   <NavigatorContainer>
     <template v-if="teamStore.navigatorDrawer && !$q.screen.gt.xs">
-      <SideNavigation
-          v-if="team"
-          class="absolute-full"
-          :class="team.isExternal ? 'q-pt-sm' : ''"
+      <SideNavigation v-if="team"
+        class="absolute-full"
+        :class="team.isExternal ? 'q-pt-sm' : ''"
       />
-      <TeamList
-        v-else-if="
+      <TeamList v-else-if="
           !$q.screen.gt.xs &&
           teamStore.init &&
           !teamStore.init.default_team
@@ -85,8 +83,7 @@
 
       <q-page-container>
         <q-page :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-3'">
-          <div
-            v-if="$q.screen.gt.xs"
+          <div v-if="$q.screen.gt.xs"
             class="absolute-left full-height hover-col-resize flex flex-center toggle-container z-max"
             :class="dragWidth ? 'bg-primary ' : ''"
             :style="dragWidth ? 'width: 3px' : 'width: 10px'"

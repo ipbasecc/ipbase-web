@@ -666,6 +666,10 @@ const createCard_in = ref(null);
 const DefaultCreateCardType = ref();
 let DefaultCreateCardType_key = `___DefaultCreateCardType_key__${columnRef.value?.id}`;
 const CreateCardFn = (column_id, createCardType) => {
+  if(teamStore.storageCapacityExceeded){
+    uiStore.dialogNotify = 'cardNumberExceeded'
+    return
+  }
   if (!uiStore.dragging) {
     createCard_in.value = createCard_in.value ? null : column_id;
     if (createCardType) {

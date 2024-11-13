@@ -694,6 +694,8 @@ export default {
   splite_kanban_right_view_tip: '请在右侧看板列表中点选看板',
   add_member_from_team: '从团队中添加',
   add_member_by_invite_link: '通过邀请链接添加',
+  team_members_exceeded: '团队成员数量超额，请联系团队管理员升级付费计划',
+  team_members_exceeded_tip: '由于成员数量超过限额，部分成员未能显示',
 
   send_friend_request: '发送好友请求',
   add_friend_msg_label: '留言',
@@ -798,4 +800,10 @@ export default {
   name_section: '名称',
   mode_section: '模式',
   funcition_section: '功能开关',
+
+  storage_capactiy_exceeded: '团队文件容量超限，请联系管理员升级订阅',
+  storageCapacityExceeded_notify_title: '订阅超限',
+  storageCapacityExceeded_notify_message: '团队文件容量超限，请联系管理员升级订阅',
+  cardNumberExceeded_notify_title: '订阅超限',
+  cardNumberExceeded_notify_message: '团队卡片数量容量超限，请联系管理员升级订阅',
 };

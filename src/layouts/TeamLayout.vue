@@ -92,6 +92,7 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
+  <DialogNotify />
 </template>
 
 <script setup>
@@ -118,6 +119,7 @@ import { useSocket } from 'src/pages/team/hooks/useSocket.js'
 
 import { isTokenExpired } from 'src/hooks/utilits.js'
 import MeetPage from 'src/pages/team/meet/MeetPage.vue'
+import DialogNotify from 'src/components/VIewComponents/DialogNotify.vue'
 
 getUserData();
 useSocket();

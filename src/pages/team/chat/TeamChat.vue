@@ -46,15 +46,8 @@ onMounted(async () => {
 watch(
   mm_wsStore,
   async () => {
-    const refetchChannel = async () => {
-      const res = await getChannelByID(teamStore.channel?.id);
-      if (res?.data) {
-        teamStore.channel = res.data;
-      }
-    };
     if (mm_wsStore.event) {
-      let post =
-        mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
+      let post = mm_wsStore.event.data?.post && JSON.parse(mm_wsStore.event.data.post);
       if (!post) return;
       let strapi = post?.props?.strapi;
       if (strapi) {
@@ -62,7 +55,10 @@ watch(
           strapi.data.action === "channel_member_updated" &&
           strapi.data.channel_id === teamStore.channel?.id
         ) {
-          await refetchChannel();
+          const res = await getChannelByID(teamStore.channel?.id);
+          if (res?.data) {
+            teamStore.channel = res.data;
+          }
         }
         if (
           strapi.data.is === "channel" &&

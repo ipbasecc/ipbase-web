@@ -8,6 +8,8 @@ import useUserStore from "src/stores/user.js";
 import useProjectStore from "src/stores/project.js";
 import useTeamStore from "src/stores/team.js";
 import useOss from "src/stores/oss.js";
+import { Notify } from 'quasar'
+import { uiStore } from "../global/useStore";
 
 const ossStore = useOss();
 const userStore = useUserStore();
@@ -93,7 +95,28 @@ async function uploadFile(file, username, id) {
 
 // 定义一个异步的confirmUpload函数，接收一个文件数组和一个me对象作为参数，返回一个promise
 export async function confirmUpload(files, me) {
+  if (teamStore.storageCapacityExceeded) {
+    uiStore.dialogNotify = 'storageCapacityExceeded'
+    return
+  }
   // console.log('confirmUpload',files);
+  let totalFileSize = 0;
+  files.forEach(file => {
+    totalFileSize += file.size;
+  });
+  
+  const limit = teamStore.singal_file_limit
+  if (totalFileSize > limit) {
+    Notify.create({
+      message: `文件总大小超过限制(${(totalFileSize / (1024 * 1024 * 1024)).toFixed(2)} G > ${(limit / (1024 * 1024 * 1024)).toFixed(2)} G)`,
+      color: 'red',
+      icon: 'error',
+      position: 'top',
+      timeout: 3000
+    });
+    return
+  }
+
   if (!me) {
     let err = "需要提供 me 参数";
     // console.log("文件获取错误" + err);

@@ -22,7 +22,7 @@ import {
   putProjectCache,
 } from "src/hooks/project/useProcess.js";
 
-import { teamStore, userStore, uiStore } from "src/hooks/global/useStore.js";
+import { teamStore } from "src/hooks/global/useStore.js";
 
 const props = defineProps({
   project_id: {

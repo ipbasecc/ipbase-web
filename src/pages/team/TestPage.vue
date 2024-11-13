@@ -9,7 +9,7 @@
 
         <q-page-container>
             <q-page class="q-pa-md flex flex-center">
-                <q-btn color="primary" no-caps label="Create Folder" @click="creatFolder()" />
+                <SubscriptionPlan />
             </q-page>
         </q-page-container>
     </q-layout>
@@ -19,6 +19,7 @@
 import { onMounted, ref, useTemplateRef, computed, watchEffect } from 'vue';
 import { uiStore } from "src/hooks/global/useStore.js";
 import { folderService } from 'src/api/strapi/services/folderService.js'
+import SubscriptionPlan from './components/SubscriptionPlan.vue'
 
 
 const creatFolder = async () => {

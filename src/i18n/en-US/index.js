@@ -683,7 +683,7 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   quality_source: 'Original',
   quality_3840: '4K',
   quality_1920: 'Full HD',
-  quality_1280: 'Helf HD',
+  quality_1280: 'Half HD',
   quality_960: '960P',
   quality_640: '640P',
   quality_480: '480P',
@@ -695,6 +695,8 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   splite_kanban_right_view_tip: 'Please select a board from the list on the right side.',
   add_member_from_team: 'Add from team',
   add_member_by_invite_link: 'Add by invite link',
+  team_members_exceeded: 'Team member count exceeded, please contact the team administrator to upgrade the paid plan',
+  team_members_exceeded_tip: 'Due to the number of members exceeding the limit, some members are not displayed',
 
   version_updated_notify: 'The application has been updated. Please use "Shift + F5" or "Ctrl + Shift + R" to reload the application.',
   delete_card_warning: 'Delete current content.',
@@ -796,4 +798,10 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   name_section: 'Name',
   mode_section: 'Mode',
   funcition_section: 'Functions',
+
+  storage_capactiy_exceeded: 'Team file storage capacity exceeded, please contact the administrator to upgrade the subscription',
+  storageCapacityExceeded_notify_title: 'Subscription Exceeded',
+  storageCapacityExceeded_notify_message: 'Team file storage capacity exceeded, please contact the administrator to upgrade the subscription',
+  cardNumberExceeded_notify_title: 'Subscription Exceeded',
+  cardNumberExceeded_notify_message: 'Team card number capacity exceeded, please contact the administrator to upgrade the subscription',
 }

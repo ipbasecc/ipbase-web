@@ -2,15 +2,19 @@
   <div class="fit column q-space">
     <template v-if="authBase && __members && member_roles">
       <div v-if="can_invite" class="q-pa-md">
+        <q-chip v-if="!teamStore.teamMembersExceeded && show_member_exceeded_tip"
+          v-model="show_member_exceeded_tip" color="info" outline size="md"
+          class="full-width border q-pa-md" :label="$t('team_members_exceeded_tip')" removable
+        />
         <q-btn-group dense unelevated class="full-width">
           <q-btn color="primary" class="q-space"
-            :disable="!useAuths('invite_uris', [authBase.collection], auth?.members, auth?.roles)"
+            :disable="!useAuths('invite_uris', [authBase.collection], auth?.members, auth?.roles) || teamStore.teamMembersExceeded"
             @click="inviteFn(teamStore.project)"
           >
             <q-icon name="group_add" size="xs" />
             <span class="q-ml-md">{{ $t('invite') }}</span>
             <q-tooltip v-if="byInfo.by !== 'team'" class="font-medius border" :class="$q.dark.mode ? 'bg-black' : 'bg-white'">
-              {{ $t('add_member_by_invite_link') }}
+              {{ teamStore.teamMembersExceeded ? $t('team_members_exceeded') : $t('add_member_by_invite_link') }}
             </q-tooltip>
           </q-btn>
           <q-btn v-if="byInfo.by !== 'team' && (byInfo?.by !== 'channel' || teamStore.mm_channel?.type !== 'O')" split color="blue" icon="mdi-account-plus" @click="toggleAddFromeTeam()">
@@ -198,28 +202,30 @@ const inviteFn = (project) => {
   inviteTarget.value = project;
 };
 
+const show_member_exceeded_tip = ref(true)
 const authBase = computed(() => {
   let res = {};
   let isInCard;
   let isInProject;
   let isInTeam;
   let isInChannel;
+  let members
   if (teamStore.card) {
-    const members = teamStore.card?.card_members?.map((i) => i.by_user?.id);
+    members = teamStore.card?.card_members?.map((i) => i.by_user?.id);
     isInCard = members?.includes(userId.value);
   }
   if (teamStore.project) {
-    const members = teamStore.project?.project_members?.map(
+    members = teamStore.project?.project_members?.map(
       (i) => i.by_user?.id
     );
     isInProject = members?.includes(userId.value);
   }
   if (teamStore.team) {
-    const members = teamStore.team?.members?.map((i) => i.by_user?.id);
+    members = teamStore.team?.members?.map((i) => i.by_user?.id);
     isInTeam = members?.includes(userId.value);
   }
   if (teamStore.channel) {
-    const members = teamStore.channel?.members?.map((i) => i.by_user?.id);
+    members = teamStore.channel?.members?.map((i) => i.by_user?.id);
     isInChannel = members?.includes(userId.value);
   }
   if (byInfo.value?.by === "card" && isInCard) {
@@ -279,13 +285,13 @@ const addFromTeam = ref(false);
 const toggleAddFromeTeam = () => {
   addFromTeam.value = !addFromTeam.value;
 };
-
-const project_members = computed(() => teamStore.project?.project_members);
+const sliceNumber = computed(() => teamStore.level_detail.team_members_limit === -1 ? 0 : teamStore.level_detail.team_members_limit)
+const project_members = computed(() => teamStore.project?.project_members?.slice(0, sliceNumber.value));
 const card_members = computed(() => teamStore.card?.card_members);
 const team_members_not_in_card = computed(() => team_members.value.filter(i => !card_members.value.map(j => j.id).includes(i.id)));
-const team_members = computed(() => teamStore.team?.members);
+const team_members = computed(() => teamStore.team?.members?.slice(0, sliceNumber.value));
 const team_members_not_in_project = computed(() => team_members.value.filter(i => !project_members.value.map(j => j.id).includes(i.id)));
-const channel_members = computed(() => teamStore.channel?.members);
+const channel_members = computed(() => teamStore.channel?.members?.slice(0, sliceNumber.value));
 const team_members_not_in_channel = computed(() => team_members.value.filter(i => !channel_members.value.map(j => j.id).includes(i.id)));
 const members_for_from = computed(() => {
   let members
