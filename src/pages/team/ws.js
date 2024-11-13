@@ -32,6 +32,7 @@ export async function _ws() {
     if (!token) return
     if (reConnectCount < 10) {
       if (token) {
+        ws = void 0;
         wsConnect();
       }
     } else {
@@ -68,7 +69,6 @@ export async function _ws() {
     ws.addEventListener("message", (event) => {
       mm_wsStore.event = JSON.parse(event.data);
       // console.log('GET WS_MESSAGE - event.data', mm_wsStore.event.data)
-      // Linux系统下，Edge浏览器有时候需要清理之后才能受到后续消息，因此这里必须收到服务端成功连接的消息以后才能正式判定连接成功
       if (mm_wsStore.event?.data?.connection_id) {
         mm_wsStore.online = true;
         console.log('ws connected && mm_wsStore.online = ', mm_wsStore.online)
@@ -111,6 +111,7 @@ export function closeWs() {
   // 判断ws是否存在
   if (ws) {
     ws.close();
+    ws = null;
     mm_wsStore.online = false;
   }
 }
