@@ -125,6 +125,9 @@ const redirectNow = () => {
 const count = ref(2);
 let intervalId = null;
 const startCountdown = () => {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
   intervalId = setInterval(() => {
     count.value--;
     if (count.value === 0) {

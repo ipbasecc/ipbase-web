@@ -1,6 +1,9 @@
 <template>
+  count： {{count}}
     <TipTap
+      v-if="teamStore.note"
       v-bind="$attrs"
+      :key="teamStore.note?.id"
       :jsonContent="teamStore.note?.jsonContent"
       :editable="isCreator"
       autofocus="all"
@@ -84,10 +87,15 @@ const updateDocumentFn = async () => {
 const count = ref(15);
 let intervalId = null;
 const startCountdown = () => {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+  count.value = 15;
   intervalId = setInterval(async () => {
     count.value--;
     if (count.value === 0) {
       clearInterval(intervalId);
+      intervalId = null
       await updateDocumentFn();
     }
   }, 1000);
@@ -95,7 +103,6 @@ const startCountdown = () => {
 
 const tiptapUpdate = async (val) => {
   jsonContent.value = val;
-  count.value = 15;
   startCountdown();
 };
 const tiptapBlur = async (val) => {

@@ -13,6 +13,9 @@ onUnmounted(() => {
 });
 
 export function getCurTime() {
+  if (timer) {
+    clearInterval(timer);
+  }
   timer = setInterval(() => {
     curTime.value = date.formatDate(Date.now(), "HH:mm:ss");
   }, 1000);

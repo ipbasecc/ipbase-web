@@ -84,6 +84,9 @@ const update = async () => {
 const count = ref(15);
 let intervalId = null;
 const startCountdown = () => {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
   intervalId = setInterval(async () => {
     count.value--;
     if (count.value === 0) {

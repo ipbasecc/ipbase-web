@@ -766,9 +766,6 @@ body.body--dark pre>code, pre>code {
 mark {
   color: white !important;
 }
-.tiptapBody > div {
-  height: 100%;
-}
 
 .code-block {
   background: #282c34;

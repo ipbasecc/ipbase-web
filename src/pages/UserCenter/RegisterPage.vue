@@ -270,6 +270,9 @@ const redirectNow = () => {
 const count = ref(2);
 let intervalId = null;
 const startCountdown = () => {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
   intervalId = setInterval(() => {
     console.log("开始倒计时");
     count.value--;
