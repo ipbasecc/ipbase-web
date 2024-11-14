@@ -87,7 +87,8 @@ export default defineStore("team", {
       return state.team?.level_detail; // 计算属性
     },
     storageCapacityExceeded: (state) => {
-      return state.team?.level_detail.team_storage_max_limit > state.team?.statistics?.storage_size; // 计算属性
+      const limit = state.team?.level_detail.team_storage_max_limit * 1024 * 1024 // 后端返回的是 G 为单位，这里转为kb
+      return limit < state.team?.statistics?.storage_size; // 计算属性
     },
     cardNumberExceeded: (state) => {
       return state.team?.level_detail.card_number_limit < state.team?.statistics?.cards_number; // 计算属性

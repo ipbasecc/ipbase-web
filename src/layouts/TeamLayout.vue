@@ -96,7 +96,7 @@
 </template>
 
 <script setup>
-import {watch, computed, onBeforeMount, onMounted, onUnmounted, ref, watchEffect} from "vue";
+import {watch, computed, onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {loginAndInit} from 'src/hooks/init.js'
 import {useRoute, useRouter} from "vue-router";
 import AccountMenu from "../pages/team/components/AccountMenu.vue";

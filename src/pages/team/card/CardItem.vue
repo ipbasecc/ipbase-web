@@ -139,7 +139,7 @@
       >
         <template v-if="!isElectron">
           <FileViewer
-            v-if="media?.url"
+            v-if="media?.url && cardRef.type !== 'classroom'"
             :key="media.url"
             :file="quality?.length > 0 ? {
               id: media.id,
@@ -757,7 +757,7 @@ watch(cardRef, () => {
 },{immediate:true,deep:true});
 
 watch([storeCard, storeCardMedia, storeCardVersion], () => {
-  if (storeCard.value?.id === cardRef.value.id && storeCardVersion.value) {    
+  if (storeCard.value?.id === cardRef.value.id && storeCardMedia.value && storeCardVersion.value) {    
     media.value = storeCardMedia.value
 
     const { quality: _quality } = useOverview(storeCardVersion.value)

@@ -101,6 +101,7 @@
           <AffairsList v-if="uiStore.app === 'affairs'" />
           <FollowedList v-if="uiStore.app === 'brand'" />
           <NotebookList v-if="uiStore.app === 'notebooks'" />
+          <BussinessMenu v-if="uiStore.app === 'business'" />
         </q-drawer>
         <RightPannel />
       </template>
@@ -167,6 +168,7 @@ import FollowedList from 'src/pages/ChannelPage/FollowedList.vue'
 import NavigatorHeader from './components/NavigatorHeader.vue'
 import RightPannel from './components/RightPannel.vue'
 import NotebookList from './notebook/NotebookList.vue'
+import BussinessMenu from '../business/BussinessMenu.vue'
 
 // 团队状态是否存在 blocked 或 unconfirmed
 const userStatus_byTeam = computed(() => teamStore.team?.status);

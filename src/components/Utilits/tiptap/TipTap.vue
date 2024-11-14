@@ -351,8 +351,9 @@ const dropZoneRef = ref();
 
 const tiptapContent = ref();
 const isEmpty = computed(() => {
-  const fristContent = tiptapContent.value?.content[0];
-  if(fristContent?.type === 'paragraph' && !fristContent?.content){
+  const fristContent = tiptapContent.value?.content;
+  if(!fristContent || !Array.isArray(fristContent)) return
+  if(fristContent[0]?.type === 'paragraph' && !fristContent[0]?.content){
     return true
   } else {
     return false

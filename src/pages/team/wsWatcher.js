@@ -7,6 +7,7 @@ import { fetchProject } from "src/hooks/project/useProcess.js";
 import { cleanCache } from 'src/pages/team/hooks/useAuths.js'
 import { useQuasar } from "quasar";
 import { useDocumentVisibility, useWindowFocus } from '@vueuse/core'
+import { findCard } from "src/api/strapi/project.js";
 
 
 export default function useWatcher() {
@@ -16,7 +17,7 @@ export default function useWatcher() {
   const val = computed(() => teamStore.income);
   watch(val, async(newVal, oldVal) => {
     if(!newVal) return;
-    const { team_id, project_id, board_id, group_id, card_id, data } = val.value?.data;
+    let { team_id, project_id, board_id, group_id, card_id, data } = val.value?.data;
     if(teamStore.team?.id === Number(team_id)){
       if(val.value.event === 'team:update'){
         teamStore.team = data;
@@ -387,6 +388,15 @@ export default function useWatcher() {
           })
         }
         if(card_id) {
+          if(data.card?.type === 'classroom'){
+            const res = await findCard(card_id);
+            if(res?.data){
+              if(teamStore.card?.id === res.data.id){
+                teamStore.card = res.data
+              }
+            }
+            return // 提前返回，后续不需要继续执行了
+          }
           if (card_id === teamStore.card?.id) {
             if (teamStore.card?.overviews?.length > 0) {
               teamStore.card.overviews.push(data);
@@ -487,6 +497,18 @@ export default function useWatcher() {
         });
       }
       if(val.value.event === 'overview:updated'){
+        // 如果是课堂内容，那么后端返回的数据不会包含media相关字段
+        // 这里重新请求数据，由于课堂卡片不会在分栏中显示媒体，所以不需要执行更新媒体的操作
+        // 只需要更新正在查看详情详情内容
+        if(data.card?.type === 'classroom'){
+          const res = await findCard(data.card.id);
+          if(res?.data){
+            if(teamStore.card?.id === res.data.id){
+              teamStore.card = res.data
+            }
+          }
+          return // 提前返回，后续不需要继续执行了
+        }
         const isIn = (overviews) => {
           if (!overviews || overviews.length === 0) return false;
           return overviews.map(i => i.id).includes(Number(data.id));

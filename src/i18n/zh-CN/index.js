@@ -806,4 +806,12 @@ export default {
   storageCapacityExceeded_notify_message: '团队文件容量超限，请联系管理员升级订阅',
   cardNumberExceeded_notify_title: '订阅超限',
   cardNumberExceeded_notify_message: '团队卡片数量容量超限，请联系管理员升级订阅',
+
+  my_business: '经营中心',
+  business_overview: '经营概览',
+  total_revenue: '总收入',
+  account_balance: '账户余额',
+  total_revenue_description: '您在平台销售金额 - 支付平台服务费用 - 平台佣金',
+  account_balance_description: '总收入 - 已提现金额',
+  withdraw: '提现'
 };

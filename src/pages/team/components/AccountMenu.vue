@@ -90,6 +90,17 @@
                 </q-item-section>
                 <q-item-section>{{ $t('my_channel')}}</q-item-section>
               </q-item>
+              <q-item
+                clickable
+                v-close-popup
+                class="radius-xs"
+                @click="toBusinessPage()"
+              >
+                <q-item-section side>
+                  <q-icon name="mdi-sale" />
+                </q-item-section>
+                <q-item-section>{{ $t('my_business')}}</q-item-section>
+              </q-item>
               <q-separator spaced class="op-3" />
               <q-item
                 clickable
@@ -238,6 +249,7 @@ import {
   userStore,
   channelStore,
   teamStore,
+  uiStore,
 } from "src/hooks/global/useStore.js";
 import {clearLocalDB} from "pages/team/hooks/useUser";
 import { useI18n } from 'vue-i18n'
@@ -358,6 +370,11 @@ const toTeamHome = () => {
     router.push("/teams");
   });
 };
+
+const toBusinessPage = () => {
+  uiStore.app = 'business'
+  router.push(`/business`)
+}
 
 const emit = defineEmits(["createTeam"]);
 const createTeam = () => {

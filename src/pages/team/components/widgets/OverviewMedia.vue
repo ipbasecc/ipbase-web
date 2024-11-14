@@ -25,22 +25,29 @@
           @click="$hevueImgPreview(activeVersion?.media?.url)"
         />
       </template>
-      <template v-if="quality?.length > 0 && filetype(activeVersion?.media.url) === 'video'">
+      <q-responsive v-if="quality[0]?.url && filetype(quality[0].url) === 'video'"
+        class="fit"
+        :ratio="16 / 9">
         <Artplayer :option="{
-            url: quality[0].url,
+            url: quality[0].url || activeVersion?.media.url,
             quality: quality,
-            muted: false,
-            autoplay: false,
-            loop: false,
-            mutex: true,
-            fullscreen: true,
-            fullscreenWeb: !uiStore.activeReel,
+            ...player_options
           }"
           class="fit"
         />
-      </template>
+      </q-responsive>
+      <q-responsive v-else-if="activeVersion?.media?.url && filetype(activeVersion.media.url) === 'video'"
+        class="fit"
+        :ratio="16 / 9">
+        <Artplayer :option="{
+            url: activeVersion?.media.url,
+            ...player_options
+          }"
+          class="fit"
+        />
+      </q-responsive>
       <q-toolbar
-        v-if="auth"
+        v-if="auth && teamStore.navigation !== 'classroom'"
         class="absolute-top transparent z-fab"
       >
         <q-space v-if="!uiStore.activeReel" />
@@ -83,7 +90,7 @@
     >
       <div class="absolute-full flex flex-center q-pa-xl">
         <q-card bordered flat style="min-width: 22rem">
-          <template v-if="!isClassroom || teamStore.card?.payState?.cardState?.isCreator">
+          <template v-if="!isClassroom || isCreator">
             <StrapiUpload
               :label="upload_label"
               :max-files="1"
@@ -154,6 +161,16 @@ const isShared = computed(() => uiStore.isShared)
 const upload_label = computed(() =>
   teamStore.card?.type === "classroom" ? $t('classroom_file') : $t('preview_file')
 );
+const player_options = {
+  muted: false,
+  autoplay: false,
+  loop: false,
+  mutex: true,
+  fullscreen: true,
+  fullscreenWeb: !uiStore.activeReel,
+}
+
+const isCreator = computed(() => teamStore.card?.creator?.id === teamStore.init?.id)
 
 const media_change_ing = ref(false);
 const fileUploaded = (files) => {

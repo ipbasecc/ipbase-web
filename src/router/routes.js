@@ -155,6 +155,12 @@ const routes = [
         },
       },
       {
+        path: "/business",
+        component: () => import("pages/business/BusinessPage.vue"),
+        name: "BusinessPage",
+        props: true,
+      },
+      {
         path: "/teams/test",
         component: () => import("src/pages/team/TestPage.vue"),
         name: "team_test",
