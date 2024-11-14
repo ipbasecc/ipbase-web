@@ -1,5 +1,6 @@
 <template>
   <q-list v-if="options" dense class="full-width q-pa-sm column no-wrap gap-sm">
+    todogroups: {{ teamStore.init?.todogroups }}
     <q-item v-for="i in options" :key="i.id" tag="label" v-ripple class="radius-xs"
             :class="userStore.affairsFilterIDs?.includes(i.id) ? 'border' : 'border-placeholder'"
     >

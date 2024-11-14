@@ -27,8 +27,9 @@
       </q-page-container>
     </template>
     <template v-else>
-      <template v-if="$q.screen.gt.xs">
+      <template v-if="$q.screen.gt.xs && uiStore.app">
         <q-drawer
+          v-if="show_list"
           side="left"
           v-model="uiStore.navigatorDrawer"
           :breakpoint="640"
@@ -144,7 +145,7 @@
 </template>
 
 <script setup>
-import {computed, reactive, ref, watch,} from "vue";
+import {computed, reactive, ref, watch, watchEffect} from "vue";
 import {useRoute} from "vue-router";
 
 import CreateTeam from "src/pages/team/components/CreateTeam.vue";
@@ -234,6 +235,7 @@ const handleMouseMove = () => {
     uiStore.navigatorDrawer = false;
   }
 };
+const show_list = computed(() => (uiStore.app === 'affairs' && teamStore.init?.todogroups?.length > 0) || uiStore.app !== 'affairs')
 </script>
 
 <style scoped>
