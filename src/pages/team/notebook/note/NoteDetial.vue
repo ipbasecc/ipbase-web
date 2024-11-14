@@ -1,5 +1,4 @@
 <template>
-  count： {{count}}
     <TipTap
       v-if="teamStore.note"
       v-bind="$attrs"
@@ -46,14 +45,14 @@ import ClassPage from '../../card/ClassPage.vue'
 
 const { active_note_id } = defineProps(['active_note_id'])
 const route = useRoute();
-const note_id = computed(() => route.params.note_id || active_note_id);
+const note_id = computed(() => route.params?.note_id || active_note_id);
 const isCreator = computed(() => {
     const creator_id = teamStore.note?.by_user?.id || teamStore.note?.creator?.id
     return creator_id === teamStore.init?.id
 })
 
 watch(note_id, async() => {
-    if(note_id.value){
+    if(note_id.value){      
         const {data} = await getDocument(note_id.value)
         if(data){
             teamStore.note = data;

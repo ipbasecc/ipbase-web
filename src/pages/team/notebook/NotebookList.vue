@@ -5,33 +5,35 @@
             @click="enterLibrary()" />
             <span v-if="notebook?.name && targetList !== 'notebooks'">{{ notebook.name }}</span>
         </q-toolbar>
-        <q-scroll-area class="q-space q-pa-xs">
-            <q-list v-if="targetList === 'notebooks'" dense class="column no-wrap gap-xs">
-                <template v-if="notebooks?.length > 0">
-                    <q-item clickable v-ripple v-for="nb in notebooks" :key="nb.id"
-                    class="radius-xs hovered-item" :class="nb.id === notebook?.id ? 'border active-listitem' : 'border-placeholder op-7'"
-                    @click="enterNotebook(nb)">
-                        <q-item-section>{{ nb.name }}</q-item-section>
-                        <NotebookItemMenu class="hover-show transition" :notebook="nb" @cancelUpdate="cancelUpdateFn"
-                        @updated="updated" @deleted="deletedFn" @mouseenter="disableEnter = true" @mouseleave="disableEnter = false" />
+        <KeepAlive>
+            <q-scroll-area class="q-space q-pa-xs">
+                <q-list v-if="targetList === 'notebooks'" dense class="column no-wrap gap-xs">
+                    <template v-if="notebooks?.length > 0">
+                        <q-item clickable v-ripple v-for="nb in notebooks" :key="nb.id"
+                        class="radius-xs hovered-item" :class="nb.id === notebook?.id ? 'border active-listitem' : 'border-placeholder op-7'"
+                        @click="enterNotebook(nb)">
+                            <q-item-section>{{ nb.name }}</q-item-section>
+                            <NotebookItemMenu class="hover-show transition" :notebook="nb" @cancelUpdate="cancelUpdateFn"
+                            @updated="updated" @deleted="deletedFn" @mouseenter="disableEnter = true" @mouseleave="disableEnter = false" />
+                        </q-item>
+                    </template>
+                    <q-item v-if="!creating" clickable v-ripple class="radius-xs hovered-item" @click="creating = true">
+                        <q-item-section side>
+                            <q-icon name="mdi-plus" />
+                        </q-item-section>
+                        <q-item-section class="hover-show transition">
+                            {{ $t('create_notebook') }}
+                        </q-item-section>
                     </q-item>
-                </template>
-                <q-item v-if="!creating" clickable v-ripple class="radius-xs hovered-item" @click="creating = true">
-                    <q-item-section side>
-                        <q-icon name="mdi-plus" />
-                    </q-item-section>
-                    <q-item-section class="hover-show transition">
-                        {{ $t('create_notebook') }}
-                    </q-item-section>
-                </q-item>
-                <CreateNotebook v-else @cancelCreate="creating = false" @created="createdFn" />
-            </q-list>
-            <NoteList v-else-if="notebook" :notebook_id="notebook.id" />
-        </q-scroll-area>
+                    <CreateNotebook v-else @cancelCreate="creating = false" @created="createdFn" />
+                </q-list>
+                <NoteList v-else-if="notebook" :notebook_id="notebook.id" />
+            </q-scroll-area>
+        </KeepAlive>
     </div>
 </template>
 <script setup>
-import { ref, watchEffect, onBeforeMount } from "vue";
+import { ref, watchEffect, onMounted } from "vue";
 import { teamStore, uiStore } from "src/hooks/global/useStore";
 import CreateNotebook from './CreateNotebook.vue'
 import NotebookItemMenu from './NotebookItemMenu.vue'
@@ -80,17 +82,23 @@ const enterLibrary = () => {
 }
 const notebook = ref()
 const enterNotebook = (_notebook) => {
-    if(disableEnter.value) return
+    if(disableEnter.value || !_notebook) return
     targetList.value = 'note'
     notebook.value = _notebook;
     if(uiStore.app === 'notebooks') {
         router.push(`/notebooks/${_notebook.id}`);
     }
 }
+
+onMounted(() => {
 const { notebook_id, note_id } = route.params
-if(notebook_id && !note_id){
-    enterNotebook(notebook_id)
-}
+    if(notebook_id || teamStore.notebook){
+        const notebook = {
+            id: notebook_id || teamStore.notebook?.id
+        }
+        enterNotebook(notebook)
+    }
+})
 </script>
 
 <style scoped>

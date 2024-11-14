@@ -350,6 +350,14 @@ const editor = ref();
 const dropZoneRef = ref();
 
 const tiptapContent = ref();
+const isEmpty = computed(() => {
+  const fristContent = tiptapContent.value?.content[0];
+  if(fristContent?.type === 'paragraph' && !fristContent?.content){
+    return true
+  } else {
+    return false
+  }
+})
 const cleanHtmlHandler = (val) => {
   return val.replace(/<[^>]*>?/gm, "");
 };
@@ -382,7 +390,7 @@ const init = () => {
   editor.value = new Editor({
     content: tiptapContent.value,
     editable: isEditable.value,
-    autofocus: autofocus.value,
+    autofocus: isEmpty.value,
     editorProps: {
       // clipboardTextParser(text, $context) {
       //   // 在这里处理粘贴的文本
@@ -431,10 +439,10 @@ const init = () => {
       CustomStrike,
       Placeholder.configure({
         placeholder: ({ node }) => {          
-          if (node.type.name === 'paragraph') {
-            return 'What’s the title?'
+          if (node.type.name === 'paragraph' || node.type.name === 'text') {
+            return '请输入文本...';
           }
-          return 'Can you add some further context?'
+          return '';
         },
       }),
       // slash菜单

@@ -22,7 +22,7 @@
     </q-list>
 </template>
 <script setup>
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, onMounted, nextTick } from "vue";
 import { teamStore, uiStore } from "src/hooks/global/useStore";
 import CreateNote from './CreateNote.vue'
 import NoteitemMenu from './NoteitemMenu.vue'
@@ -44,14 +44,22 @@ watch(_notebook_id, async() => {
 
 const creating = ref(false);
 const disableEnter = ref(false);
-const enterNote = (note_id) => {
+const enterNote = async (note_id) => {
+    
     if(disableEnter.value) return
     if(uiStore.app === 'notebooks'){
-        router.push(`/notebooks/${teamStore.notebook.id}/${note_id}`)
+        await router.push(`/notebooks/${teamStore.notebook?.id}/${note_id}`)
     } else {
         uiStore.active_note_id = note_id;
     }
 }
+onMounted(() => {
+    if(teamStore.note && teamStore.notebook){
+        setTimeout(() => {
+            enterNote(teamStore.note?.id)
+        },15)
+    }
+})
 
 const created = (val) => {
     notes.value.push(val);

@@ -158,17 +158,20 @@ const updateDocumentFn = async () => {
 const count = ref(8);
 let intervalId = null
 const autoSave = (val) => {
+  console.log('tiptapUpdate autoSave 1', count.value);
   if (intervalId) {
     clearInterval(intervalId);
   }
+  console.log('tiptapUpdate autoSave 2', count.value);
   intervalId = setInterval(async () => {
     jsonContent.value = val;
     count.value--;
-    // console.log('tiptapUpdate autoSave', count.value);
+    console.log('tiptapUpdate autoSave 3', count.value);
     if (count.value < 1) {
       // console.log('Clearing interval');
       clearInterval(intervalId);
       try {
+        console.log('tiptapUpdate autoSave 4', count.value);
         await updateDocumentFn();
         // console.log('Document updated');
       } catch (error) {
