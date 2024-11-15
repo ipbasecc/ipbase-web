@@ -623,7 +623,7 @@ import {isEqual} from "lodash-es";
 import {useProjectCardPreference,colorMarks,cardTypes,preferences,shareProps} from "src/pages/team/hooks/useSettingTemplate.js";
 import ThreadBtn from "../components/widgets/ThreadBtn.vue";
 import ReName from "../components/widgets/icons/ReName.vue";
-import {teamStore, uiStore, userStore, mm_wsStore} from "src/hooks/global/useStore.js";
+import {teamStore, uiStore, userStore} from "src/hooks/global/useStore.js";
 import ClassPage from "./ClassPage.vue";
 import FileViewer from "src/components/VIewComponents/FileViewer.vue";
 import CreateShare from "pages/team/components/CreateShare.vue";

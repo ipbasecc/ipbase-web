@@ -500,8 +500,6 @@ watch(val, async(newVal, oldVal) => {
        * 
        */
       const applyCardData = (cardData) => {
-        // console.log('card:updated applyCardData');
-
         if(_column?.cards){ // 正常的修改
           const cardIndex = _column.cards.findIndex(i => i.id === cardData.id);
           if(cardIndex !== -1){
@@ -524,20 +522,34 @@ watch(val, async(newVal, oldVal) => {
         // 重新上架
         const {column_cards, updator} = val.value.data;
         if(data.unpulled_card_id){
-          res = await findCard(data.unpulled_card_id);
-          if(res?.data){
-            _column.cards = column_cards.map(i => _column.cards.find(j => j.id === i) || res.data)
-            if(teamStore.card?.id === data.unpulled_card_id){
-              teamStore.card.pulled = !teamStore.card.pulled
+          if(updator !== teamStore.init?.id){
+            res = await findCard(data.unpulled_card_id);
+            if(res?.data){
+              _column.cards = column_cards.map(i => _column.cards.find(j => j.id === i) || res.data)
             }
+          } else {
+            const index = _column.cards.findIndex(i => i.id === data.unpulled_card_id)
+            if(index !== -1){
+              _column.cards[index].pulled = false
+            }
+          }
+          if(teamStore.card?.id == data.unpulled_card_id){
+            teamStore.card.pulled = false
           }
           return
         }
         // 下架
-        if(data.pulled_card_id && updator !== teamStore.init?.id){
-          _column.cards = _column.cards.filter(i => i.id !== data.pulled_card_id)
-          if(teamStore.card && teamStore.card.id === data.unpulled_card_id){
-            teamStore.card.pulled = !teamStore.card.pulled
+        if(data.pulled_card_id){
+          if(updator !== teamStore.init?.id){
+            _column.cards = _column.cards.filter(i => i.id !== data.pulled_card_id)
+          } else {
+            const index = _column.cards.findIndex(i => i.id === data.pulled_card_id)
+            if(index !== -1){
+              _column.cards[index].pulled = true
+            }
+          }
+          if(teamStore.card && teamStore.card.id == data.pulled_card_id){
+            teamStore.card.pulled = true
           }
           return
         }
