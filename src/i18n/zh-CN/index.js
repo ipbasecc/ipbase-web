@@ -786,6 +786,7 @@ export default {
   unpublished: '未发布',
   publish: '发布',
   pulled: '下架',
+  unpulled: '上架',
   is_pulled: '已下架',
   price: '价格',
   price_free: '免费',

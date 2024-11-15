@@ -33,8 +33,10 @@
             <template v-if="teamStore.card?.isCreator">
               <q-btn v-if="!teamStore.card?.published" icon="mdi-eye" color="positive" class="q-mr-lg border"
               :label="$t('publish')" @click="publishCard()" />
-              <q-btn v-else icon="mdi-cart-off" color="negative" class="q-mr-lg border"
+              <q-btn v-else-if="!teamStore.card?.pulled" icon="mdi-cart-off" color="negative" class="q-mr-lg border"
               :label="$t('pulled')" @click="pulledCard()" />
+              <q-btn v-else icon="mdi-cart-plus" color="positive" class="q-mr-lg border"
+              :label="$t('unpulled')" @click="unpulledCard()" />
             </template>
             <q-btn @click="toggleRightDrawer()"
               flat dense size="sm" round
@@ -323,6 +325,9 @@ const pulledCard = () => {
   } else {
     show_pulled_dlg.value = true
   }
+}
+const unpulledCard = () => {
+  emit('unpulledCard', teamStore.card?.id)
 }
 const isShared = computed(() => uiStore.isShared)
 const userId = computed(() => teamStore.init?.id);

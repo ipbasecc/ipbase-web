@@ -576,7 +576,7 @@ watchEffect(() => {
 });
 watch(columnRef, () => {
   if(columnRef.value){
-    cards.value = columnRef.value?.cards;
+    cards.value = columnRef.value?.cards.filter(i => !i.pulled || i.creator?.id === teamStore.init?.id);
     filteredCards.value = cards.value;
     column_name.value = columnRef.value?.name;
     column_unread_count.value = columnRef.value?.unread_count;

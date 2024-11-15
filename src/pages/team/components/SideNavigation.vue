@@ -215,7 +215,7 @@
                     ? 'border active-listitem'
                     : 'border-placeholder op-7'
                 } ${project.auth && !project.auth?.read ? 'op-5' : ''}`"
-                class="radius-xs q-pa-xs full-width"
+                class="radius-xs q-pa-xs"
                 @click="enterProject(project)"
                 :style="`width: ${uiStore.navDrawerWidth - 16}px;`"
               >
@@ -236,7 +236,7 @@
                   <q-item-label
                     v-if="project.description"
                     caption
-                    lines="2"
+                    lines="1"
                     class="text-grey-5"
                   >
                     {{ project.description }}
@@ -248,6 +248,14 @@
                   class="bg-primary absolute-left"
                   style="width: 3px"
                 ></div>
+                <q-tooltip class="transparent radius-sm">
+                  <q-card bordered
+                  :style="`width: ${uiStore.navDrawerWidth - 16}px;`">
+                    <q-card-section :class="$q.dark.mode ? 'text-white' : 'text-black'" class="font-small q-pa-sm">
+                      {{ project.description }}
+                    </q-card-section>
+                  </q-card>
+                </q-tooltip>
               </q-item>
             </template>
           </template>

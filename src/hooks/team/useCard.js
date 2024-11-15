@@ -126,7 +126,17 @@ export async function publishCard(card) {
   }
 }
 export async function pulledCard(card) {
+  delete updateParmars.data.unpulledCard_id
   updateParmars.data.pulledCard_id = card.id;
+
+  let res = await updateCardFn(card.id);
+  if (res) {
+    return res;
+  }
+}
+export async function unpulledCard(card) {
+  delete updateParmars.data.pulledCard_id
+  updateParmars.data.unpulledCard_id = card.id;
 
   let res = await updateCardFn(card.id);
   if (res) {

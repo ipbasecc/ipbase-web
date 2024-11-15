@@ -388,15 +388,18 @@ export default function useWatcher() {
           })
         }
         if(card_id) {
-          if(data.card?.type === 'classroom'){
+          // 当新增overview的卡片是课堂时，只需要更新已经打开详情的card的overviews即可，因为课堂卡片在分栏中只显示封面
+          if(data.card?.type === 'classroom' && teamStore.card?.id === data.card.id){
             const res = await findCard(card_id);
             if(res?.data){
               if(teamStore.card?.id === res.data.id){
-                teamStore.card = res.data
+                teamStore.card.overviews = res.data.overviews
               }
             }
             return // 提前返回，后续不需要继续执行了
           }
+          if(data.card?.type === 'classroom') return
+
           if (card_id === teamStore.card?.id) {
             if (teamStore.card?.overviews?.length > 0) {
               teamStore.card.overviews.push(data);
@@ -437,6 +440,14 @@ export default function useWatcher() {
         }
       }
       if(val.value.event === 'overview:deleted'){
+
+        // 当移除overview的卡片是课堂时，只需要更新已经打开详情的card的overviews即可，因为课堂卡片在分栏中只显示封面
+        if(data.card?.type === 'classroom' && teamStore.card?.id === data.card.id){
+          teamStore.card.overviews = teamStore.card.overviews.filter(i => i.id !== Number(data.removed_overview))
+          return // 提前返回，后续不需要继续执行了
+        }
+        if(data.card?.type === 'classroom') return
+
         const isIn = (overviews) => {
           if (!overviews || overviews.length === 0) return false;
           return overviews.map(i => i.id).includes(Number(data.removed_overview));
@@ -500,15 +511,20 @@ export default function useWatcher() {
         // 如果是课堂内容，那么后端返回的数据不会包含media相关字段
         // 这里重新请求数据，由于课堂卡片不会在分栏中显示媒体，所以不需要执行更新媒体的操作
         // 只需要更新正在查看详情详情内容
-        if(data.card?.type === 'classroom'){
+
+        // 当更新overviews的卡片是课堂时，只需要更新已经打开详情的card的overviews即可，因为课堂卡片在分栏中只显示封面
+        if(data.card?.type === 'classroom' && teamStore.card?.id === data.card.id){
           const res = await findCard(data.card.id);
           if(res?.data){
             if(teamStore.card?.id === res.data.id){
               teamStore.card = res.data
+              teamStore.card.activeVersion = teamStore.card.overviews.find(i => i.id === data.id)
             }
           }
           return // 提前返回，后续不需要继续执行了
         }
+        if(data.card?.type === 'classroom') return
+
         const isIn = (overviews) => {
           if (!overviews || overviews.length === 0) return false;
           return overviews.map(i => i.id).includes(Number(data.id));

@@ -1,6 +1,5 @@
 <template>
   <div v-if="cardRef.expand"
-    v-show="!cardRef.pulled"
     :key="`card-${cardRef.id}`"
     class="flex flex-center"
     :class="`
@@ -174,6 +173,7 @@
         <template v-if="show_unpublished_chip">
           <q-chip color="negative" square :label="$t('unpublished')" class="absolute-top-left" />
         </template>
+        <q-chip v-if="cardRef.pulled" color="negative" square :label="$t('is_pulled')" class="absolute-top-left" />
       </q-card-section>
       <!-- 任务、备忘 -->
       <q-card-section
@@ -557,6 +557,7 @@
         @buyData="buyData"
         @publishCard="publishCard(cardRef)"
         @pulledCard="pulledCard(cardRef)"
+        @unpulledCard="unpulledCard(cardRef)"
       />
       <q-card v-else bordered class="column">
         <q-toolbar class="bg-deep-orange text-white">
@@ -615,7 +616,8 @@ import {
   updateCardThread,
   updateJsonContent,
   publishCard,
-  pulledCard
+  pulledCard,
+  unpulledCard
 } from "src/hooks/team/useCard.js";
 import {isEqual} from "lodash-es";
 import {useProjectCardPreference,colorMarks,cardTypes,preferences,shareProps} from "src/pages/team/hooks/useSettingTemplate.js";
