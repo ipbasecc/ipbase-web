@@ -483,6 +483,12 @@ export async function createCard(parmars) {
   }
 }
 //在项目 - 看板 - 分栏中更新卡片
+/**
+ * 
+ * @param {Number} card_id 
+ * @param {Object} parmars 带data
+ * @returns 
+ */
 export async function updateCard(card_id, parmars) {
   try {
     const res = await api.put(`/cards/${card_id}`, parmars);
@@ -1095,6 +1101,23 @@ export async function projectMeetAuth(params) {
 export async function checkCardsPayStates(params) {
   try {
     const res = await api.post(`/cards/check_paied`, params);
+    return res;
+  } catch (error) {
+    return error;
+  }
+}
+
+export async function findOrders(offset,limit) {
+  try {
+    const res = await api.get(`/orders?offset=${offset}&limit=${limit}`);
+    return res;
+  } catch (error) {
+    return error;
+  }
+}
+export async function findSales(offset,limit) {
+  try {
+    const res = await api.get(`/sales?offset=${offset}&limit=${limit}`);
     return res;
   } catch (error) {
     return error;

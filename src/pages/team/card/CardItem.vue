@@ -337,15 +337,9 @@
                 <q-item class="radius-xs">
                   <q-item-section>
                     <div class="row no-wrap gap-sm">
-                      <q-btn
-                        flat
-                        dense
-                        size="sm"
-                        stack
+                      <q-btn flat dense size="sm" stack
                         :icon="!isDilgMode ? 'mdi-import' : 'mdi-arrow-expand'"
-                        class="op-5"
-                        padding="sm"
-                        v-close-popup
+                        class="op-5" padding="sm" v-close-popup
                         @click="
                           _enterCard(useAuths('read', ['card']))
                         "
@@ -354,34 +348,36 @@
                           <span class="font-medium">{{ cardRef.type !== 'classroom' ? $t('task_detial') : $t('course_detial') }}</span>
                         </q-tooltip>
                       </q-btn>
-                      <q-btn
-                        v-if="useAuths('name', ['card']) && cardRef.type !== 'classroom'"
-                        flat
-                        dense
-                        size="sm"
-                        stack
-                        class="op-5"
-                        padding="sm"
-                        v-close-popup
-                        @click="name_changing = true"
-                      >
-                        <ReName />
-                        <q-tooltip>
-                          <span class="font-medium">{{ $t('rename_card') }}</span>
-                        </q-tooltip>
-                      </q-btn>
-                      <template v-if="cardRef.type !== 'classroom'">
+                      <template v-if="cardRef.type === 'classroom' && cardRef.creator?.id === teamStore.init?.id">
                         <q-space />
                         <q-btn
-                          v-if="!cardRef.disable_share"
-                          flat
-                          dense
-                          size="sm"
-                          stack
-                          icon="share"
-                          class="op-5"
-                          padding="sm"
-                          v-close-popup
+                          flat dense size="sm" stack
+                          class="op-5" padding="sm" v-close-popup
+                          @click="editCareDlg = true"
+                        >
+                          <ReName />
+                          <q-tooltip>
+                            <span class="font-medium">{{ $t('rename_card') }}</span>
+                          </q-tooltip>
+                        </q-btn>
+                      </template>
+                      <template v-if="cardRef.type !== 'classroom'">
+                        <q-btn
+                          v-if="useAuths('name', ['card'])"
+                          flat dense size="sm" stack
+                          class="op-5" padding="sm" v-close-popup
+                          @click="name_changing = true"
+                        >
+                          <ReName />
+                          <q-tooltip>
+                            <span class="font-medium">{{ $t('rename_card') }}</span>
+                          </q-tooltip>
+                        </q-btn>
+                        <q-space />
+                        <q-btn v-if="!cardRef.disable_share"
+                          flat dense size="sm" stack
+                          icon="share" class="op-5"
+                          padding="sm" v-close-popup
                           @click="shareCard()"
                         />
                         <ThreadBtn
@@ -583,6 +579,9 @@
         @createShare="createShare"
       />
     </q-dialog>
+    <q-dialog v-model="editCareDlg" persistent>
+      <EditCard :card="cardRef" @updated="updated" />
+    </q-dialog>
   </div>
 </template>
 
@@ -632,6 +631,7 @@ import useOverview from 'src/pages/team/hooks/useOverview.js'
 import useSocket from "src/pages/team/card/hooks/useSocket.js";
 import useMember from "src/hooks/team/useMember.js";
 import PayState from './components/PayState.vue'
+import EditCard from './components/EditCard.vue'
 
 const $q = useQuasar();
 const route = useRoute();
@@ -682,6 +682,11 @@ const videoOption = {
 const isExternal = computed(() => teamStore.project?.isExternal || false);
 const isDilgMode = ref(true);
 const actived = ref(false);
+const editCareDlg = ref(false);
+
+const updated = () => {
+  editCareDlg.value = false
+}
 
 watchEffect(() => {
   isDilgMode.value = !isExternal.value && !uiStore.isFocusMode

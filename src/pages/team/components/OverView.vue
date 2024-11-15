@@ -227,8 +227,6 @@ import OverviewDeadline from "./widgets/OverviewDeadline.vue";
 import ReName from "./widgets/icons/ReName.vue";
 import { useQuasar } from "quasar";
 import {
-  userStore,
-  mm_wsStore,
   teamStore,
   uiStore,
 } from "src/hooks/global/useStore.js";

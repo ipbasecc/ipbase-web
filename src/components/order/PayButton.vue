@@ -148,6 +148,11 @@ watch(income, () => {
     if(event === 'pay:completed' && data?.payOrderId === payOrderId.value){
         state.value = data?.state
         if(data.commodity){
+            data.commodity.payState = {
+                cardState: {
+                    isPaied: true
+                }
+            }
             emit('buyData', data.commodity)
         }
         showCreate.value = false

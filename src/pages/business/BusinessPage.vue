@@ -1,36 +1,40 @@
 <template>
     <NavigatorContainer>
         <div class="absolute-full q-pa-sm">
-            <div class="row gap-sm">
-                <q-card bordered :class="$q.screen.gt.sm ? 'col-6' : 'col-12'">
-                    <q-card-section>
-                        <div class="text-h6">{{ $t('total_revenue') }}</div>
-                        <div class="font-bold-600" style="font-size: 5rem;">2999.32</div>
-                    </q-card-section>
-                    <q-card-section>
-                        {{ $t('total_revenue_description') }}
-                    </q-card-section>
-                </q-card>
-                <q-card bordered class="col">
-                    <q-card-section>
-                        <div class="row items-start">
-                            <div class="text-h6">{{ $t('account_balance') }}</div>
-                            <q-space />
-                            <q-btn color="primary" :label="$t('withdraw')" padding="xs lg" @click="onClick" />
-                        </div>
-                        <div class="font-bold-600" style="font-size: 5rem;">1500</div>
-                    </q-card-section>
-                    <q-card-section>
-                        {{ $t('account_balance_description') }}
-                    </q-card-section>
-                </q-card>
-            </div>
+            <SaleCards />
+            <SaleTable v-if="sales" :sales :pageInfo />
         </div>
     </NavigatorContainer>
 </template>
 
 <script setup>
+import {ref, onMounted, computed} from 'vue'
+import {findSales} from 'src/api/strapi/project.js'
+
 import NavigatorContainer from '../team/NavigatorContainer.vue'
+import SaleTable from 'src/components/business/SaleTable.vue'
+import SaleCards from 'src/components/business/SaleCards.vue'
 
+const page = ref(1);
+const limit = ref(20);
+const offset = computed(() => (page.value - 1) * limit.value);
 
+const sales = ref([]);
+const getSales = async() => {
+    const { data } = await findSales(offset.value,limit.value);
+    if(data) {
+        sales.value = data
+    }
+}
+const pageInfo = computed(() => {
+    return {
+        page: page.value,
+        per_page: limit.value,
+        count: sales.value.length
+    }
+})
+
+onMounted(async() => {
+    await getSales();
+})
 </script>
