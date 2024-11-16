@@ -156,9 +156,23 @@ const routes = [
       },
       {
         path: "/business",
-        component: () => import("pages/business/BusinessPage.vue"),
-        name: "BusinessPage",
-        props: true,
+        component: () => import("pages/business/BusinessIndex.vue"),
+        name: "BusinessIndex",
+        redirect: "/business/main",
+        children: [
+          {
+            path: "/business/main",
+            component: () => import("pages/business/BusinessPage.vue"),
+            name: "BusinessPage",
+            props: true,
+          },
+          {
+            path: "/business/info",
+            component: () => import("pages/business/AccountInfo.vue"),
+            name: "BusinessAccount",
+            props: true,
+          }
+        ]
       },
       {
         path: "/teams/test",

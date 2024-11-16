@@ -296,6 +296,21 @@ export async function createOrder(params) {
     return error;
   }
 }
+/**
+ * https://docs.jeequan.com/docs/jeepay/payment_api
+ * @param {*} params 文档 - 统一下单数据结构
+ * @returns 
+ */
+export async function createTransferOrder(params) {
+  try {
+    const res = await api.post(`/order/withdraw`, params);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    throw error;
+  }
+}
 
 /**
  * 测试方法，不要使用

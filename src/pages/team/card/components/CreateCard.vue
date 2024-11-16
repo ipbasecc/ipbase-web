@@ -248,10 +248,11 @@ const create_with_name = computed(() => {
 
 const params = ref({});
 const cover = ref()
+const cover_id = ref()
 const setCover = (val) => {
   // console.log('setCover', val);
   if(val?.id){
-    params.value.data.cover = val.id
+    cover_id.value = val.id
     cover.value = val.attributes?.url
   }
 }
@@ -260,14 +261,14 @@ const name = ref();
 const jsonContent = ref();
 watchEffect(() => {
   params.value = {
-    ...params.value,
     column_id: column_idRef.value,
     data: {
       status: type_for_create.value === 'classroom' ? 'completed' : "pending",
       type: type_for_create.value,
       name: name.value,
       jsonContent: jsonContent.value,
-      price: price.value * 100
+      price: price.value * 100,
+      cover: cover_id.value,
     },
   };
 });

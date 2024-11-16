@@ -197,15 +197,15 @@ import { useDropZone } from "@vueuse/core";
 import { useI18n } from 'vue-i18n';
 import BubbleMenuContent from './BubbleMenu.vue'
 
-import javascript from 'highlight.js/lib/languages/javascript.js'
-import css from 'highlight.js/lib/languages/css.js'
-import htmlLang from 'highlight.js/lib/languages/xml.js'
-import python from 'highlight.js/lib/languages/python.js'
-import java from 'highlight.js/lib/languages/java.js'
-import jsonLang from 'highlight.js/lib/languages/json.js'
-import typescript from 'highlight.js/lib/languages/typescript.js'
-import bash from 'highlight.js/lib/languages/bash.js'
-import sql from 'highlight.js/lib/languages/sql.js'
+import javascript from 'highlight.js/lib/languages/javascript'
+import css from 'highlight.js/lib/languages/css'
+import htmlLang from 'highlight.js/lib/languages/xml'
+import python from 'highlight.js/lib/languages/python'
+import java from 'highlight.js/lib/languages/java'
+import jsonLang from 'highlight.js/lib/languages/json'
+import typescript from 'highlight.js/lib/languages/typescript'
+import bash from 'highlight.js/lib/languages/bash'
+import sql from 'highlight.js/lib/languages/sql'
 
 import 'highlight.js/styles/atom-one-dark.css'
 

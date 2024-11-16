@@ -3,7 +3,7 @@
         <q-card bordered :class="$q.screen.gt.sm ? 'col-6' : 'col-12'">
             <q-card-section>
                 <div class="text-h6">{{ $t('total_revenue') }}</div>
-                <div class="font-bold-600" style="font-size: 5rem;">2999.32</div>
+                <div class="font-bold-600" style="font-size: 5rem;">{{ teamStore.init?.income / 100 }}</div>
             </q-card-section>
             <q-card-section>
                 {{ $t('total_revenue_description') }}
@@ -16,7 +16,7 @@
                     <q-space />
                     <q-btn color="primary" :label="$t('withdraw')" padding="xs lg" @click="onClick" />
                 </div>
-                <div class="font-bold-600" style="font-size: 5rem;">1500</div>
+                <div class="font-bold-600" style="font-size: 5rem;">{{ teamStore.init?.withdraw / 100 }}</div>
             </q-card-section>
             <q-card-section>
                 {{ $t('account_balance_description') }}
@@ -27,4 +27,5 @@
 
 <script setup>
 import { ref } from 'vue';
+import { teamStore } from 'src/hooks/global/useStore';
 </script>

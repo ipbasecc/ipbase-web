@@ -1,17 +1,14 @@
 <template>
-    <NavigatorContainer>
-        <div class="absolute-full q-pa-sm">
-            <SaleCards />
-            <SaleTable v-if="sales" :sales :pageInfo />
-        </div>
-    </NavigatorContainer>
+    <div class="absolute-full q-pa-sm">
+        <SaleCards />
+        <SaleTable v-if="filteredSales" :sales="filteredSales" :pageInfo :partner_info @filterBy="filterBy" />
+    </div>
 </template>
 
 <script setup>
 import {ref, onMounted, computed} from 'vue'
 import {findSales} from 'src/api/strapi/project.js'
 
-import NavigatorContainer from '../team/NavigatorContainer.vue'
 import SaleTable from 'src/components/business/SaleTable.vue'
 import SaleCards from 'src/components/business/SaleCards.vue'
 
@@ -20,10 +17,12 @@ const limit = ref(20);
 const offset = computed(() => (page.value - 1) * limit.value);
 
 const sales = ref([]);
+const partner_info = ref({});
 const getSales = async() => {
     const { data } = await findSales(offset.value,limit.value);
     if(data) {
-        sales.value = data
+        sales.value = data.orders
+        partner_info.value = data.partner_info
     }
 }
 const pageInfo = computed(() => {
@@ -34,7 +33,20 @@ const pageInfo = computed(() => {
     }
 })
 
+const filteredSales = ref();
+const filterSales = (filter) => {
+    if(filter === 'can_withdraw') {
+        filteredSales.value = sales.value.filter(sale => !sale.order_transfer)
+    } else {
+        filteredSales.value = sales.value
+    }
+}
+const filterBy = (filter) => {
+    filterSales(filter)
+}
+
 onMounted(async() => {
     await getSales();
+    filterSales('all')
 })
 </script>

@@ -776,7 +776,7 @@ const dragHandler = (val) => {
 };
 
 const pushCard = (_card) => {
-  if (teamStore.kanban?.type === "kanban") {
+  if (teamStore.kanban?.type === "kanban" || teamStore.kanban?.type === "classroom") {
     columnRef.value.cards = [_card, ...columnRef.value?.cards];
   } else {
     columnRef.value.cards = [...columnRef.value?.cards, _card];

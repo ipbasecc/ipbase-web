@@ -20,13 +20,15 @@
     <q-card-section class="q-pa-xs border-bottom">
         <q-input v-model="price" square filled type="number" :aria-placeholder="price" />
     </q-card-section>
-    <q-card-section class="q-pa-sm">
-        <q-btn color="primary" dense class="full-width" label="OK" @click="update()" />
+    <q-card-section class="q-pa-sm row no-wrap items-center">
+        <q-btn dense flat padding="xs md" :label="$t('cancel')" v-close-popup />
+        <q-space />
+        <q-btn color="primary" dense padding="xs lg" label="OK" @click="update()" />
     </q-card-section>
 
     <q-inner-loading :showing="loading">
         <q-spinner-orbit size="3rem" color="primary" />
-      </q-inner-loading>
+    </q-inner-loading>
 </q-card>
 </template>
 

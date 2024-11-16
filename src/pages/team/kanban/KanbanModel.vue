@@ -436,6 +436,7 @@ watch(val, async(newVal, oldVal) => {
     }
     
     if(val.value.event === 'card:created'){
+      // classroom 新建时不会发布，因此后端在新建classroom卡片后不会发ws，这里直接处理即可，不需要处理classroom的情况
       const column = kanban.value?.columns?.find(i => i.id === column_id);
       if(column) {
         if(column.cards?.length > 0){
