@@ -284,3 +284,26 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
+<style lang="sass">
+@keyframes autofill
+  100%
+    background-color: transparent
+
+.q-input,
+.q-select
+  .q-field__native
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus,
+    &:-webkit-autofill:active
+      -webkit-background-clip: text
+      animation: autofill 0s forwards
+
+  &.q-field--dark .q-field__native
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus,
+    &:-webkit-autofill:active
+      -webkit-text-fill-color: transparent
+
+</style>
