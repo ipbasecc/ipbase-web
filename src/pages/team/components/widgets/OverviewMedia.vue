@@ -95,6 +95,7 @@
               :label="upload_label"
               :max-files="1"
               :readonly="!auth"
+              :accept="uiStore.allowedFormatsVideo"
               class="full-width"
               @uploaded="fileUploaded"
             ></StrapiUpload>

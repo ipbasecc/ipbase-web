@@ -95,7 +95,7 @@ async function uploadFile(file, username, id) {
 
 // 定义一个异步的confirmUpload函数，接收一个文件数组和一个me对象作为参数，返回一个promise
 export async function confirmUpload(files, me) {
-  if (teamStore.storageCapacityExceeded) {
+  if (teamStore.$storageCapacityExceeded) {
     uiStore.dialogNotify = 'storageCapacityExceeded'
     return
   }
@@ -105,7 +105,7 @@ export async function confirmUpload(files, me) {
     totalFileSize += file.size;
   });
   
-  const limit = teamStore.singal_file_limit
+  const limit = teamStore.$singal_file_limit
   if (totalFileSize > limit) {
     Notify.create({
       message: `文件总大小超过限制(${(totalFileSize / (1024 * 1024 * 1024)).toFixed(2)} G > ${(limit / (1024 * 1024 * 1024)).toFixed(2)} G)`,

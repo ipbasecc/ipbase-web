@@ -2,7 +2,7 @@
     <q-list class="q-pa-xs">
         <q-item v-for="i in menu" :key="i.name"
             clickable v-ripple class="radius-xs"
-            :class="actived_item_name === i.name ? 'bg-primary' : ''"
+            :class="[actived_item_name, route.path].includes(i.route) ? 'bg-primary' : ''"
             @click="i.handler(i)"
         >
             <q-item-section side>
@@ -15,24 +15,27 @@
 
 <script setup>
 import {ref} from 'vue'
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 const router = useRouter();
+const route = useRoute();
 const actived_item_name = ref();
 const menu = [
     {
         name: 'business_overview',
         icon: 'mdi-chart-areaspline',
+        route: '/business/main',
         handler: (i) => {
             actived_item_name.value = i.name
-            router.push('/business/main')
+            router.push(i.route)
         }
     },
     {
         name: 'business_account_info',
         icon: 'mdi-account-box',
+        route: '/business/info',
         handler: (i) => {
             actived_item_name.value = i.name
-            router.push('/business/info')
+            router.push(i.route)
         }
     }
 ]

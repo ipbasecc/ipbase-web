@@ -148,6 +148,20 @@ const routes = [
               }
             ]
           },
+          {
+            path: "/teams/:team_id/orders",
+            component: () => import("src/pages/team/order/OrderPage.vue"),
+            name: "team_order_page",
+            props: true,
+            children: [
+              {
+                path: "/teams/:team_id/orders/:order_id",
+                component: () => import("src/pages/team/order/OrderCard.vue"),
+                name: "team_order_card_page",
+                props: true,
+              }
+            ]
+          },
         ],
         meta: {
           requireAuth: true,

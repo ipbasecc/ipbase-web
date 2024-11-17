@@ -540,6 +540,7 @@
       :maximized="!$q.screen.gt.sm"
       persistent
       no-shake
+      allow-focus-outside
       :transition-show="teamStore?.card ? '' : 'slide-down'"
       transition-hide="slide-up"
       transition-duration="300"

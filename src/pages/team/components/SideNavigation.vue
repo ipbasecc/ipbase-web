@@ -67,6 +67,25 @@
               style="width: 3px"
             ></div>
           </q-item>
+          <q-item v-if="enable_orders" @click="enterSubApp('orders')"
+            :class="`${
+              teamStore?.mm_channel?.id === 'orders'
+                ? 'border active-listitem'
+                : 'border-placeholder op-7'
+            }`"
+            class="overflow-hidden radius-xs q-pa-xs hovered-item full-width"
+            clickable v-ripple
+          >
+            <q-item-section side class="q-pr-sm">
+              <q-icon name="mdi-newspaper" :color="$q.screen.gt.xs ? 'grey-1' : `grey-1${$q.dark.mode ? '' : '0'}`" />
+            </q-item-section>
+            <q-item-section class="overflow-hidden"> {{ $t('navigation_Orders') }} </q-item-section>
+            <div
+              v-if="teamStore?.mm_channel?.id === 'orders'"
+              class="bg-primary absolute-left"
+              style="width: 3px"
+            ></div>
+          </q-item>
         </q-list>
       </template>
       <template v-if="enable_channel">
@@ -204,7 +223,7 @@
         <q-item-label header class="q-pa-sm non-selectable op-6 q-mt-md"
           :class="$q.screen.gt.xs ? 'text-grey-1' : `text-grey-1${$q.dark.mode ? '' : '0'}`"
         >{{ $t('collaboration_project') }}</q-item-label>
-        <q-list :dense="$q.screen.gt.sm" class="q-px-sm">
+        <q-list :dense="$q.screen.gt.sm" class="q-px-sm column gap-xs">
           <template v-if="team.projects?.length > 0">
             <template v-for="project in team.projects" :key="project.id">
               <q-item
@@ -534,6 +553,8 @@ const emptyProject = () => {
 const enterSubApp = (val) => {
   if(val === 'news'){
     router.push(`/teams/${teamStore.team.id}/news`);
+  } else if(val === 'orders'){
+    router.push(`/teams/${teamStore.team.id}/orders`);
   } else {
     router.push(`/${val}`);
   }
@@ -551,4 +572,7 @@ const createProject = () => {
 const projectCreated = (val) => {
   openCreateProject.value = false;
 };
+
+// 后续完善功能后开启
+const enable_orders = ref(false);
 </script>

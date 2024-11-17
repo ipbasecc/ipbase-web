@@ -32,6 +32,7 @@ export default {
   navigation_threads: "讨论主题",
   navigation_Quadrant: "事务沙盘",
   navigation_News: "团队资讯",
+  navigation_Orders: "我的购买",
   channel: "频道",
   project: "项目",
   community_channel: "社群频道",

@@ -83,23 +83,23 @@ export default defineStore("team", {
     teamMembersExceeded: false,
   }),
   getters: {
-    level_detail: (state) => {
+    $level_detail: (state) => {
       return state.team?.level_detail; // 计算属性
     },
-    storageCapacityExceeded: (state) => {
+    $storageCapacityExceeded: (state) => {
       const limit = state.team?.level_detail.team_storage_max_limit * 1024 * 1024 // 后端返回的是 G 为单位，这里转为kb
       return limit < state.team?.statistics?.storage_size; // 计算属性
     },
-    cardNumberExceeded: (state) => {
+    $cardNumberExceeded: (state) => {
       return state.team?.level_detail.card_number_limit < state.team?.statistics?.cards_number; // 计算属性
     },
-    teamMembersExceeded: (state) => {
+    $teamMembersExceeded: (state) => {
       if(state.team?.level_detail.team_members_limit === -1){
         return false
       }
       return state.team?.level_detail?.team_members_limit < state.team?.statistics?.member_number;
     },
-    singal_file_limit: (state) => {
+    $singal_file_limit: (state) => {
       const limit = state.team?.level_detail?.singal_file_limit;
       if (limit === -1) return null;
       if (limit > 0) return limit * 1024 * 1024 * 1024;

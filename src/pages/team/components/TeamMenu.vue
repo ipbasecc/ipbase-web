@@ -110,7 +110,7 @@
       </q-item>
     </q-list>
   </q-menu>
-  <q-dialog v-model="aboutTeam" persistent :maximized="!$q.screen.gt.xs">
+  <q-dialog v-model="aboutTeam" persistent allow-focus-outside :maximized="!$q.screen.gt.xs">
     <AboutTeam />
   </q-dialog>
   <q-dialog v-model="invite" persistent>

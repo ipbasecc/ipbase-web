@@ -312,6 +312,19 @@ export async function createTransferOrder(params) {
   }
 }
 
+
+export async function findOrders() {
+  try {
+    const res = await api.get(`/orders`);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+
+
 /**
  * 测试方法，不要使用
  * @returns 

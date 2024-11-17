@@ -181,11 +181,11 @@
                   <div class="text-h6">{{ teamStore.card?.message }}</div>
                 </q-card-section>
               </q-card>
-              <OrderCard v-else :card>
+              <OrderCard v-else :card="teamStore.card">
                 <template #buyBtn>
                   <PayButton
                     class="full-width" btnColor="negative"
-                    subject="card" :commodity="card" @buyData="buyData"
+                    subject="card" :commodity="teamStore.card" @buyData="buyData"
                   />
                 </template>
               </OrderCard>
@@ -393,9 +393,8 @@ const getCard = async (card_id) => {
     card_members.value = res.data.card_members;
     teamStore.card = res.data;
     if(card.value?.activeVersion){
-      teamStore.card.activeVersion = teamStore.card.overviews.find(i => i.id === card.value.activeVersion.id)
+      teamStore.card.activeVersion = teamStore.card?.overviews?.find(i => i.id === card.value.activeVersion?.id)
     }
-    teamStore.cards = [res.data];
     fetched.value = true
   }
 };
