@@ -6,7 +6,7 @@
     @mousemove="handleMouseMove"
     @mouseup="handleMouseUp"
   >
-    <NavigatorHeader v-if="!$q.screen.gt.xs && !uiStore.hide_top" />
+    <NavigatorHeader v-if="$q.screen.gt.xs || !uiStore.hide_top" />
     <template v-if="teamStore.status === 'deleted'">
       <q-page-container>
         <q-page>
