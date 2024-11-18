@@ -53,7 +53,6 @@
               <q-card-section class="q-mt-lg">
                 <q-input
                   v-model="username"
-                  :standout="$q.dark.mode"
                   type="text"
                   label="用户名"
                   hide-bottom-space
@@ -72,7 +71,6 @@
               <q-card-section class="q-pt-none">
                 <q-input
                   v-model="email"
-                  :standout="$q.dark.mode"
                   type="text"
                   label="邮箱"
                   hide-bottom-space
@@ -92,7 +90,6 @@
               <q-card-section class="q-pt-none">
                 <q-input
                   v-model="password"
-                  :standout="$q.dark.mode"
                   type="password"
                   label="密码"
                   hide-bottom-space
@@ -108,7 +105,6 @@
               <q-card-section class="q-pt-none">
                 <q-input
                   v-model="confirmPassword"
-                  :standout="$q.dark.mode"
                   type="password"
                   label="确认密码"
                   hide-bottom-space
@@ -309,12 +305,3 @@ const setCompleted = () => {
   uiStore.setServer = false
 }
 </script>
-<style>
-input:-webkit-autofill.q-field__native {
-  -webkit-box-shadow: 0 0 0 1000px rgba(19, 19, 19, 0.087) inset !important;
-}
-input:-webkit-autofill.q-field__native,
-input:-webkit-autofill.q-field__native:focus {
-  transition: background-color 0s 600000s, color 0s 600000s !important;
-}
-</style>

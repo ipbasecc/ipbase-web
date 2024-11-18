@@ -19,7 +19,6 @@
                 <form class="column gap-md no-wrap">
                   <q-input
                     v-model="identifier"
-                    :standout="$q.dark.mode"
                     hide-bottom-space
                     autocomplete="off"
                     type="text"
@@ -38,7 +37,6 @@
                   </q-input>
                   <q-input
                     v-model="password"
-                    :standout="$q.dark.mode"
                     hide-bottom-space
                     type="password"
                     autocomplete="off"
@@ -357,9 +355,4 @@ const setCompleted = () => {
 };
 
 </script>
-<style>
-input:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0 1000px white inset !important;
-  background-color: rgba(16, 16, 18, 0.194) !important;
-}
-</style>
+
