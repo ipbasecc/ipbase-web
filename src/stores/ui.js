@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {Platform} from 'quasar'
+import {Platform,Screen} from 'quasar'
 
 export default defineStore("ui", {
   state: () => ({
@@ -31,7 +31,7 @@ export default defineStore("ui", {
       {
         val: "chats",
         label: 'chats',
-        icon: "mark_chat_read",
+        icon: "contacts",
         description: 'app_chat_purpose',
         to: "chats",
         enable: true,
@@ -50,7 +50,7 @@ export default defineStore("ui", {
         icon: "mdi-creation",
         description: 'app_brand_purpose',
         to: "brand",
-        enable: !Platform.is.mobile
+        enable: false
       },
     ],
     colorMarks: [
@@ -107,6 +107,7 @@ export default defineStore("ui", {
     appFooter: false,
     project_chat_list: true, // just for mobile
     hide_footer: false,
+    hide_top: false,
     edittingTodo: void 0,
     showDocumentsList: true,
     showMainContentList: true,

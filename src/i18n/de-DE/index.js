@@ -391,7 +391,8 @@ export default {
 
   remove_this_group: 'Diese Gruppe entfernen',
   new_kanban: 'Neues Kanban',
-  new_reel: 'Neue Klassenraum',  
+  new_reel: 'Neue Klassenraum', 
+  new_classroom: 'Neuer Kurs', 
   kanban_name: 'Kanban-Name',
   new_group: 'Neue Gruppe',
   group_name: 'Gruppenname',
@@ -657,7 +658,7 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   onboarding_step2_title: 'Kanäle',
   onboarding_step2_caption: 'Kanäle verstehen oder neue hinzufügen',
   onboarding_step3_title: 'Alle Funktionen in 30 Sekunden entdecken',
-  onboarding_step4_caption: 'Schnelle Einführung in die Plattform-Funktionen',
+  onboarding_step3_caption: 'Schnelle Einführung in die Plattform-Funktionen',
   onboarding_completed_tip: 'Glückwunsch, die Initialisierung ist abgeschlossen!',
   onboarding_completed_btn_label: 'Starte jetzt deine Team-Reise',
 
@@ -699,12 +700,17 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
 
   version_updated_notify: 'Die Anwendung wurde aktualisiert. Bitte verwenden Sie "Shift + F5" oder "Strg + Umschalt + R" zum Neuladen der Anwendung.',
   delete_card_warning: 'Löschen Sie den aktuellen Inhalt.',
+  send_friend_dlog_title: 'Freund hinzufügen',
+  
+  version_updated_notify: 'Die Anwendung wurde aktualisiert. Bitte verwenden Sie "Shift + F5" oder "Strg + Umschalt + R" zum Neuladen der Anwendung.',
+  delete_card_warning: 'Löschen Sie den aktuellen Inhalt.',
 
   create_person_todogroup: 'Erstellen Sie die persönliche Angelegenheiten-Gruppierung',
   create_todogroup: 'Erstellen einer Aufgabengruppe',
   budget: 'Haushalt',
   set_team_notification_label: 'Team-Benachrichtigung einstellen',
   confirm: 'Bestätigen',
+  reset: 'Zurücksetzen',
   set_team_notification: 'Team-Benachrichtigung',
   add_team_news: 'Team-Nachrichten hinzufügen',
   team_news_title: 'Titel der Nachricht',
@@ -731,8 +737,6 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   ledger_purpose: 'Verwendungszweck des Geldes',
   ledger_update_amount: 'Betrag aktualisieren',
   ledger_delete: 'Transaktion löschen',
-  ledger_update_amount: 'Betrag anpassen',
-  ledger_delete: 'Transaktion löschen',
   ledger_affect_budget: 'Budget anpassen',
 
   document_locked_tip: 'Ein anderer Benutzer bearbeitet das Dokument.',
@@ -746,9 +750,12 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   open_related_course: 'Verwandten Kurs öffnen',
   notebooks: 'Notizen',
   app_notebooks_purpose: 'Verlinkte Notizen',
+
   start_meet: 'Meeting starten',
   join_meet: 'Meeting beitreten',
   meet_no_auth: 'Sie haben keine Berechtigung, an diesem Meeting teilzunehmen',
+
+  
   tiptap_menu_Text: 'Text',
   tiptap_menu_Text_description: 'Beginnen Sie einfach mit der Eingabe von reinem Text.',
   tiptap_menu_TodoList: 'To-do-Liste',
@@ -780,6 +787,7 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   unpublished: 'Unveröffentlicht',
   publish: 'Veröffentlichen',
   pulled: 'Produkt aus dem Verkauf nehmen',
+  unpulled: 'in den Verkauf',
   is_pulled: 'Ausverkauft',
   price: 'Preis',
   price_free: 'kostenlos',
@@ -795,10 +803,26 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   mode_section: 'Mode',
   funcition_section: 'Functions',
 
-
   storage_capactiy_exceeded: 'Speicherkapazität des Teamdateisystems überschritten, bitte kontaktieren Sie den Administrator, um das Abonnement zu aktualisieren',
   storageCapacityExceeded_notify_title: 'Abonnement überschritten',
   storageCapacityExceeded_notify_message: 'Teamdateispeicher überschritten, bitte kontaktieren Sie den Administrator, um das Abonnement zu aktualisieren',
   cardNumberExceeded_notify_title: 'Abonnement überschritten',
   cardNumberExceeded_notify_message: 'Teamkartenanzahl überschritten, bitte kontaktieren Sie den Administrator, um das Abonnement zu aktualisieren',
+
+  my_business: 'Geschäftszentrum',
+  business_overview: 'Geschäftsübersicht',
+  business_account_info: 'Kontoinformationen',
+  total_revenue: 'Gesamteinnahmen',
+  account_balance: 'Kontostand',
+  total_revenue_description: 'Ihre Verkaufseinnahmen auf der Plattform - Plattformdienstleistungsgebühren - Plattformprovision',
+  account_balance_description: 'Gesamteinnahmen - bereits ausgezahlte Beträge',
+  withdraw: 'Auszahlen',
+
+  known_more: 'Mehr erfahren',
+  init_known_more: 'Bitte klicken Sie nacheinander auf den Inhalt unten, um die Initialisierung abzuschließen',
+
+  next_step: 'Weiter',
+  previous_step: 'Zurück',
+  onboarding_skip_btn_label: 'Überspringen und abschließen',
+  read_functions_tip: 'Klicken Sie und lesen Sie die Funktionsbeschreibung oben, um die Funktionen der Plattform schnell zu verstehen',
 };

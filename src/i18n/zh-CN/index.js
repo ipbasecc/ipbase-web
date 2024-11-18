@@ -658,7 +658,7 @@ export default {
   onboarding_step2_title: '频道',
   onboarding_step2_caption: '了解频道，或新增频道',
   onboarding_step3_title: '30秒通关',
-  onboarding_step4_caption: '快速了解平台功能',
+  onboarding_step3_caption: '快速了解平台功能',
   onboarding_completed_tip: '恭喜，初始化完成',
   onboarding_completed_btn_label: '开启团队之旅',
 
@@ -818,4 +818,11 @@ export default {
   account_balance_description: '总收入 - 已提现金额',
   withdraw: '提现',
   
+  known_more: '了解更多',
+  init_known_more: '请逐个点击下方内容查看后完成初始化',
+
+  next_step: '下一步',
+  previous_step: '上一步',
+  onboarding_skip_btn_label: '跳过并完成',
+  read_functions_tip: '点击并阅读上方功能介绍，以便快速了解平台功能',
 };

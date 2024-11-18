@@ -658,7 +658,7 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   onboarding_step2_title: 'Channels',
   onboarding_step2_caption: 'Understand channels or add new ones',
   onboarding_step3_title: 'Discover All Features in 30 Seconds',
-  onboarding_step4_caption: 'Quickly learn about platform features',
+  onboarding_step3_caption: 'Quickly learn about platform features',
   onboarding_completed_tip: 'Congratulations, initialization is complete!',
   onboarding_completed_btn_label: 'Start your team journey now',
 
@@ -700,6 +700,10 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
 
   version_updated_notify: 'The application has been updated. Please use "Shift + F5" or "Ctrl + Shift + R" to reload the application.',
   delete_card_warning: 'Delete current content.',
+  send_friend_dlog_title: 'Add Friend',
+
+  version_updated_notify: 'The application has been updated. Please use "Shift + F5" or "Ctrl + Shift + R" to reload the application.',
+  delete_card_warning: 'Delete current content',
 
   create_person_todogroup: 'Create Personal Affairs Grouping',
   create_todogroup: 'Create Todo Grouping',
@@ -752,7 +756,6 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   meet_no_auth: 'You do not have permission to join this meeting',
 
 
-
   tiptap_menu_Text: 'Text',
   tiptap_menu_Text_description: 'Just start typing with plain text.',
   tiptap_menu_TodoList: 'To-do List',
@@ -784,6 +787,7 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   unpublished: 'Unpublished',
   publish: 'Publish',
   pulled: 'Take down',
+  unpulled: 'Unpulled',
   is_pulled: 'pulled',
   price: 'price',
   price_free: 'free',
@@ -804,4 +808,21 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   storageCapacityExceeded_notify_message: 'Team file storage capacity exceeded, please contact the administrator to upgrade the subscription',
   cardNumberExceeded_notify_title: 'Subscription Exceeded',
   cardNumberExceeded_notify_message: 'Team card number capacity exceeded, please contact the administrator to upgrade the subscription',
+
+  my_business: 'Business Center',
+  business_overview: 'Business Overview',
+  business_account_info: 'Account Information',
+  total_revenue: 'Total Revenue',
+  account_balance: 'Account Balance',
+  total_revenue_description: 'Your sales amount on the platform - Payment platform service fee - Platform commission',
+  account_balance_description: 'Total revenue - Withdrawn amount',
+  withdraw: 'Withdraw',
+  
+  known_more: 'Learn More',
+  init_known_more: 'Please click on the content below one by one to complete the initialization',
+
+  next_step: 'Next Step',
+  previous_step: 'Previous Step',
+  onboarding_skip_btn_label: 'Skip and Complete',
+  read_functions_tip: 'Click and read the function introduction above to quickly understand the platform features',
 }

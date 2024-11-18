@@ -18,7 +18,7 @@
       @tiptapBlur="tiptapBlur"
     >
       <template v-slot:left-btn>
-        <q-btn flat dense size=sm icon="mdi-chevron-left" @click="uiStore.active_note_id = void 0" />
+        <q-btn flat dense size=sm icon="mdi-chevron-left" @click="backList()" />
       </template>
         <template v-slot:more_btn>
           <template v-if="teamStore.note?.by_course && uiStore.app === 'notebooks'">
@@ -37,7 +37,7 @@
 </template>
 <script setup>
 import { ref, computed, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { teamStore, uiStore } from 'src/hooks/global/useStore';
 import { getDocument, updateDocument } from 'src/api/strapi/project.js'
 import TipTap from 'src/components/Utilits/tiptap/TipTap.vue';
@@ -45,6 +45,7 @@ import ClassPage from '../../card/ClassPage.vue'
 
 const { active_note_id } = defineProps(['active_note_id'])
 const route = useRoute();
+const router = useRouter();
 const note_id = computed(() => route.params?.note_id || active_note_id);
 const isCreator = computed(() => {
     const creator_id = teamStore.note?.by_user?.id || teamStore.note?.creator?.id
@@ -61,6 +62,14 @@ watch(note_id, async() => {
 },{immediate: true})
 
 const showCourseDialog = ref(false);
+const backList = async () => {
+    if(uiStore.app === 'notebooks'){
+      teamStore.note = null;
+      await router.push(`/notebooks/${teamStore.notebook?.id}`)
+    } else {
+        uiStore.active_note_id = void 0
+    }
+}
 
 const saving = ref(false)
 const contentChanged = ref(false)

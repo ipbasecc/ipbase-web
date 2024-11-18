@@ -9,16 +9,15 @@
     </q-layout>
   </template>
 <script setup>
-import { computed, ref, watchEffect } from 'vue';
+import { computed, watchEffect } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getNotebook } from "src/api/strapi/notebook";
-import { uiStore, teamStore } from 'src/hooks/global/useStore';
+import { teamStore } from 'src/hooks/global/useStore';
 
 const route = useRoute();
 const router = useRouter();
 const notebook_id = computed(() => route.params.notebook_id)
 const note_id = computed(() => route.params.note_id)
-
 
 watchEffect(async () => {
     if(notebook_id.value && !teamStore.notebook) {

@@ -2,8 +2,8 @@
     <div class="q-space gap-md" :class="$q.screen.lt.sm ? 'column gap-md' : 'row'">
         <div class="column flex-center q-pa-lg" :style="$q.screen.lt.sm ? 'order: 2' : ''">
           <section class="column q-mb-md">
-            <span class="font-large text-h2" style="line-height: 1.3;">了解更多</span>
-            <span class="font-medium">请逐个点击下方内容查看后完成初始化</span>
+            <span class="font-large text-h2" style="line-height: 1.3;">{{ $t('known_more') }}</span>
+            <span class="font-medium text-orange">{{ $t('init_known_more') }}</span>
           </section>
             <q-list class="q-pa-sm">
                 <template v-for="i in items" :key="i.val">

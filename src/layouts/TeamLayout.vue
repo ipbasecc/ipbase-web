@@ -192,12 +192,14 @@ const needLogin = computed(() =>
   || uiStore.axiosError?.response?.data?.error?.name === 'UnauthorizedError'
 );
 
-const need_show_footer = ["teams", "AffairsPage", "team_threads_homepage", "ChatsPage"];
+const need_show_footer = ["teams", "AffairsPage", "team_threads_homepage", "ChatsPage", "NotebookPage", "NotebookDetial"];
+const need_show_top = ["teams"];
 const route = useRoute();
 const router = useRouter();
 const routeName = computed(() => route.name);
 watchEffect(() => {
   uiStore.hide_footer = !need_show_footer.includes(routeName.value);
+  uiStore.hide_top = !need_show_top.includes(routeName.value);
 });
 const toLogin = async () => {
   uiStore.axiosStautsCode = void 0;

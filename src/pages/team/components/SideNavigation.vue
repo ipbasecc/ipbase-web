@@ -62,7 +62,7 @@
             </q-item-section>
             <q-item-section class="overflow-hidden"> {{ $t('navigation_News') }} </q-item-section>
             <div
-              v-if="teamStore?.mm_channel?.id === 'teams'"
+              v-if="teamStore?.mm_channel?.id === 'news'"
               class="bg-primary absolute-left"
               style="width: 3px"
             ></div>
@@ -267,7 +267,7 @@
                   class="bg-primary absolute-left"
                   style="width: 3px"
                 ></div>
-                <q-tooltip class="transparent radius-sm">
+                <q-tooltip v-if="project.description" class="transparent radius-sm">
                   <q-card bordered
                   :style="`width: ${uiStore.navDrawerWidth - 16}px;`">
                     <q-card-section :class="$q.dark.mode ? 'text-white' : 'text-black'" class="font-small q-pa-sm">

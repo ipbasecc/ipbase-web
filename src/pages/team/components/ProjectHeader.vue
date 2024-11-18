@@ -11,7 +11,7 @@
         <q-btn v-if="teamStore.project?.meeting" flat dense round color="red" icon="radio_button_checked" @click="toggleMeet()" />
         <ProjectNavigation />
         <q-space />
-        <StartMeet :project="teamStore.project" class="q-pr-sm" />
+        <StartMeet v-if="$q.screen.gt.xs" :project="teamStore.project" class="q-pr-sm" />
         <MembersIndicator
           v-if="teamStore?.project?.id && membersForAvatar && $q.screen.gt.xs"
           :members="membersForAvatar"

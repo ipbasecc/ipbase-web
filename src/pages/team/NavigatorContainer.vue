@@ -6,7 +6,7 @@
     @mousemove="handleMouseMove"
     @mouseup="handleMouseUp"
   >
-    <NavigatorHeader />
+    <NavigatorHeader v-if="!$q.screen.gt.xs && !uiStore.hide_top" />
     <template v-if="teamStore.status === 'deleted'">
       <q-page-container>
         <q-page>
@@ -146,7 +146,7 @@
 </template>
 
 <script setup>
-import {computed, reactive, ref, watch, watchEffect} from "vue";
+import {computed, reactive, ref, watch} from "vue";
 import {useRoute} from "vue-router";
 
 import CreateTeam from "src/pages/team/components/CreateTeam.vue";
