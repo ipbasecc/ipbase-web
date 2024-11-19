@@ -81,11 +81,6 @@ export default configure((ctx) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
     build: {
-      target: {
-        browser: ["es2019", "edge88", "firefox78", "chrome87", "safari13.1"],
-        node: "node20",
-      },
-
       vueRouterMode: "history", // available values: 'hash', 'history'
       // vueRouterBase,
       // vueDevtools,
@@ -253,7 +248,7 @@ export default configure((ctx) => {
             cacheName: "app-shell",
             // 设置适当的 expiration 以清理旧缓存
             expiration: {
-              maxEntries: 10, // 最大缓存条目数
+              maxEntries: 10, // 最缓存条目数
               maxAgeSeconds: 7 * 24 * 60 * 60, // 7 天
             },
           },
@@ -331,11 +326,34 @@ export default configure((ctx) => {
           requestedExecutionLevel: "requireAdministrator"
         },
         linux: {
-          icon: "build/icons",
-          target: ["rpm", "deb", "appImage", "snap"],
-          // target: ["rpm"],
-          category: "Network;WebBrowser"
+          target: [
+            "AppImage",
+            "rpm",
+            "deb",
+            {
+              target: "flatpak",
+              arch: ["x64"]
+            }
+          ],
+          category: "Development",
+          maintainer: "auxcc <jerr@foxmail.com>",
+          vendor: "IPBase",
+          synopsis: "IPBase Desktop Application"
         },
+        flatpak: {
+          base: "org.electronjs.Electron2.BaseApp",
+          baseVersion: "22.08",
+          runtime: "org.freedesktop.Platform",
+          runtimeVersion: "22.08",
+          sdk: "org.freedesktop.Sdk",
+          finishArgs: [
+            "--share=network",
+            "--share=ipc",
+            "--socket=x11",
+            "--socket=wayland",
+            "--device=dri"
+          ]
+        }
       },
 
       // Specify additional parameters when yarn/npm installing
