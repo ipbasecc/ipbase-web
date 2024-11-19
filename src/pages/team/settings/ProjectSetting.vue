@@ -44,12 +44,32 @@
       <div class="column q-space q-pa-sm scroll-y">
         <OverView v-if="settingforRef === 'basic'"
           wasAttached_to="project"
-          :members="teamStore.project?.project_members" :roles="teamStore.project?.member_roles" />
-        <EnableSetting v-if="settingforRef === 'enable'" />
-        <PreferencesSetting v-if="settingforRef === 'preferences'" />
-        <roleSettings v-if="settingforRef === 'role'" :members :roles />
-        <MemberManager v-if="settingforRef === 'members'" :byInfo />
-        <MoreOptions v-if="settingforRef === 'more'" :members :roles />
+          :members="teamStore.project?.project_members" :roles="teamStore.project?.member_roles"
+        />
+        <template v-if="settingforRef === 'enable'">
+          <EnableSetting v-if="useAuths('preferences', ['project'])" />
+          <span v-else class="fit flex flex-center">{{ $t('no_premission_to_edit') }}</span>
+        </template>
+
+        <template v-if="settingforRef === 'preferences'">
+          <PreferencesSetting v-if="useAuths('preferences', ['project'])" />
+          <span v-else class="fit flex flex-center">{{ $t('no_premission_to_edit') }}</span>
+        </template>
+
+        <template v-if="settingforRef === 'role'">
+          <roleSettings v-if="useAuths('manageRole', ['project'])" :members :roles />
+          <span v-else class="fit flex flex-center">{{ $t('no_premission_to_edit') }}</span>
+        </template>
+
+        <template v-if="settingforRef === 'members'">
+          <MemberManager v-if="useAuths('manageMember', ['project'])" :byInfo />
+          <span v-else class="fit flex flex-center">{{ $t('no_premission_to_edit') }}</span>
+        </template>
+
+        <template v-if="settingforRef === 'more'">
+          <MoreOptions v-if="useAuths('delete', ['project'])" :members :roles />
+          <span v-else class="fit flex flex-center">{{ $t('no_premission_to_edit') }}</span>
+        </template>
       </div>
     </div>
     <div
