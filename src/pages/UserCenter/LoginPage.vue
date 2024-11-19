@@ -9,350 +9,267 @@
       :style="$q.screen.gt.xs ? 'width: 48rem' : ''"
     >
       <q-card-section :horizontal="$q.screen.gt.sm">
-        <q-card-section :class="$q.screen.gt.sm ?  showExtanInfo ? 'col-6' : 'col-12' : ''" :style="$q.screen.gt.sm ? 'order: 99;' : ''">
+        <q-card-section class="q-space"
+          :style="$q.screen.gt.sm ? 'order: 99;' : ''"
+        >
           <template v-if="!hasError">
-            <template v-if="!store.logged">
-              <q-card-section class="q-mt-lg">
-                <div class="text-h3 text-center font-bold-600">登陆您的账户</div>
-              </q-card-section>
-              <q-card-section class="q-pa-md q-mt-lg">
-                <form class="column gap-md no-wrap">
-                  <q-input
-                    v-model="identifier"
-                    hide-bottom-space
-                    autocomplete="off"
-                    type="text"
-                    :rules="[
-                      (val) => !!val || 'Email is missing',
-                      (val) =>
-                        /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(
-                          val
-                        ) || '邮箱输入有误，请检查输入！',
-                    ]"
-                    class="border radius-xs overflow-hidden"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="mdi-email-outline" size="sm" class="q-px-sm" />
-                    </template>
-                  </q-input>
-                  <q-input
-                    v-model="password"
-                    hide-bottom-space
-                    type="password"
-                    autocomplete="off"
-                    :rules="[(val) => !!val || '请输入账号密码!']"
-                    class="border radius-xs overflow-hidden"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="mdi-lock-outline" size="sm" class="q-px-sm" />
-                    </template>
-                  </q-input>
-                </form>
-              </q-card-section>
-              <q-card-section class="column no-wrap gap-sm items-end">
-                <q-btn
-                  color="primary"
-                  icon="login"
-                  label="登陆"
-                  unelevated
-                  class="full-width"
-                  @click="submitLogin()"
-                />
-                <q-separator spaced class="op-5 full-width" />
-                <q-btn
-                  color="info"
-                  icon="mdi-server-network"
-                  label="设置服务器地址"
-                  unelevated
-                  class="full-width"
-                  @click="setServer()"
-                />
-                <RouterLink class="q-pr-xs q-mt-sm text-primary" :to="`/register`"
-                  >没有账号？点此注册</RouterLink
-                >
-                <RouterLink class="q-pr-xs text-primary" :to="`/forgot-password`"
-                  >忘记密码？</RouterLink
-                >
-              </q-card-section>
-            </template>
-            <template v-else-if="start">
-              <q-card-section
-                v-if="strapi_loading"
-                class="row no-wrap gap-sm items-center"
-              >
-                <span>正在验证账号，请稍等...</span>
-              </q-card-section>
-              <q-card-section
-                v-else-if="mm_loading"
-                class="row no-wrap gap-sm items-center"
-              >
-                <span>正在链接通讯服务，请稍等...</span>
-              </q-card-section>
-            </template>
-            <template v-else-if="isLogined">
-              <q-card-section class="row no-wrap items-center">
-                <div class="font-medium">
-                  {{
-                    store.logged && me ? "欢迎回来：" : "您已成功登陆，无须再次登陆"
-                  }}
-                  <span class="font-medium font-bold-600">{{
-                    me?.username || store.me?.username
-                  }}</span>
-                </div>
-              </q-card-section>
-              <q-card-section
-                class="row no-wrap flex-center border-top q-py-xl q-px-lg"
-              >
-                <div class="relative-position q-mr-md">
-                  <q-spinner-oval color="primary" size="2rem" />
-                  <div class="absolute-full flex flex-center">{{ count }}</div>
-                </div>
-                <span
-                  >您已经登陆，正在跳转到首页<span class="q-px-sm"></span>...</span
-                >
-              </q-card-section>
-              <q-card-section class="q-pa-sm border-top">
-                <q-btn
-                  unelevated
-                  color="primary"
-                  label="点击立即跳转"
-                  class="full-width"
-                  @click="redirectNow()"
-                />
-              </q-card-section>
-            </template>
-          </template>
-          <q-card-section v-else-if="errorStats === 'noneConfirmed'">
-            账号未激活，请检查您的注册邮箱，接收来自
-            <span class="text-red font-bild-600">“易乎APP“</span>
-            的邮件，点击其中的激活链接！
-          </q-card-section>
-
-          <q-card-section v-else-if="errorStats === 'ValidationError'"
-            class="row no-wrap gap-sm items-center"
-          >
-            <span>账号或密码错误！</span
-            ><q-btn
-              color="primary"
-              padding="xs md"
-              dense
-              flat
-              label="重新登录"
-              @click="reLogin"
+            <LoginForm 
+              v-if="!store.logged" 
+              :loading="isLoading"
+              @submit="handleSubmit"
+              @setServer="setServer"
             />
-          </q-card-section>
-
-          <q-card-section v-else-if="errorStats === 'Unauthorized'"
-            class="row no-wrap gap-sm items-center"
-          >
-            <span>授权已过期，请重新登陆</span
-            ><q-btn
-              color="primary"
-              padding="xs md"
-              dense
-              flat
-              label="重新登录"
-              @click="reLogin"
+            
+            <LoadingStatus 
+              v-else-if="start"
+              :strapi-loading="strapi_loading"
+              :mm-loading="mm_loading" 
             />
-          </q-card-section>
-          <template v-else-if="errorStats === 'ERR_NETWORK' || connect_refused">
-            <q-card-section class="column no-wrap gap-sm">
-              <span class="font-larger">{{ $t('connect_refused_header') }}</span>
-              <span class="op-6">{{ $t('connect_refused_login_caption') }}</span>
-            </q-card-section>
-            <q-card-section class="border-top">
-              <q-btn
-                color="primary"
-                padding="xs md"
-                dense
-                class='full-width'
-                :label="$t('connect_refused_login_btn_label')"
-                @click="setServer()"
-              />
-            </q-card-section>
+            
+            <LoginSuccess 
+              v-else-if="userStore.logged"
+              :username="store.me?.username"
+              :count="count"
+              @redirect="redirectNow"
+            />
           </template>
 
-          <q-card-section
+          <ErrorDisplay
+            v-else
+            :error-type="errorStats"
+            :connect-refused="connect_refused"
+            @relogin="reLogin"
+            @set-server="setServer"
+          />
+
+          <CountdownDisplay 
             v-if="count"
-            class="row no-wrap flex-center q-py-xl q-px-lg"
-          >
-            <div class="relative-position q-mr-md">
-              <q-spinner-oval color="primary" size="2rem" />
-              <div class="absolute-full flex flex-center">{{ count }}</div>
-            </div>
-            <span>跳转中，请稍等<span class="q-px-sm"></span>...</span>
-          </q-card-section>
+            :count="count"
+          />
         </q-card-section>
-        <q-card-section v-if="showExtanInfo" class="column no-wrap flex-center" :class="$q.screen.gt.sm ? 'col-6 border-right' : ''">
-          <template v-if="uiStore.setServer" >
-            <ServerList :useDialog="false" @setCompleted="setCompleted()" />
-          </template>
-          <ExtendInfo v-else />
-        </q-card-section>
+
+        <ExtendedInfo />
       </q-card-section>
     </q-card>
   </div>
 </template>
+
 <script setup>
-import {
-  ref,
-  onMounted,
-  onUnmounted,
-  computed,
-  nextTick,
-} from "vue";
-import { useRouter } from "vue-router";
-import { login as strapi_login } from 'src/api/strapi.js'
-import { login as mmLogin } from "src/api/mattermost.js";
-import useUserStore from "src/stores/user.js";
-import { useFetchAvatar } from "src/pages/Chat/hooks/useFetchAvatar.js";
-import { uiStore, userStore } from "src/hooks/global/useStore.js";
-import ServerList from "pages/team/settings/ServerList.vue";
-import ExtendInfo from './ExtendInfo.vue'
-import { clearLocalDB } from "src/pages/team/hooks/useUser.js";
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useQuasar } from 'quasar';
+import { authService } from 'src/services/auth.service';
+import useUserStore from 'src/stores/user';
+import { uiStore, userStore } from 'src/hooks/global/useStore';
+import { clearLocalDB } from 'src/pages/team/hooks/useUser';
+import { useFetchAvatar } from 'src/pages/Chat/hooks/useFetchAvatar';
 
-uiStore.topbarClass = "transparent";
-const store = useUserStore();
+// 组件导入
+import LoginForm from './components/LoginForm.vue';
+import LoadingStatus from './components/LoadingStatus.vue';
+import LoginSuccess from './components/LoginSuccess.vue';
+import ErrorDisplay from './components/ErrorDisplay.vue';
+import CountdownDisplay from './components/CountdownDisplay.vue';
+import ExtendedInfo from './components/ExtendedInfo.vue';
+
+// 常量定义
+const ERROR_TYPES = {
+  VALIDATION: 'ValidationError',
+  UNAUTHORIZED: 'Unauthorized',
+  NETWORK: 'ERR_NETWORK',
+  NONE_CONFIRMED: 'noneConfirmed'
+};
+
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCK_DURATION = 30 * 60 * 1000; // 30分钟
+
+// 状态初始化
 const router = useRouter();
-const me = ref();
+const $q = useQuasar();
+const store = useUserStore();
 
-const isLogined = ref(false);
-
-onMounted(async() => {
-  let strapi_jwt = localStorage.getItem("jwt");
-  let mm_token = localStorage.getItem("mmtoken");
-  await nextTick();
-  if (strapi_jwt && mm_token) {
-    isLogined.value = true;
-    router.push("/teams");
-  } else {
-    localStorage.clear();
-    userStore.$reset();
-  }
-});
-
-const connect_refused = computed(() => uiStore.serverResfused);
-
-// 开始登录
-// 定义登录表单数据
-const identifier = ref();
-const password = ref();
-
-// 定义登录提交数据结构
-const loginParams = ref({
-  password: "",
-  identifier: "",
-});
-
+const isLoading = ref(false);
+const identifier = ref('');
+const password = ref('');
 const hasError = ref(false);
-const errorStats = ref();
+const errorStats = ref(null);
 const start = ref(false);
 const strapi_loading = ref(false);
 const mm_loading = ref(false);
-const showExtanInfo = ref(true);
+const count = ref(null);
+let timer = null;
 
-// 登录动作
-const submitLogin = async () => {
-  await clearLocalDB("LoginPage submitLogin event");
-  start.value = true;
-  loginParams.value.password = password.value;
-  loginParams.value.identifier = identifier.value;
+// 计算属性
+const connect_refused = computed(() => uiStore.serverResfused);
+const isLoggedIn = computed(() => {
+  return !!localStorage.getItem('jwt') && !!localStorage.getItem('mmtoken');
+});
 
-  strapi_loading.value = true;
-  const res = await strapi_login(loginParams.value);
-  if (res?.data) {      
-    strapi_loading.value = false;
+// 登录尝试次数控制
+const loginAttempts = ref(0);
+const checkLoginAttempts = () => {
+  const lockUntil = localStorage.getItem('loginLockUntil');
+  if (lockUntil && parseInt(lockUntil) > Date.now()) {
+    throw new Error(`账号已被锁定，请在${Math.ceil((parseInt(lockUntil) - Date.now()) / 60000)}分钟后重试`);
+  }
+  
+  if (loginAttempts.value >= MAX_LOGIN_ATTEMPTS) {
+    const lockUntil = Date.now() + LOCK_DURATION;
+    localStorage.setItem('loginLockUntil', lockUntil);
+    throw new Error('登录尝试次数过多，请30分钟后再试');
+  }
+};
+
+// 错误处理
+const handleError = (error) => {
+  const errorHandlers = {
+    [ERROR_TYPES.VALIDATION]: () => {
+      errorStats.value = ERROR_TYPES.VALIDATION;
+      hasError.value = true;
+    },
+    [ERROR_TYPES.UNAUTHORIZED]: () => {
+      errorStats.value = ERROR_TYPES.UNAUTHORIZED;
+      handleLogout();
+    },
+    [ERROR_TYPES.NETWORK]: () => {
+      uiStore.serverResfused = true;
+      errorStats.value = ERROR_TYPES.NETWORK;
+    },
+    default: () => {
+      console.error('Unhandled error:', error);
+      errorStats.value = 'UNKNOWN_ERROR';
+    }
+  };
+
+  (errorHandlers[error.name] || errorHandlers.default)();
+  loginAttempts.value++;
+};
+
+// 计时器处理
+const startCountdown = (seconds = 2) => {
+  clearTimer();
+  count.value = seconds;
+  timer = setInterval(() => {
+    count.value--;
+    if (count.value <= 0) {
+      clearTimer();
+      router.push('/teams');
+    }
+  }, 1000);
+};
+
+const clearTimer = () => {
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
+  }
+};
+
+// 登录处理
+const handleSubmit = async (formData) => {
+  try {
+    if (isLoading.value) return;
+    isLoading.value = true;
     
-    store.logged = true;
-    store.needRefetch = true;
-    // 登录mattermost
-    try {
-      mm_loading.value = true;
-      const loginParmars = ref({
-        login_id: identifier.value,
-        password: password.value,
-      });
-      let res = await mmLogin(loginParmars.value);
-      if (res?.data) {
-        await useFetchAvatar(res.data.id, "force");
+    checkLoginAttempts();
+    await clearLocalDB('LoginPage submitLogin event');
+    
+    start.value = true;
+    strapi_loading.value = true;
+    
+    const { strapiResult, mmResult } = await authService.login({
+      identifier: formData.identifier,
+      password: formData.password
+    });
+    // console.log(strapiResult, mmResult);
+    
+    if (strapiResult?.data) {
+      strapi_loading.value = false;
+      store.logged = true;
+      store.needRefetch = true;
+      userStore.me = strapiResult.data.user
+      if (mmResult?.data) {
+        userStore.mm_profile = mmResult.data
+        await useFetchAvatar(mmResult.data.id, 'force');
         mm_loading.value = false;
         start.value = false;
-        showExtanInfo.value = false
         startCountdown();
+        loginAttempts.value = 0;
       }
-    } catch (error) {
-      console.log(error);
     }
-  } else if (res?.response?.data?.error) {
-    const err = res.response.data.error;
-    if(err.name === 'ValidationError'){
-      errorStats.value = "ValidationError";
-    } else if (err.name === "Unauthorized") {
-      errorStats.value = "Unauthorized";
-    } else if (err.name === "Forbidden") {
-      errorStats.value = "Forbidden";
-    } else {
-      errorStats.value = err.message;
-    }
-    hasError.value = true;
-    strapi_loading.value = false;
-    start.value = false;
-  }
-};
-const enterListener = (event) => {
-  if (event.keyCode === 13) {
-    submitLogin();
+  } catch (error) {
+    handleError(error);
+  } finally {
+    isLoading.value = false;
   }
 };
 
-onMounted(() => {
-  window.addEventListener("keyup", enterListener);
-});
-
-onUnmounted(() => {
-  window.removeEventListener("keyup", enterListener);
-});
+// 其他功能处理
 const reLogin = () => {
   errorStats.value = null;
   hasError.value = false;
   store.logged = false;
 };
+
 const redirectNow = () => {
   store.needRefetch = true;
-  router.push("/teams");
+  router.push('/teams');
 };
-const count = ref();
-let intervalId = null;
-const startCountdown = () => {
-  if (intervalId) {
-    clearInterval(intervalId);
-  }
-  resetError();
-  count.value = 2;
-  intervalId = setInterval(() => {
-    count.value--;
-    if (count.value === 1) {
-      clearInterval(intervalId);
-      router.push("/teams");
-    }
-  }, 1000);
-};
+
 const resetError = () => {
-  uiStore.axiosStauts = void 0;
-  uiStore.axiosStautsCode = void 0;
-  uiStore.axiosError = void 0;
+  uiStore.axiosStauts = undefined;
+  uiStore.axiosStautsCode = undefined;
+  uiStore.axiosError = undefined;
   errorStats.value = null;
   hasError.value = false;
   uiStore.serverResfused = false;
-}
+};
+
 const setServer = () => {
   resetError();
   uiStore.setServer = true;
 };
+
 const setCompleted = () => {
   uiStore.setServer = false;
   localStorage.clear();
 };
 
+// 定义事件处理函数
+const handleKeyUp = (event) => {
+  if (event.key === 'Enter' && !isLoading.value) {
+    handleSubmit({ 
+      identifier: identifier.value, 
+      password: password.value 
+    });
+  }
+};
+
+// 生命周期钩子
+onMounted(() => {
+  if (isLoggedIn.value) {
+    userStore.logged = true;
+    router.push('/teams');
+  } else {
+    localStorage.clear();
+    userStore.$reset();
+  }
+  
+  // 添加回车监听
+  window.addEventListener('keyup', handleKeyUp);
+});
+
+onUnmounted(() => {
+  clearTimer();
+  // 正确移除事件监听器
+  window.removeEventListener('keyup', handleKeyUp);
+});
 </script>
+
+<style scoped>
+.focus-form {
+  max-width: 48rem;
+  margin: auto;
+}
+</style>
 
