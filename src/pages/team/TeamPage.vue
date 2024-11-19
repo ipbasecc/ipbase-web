@@ -18,7 +18,7 @@
         @createTeam="createing = true"
       />
     </template>
-    <q-layout v-else view="lHr LpR lfr" container
+    <q-layout v-else view="hHh LpR lFr" container
       :class="dragWidth ? 'col-resize' : ''"
       class="absolute-full"
       @mousemove="handleMouseMove" @mouseup="handleMouseUp">
