@@ -54,7 +54,9 @@
                       <TeamMenu v-if="!userStatus_byTeam" :team />
                     </q-btn>
                     <q-space />
-                    <q-btn v-if="enable_project || enable_channel"
+                    <q-btn v-if="
+                      (enable_project && useAuths('create', ['project']))
+                      || (enable_channel && useAuths('create', ['channel']))"
                     dense size="sm" flat round icon="add">
                       <TeamAddmenu />
                     </q-btn>

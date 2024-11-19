@@ -29,6 +29,15 @@ function getCacheKey(field, collections, members, roles) {
 }
 
 // 优化前的useAuths hook
+/**
+ * 
+ * @param {String} field 必填 需要鉴权的字段
+ * @param {Array} collections 必填 需要鉴权的模块集合 card的权限需要分别鉴定自身角色和项目角色，可能需要填入两个不同的模块名称，这里填数组，只有一个的就传单成员数组
+ * @param {Array} members 留空表示自动计算 成员集合
+ * @param {Array} roles 留空表示自动计算 角色集合
+ * @param {String} from 可选 传入一个字段来标记来源，方便调试，不参与实际逻辑 
+ * @returns 
+ */
 export function useAuths(field, collections, members, roles, from) {
   if(!members) members = _members.value;
   if(!roles) roles = _roles.value;

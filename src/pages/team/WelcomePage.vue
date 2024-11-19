@@ -60,7 +60,7 @@
         delete: false,
       }"
       :taskContainerSIze="taskContainerSIze"
-      @QuadrantChange="QuadrantChange"
+      @itemChanged="itemChanged"
     />
   </div>
   <div v-else class="fit column flex-center">
@@ -264,7 +264,7 @@ watch(
   { immediate: false, deep: true }
 );
 
-const QuadrantChange = async (_id, _params) => {
+const itemChanged = async (_id, _params) => {
   console.log("_params", _id, _params);
   cards.value.find((i) => i.id === _id).urgency = _params.data?.urgency;
   cards.value.find((i) => i.id === _id).importance = _params.data?.importance;

@@ -6,7 +6,7 @@
       class="radius-sm q-pa-xs"
       :class="$q.dark.mode ? 'bg-grey-10 text-grey-1' : 'bg-white text-grey-10'"
     >
-      <q-item v-if="enable_channel"
+      <q-item v-if="enable_channel && useAuths('create', ['channel'])"
         clickable
         v-close-popup
         class="radius-xs"
@@ -17,7 +17,7 @@
         </q-item-section>
         <q-item-section class="q-pr-md">{{ $t('create_channel') }}</q-item-section>
       </q-item>
-      <q-item v-if="enable_project"
+      <q-item v-if="enable_project && useAuths('create', ['project'])"
         clickable
         v-close-popup
         class="radius-xs"
@@ -40,7 +40,6 @@
 
 <script setup>
 import { ref } from "vue";
-import { teamStore } from "src/hooks/global/useStore.js";
 import CreateProject from "./CreateProject.vue";
 import CreateChannel from "./CreateChannel.vue";
 
