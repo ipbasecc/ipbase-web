@@ -587,8 +587,8 @@ watch(val, async(newVal, oldVal) => {
 
     if(val.value.event === 'column:updated'){
       // 如果是当前用户执行的修改，直接用返回的数据赋值
-      const { updator } = val.value.data;
-      if(updator === teamStore.init.id) return
+      // const { updator } = val.value.data;
+      // if(updator === teamStore.init.id) return
 
       //如果接收到ws的更新数据，按方法执行
       const index = kanban.value.columns?.findIndex(i => i.id === Number(data.id));
