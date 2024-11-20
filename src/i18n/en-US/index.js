@@ -833,4 +833,7 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   previous_step: 'Previous Step',
   onboarding_skip_btn_label: 'Skip and Complete',
   read_functions_tip: 'Click and read the function introduction above to quickly understand the platform features',
+
+  need_fill_business_account: 'You have not yet completed the business account information!',
+  fill_business_account: 'Complete Information',
 }

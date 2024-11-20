@@ -14,7 +14,6 @@
                 <div class="row items-start">
                     <div class="text-h6">{{ $t('account_balance') }}</div>
                     <q-space />
-                    <q-btn color="primary" :label="$t('withdraw')" padding="xs lg" @click="onClick" />
                 </div>
                 <div class="font-bold-600" style="font-size: 5rem;">{{ teamStore.init?.withdraw / 100 }}</div>
             </q-card-section>

@@ -49,6 +49,15 @@
     </div>
     <q-dialog v-model="scurity_check" persistent>
       <q-card bordered style="width: 32rem">
+        <template v-if="teamStore.init?.need_fill_business_account">
+          <q-card-section class="text-center text-h4 q-py-xl">
+            {{ $t('need_fill_business_account') }}
+          </q-card-section>
+          <q-card-actions align="right">
+            <q-btn color="primary" padding="xs md" :label="$t('fill_business_account')" @click="fillBusinessAccount()" />
+          </q-card-actions>
+        </template>
+        <template v-else>
           <q-card-section class="row items-center">
             <q-input v-model="exchange_code" type="password" 
               outlined filled class="radius-xs overflow-hidden full-width"
@@ -63,6 +72,7 @@
             <q-space />
             <q-btn color="primary" :label="$t('confirm')" @click="withdraw()" />
           </q-card-actions>
+        </template>
       </q-card>
     </q-dialog>
     <q-inner-loading :showing="loading">
@@ -75,7 +85,10 @@
 import { ref, computed, watch } from "vue";
 import { date } from 'quasar'
 import {createTransferOrder} from "src/api/strapi.js";
+import { teamStore } from "src/hooks/global/useStore";
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const { sales, pageInfo, partner_info } = defineProps(["sales", "pageInfo", "partner_info"]);
 const { interest, transaction_fee } = partner_info;
 const emit = defineEmits(["filterBy"]);
@@ -161,7 +174,7 @@ const withdraw = async() => {
   try {
     const { data } = await createTransferOrder(params.value);
     if(data){
-      console.log('data', data);
+      // console.log('data', data);
       loading.value = false
       scurity_check.value = false;
     }
@@ -170,5 +183,9 @@ const withdraw = async() => {
     loading.value = false
     errorMsg.value = error.response.data.error.message;
   }
+}
+
+const fillBusinessAccount = () => {
+  router.push('/business/info')
 }
 </script>

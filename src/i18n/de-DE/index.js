@@ -833,4 +833,7 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   previous_step: 'Zurück',
   onboarding_skip_btn_label: 'Überspringen und abschließen',
   read_functions_tip: 'Klicken Sie und lesen Sie die Funktionsbeschreibung oben, um die Funktionen der Plattform schnell zu verstehen',
+
+  need_fill_business_account: 'Sie haben Ihre Geschäftskontoinformationen noch nicht vervollständigt!',
+  fill_business_account: 'Informationen vervollständigen',
 };

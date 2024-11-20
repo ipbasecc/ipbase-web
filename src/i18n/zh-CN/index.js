@@ -833,4 +833,7 @@ export default {
   previous_step: '上一步',
   onboarding_skip_btn_label: '跳过并完成',
   read_functions_tip: '点击并阅读上方功能介绍，以便快速了解平台功能',
+
+  need_fill_business_account: '您尚未完善经营账号信息！',
+  fill_business_account: '完善信息',
 };
