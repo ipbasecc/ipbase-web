@@ -150,8 +150,6 @@ const updateUnreadCount = (_mm_channel_id) => {
 
 // 执行view事件，保持与Mattermost的连接
 const viewed = ref(false);
-let clickListenerAdded = false; // 用于跟踪是否已添加点击事件监听器
-let visibilityListenerAdded = false; // 用于跟踪是否已添加visibilitychange事件监听器
 
 export async function __viewChannel(channel_id) {
   if (!channel_id || viewed.value) return;

@@ -328,6 +328,7 @@ import {
 } from "src/pages/team/hooks/useConfig.js";
 import useProject from 'src/hooks/project/useProject.js';
 import ChannelMenu from './ChannelMenu.vue'
+import {updateUnreads} from 'src/pages/team/chat/hooks/useMm.js';
 
 const props = defineProps({
   width: {
@@ -410,39 +411,7 @@ watch(mm_team, async(newVal, oldVal) => {
     await fetch_userPreferences(); // todo fixme: 被触发了两次
     await getTeamMembers(mm_team.value?.id, page.value, per_page.value);
     
-    let mm_channels = []
-    const mm_uid = localStorage.getItem("mmUserId")
-    if(team.value?.team_channels?.length > 0 && enable_channel.value){
-      const filterMMChannel = team.value?.team_channels.filter(i => i.mm_channel)
-      mm_channels.push(...filterMMChannel.map(i => i.mm_channel?.id));
-    }
-    if(team.value.projects?.length > 0 && enable_project.value && teamMode.value === 'toMany'){
-      // can read
-      const filterHaveMM = team.value.projects.filter(i => i.mm_channel && i.auth?.read);
-      
-      if(filterHaveMM?.length > 0){
-        mm_channels.push(...filterHaveMM.map(i => i.mm_channel.id));
-      }
-    }
-    if(mm_channels.length > 0){
-      const promises = mm_channels.map(async (m) => {
-        const res = await getChannelUnreads(mm_uid, m);
-        if(res?.data) {
-          return res?.data;
-        }
-      })
-      const allSettleds = await Promise.allSettled(promises)
-      const fulfilleds = allSettleds.filter(i => i.status === "fulfilled")?.map((j) => j.value);
-      if(fulfilleds.length > 0){
-        uiStore.unreads.channels = fulfilleds
-      }
-    }
-    if(mm_uid){
-      const res = await getUnreadsForTeam(mm_uid, mm_team.value.id)
-      if(res?.data){
-        uiStore.unreads.team = res?.data
-      }
-    }
+    await updateUnreads();
 
   }
 },{immediate:true,deep:false})

@@ -390,20 +390,19 @@ onBeforeMount(async() => {
   await initMsgs();
   uiStore.hide_footer = true
 })
+
+const _channel_id = computed(() => channel_id || route.params.channel_id);
+const view = async () => {
+  if(_channel_id.value){
+    await __viewChannel(_channel_id.value);
+  }
+}
 onMounted(async () => {
   await scroll_bottom();
-  let _channel_id;
-  if(channel_id.value){
-    _channel_id = channel_id.value;
-  } else if(route.params.channel_id){
-    _channel_id = route.params.channel_id;
-  }
-  if(_channel_id){
-    await __viewChannel(_channel_id);
-  }
+  await view();
   // 如果通过连接直接访问到聊天界面，需要获取Strapi频道、Mattermost频道
-  if(!teamStore.mm_channel && _channel_id){
-    const res = await getMmChannelByID(_channel_id);
+  if(!teamStore.mm_channel && _channel_id.value){
+    const res = await getMmChannelByID(_channel_id.value);
     if(res?.data){
       teamStore.mm_channel = res.data;
     }
