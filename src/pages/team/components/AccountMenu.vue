@@ -80,6 +80,7 @@
               </template>
               <q-separator spaced class="op-3" />
               <q-item
+                v-if="false"
                 clickable
                 v-close-popup
                 class="radius-xs"
