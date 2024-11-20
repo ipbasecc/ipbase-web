@@ -35,7 +35,7 @@ export default {
   channel: "Kanal",
   project: "Projekt",
   community_channel: "Gemeinschaftskanal",
-  collaboration_project: "Kooperationsprojekt",
+  collaboration_project: "Zusammenarbeit und Dienstleistung",
   video: "Video",
   create_project: "Projekt erstellen",
   shortcut_table_header_desc: "Funktion",
@@ -635,7 +635,7 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   Project_schedule: 'Projektplanung',
 
   interact: 'Interagieren',
-  toManyMode_team: 'Zusammenarbeit im Team',
+  toManyMode_team: 'Gemeinschaftsdienst',
   toOneMode_team: 'Ein-zu-Eins-Service',
   channels_teamFunc: 'Kanalfunktion',
   projects_teamFunc: 'Projektfunktion',
@@ -647,7 +647,7 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   team_disableChanel_tip: 'Die Kanalfunktion ist nicht verfügbar',
 
   team_id_cant_lose: 'Team-ID-Parameter darf nicht fehlen',
-  initialization_step3_label_1: 'Betriebsmodus: Teamarbeit VS Einzelservice',
+  initialization_step3_label_1: 'Betriebsmodus: Gemeinschaftsdienst VS Einzelservice',
   initialization_step3_label_2: 'Diskussionskanal',
   initialization_step3_label_3: 'Projektmanagement',
   initialization_step3_label_4: '"Objektorientierte" Diskussion',

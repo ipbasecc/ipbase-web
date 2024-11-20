@@ -36,7 +36,7 @@ export default {
   channel: "频道",
   project: "项目",
   community_channel: "社群频道",
-  collaboration_project: "协作项目",
+  collaboration_project: "协作与服务",
   video: "视频",
   create_project: "新建项目",
   shortcut_table_header_desc: "功能",
@@ -635,7 +635,7 @@ export default {
   Project_schedule: '项目规划',
 
   interact: '沟通',
-  toManyMode_team: '团队协作',
+  toManyMode_team: '社群服务',
   toOneMode_team: '一对一服务',
   channels_teamFunc: '频道功能',
   projects_teamFunc: '项目功能',
@@ -647,7 +647,7 @@ export default {
   team_disableChanel_tip: '频道功能将不可用',
 
   team_id_cant_lose: '团队ID参数不能缺少',
-  initialization_step3_label_1: '运营模式：团队协作 VS 一对一服务',
+  initialization_step3_label_1: '运营模式：社群服务 VS 一对一服务',
   initialization_step3_label_2: '讨论频道',
   initialization_step3_label_3: '项目管理',
   initialization_step3_label_4: '“对象型”讨论',

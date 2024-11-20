@@ -35,7 +35,7 @@ export default {
   channel: 'channel',
   project: 'project',
   community_channel: "Community Channel",
-  collaboration_project: "Collaboration Project",
+  collaboration_project: "Collaboration and Service",
   video: "Video",
   create_project: 'create project',
   shortcut_table_header_desc: "Function",
@@ -635,7 +635,7 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   Project_schedule: 'Project Schedule',
 
   interact: 'Interact',
-  toManyMode_team: 'Team Collaboration',
+  toManyMode_team: 'Community Service',
   toOneMode_team: 'One-to-One Service',
   channels_teamFunc: 'Channels',
   projects_teamFunc: 'Projects',
@@ -647,7 +647,7 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   team_disableChanel_tip: 'The channel function will be unavailable',
 
   team_id_cant_lose: 'Team ID parameter cannot be missing',
-  initialization_step3_label_1: 'Operation mode: Team collaboration VS One-on-one service',
+  initialization_step3_label_1: 'Operation mode: Community Service VS One-on-one service',
   initialization_step3_label_2: 'Discussion Channel',
   initialization_step3_label_3: 'Project Management',
   initialization_step3_label_4: '"Object-oriented" Discussion',
