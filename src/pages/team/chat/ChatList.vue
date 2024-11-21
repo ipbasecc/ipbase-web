@@ -1,7 +1,6 @@
 <template>
   <q-list dense class="full-width q-pa-xs">
-    <q-item
-      v-if="teamMode === 'toMany'"
+    <q-item v-if="teamMode === 'toMany'"
       clickable
       v-ripple
       @click="gotoChannel(project_mm_channel)"
@@ -19,15 +18,16 @@
         </q-avatar>
       </q-item-section>
       <q-item-section>{{ $t('all_members_group') }}</q-item-section>
-      <div
-        v-if="channel_id === project_mm_channel?.id"
+      <q-item-section v-if="channel_unread(project_mm_channel?.name) > 0" side>
+        <q-chip :label="channel_unread(project_mm_channel?.name)" />
+      </q-item-section>
+      <div v-if="channel_id === project_mm_channel?.id"
         class="absolute-left bg-primary"
         style="width: 3px"
       ></div>
     </q-item>
     <template v-if="project_users">
-      <q-item
-        v-for="i in project_users"
+      <q-item v-for="i in project_users"
         :key="i.id"
         clickable
         v-ripple
@@ -43,6 +43,9 @@
           />
         </q-item-section>
         <q-item-section>{{ i.username }}</q-item-section>
+        <q-item-section v-if="channel_unread(`${i.mm_profile?.id}__${My_MMID}`) > 0" side>
+          <q-chip color="negative" dense :label="channel_unread(`${i.mm_profile?.id}__${My_MMID}`)" />
+        </q-item-section>
         <div
           v-if="directTargetID === i.mm_profile?.id"
           class="absolute-left bg-primary"
@@ -54,13 +57,13 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, nextTick } from "vue";
+import { ref, computed, watch, onMounted, nextTick, onBeforeMount } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { uniqueById } from "src/hooks/utilits.js";
 import { createDirect, getChannelByID } from "src/api/mattermost.js";
 import UserAvatar from "src/pages/team/components/user/UserAvatar.vue";
 import { setLastChannel } from "src/pages/team/chat/TeamChat.js";
-import {teamStore, uiStore} from 'src/hooks/global/useStore.js';
+import {teamStore, uiStore, mm_wsStore} from 'src/hooks/global/useStore.js';
 
 const router = useRouter();
 const route = useRoute();
@@ -78,14 +81,63 @@ const overview = computed(
 const projectCover = computed(() => overview.value?.media?.url);
 const mm_channel = computed(() => teamStore?.mm_channel);
 const project_mm_channel = computed(() => teamStore?.project?.mm_channel);
+const all_users = computed(() => project.value?.project_members?.map((i) => i.by_user));
 const project_users = computed(() => {
   let users;
-  const all_users = project.value?.project_members?.map((i) => i.by_user);
-  if (all_users) {
-    users = uniqueById(all_users);
+  if (all_users.value) {
+    users = uniqueById(all_users.value);
   }
   return users;
 });
+
+const My_MMID = ref(localStorage.getItem("mmUserId"));
+const channels = ref([
+  {
+    channel_name: project_mm_channel.value?.name,
+    unread: 0
+  }
+])
+const channel_unread = (channel_name) => {
+  const channel = channels.value.find(i => i.channel_name === channel_name);
+  if(channel) {
+    return channel.unread;
+  }
+  return 0;
+};
+const init_allChannels = () => {
+  all_users.value?.map(i => {
+    channels.value.push({
+      channel_name: `${i.mm_profile?.id}__${My_MMID.value}`,
+      unread: 0
+    })
+  })
+}
+onMounted(() => {
+  init_allChannels();
+})
+
+watch(
+    mm_wsStore,
+    async () => {
+      const { data, event } = mm_wsStore.event;
+      const post = !!data?.post ? JSON.parse(data.post) : {};
+      let last_post = {}
+      // 判断消息类型
+      if (event === 'posted' && !!data.channel_name && post.message) {
+        if(!last_post || last_post.id === post.id) return;
+        const channel = channels.value.find(i => i.channel_name === data.channel_name);
+        if(channel) {
+          if(data.channel_name !== teamStore.mm_channel?.name){
+            channel.unread += 1;
+          } else {
+            channel.unread = 0;
+          }
+        }
+        last_post = post;
+      }
+    },
+    { immediate: true, deep: true }
+);
 
 const gotoChannel = async (channel) => {
   await setLastChannel(project.value?.id, channel);
@@ -103,7 +155,6 @@ const findChannelEnter = async (channel_id) => {
 };
 const route_name = computed(() => route.name);
 
-const My_MMID = ref(localStorage.getItem("mmUserId"));
 const createChannel = async (a, b) => {
   const res = await createDirect(a, b);
   if (res) {
