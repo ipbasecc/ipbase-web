@@ -503,6 +503,40 @@ const orderStorages = async () => {
     }
   }
 };
+
+const val = computed(() => teamStore.income);
+watch(val, async(newVal) => {
+  if(!newVal) return;
+  const { team_id, data } = val.value?.data;
+  const _storage_ids = storages.value.map(i => i.id);
+  if(teamStore.team?.id === Number(team_id)){
+    if(val.value.event === 'storage:updated'){
+      if(_storage_ids.includes(Number(data.id))){
+        if(by_info.value?.by === "project") {
+          const index = teamStore.project.storages.findIndex(i => i.id === Number(data.id));
+          teamStore.project.storages[index] = data;
+        } else if(by_info.value?.by === "user") {
+          const index = teamStore.init.storages.findIndex(i => i.id === Number(data.id));
+          teamStore.init.storages[index] = data;
+        }
+      }
+    }
+    // 新建逻辑处理在src/pages/team/wsWatcher.js文件中
+    if(val.value.event === 'storage:removed'){
+      if(_storage_ids.includes(Number(data.removed_storage_id))){
+        if(by_info.value?.by === "project") {
+          teamStore.project.storages = teamStore.project.storages.filter(
+            (i) => i.id !== Number(data.removed_storage_id)
+          );
+        } else if(by_info.value?.by === "user") {
+          teamStore.init.storages = teamStore.init.storages.filter(
+            (i) => i.id !== Number(data.removed_storage_id)
+          );
+        }
+      }
+    }
+  }
+});
 </script>
 
 <style lang="scss" scoped></style>

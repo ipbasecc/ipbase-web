@@ -32,7 +32,6 @@
           />
         </template>
       </q-tabs>
-      <q-btn color="primary" icon="check" label="OK" @click="$q.dark.toggle()" />
     </section>
     <q-layout
       v-if="teamStore?.card"
