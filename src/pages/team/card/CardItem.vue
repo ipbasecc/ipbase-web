@@ -578,6 +578,7 @@
         :share_props="shareProps"
         is="card"
         @createShare="createShare"
+        @closeShare="shareDlg = false"
       />
     </q-dialog>
     <q-dialog v-model="editCareDlg" persistent>

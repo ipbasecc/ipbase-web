@@ -220,6 +220,7 @@ import {
   watch,
   nextTick,
   watchEffect,
+  onBeforeMount
 } from "vue";
 import {findCardByShare, findCardFeedbackByShare} from 'src/api/strapi/project.js';
 
@@ -316,7 +317,10 @@ const enabled_byShare = computed(() => {
   let _enables = teamStore.card?.props?.filter((i) => i.enable).map((i) => i.val) || [];
   return _enables?.map((i) => card_models.value.find(j => j.relation === i))
 })
-const current_model = ref("card_feedback");
+const current_model = ref("");
+onBeforeMount(() => {
+  current_model.value = enabled_byShare.value[0]?.relation || 'overview'
+})
 const modelKey = computed(() => `__card_${activedCard_id.value}_lastModel`);
 const setLastModel = async () => {
   await localforage.setItem(modelKey.value, current_model.value);

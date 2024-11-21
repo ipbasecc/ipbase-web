@@ -238,7 +238,7 @@ watchEffect(() => {
     target.value = $t('card');
   }
 });
-const emit = defineEmits(["createShare"]);
+const emit = defineEmits(["createShare", "closeShare"]);
 
 const $q = useQuasar();
 const user_shareCode = computed(() =>
@@ -267,7 +267,12 @@ const genShareUrl = (code) => {
   share_url.value = `${process.env.APP_URI}/${is.value}/share/${share_item.value?.id}?share_code=${code}&share_by=${userStore.userId}`;
 };
 const share_url = ref();
+
 const createShare = async (share_code) => {
+  if(!modify.value){
+    emit('closeShare')
+    return
+  }
   if (!share_code.code) return;
   share_code.up_time = share_code.up_time?.replace(/\//g, "-") || null;
   emit("createShare", share_code);
