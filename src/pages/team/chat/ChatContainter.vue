@@ -296,13 +296,27 @@ const togglePowerpannel = (pannel) => {
 const scrollAreaRef = ref();
 const msgContainerBottom = ref(null);
 const scroll_bottom = async () => {
-  // 等待DOM更新
-  await nextTick()
-  // 等待一个短暂延时，确保内容渲染完成
-  setTimeout(() => {
-    scrollAreaRef.value?.setScrollPercentage("vertical", 1, 300)
-  }, 40)
-}
+  const maxAttempts = 3;
+  const delay = 200;
+  
+  for (let i = 0; i < maxAttempts; i++) {
+    await new Promise(resolve => setTimeout(resolve, delay));
+    await nextTick();
+    try {
+      msgContainerBottom.value?.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'end'
+      });
+    } catch (err) {
+      console.error('Primary scroll attempt failed:', err);
+      try {
+        scrollAreaRef.value?.setScrollPercentage("vertical", 1);
+      } catch (backupErr) {
+        console.error('Backup scroll attempt failed:', backupErr);
+      }
+    }
+  }
+};
 async function onLoad (index, done)  {
   await fetchMore();  
   done();
@@ -411,38 +425,8 @@ onBeforeMount(async() => {
   }
 })
 onMounted(async () => {
-  await view()
-  // 等待消息加载和渲染
-  if (messages.value?.length > 0) {
-    // 监听图片加载完成
-    const messageContainer = scrollAreaRef.value?.$el
-    if (messageContainer) {
-      const images = messageContainer.getElementsByTagName('img')
-      console.log(images);
-      
-      if (images.length > 0) {
-        // 等待所有图片加载完成
-        Promise.all(
-          Array.from(images).map(img => {
-            return new Promise((resolve) => {
-              if (img.complete) {
-                resolve()
-              } else {
-                img.onload = () => resolve()
-                img.onerror = () => resolve()
-              }
-            })
-          })
-        ).then(() => {
-          scroll_bottom()
-        })
-      } else {
-        scroll_bottom()
-      }
-    } else {
-      scroll_bottom()
-    }
-  }
+  await view();
+  await scroll_bottom()
 })
 
 
@@ -546,3 +530,12 @@ onUnmounted(() => {
   document.removeEventListener("mouseup", () => {});
 });
 </script>
+
+<style scoped>
+.msgContainerBottom {
+  /* 确保div不会影响布局但能被滚动到 */
+  height: 0;
+  margin: 0;
+  padding: 0;
+}
+</style>
