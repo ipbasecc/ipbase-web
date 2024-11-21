@@ -32,6 +32,7 @@
           />
         </template>
       </q-tabs>
+      <q-btn color="primary" icon="check" label="OK" @click="$q.dark.toggle()" />
     </section>
     <q-layout
       v-if="teamStore?.card"
@@ -98,7 +99,7 @@
       </q-drawer>
 
       <q-page-container>
-        <q-page>
+        <q-page :class="$q.dark.mode ? 'bg-dark' : 'bg-grey-1'">
           <template v-if="current_model === 'overview'">
             <OverView wasAttached_to="card" :hideMedia="true" @current_version="set_current_version" class="absolute-full" />
           </template>
