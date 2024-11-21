@@ -81,7 +81,10 @@
           </q-tabs>
           <q-space />
         </q-bar>
-        <OverView v-if="!$q.screen.gt.xs" wasAttached_to="card" :current_versionRef="current_version" :onlyMedia="true" />
+
+        <q-responsive :ratio="16/9">
+          <OverView v-if="!$q.screen.gt.xs" wasAttached_to="card" :current_versionRef="current_version" :onlyMedia="true" />
+        </q-responsive>
       </q-header>
 
       <q-drawer
