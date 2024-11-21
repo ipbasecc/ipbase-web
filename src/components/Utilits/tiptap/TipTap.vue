@@ -102,7 +102,7 @@
         </template>
         <slot name="more_btn"></slot>
       </div>
-      <bubble-menu v-if="editor" ref="bubble-menuRef"
+      <bubble-menu v-if="editor && show_bubbleMenu" ref="bubble-menuRef"
         :editor="editor"
         :tippy-options="{ duration: 100, maxWidth: 'none', }"
         class="bubble-menu"
@@ -194,7 +194,6 @@ import { uiStore, userStore } from "src/hooks/global/useStore";
 import { useFileDialog } from "@vueuse/core";
 import { confirmUpload } from "src/hooks/utilits/useConfirmUpload.js";
 import { useDropZone } from "@vueuse/core";
-import { useI18n } from 'vue-i18n';
 import BubbleMenuContent from './BubbleMenu.vue'
 
 import javascript from 'highlight.js/lib/languages/javascript'
@@ -223,11 +222,14 @@ lowlight.register('ts', typescript)
 lowlight.register('bash', bash)
 lowlight.register('sql', sql)
 
-const { t } = useI18n();
 const $q = useQuasar();
 
 const props = defineProps({
   show_toolbar: {
+    type: Boolean,
+    default: true,
+  },
+  show_bubbleMenu: {
     type: Boolean,
     default: true,
   },
@@ -376,28 +378,21 @@ const init = () => {
       ]
     },
   })
-  const _HardBreak = props.for !== 'chat' ? HardBreak.extend({
-    addKeyboardShortcuts() {
-      return {
-        // ↓ 禁用Ctrl + Enter,改为发送消息
-        'Mod-Enter': () => {
-          tiptapBlur();
-          emit("ModEnter");
-        },
-      }
-    },
-  }) : HardBreak;
 
   editor.value = new Editor({
     content: tiptapContent.value,
     editable: isEditable.value,
     autofocus: isEmpty.value,
     editorProps: {
-      // clipboardTextParser(text, $context) {
-      //   // 在这里处理粘贴的文本
-      //   // 例如，调用 cleanHtmlHandler 处理 HTML
-      //   return cleanHtmlHandler(text);
-      // },
+      handleKeyDown: (view, event) => {
+        // 检查是否是 Ctrl+Enter 或 Cmd+Enter
+        if (props.for === 'chat' && ((event.ctrlKey || event.metaKey) && event.key === 'Enter')) {
+          tiptapBlur();
+          emit("ModEnter");
+          return true; // 阻止默认行为
+        }
+        return false; // 允许其他键盘事件正常处理
+      },
     },
     extensions: [
       TextStyle,
@@ -423,7 +418,7 @@ const init = () => {
       Document,
       Dropcursor,
       Gapcursor,
-      _HardBreak,
+      HardBreak,
       Heading,
       History,
       HorizontalRule,

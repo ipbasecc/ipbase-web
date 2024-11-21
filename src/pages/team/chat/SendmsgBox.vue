@@ -10,6 +10,7 @@
           for="chat"
           class="message_sender"
           :contentChanged="isContentChanged"
+          @ModEnter="sendMsg(msg)"
           @tiptapUpdate="tiptapUpdate"
           @contentChanged="contentChanged"
           @keyup.ctrl.enter="sendMsg(msg)"
@@ -76,10 +77,8 @@
 <script setup>
 import { ref, toRef, watchEffect } from "vue";
 import { sendPost } from "src/api/mattermost.js";
-import { mm_wsStore } from "src/hooks/global/useStore.js";
 import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
 import uploadFile from "src/pages/Chat/components/wigets/uploadFile.vue";
-import LoadingBlock from "src/components/VIewComponents/LoadingBlock.vue";
 
 import TurndownService from "turndown";
 
