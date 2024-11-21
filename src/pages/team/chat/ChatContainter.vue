@@ -94,6 +94,7 @@
                 </template>
               </q-infinite-scroll>
             </q-pull-to-refresh>
+            <div class="msgContainerBottom" ref="msgContainerBottom"></div>
           </q-scroll-area>
           <div v-if="teamStore.mm_channel?.wasblocked || teamStore.mm_channel?.isblocked" class="full-width q-pa-xl border flex flex-center">
             {{ `${teamStore.mm_channel?.wasblocked ? '您已被对方屏蔽' : '您已屏蔽对方'}，不能发送消息` }}
@@ -105,7 +106,7 @@
         <div class="fit" :class="hoverSplitterLine ? 'bg-primary' : ''"></div>
       </template>
       <template v-slot:after>
-        <div class="absolute-full"
+        <div class="absolute-full chat_pannel"
              :class="$q.dark.mode ? 'bg-grey-10 text-grey-1' : 'bg-grey-1 text-grey-10'"
         >
           <ThreadContainer
@@ -136,7 +137,7 @@
       <div class="q-space column">
         <template v-if="uiStore.chat_pannel">
           <div
-              class="absolute-full"
+              class="absolute-full chat_pannel"
               :class="
               $q.dark.mode ? 'bg-grey-10 text-grey-1' : 'bg-grey-1 text-grey-10'
             "
@@ -293,9 +294,11 @@ const togglePowerpannel = (pannel) => {
 };
 
 const scrollAreaRef = ref();
+const msgContainerBottom = ref(null);
 const scroll_bottom = async (_val) => {
   await nextTick();  
   scrollAreaRef.value?.setScrollPercentage("vertical",1,300);
+  // scrollAreaRef.value.setScrollPosition('vertical', msgContainerBottom.value.offsetBottom, 0);
 };
 async function onLoad (index, done)  {
   await fetchMore();  
@@ -435,6 +438,8 @@ watch(
           const readingHistory =
               _bottom - scrollInfo.verticalContainerSize * 2 > 0;
           if (mm_me.value?.id !== sender && readingHistory) {
+            console.log('他人发送的');
+            
             const avatar = await useFetchAvatar(sender);
             $q.notify({
               message: $t('got_new_messages'),
@@ -452,7 +457,7 @@ watch(
               ],
             });
           } else {
-            await nextTick();
+            console.log('自己发送的');
             setTimeout(() => {
               scroll_bottom();
             }, 1);

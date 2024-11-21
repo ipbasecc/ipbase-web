@@ -85,6 +85,12 @@ body * {
   overflow: hidden !important;
 }
 
+.message_body img, .message-attachments img, .message_sender img {
+  max-width: 33%;
+}
+.chat_pannel .message_body img {
+  max-width: 100%;
+}
 p {
   margin: 0;
 }

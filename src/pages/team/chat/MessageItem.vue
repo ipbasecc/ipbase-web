@@ -1,6 +1,6 @@
 <template>
   <div v-if="msg?.message" v-bind="$attrs"
-    class="row no-wrap gap-md q-py-xs q-px-md"
+    class="row no-wrap gap-md q-py-xs q-px-md message"
     :class="`
       ${is_sameUser ? '' : 'q-mt-sm'}
       ${msg.type.includes('system_') ? '' : 'hovered-item'}
@@ -54,6 +54,7 @@
         </span>
         <div
           v-html="html"
+          class="message_body"
           :class="!msg?.root_id ? 'cursor-pointer' : ''"
           @click="enterThread(msg)"
         ></div>
@@ -190,7 +191,7 @@
 </template>
 
 <script setup>
-import {computed, ref, toRefs} from "vue";
+import {computed, ref, toRefs, getCurrentInstance} from "vue";
 import {useFetch_mmMember} from "src/hooks/mattermost/api.js";
 import UserAvatar from "src/pages/team/components/user/UserAvatar.vue";
 import showFile from "src/pages/Chat/components/wigets/showFile.vue";
@@ -201,6 +202,9 @@ import {fetch_userPreferences} from "src/hooks/mattermost/useMattermost.js";
 import {marked} from "marked";
 import {mmstore, mmUser, teamStore} from "src/hooks/global/useStore.js";
 import TimeAgo from "pages/team/components/widgets/TimeAgo.vue";
+
+import { useImagePreview } from 'src/hooks/useImagePreview.js'
+const { preview } = useImagePreview()
 
 const props = defineProps({
   msg: {
@@ -345,12 +349,19 @@ const toggle_pin = (i) => {
 
 //关注主题
 const followThreadFn = async (i) => {
-  console.log("followThreadFn", i);
+  // console.log("followThreadFn", i);
   await followThread(cur_mmUser.value, teamStore.mm_team?.id, i.id);
 };
-// 当前用户操作 - 结束
 
 const enterThread = (msg) => {
+  const isImageClick = event?.target?.tagName?.toLowerCase() === 'img';
+  const imgSrc = event?.target?.getAttribute('src');
+  
+  if (isImageClick && imgSrc) {
+    preview(imgSrc);
+    return;
+  }
+  
   emit("enterThread", msg);
 };
 </script>

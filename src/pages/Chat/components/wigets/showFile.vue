@@ -1,12 +1,11 @@
 <template>
-  <div class="column no-wrap gap-xs">
+  <div class="column no-wrap gap-xs message-attachments">
     <div v-for="i in filesRef" :key="i.id" class="row no-wrap">
         <div v-if="imageExtensions.includes(i.extension)" class="q-space">
             <img
                 v-if="i.preview"
                 :src="i.preview"
                 class="cursor-pointer"
-                style="max-width: 100%;"
                 @click.stop="showFile(i.id).then(res => {$hevueImgPreview({url:res,clickMaskCLose: true})})"
             />
             <q-img

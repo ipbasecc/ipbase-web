@@ -8,6 +8,7 @@
           need="md"
           ref="tiptapRef"
           for="chat"
+          class="message_sender"
           :contentChanged="isContentChanged"
           @tiptapUpdate="tiptapUpdate"
           @contentChanged="contentChanged"
