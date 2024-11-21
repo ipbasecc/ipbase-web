@@ -3,9 +3,7 @@ import { sortByField } from 'src/hooks/utilits.js'
 import { i18n } from 'src/boot/i18n.js';
 const $t = i18n.global.t;
 
-export default function useOverview(version) {
-  console.log('version', version);
-  
+export default function useOverview(version) {  
   const playlist = computed(() => {
     if(version?.mps_info) {
       let media = version.mps_info.mediaList.media[0];

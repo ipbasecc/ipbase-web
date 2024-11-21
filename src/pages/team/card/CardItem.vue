@@ -188,6 +188,7 @@
           :need="'json'"
           :square="true"
           :show_toolbar="false"
+          :show_bubbleMenu="false"
           class="undrag"
           styleClass="q-px-md q-py-sm"
           :hideScroll="cardRef.expand === 'collapse'"

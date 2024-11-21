@@ -490,7 +490,6 @@ watch(
               ],
             });
           } else {
-            console.log('自己发送的');
             setTimeout(() => {
               scroll_bottom();
             }, 1);
