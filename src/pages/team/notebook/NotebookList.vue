@@ -79,6 +79,9 @@ const deletedFn = (val) => {
 }
 const enterLibrary = () => {
     targetList.value = 'notebooks'
+    if(uiStore.app !== 'notebooks') {
+        notebook.value = null;
+    }
 }
 const notebook = ref()
 const enterNotebook = (_notebook) => {

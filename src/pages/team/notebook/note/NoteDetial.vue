@@ -67,7 +67,8 @@ const backList = async () => {
       teamStore.note = null;
       await router.push(`/notebooks/${teamStore.notebook?.id}`)
     } else {
-        uiStore.active_note_id = void 0
+      teamStore.note = null;
+      uiStore.active_note_id = void 0
     }
 }
 
