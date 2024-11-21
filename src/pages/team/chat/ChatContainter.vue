@@ -295,11 +295,14 @@ const togglePowerpannel = (pannel) => {
 
 const scrollAreaRef = ref();
 const msgContainerBottom = ref(null);
-const scroll_bottom = async (_val) => {
-  await nextTick();  
-  scrollAreaRef.value?.setScrollPercentage("vertical",1,300);
-  // scrollAreaRef.value.setScrollPosition('vertical', msgContainerBottom.value.offsetBottom, 0);
-};
+const scroll_bottom = async () => {
+  // 等待DOM更新
+  await nextTick()
+  // 等待一个短暂延时，确保内容渲染完成
+  setTimeout(() => {
+    scrollAreaRef.value?.setScrollPercentage("vertical", 1, 300)
+  }, 40)
+}
 async function onLoad (index, done)  {
   await fetchMore();  
   done();
@@ -389,10 +392,6 @@ const initMsgs = async () => {
     merageMsg(resMsgs.value)
   }
 }
-onBeforeMount(async() => {
-  await initMsgs();
-  uiStore.hide_footer = true
-})
 
 const _channel_id = computed(() => channel_id || route.params.channel_id);
 const view = async () => {
@@ -400,9 +399,9 @@ const view = async () => {
     await __viewChannel(_channel_id.value);
   }
 }
-onMounted(async () => {
-  await scroll_bottom();
-  await view();
+onBeforeMount(async() => {
+  await initMsgs();
+  uiStore.hide_footer = true
   // 如果通过连接直接访问到聊天界面，需要获取Strapi频道、Mattermost频道
   if(!teamStore.mm_channel && _channel_id.value){
     const res = await getMmChannelByID(_channel_id.value);
@@ -410,7 +409,41 @@ onMounted(async () => {
       teamStore.mm_channel = res.data;
     }
   }
-});
+})
+onMounted(async () => {
+  await view()
+  // 等待消息加载和渲染
+  if (messages.value?.length > 0) {
+    // 监听图片加载完成
+    const messageContainer = scrollAreaRef.value?.$el
+    if (messageContainer) {
+      const images = messageContainer.getElementsByTagName('img')
+      console.log(images);
+      
+      if (images.length > 0) {
+        // 等待所有图片加载完成
+        Promise.all(
+          Array.from(images).map(img => {
+            return new Promise((resolve) => {
+              if (img.complete) {
+                resolve()
+              } else {
+                img.onload = () => resolve()
+                img.onerror = () => resolve()
+              }
+            })
+          })
+        ).then(() => {
+          scroll_bottom()
+        })
+      } else {
+        scroll_bottom()
+      }
+    } else {
+      scroll_bottom()
+    }
+  }
+})
 
 
 const mm_me = computed(() => mmUser.me);

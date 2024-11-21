@@ -358,7 +358,7 @@ const enterThread = (msg) => {
   const imgSrc = event?.target?.getAttribute('src');
   
   if (isImageClick && imgSrc) {
-    preview(imgSrc);
+    preview({url:imgSrc,clickMaskCLose: true});
     return;
   }
   
