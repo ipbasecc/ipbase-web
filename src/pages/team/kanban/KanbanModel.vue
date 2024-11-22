@@ -517,6 +517,7 @@ watch(val, async(newVal, oldVal) => {
         } else { // 可能新发布的卡片所在的分栏内原来是空的，这里直接添加
           _column.cards = [cardData]
         }
+        uiStore.updatedCard_for_userTeamAffairs = cardData;
       }
       if(_column){
         let res

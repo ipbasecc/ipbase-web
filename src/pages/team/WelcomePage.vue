@@ -69,11 +69,11 @@
 </template>
 
 <script setup>
-import { ref, watch, watchEffect, computed } from "vue";
+import { ref, watch, watchEffect, computed, nextTick } from "vue";
 import { getCards, getFollowedCards } from "src/api/strapi/project.js";
 import localforage from "localforage";
 
-import { teamStore } from "src/hooks/global/useStore.js";
+import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 
 import QuadrantBackgroud from "src/pages/team/card/components/QuadrantBackgroud.vue";
 import QuadrantChart from "src/pages/team/kanban/QuadrantChart.vue";
@@ -248,6 +248,15 @@ const toggleClass = (val) => {
     JSON.parse(JSON.stringify(cardClass.value))
   );
 };
+const updatedCard_for_userTeamAffairs = computed(() => uiStore.updatedCard_for_userTeamAffairs);
+watch([updatedCard_for_userTeamAffairs, axisData], async() => {
+  if(updatedCard_for_userTeamAffairs.value && Object.keys(axisData.value || {}).length > 0){    
+    const index = allCards.value.findIndex(i => i.id === updatedCard_for_userTeamAffairs.value.id);
+    if(index !== -1){
+      allCards.value[index] = updatedCard_for_userTeamAffairs.value;
+    }
+  }
+},{immediate: true,deep: 2});
 
 watchEffect(() => {
   axisData.value =

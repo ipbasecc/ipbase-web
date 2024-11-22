@@ -97,7 +97,7 @@ const nextDisabled = computed(() => {
 
 let skipChannel = false
 const teamInitialized = (val) => {
-  console.log('teamInitialized', val);
+  // console.log('teamInitialized', val);
   
   if(val.join?.message){
     skipChannel = true

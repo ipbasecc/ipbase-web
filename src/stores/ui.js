@@ -170,6 +170,7 @@ export default defineStore("ui", {
     show_meet: false,
     show_subscription: false,
     dialogNotify: null,
+    updatedCard_for_userTeamAffairs: null,
   }),
   actions: {
     $reset() {
