@@ -292,6 +292,13 @@ export function parseUrl(url) {
   }
   return params;
 }
+export function parseQueryParams(queryParams) {
+  const params = {};
+  for (const [key, value] of queryParams.entries()) {
+      params[key] = value;
+  }
+  return params;
+}
 
 export function ensureTrailingSlash(path) {
   // 检查路径是否以 '/' 结束

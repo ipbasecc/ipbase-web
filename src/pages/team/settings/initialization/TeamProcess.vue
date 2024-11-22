@@ -5,7 +5,7 @@
                 <span class="font-large text-h1">团队</span>
                 <span class="font-large">您可以在团队中创建讨论频道、协作项目！</span>
 
-                <q-card v-if="teamStore?.team" bordered class="q-mt-md bg-purple text-white">
+                <q-card v-if="!teamStore?.team" bordered class="q-mt-md bg-purple text-white">
                     <q-card-section class="q-px-lg">
                         <div class="text-h6">您已完成了团队初始化</div>
                         <div class="text-x-large">现在可以进行下一步了</div>
@@ -59,7 +59,7 @@
 import { ref } from 'vue'
 import { teamStore } from "src/hooks/global/useStore";
 import CreateTeam from '../../components/CreateTeam.vue'
-import { isValidUrl, parseUrl } from 'src/hooks/utilits.js'
+import { isValidUrl, parseQueryParams } from 'src/hooks/utilits.js'
 import { join } from 'src/pages/team/hooks/useInvite.js'
 import { setDefaultTeam, getTeamByID } from 'src/api/strapi/team.js'
 const emit = defineEmits(['teamInitialized'])
@@ -74,27 +74,46 @@ const completedCreate = async (val) => {
    await setDefaultTeamFn(val.id)
 }
 const setDefaultTeamFn = async (_team_id) => {
-  const params = {
-    data: {
-      default_team: _team_id,
-    },
-  };
-  const res = await setDefaultTeam(params);
-  if (res?.data) {
-    teamStore.$reset_team();
-    teamStore.team = res.data;
-    teamStore.mm_team = res.data.mm_team;
-  }
+    if(!_team_id) return;
+    const params = {
+        data: {
+        default_team: _team_id,
+        },
+    };
+    const res = await setDefaultTeam(params);
+    if (res?.data) {
+        teamStore.$reset_team();
+        teamStore.team = res.data;
+        teamStore.mm_team = res.data.mm_team;
+    }
 };
+
+
+
 const joinTeam = async () => {
     if(isValidUrl(invite_link.value)){
-        const { team_id, channel_id, project_id, invite_code } = parseUrl(invite_link.value)
+
+        const url = new URL(invite_link.value);
+        const urlParams = new URLSearchParams(url.search);
+        const code = urlParams.get('code');
+        const decodedCode = atob(code);
+        const queryParams = new URLSearchParams(decodedCode);
+
+        console.log('queryParams', decodedCode, queryParams);
+        
+        const { team_id, channel_id, project_id, invite_code } = parseQueryParams(queryParams)
         const Msg = await join(team_id, channel_id, project_id, invite_code)
-        await setDefaultTeamFn(team_id)
-        emit('teamInitialized', {
-            join: Msg
-        })
-    }
+        // 加入成功后，如果加入的是团队，设置默认团队，
+        //如果不是，且用户没有默认团队，应该设置，不过不需要在此处设置，后端在用户访问时，如果发现用户没有设置默认团队，会自动设置，此处可以不处理
+        if(Msg){
+            if(team_id){
+                await setDefaultTeamFn(team_id)
+            }
+            emit('teamInitialized', {
+                join: Msg
+            })
+        }
+    }   
 }
 </script>
 

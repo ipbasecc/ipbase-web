@@ -144,6 +144,11 @@ const checkNotification = async () => {
   }
 }
 
+const toLogin = async () => {
+  uiStore.axiosStautsCode = void 0;
+  await clearLocalDB('TeamLayout.vue');
+  window.location.reload();
+};
 const initFn  = async () => {
   console.log('init', teamStore.init);
   
@@ -201,11 +206,6 @@ watchEffect(() => {
   uiStore.hide_footer = !need_show_footer.includes(routeName.value);
   uiStore.hide_top = !need_show_top.includes(routeName.value);
 });
-const toLogin = async () => {
-  uiStore.axiosStautsCode = void 0;
-  await clearLocalDB('TeamLayout.vue');
-  window.location.reload();
-};
 
 const connect_refused = computed(() => uiStore.serverResfused);
 const serverRefusedHandler = () => {

@@ -97,6 +97,7 @@ const nextDisabled = computed(() => {
 
 let skipChannel = false
 const teamInitialized = (val) => {
+  console.log('teamInitialized', val);
   
   if(val.join?.message){
     skipChannel = true
@@ -105,6 +106,9 @@ const teamInitialized = (val) => {
   if(val.create){
     teamStore.team = val.create;
     nextStep.value = 2;
+  }
+  if(val.join?.code === 301){
+    step.value = 3
   }
 }
 const emit = defineEmits(['Initialized']);
