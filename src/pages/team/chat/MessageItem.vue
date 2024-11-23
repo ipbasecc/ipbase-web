@@ -5,7 +5,7 @@
       ${is_sameUser ? '' : 'q-mt-sm'}
       ${msg.type.includes('system_') ? '' : 'hovered-item'}
       ${curThreadId === msg.id ? 'active' : ''}
-      ${!msg?.root_id && !msg.type.includes('system_') ? 'mm_message' : msg.props?.strapi ? 'unselected' : ''}
+      ${!msg?.root_id && !msg.type.includes('system_') && msg.props?.strapi?.event !== 'class_publish' ? 'mm_message' : msg.props?.strapi ? 'unselected' : ''}
     `"
   >
     <template v-if="msg.type.includes('system_')">
@@ -38,7 +38,7 @@
           <TimeAgo v-if="!MsgOnly" :time="msg.create_at" />
         </div>
         <div v-if="msg.props?.strapi" class="hover-hide transition absolute row items-center justify-end text-grey-6 hover-hide transition"
-          :style="`min-width: ${avatar_size + (!MsgOnly ? 48 : 0)}px;`">
+          :style="`min-width: ${avatar_size + (!MsgOnly ? 48 : 0)}px;height: 25px`">
           <q-icon name="mdi-information-outline" />
         </div>
       </template>
@@ -55,7 +55,7 @@
         <div
           v-html="html"
           class="message_body"
-          :class="!msg?.root_id ? 'cursor-pointer' : ''"
+          :class="!msg?.root_id && msg.props?.strapi?.event !== 'class_publish' ? 'cursor-pointer' : ''"
           @click="enterThread(msg)"
         ></div>
         <template v-if="msg.metadata?.files?.length > 0">
@@ -84,8 +84,7 @@
           </template>
         </div>
         <!-- float action btns-->
-        <div
-          v-if="(wiget_show || menu_expend) && !MsgOnly"
+        <div v-if="(wiget_show || menu_expend) && !MsgOnly && msg.props?.strapi?.event !== 'class_publish'"
           class="absolute transition blur-sm mm_message_wiget radius-sm border overflow-hidden"
           style="right: 10%; bottom: 0"
         >
@@ -191,7 +190,7 @@
 </template>
 
 <script setup>
-import {computed, ref, toRefs, getCurrentInstance} from "vue";
+import {computed, ref, toRefs} from "vue";
 import {useFetch_mmMember} from "src/hooks/mattermost/api.js";
 import UserAvatar from "src/pages/team/components/user/UserAvatar.vue";
 import showFile from "src/pages/Chat/components/wigets/showFile.vue";
@@ -361,7 +360,10 @@ const enterThread = (msg) => {
     preview({url:imgSrc,clickMaskCLose: true});
     return;
   }
-  
+  console.log("enterThread", msg);
+  if(msg.props?.strapi?.event === "class_publish"){
+    return;
+  }
   emit("enterThread", msg);
 };
 </script>

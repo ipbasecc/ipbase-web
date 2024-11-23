@@ -121,6 +121,7 @@ export async function publishCard(card) {
   updateParmars.data.published = true;
 
   let res = await updateCardFn(card.id);
+  delete updateParmars.data.published
   if (res) {
     return res;
   }
@@ -375,22 +376,23 @@ export async function setCardSharecode(card, val) {
 /**
  * 
  * @param {Object} cardRef card的ref
- * @description 当收到卡片聊天内容时，更新卡片的mm_thread，但并不需要等待更新结果
+ * @description 卡片关联的聊天主题更新时，都主动更新一次卡片的mm_thread字段，以便在此读取时可以拿到最新的数据
+ * 后端收到只更新mm_thread的更新请求时，也不会通过ws同步更新信息
  */
-export function updateCardThread(cardRef) {
-  watchEffect(() => {
+export async function updateCardThread(cardRef) {
+  watchEffect(async () => {
     const event = mm_wsStore.event;
     if(event.data?.thread){
       const _thread = JSON.parse(event.data.thread);
       if (event.event === "thread_updated" && _thread.id === cardRef.value?.mm_thread?.id) {
         cardRef.value.mm_thread = _thread;
         updateParmars.data.mm_thread = _thread;
-        updateCard(cardRef.value.id, updateParmars);
+        await updateCard(cardRef.value.id, updateParmars);
         delete updateParmars.data.mm_thread;
       }
     }
     
-    if(mm_wsStore.event?.data?.post){
+    if(event.data?.post){
       let post = JSON.parse(mm_wsStore.event.data.post);
       if (event.event === "posted" && post.root_id === cardRef.value?.mm_thread?.id) {
         cardRef.value.mm_thread.reply_count++;
