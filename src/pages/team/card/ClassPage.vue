@@ -11,6 +11,7 @@
         >
           <q-btn v-if="uiStore.app === 'teams'" dense flat icon="menu" @click="toggleLeftDrawer" />
           <q-space />
+          loading:{{ loading }}
           <template v-if="hasDetialAuth">
             <q-chip v-if="activeVersion && teamStore.card?.overviews.filter(o => o.media)?.length > 1"
               outline dense flat color="primary" clickable class="q-px-sm no-shadow"
@@ -32,11 +33,23 @@
             <q-space />
             <template v-if="teamStore.card?.isCreator">
               <q-btn v-if="!teamStore.card?.published" icon="mdi-eye" color="positive" class="q-mr-lg border"
-              :label="$t('publish')" @click="publishCard()" />
+              :label="$t('publish')" @click="publishCard()">
+                <q-inner-loading :showing="loading">
+                  <q-spinner-dots size="2rem" />
+                </q-inner-loading>
+              </q-btn>
               <q-btn v-else-if="!teamStore.card?.pulled" icon="mdi-cart-off" color="negative" class="q-mr-lg border"
-              :label="$t('pulled')" @click="pulledCard()" />
+              :label="$t('pulled')" @click="pulledCard()">
+                <q-inner-loading :showing="loading">
+                  <q-spinner-dots size="2rem" />
+                </q-inner-loading>
+              </q-btn>
               <q-btn v-else icon="mdi-cart-plus" color="positive" class="q-mr-lg border"
-              :label="$t('unpulled')" @click="unpulledCard()" />
+              :label="$t('unpulled')" @click="unpulledCard()">
+                <q-inner-loading :showing="loading">
+                  <q-spinner-dots size="2rem" />
+                </q-inner-loading>
+              </q-btn>
             </template>
             <q-btn @click="toggleRightDrawer()"
               flat dense size="sm" round
@@ -237,6 +250,7 @@ import NoteDetial from '../notebook/note/NoteDetial.vue'
 import PayButton from 'src/components/order/PayButton.vue'
 import OrderCard from './components/OrderCard.vue'
 import { useQuasar } from "quasar";
+import { loading } from 'src/hooks/team/useCard.js'
 
 const $q = useQuasar();
 const props = defineProps({
@@ -309,6 +323,7 @@ const set_defaultVersion = (id) => {
   overviewRef.value?.set_defaultVersion(id)
 }
 const cant_publish = ref(false)
+
 const publishCard = () => {
   const medias = teamStore.card?.overviews?.filter(i => i.media);  
   if(medias?.length === 0){

@@ -360,7 +360,7 @@ const enterThread = (msg) => {
     preview({url:imgSrc,clickMaskCLose: true});
     return;
   }
-  console.log("enterThread", msg);
+  // console.log("enterThread", msg);
   if(msg.props?.strapi?.event === "class_publish"){
     return;
   }

@@ -22,7 +22,7 @@
           autofocus
           class="full-width"
           @keydown.esc="closeCreate()"
-          @keyup.enter="type_for_create !== 'classroom' && createCardFn"
+          @keyup.enter="createTodoCard()"
         >
           <template v-if="params.data.name && type_for_create !== 'classroom'" v-slot:append>
             <q-btn
@@ -59,8 +59,6 @@
             filled
             class="full-width"
             @keydown.esc="closeCreate()"
-            @keyup.enter="createCardFn"
-            @keyup.ctrl.enter="createCardFn"
           >
             <template #prepend><q-icon color="orange" name="mdi-sale" /></template>
           </q-input>
@@ -318,19 +316,19 @@ watch([isBlur, isCannel], () => {
 const emit = defineEmits(["closeCreate", "created"]);
 
 const createCardFn = async () => {
-  console.log('createCardFn 1');
+  // console.log('createCardFn 1');
   if (isCannel.value || loading.value) return;
   loading.value = true;
-  console.log('createCardFn 2');
+  // console.log('createCardFn 2');
   if (!name_onlyRef.value && !create_with_name.value) {
-    console.log('createCardFn 3');
+    // console.log('createCardFn 3');
     const isChanged = !isEqual(tipta_source, jsonContent.value);
     if (!isChanged || !jsonContent.value) return;
   } else {
-    console.log('createCardFn 4');
+    // console.log('createCardFn 4');
     if (!params.value.data.name) return;
   }
-  console.log('createCardFn 5');
+  // console.log('createCardFn 5');
   let {data} = await createCard(params.value);
   if (data) {
     if(type_for_create.value === 'classroom'){
@@ -339,6 +337,10 @@ const createCardFn = async () => {
     closeCreate(); // 父组件关闭创建窗口
   }
 };
+const createTodoCard = () => {
+  if(type_for_create.value === 'classroom') return;
+  createCardFn(); 
+}
 const closeCreate = () => {
   isCannel.value = true;
   emit("closeCreate");

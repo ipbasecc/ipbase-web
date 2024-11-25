@@ -221,7 +221,7 @@
           :hideToolbar="true"
           :dense="true"
           :uiOptions
-          :class="cardRef?.todogroups?.length === 0 ? 'absolute-full' : ''"
+          :class="(cardRef?.todogroups?.length === 0 || !cardRef?.todogroups) ? 'absolute-full' : ''"
           _for="card"
           layout="column"
         />
@@ -589,7 +589,7 @@
 </template>
 
 <script setup>
-import {computed, reactive, ref, toRef, toRefs, watch, watchEffect, nextTick, onMounted, useTemplateRef} from "vue";
+import {computed, reactive, ref, toRef, toRefs, watch, watchEffect, nextTick, onMounted} from "vue";
 import {useMagicKeys} from "@vueuse/core";
 import StatusMenu from "src/pages/team/components/user/StatusMenu.vue";
 import CardPage from "./CardPage.vue";

@@ -17,6 +17,7 @@ import {
 } from "src/hooks/global/useStore.js";
 
 const project = computed(() => teamStore?.project);
+export const loading = ref(false)
 
 export function clac_cardEdgeStyle(card) {
   let edge = {};
@@ -99,11 +100,16 @@ const updateParmars = reactive({
 });
 
 const updateCardFn = async (card_id) => {
-  let res = await updateCard(card_id, updateParmars);
-  if (res?.data) {
-    return res.data;
-  } else {
-    Notify.create("保存失败");
+  loading.value = true;
+  try {
+    let res = await updateCard(card_id, updateParmars);
+    if (res?.data) {
+      return res.data;
+    } else {
+      Notify.create("更新失败");
+    }
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -299,9 +305,16 @@ export async function removeCard(card, belong_card) {
   } else {
     res = await deleteCard(card.id, project.value?.id);
   }
-
   if (res) {
-    return card.id;
+    if(res.data?.locked){
+      Notify.create({
+        message: "已售出内容不能被删除",
+        color: "negative",
+        position: "top",
+      });
+    } else {
+      return card.id;
+    }
   }
 }
 

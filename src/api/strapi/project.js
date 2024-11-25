@@ -516,6 +516,7 @@ export async function deleteCard(card_id, project_id, belong_card_id) {
     } else {
       res = await api.delete(`/cards/${card_id}?project_id=${project_id}`);
     }
+    // console.log("removeCard", res);
     if (res) {
       return res;
     }

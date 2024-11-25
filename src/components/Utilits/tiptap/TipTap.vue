@@ -365,6 +365,7 @@ const cleanHtmlHandler = (val) => {
   return val.replace(/<[^>]*>?/gm, "");
 };
 const tiptapReadyCount = ref(0);
+const isSlashCommand = ref(false)
 const init = () => {
 
   const pasteRegex = /(?:^|\s)((?:~)((?:[^~]+))(?:~))/g
@@ -389,9 +390,9 @@ const init = () => {
         if (props.for === 'chat' && ((event.ctrlKey || event.metaKey) && event.key === 'Enter')) {
           tiptapBlur();
           emit("ModEnter");
-          return true; // 阻止默认行为
+          return true;
         }
-        return false; // 允许其他键盘事件正常处理
+        return false;
       },
     },
     extensions: [
@@ -450,13 +451,17 @@ const init = () => {
         emit("tiptapReady");
       }
     },
-    // triggered on every change
-    onUpdate: async () => {
-      // console.log('triggered onUpdate');
-      
-      emit("contentChanged", true);
+    onUpdate: async ({ editor, transaction }) => {
+      // 检查是否是斜杠触发的更新
+      isSlashCommand.value = transaction.steps.some(step => {
+        return step.slice?.content?.content?.[0]?.text === '/';
+      });
       await nextTick();
-      tiptapUpdate();
+      
+      if (!isSlashCommand.value) {
+        emit("contentChanged", true);
+        tiptapUpdate();
+      }
     },
     async onBlur({ editor, event }) {
       const sourceVal = JSON.stringify(sourceContent.value);
@@ -577,7 +582,7 @@ const html = computed(() => editor.value && editor.value.getHTML());
 const tiptapBlur = () => {
   // console.log('tiptapBlur');
   
-  if(!isEditable.value || !contentChanged.value) return;
+  if(!isEditable.value || !contentChanged.value || isSlashCommand.value) return;
   const cur = JSON.stringify(json.value);
   const prv = JSON.stringify(tiptapContent.value);
   if (cur === prv) return;
@@ -638,7 +643,7 @@ defineExpose({
 const tiptapUpdate = () => {
   // console.log('contentChanged.value', contentChanged.value, isEditable.value);
   
-  if(!isEditable.value || !contentChanged.value) return;
+  if(!isEditable.value || !contentChanged.value || isSlashCommand.value) return;
   if (needRef.value === "html") {
     emit("tiptapUpdate", html.value);
   }

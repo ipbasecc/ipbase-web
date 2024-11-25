@@ -9,6 +9,10 @@ export default function useSocket(cardRef){
       if(teamStore.team?.id === Number(team_id)){
         if(val.value.event === 'todogroup:created'){
           if(cardRef.value.id === Number(card_id)){
+            if(!cardRef.value.todogroups){
+              cardRef.value.todogroups = [data];
+              return;
+            }
             const index = cardRef.value.todogroups?.findIndex(i => i.id === data.id)
             if(index > -1){
               cardRef.value.todogroups[index] = data
@@ -49,8 +53,8 @@ export default function useSocket(cardRef){
           }
         }
         if(val.value.event === 'todo:updated'){
-          console.log('todo:updated');
-          const index = cardRef.value.todogroups.findIndex(i => i.id === Number(todogroup_id));
+          // console.log('todo:updated');
+          const index = cardRef.value.todogroups?.findIndex(i => i.id === Number(todogroup_id));
           if(index > -1){
             const todoIndex = cardRef.value.todogroups[index].todos.findIndex(i => i.id === data.id);
             if(todoIndex > -1){

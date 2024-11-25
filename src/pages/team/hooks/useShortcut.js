@@ -9,10 +9,9 @@ export default function shortcut() {
     e.preventDefault();
     if (uiStore.navigatorDrawer && teamStore.team) {
       uiStore.navigatorDrawer = false;
-    } else if (uiStore.projectLeftDrawer) {
+    } else if (uiStore.projectLeftDrawer || uiStore.newsLeftDrawer) {
       uiStore.projectLeftDrawer = false;
-    } else if (uiStore.newsLeftDrawer) {
-      uiStore.newsLeftDrawer = false;
+      uiStore.newsLeftDrawer = false
     } else {
       uiStore.appDrawer = false;
     }
@@ -23,11 +22,10 @@ export default function shortcut() {
     e.preventDefault();
     if (!uiStore.isFocusMode && !uiStore.projectLeftDrawer) {
       uiStore.projectLeftDrawer = true;
-    } else if (!uiStore.newsLeftDrawer) {
+    } else if ((!uiStore.newsLeftDrawer || !uiStore.navigatorDrawer) && teamStore.team) {
       uiStore.newsLeftDrawer = true;
-    }  else if (!uiStore.navigatorDrawer && teamStore.team) {
       uiStore.navigatorDrawer = true;
-    }else {
+    } else {
       uiStore.appDrawer = true;
     }
   });
