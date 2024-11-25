@@ -51,11 +51,11 @@
         <template v-if="step > 2">
           <q-space />
           <span class="q-mr-lg op-6">{{$t( Initialized ? 'onboarding_completed_tip' : 'read_functions_tip')}}</span>
-          <q-btn color="primary" padding="sm lg"
-            :label="Initialized ? $t('onboarding_completed_btn_label') : $t('onboarding_skip_btn_label')"
-            @click="complateInit()"
-          />
         </template>
+        <q-btn color="primary" padding="sm lg"
+          :label="Initialized ? $t('onboarding_completed_btn_label') : $t('onboarding_skip_btn_label')"
+          @click="complateInit()"
+        />
       </div>
       </q-stepper-navigation>
     </template>
