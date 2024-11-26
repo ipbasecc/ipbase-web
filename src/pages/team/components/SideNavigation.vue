@@ -298,19 +298,43 @@
     <q-dialog v-model="openCreateProject" persistent>
       <CreateProject @projectCreated="projectCreated" />
     </q-dialog>
+    <q-dialog v-model="buy_service" persistent>
+      <q-card bordered style="width: 61dvw; height: 61dvh;" class="column no-wrap overflow-hidden">
+        <q-toolbar class="transparent">
+          <span>{{ buy_project.name }}</span>
+          <q-space />
+          <q-btn flat round dense size="sm" icon="close" v-close-popup />
+        </q-toolbar>
+        <q-card-section class="q-space q-py-none scroll-y">
+          <TipTap
+            :jsonContent="buy_project.jsonContent"
+            :editable="false"
+            :need="'json'"
+            :square="true"
+            styleClass="fit"
+          />
+        </q-card-section>
+        <q-card-section class="row no-wrap gap-lg">
+          <span class="flex flex-center font-large font-bold-600 text-negative">￥：{{ buy_project.price / 100 || $t('price_free') }}</span>
+          <PayButton
+            v-if="!is_paied"
+            class="q-space" btnColor="negative"
+            subject="project" :commodity="buy_project" buyLabel="buy_service"
+            @buyData="buyData"
+          />
+          <q-btn v-else color="positive" class="q-space" :label="$t('buy_completed')" @click="refreshProject()" />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-scroll-area>
 </template>
 
 <script setup>
-import {computed, ref, watch, watchEffect, nextTick, onMounted} from 'vue';
+import {computed, ref, watch, watchEffect} from 'vue';
 import {useRoute, useRouter} from "vue-router";
 import {fetch_userPreferences, getTeamMembers,} from "src/hooks/mattermost/useMattermost.js";
 import {getChannelByID, updateChannel} from 'src/api/strapi/team.js'
-import {
-  getChannelByID as getMmChannelByID,
-  getChannelUnreads,
-  getUnreadsForTeam
-} from "src/api/mattermost.js";
+import {getChannelByID as getMmChannelByID} from "src/api/mattermost.js";
 import {getProjectNav} from "./SideNavigation.js";
 import UnreadBlock from 'src/pages/team/components/widgets/UnreadBlock.vue'
 import CreateProject from "./CreateProject.vue";
@@ -323,12 +347,13 @@ import {
   enable_channel,
   enable_dashboard,
   enable_project,
-  isExternal,
-  teamMode
+  isExternal
 } from "src/pages/team/hooks/useConfig.js";
 import useProject from 'src/hooks/project/useProject.js';
 import ChannelMenu from './ChannelMenu.vue'
 import {updateUnreads} from 'src/pages/team/chat/hooks/useMm.js';
+import TipTap from 'src/components/Utilits/tiptap/TipTap.vue'
+import PayButton from 'src/components/order/PayButton.vue'
 
 const props = defineProps({
   width: {
@@ -336,7 +361,7 @@ const props = defineProps({
     default: NaN,
   },
 });
-
+const emit = defineEmits(['refreshProject'])
 const $t = i18n.global.t;
 
 const $q = useQuasar();
@@ -415,9 +440,27 @@ watch(mm_team, async(newVal, oldVal) => {
 
   }
 },{immediate:true,deep:false})
+
+const buy_service = ref(false);
+const buy_project = computed(() => teamStore.buy_project);
 const enterProject = async (project) => {
+  console.log('project', project);
+  
   if (project?.auth && !project?.auth?.read) {
-    $q.notify($t('project_not_join_or_was_blocked'));
+    if(project.roles?.length === 0){
+      if(project.type === 'service'){
+        buy_service.value = true;
+        teamStore.buy_project = project;
+      } else {
+        $q.notify($t('project_is_not_member'));
+      }
+    }
+    if(project.roles?.includes('unconfirmed')){
+      $q.notify($t('project_is_unconfirmed'));
+    }
+    if(project.roles?.includes('blocked')) {
+      $q.notify($t('project_is_blocked'));
+    }
     return;
   }
   if (
@@ -544,4 +587,21 @@ const projectCreated = (val) => {
 
 // 后续完善功能后开启
 const enable_orders = ref(false);
+
+const is_paied = ref(false);  
+const buyData = (val) => {
+  if(Number(val.state) === 2){
+    is_paied.value = true
+  } else {
+    $q.notify({
+      message: `error: ${val}`,
+      color: 'negative',
+      position: 'top',
+    })
+  }
+}
+const refreshProject = () => {
+  uiStore.reINIT = true
+  buy_service.value = false
+}
 </script>

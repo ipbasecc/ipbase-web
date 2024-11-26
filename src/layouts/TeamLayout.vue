@@ -163,7 +163,7 @@ const initFn  = async () => {
     toLogin();
   } else {
     uiStore.pageLoaded = true;
-    if(!teamStore.init || !teamStore.team){
+    if(!teamStore.init || !teamStore.team || uiStore.reINIT){
       await loginAndInit();
       if(teamStore.init && !teamStore.init.default_team){
         const cache = await localforage.getItem('default_team');
@@ -180,6 +180,14 @@ const inited = computed(() => teamStore.init);
 watch(inited, async() => {
   await initFn()
 },{immediate: true,deep: true})
+
+const reInit = computed(() => uiStore.reINIT);
+watch(reInit, async() => {
+  if(reInit.value){
+    await initFn()
+    uiStore.reINIT = false
+  }
+})
 
 // 开发环境下，关闭 仅electron可用模式
 onMounted(async () => {

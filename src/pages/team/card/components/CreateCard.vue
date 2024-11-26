@@ -272,7 +272,7 @@ watchEffect(() => {
 // 此处同步接收Tiptap的内容，用户在输入内容后直接点击新建按钮可能不会触发Blur事件
 const tiptapUpdate = (val) => {
   if (isCannel.value) return;
-  console.log("tiptapUpdate");
+  // console.log("tiptapUpdate");
 
   jsonContent.value = val;
 };
@@ -290,7 +290,7 @@ const tipta_source = {
 const contentChanged = ref(false);
 const tiptapBlur = async (val) => {
   if (loading.value || isCannel.value) return;
-  console.log("tiptapBlur", val);
+  // console.log("tiptapBlur", val);
 
   const isChanged = !isEqual(tipta_source, val);
   if (!isChanged) {

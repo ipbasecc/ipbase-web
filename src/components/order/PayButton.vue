@@ -1,5 +1,5 @@
 <template>
-    <q-btn v-bind="$attrs" :color="btnColor ? btnColor : 'primary'" icon="check" :label="$t('buy')" @click="openCreateOrder()" />
+    <q-btn v-bind="$attrs" :color="btnColor ? btnColor : 'primary'" icon="check" :label="$t(buyLabel || 'buy')" @click="openCreateOrder()" />
     <q-dialog v-model="showCreate" persistent>
         <q-card bordered class="column no-wrap" style="min-width: 24rem; min-height: 18rem;">
             <q-card-section class="q-space column no-wrap q-pa-none" :class="`bg-${color}`">
@@ -57,13 +57,13 @@ import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import { createOrder } from 'src/api/strapi.js'
 import usePayment from './usePayment';
 import QrcodeVue from "qrcode.vue";
-import { teamStore } from "src/hooks/global/useStore.js";
+import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 import WxPay from 'src/pages/team/components/widgets/icons/WxPay.vue'
 import AliPay from 'src/pages/team/components/widgets/icons/AliPay.vue'
 
 const { paymentWays } = usePayment();
 
-const { subject, commodity, btnColor } = defineProps(['subject','commodity', 'btnColor'])
+const { subject, commodity, btnColor, buyLabel } = defineProps(['subject','commodity', 'btnColor', 'buyLabel'])
 const emit = defineEmits(['buyData'])
 
 const showCreate = ref(false);
@@ -147,13 +147,16 @@ watch(income, () => {
     const { data, event } = income.value
     if(event === 'pay:completed' && data?.payOrderId === payOrderId.value){
         state.value = data?.state
-        if(data.commodity){
+        if(data.commodity && data.card_id){
             data.commodity.payState = {
                 cardState: {
                     isPaied: true
                 }
             }
             emit('buyData', data.commodity)
+        }
+        if(data.project_id){
+            emit('buyData', data)
         }
         showCreate.value = false
     }

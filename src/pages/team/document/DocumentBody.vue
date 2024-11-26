@@ -1,6 +1,7 @@
 <template>
   <DocumentTiptap v-if="teamStore.active_document" :key="teamStore.active_document.id"
-    :document="teamStore.active_document" :by_info :contentStyle :showClose="true" @close="close"
+    class="fit" :class="$q.screen.gt.xs ? 'limit' : ''"
+    :document="teamStore.active_document" :by_info :showClose="true" @close="close"
   />
 </template>
 
@@ -31,12 +32,8 @@ const props = defineProps({
   },
 });
 
-const { project_id, document_id, by_info } = toRefs(props);
-const contentStyle = computed(() => {
-  return $q.screen.gt.xs ? 'max-width: 64rem;' : 'max-width: 100%;'
-})
+const { by_info } = toRefs(props);
 
-const document = ref();
 watchEffect(async () => {
   if (by_info.value.by === "project") {
     by_info.value.project_id = teamStore.project?.id;
@@ -54,4 +51,9 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss">
+.limit .tiptapBody div {
+  max-width: 64rem;
+  margin: 0 auto;
+}
+</style>

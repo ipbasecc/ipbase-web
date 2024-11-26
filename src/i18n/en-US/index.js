@@ -301,7 +301,9 @@ export default {
   ctrl_enter_send: 'Ctrl + Enter send',
   channel_not_join_or_was_blocked: 'You have not formally joined this channel or you have been blocked by the channel administrator',
   project_not_join_or_was_blocked: 'You have not formally joined this project or you have been blocked by the project administrator',
-
+  project_is_unconfirmed: 'You have joined, please wait for the administrator to approve',
+  project_is_not_member: 'You have not joined this project',
+  project_is_blocked: 'You have been blocked by the project administrator',
   no_verifild_cant_access: 'You have not passed the administrator verification and cannot access this team temporarily',
   was_blocked_cant_access: 'You have been blocked by the team administrator and please try to contact the administrator to appeal',
 
@@ -459,6 +461,7 @@ export default {
   project_settings: 'project settings',
   please_wait: 'please wait...',
   project_setting_basic: 'bacic',
+  project_service_content: 'service content',
   project_setting_enable: 'function',
   project_setting_preferences: 'preferences',
   project_setting_role: 'premission',
@@ -790,6 +793,8 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   tiptap_slash_menu_insert: 'Insert',
 
   buy: 'buy',
+  buy_service: 'Buy Service',
+  buy_completed: 'Purchase Completed',
   drop_or_pick_cover: 'Drag or Click to Select Cover',
   drop_or_pick_logo: 'Drag or Click to Select Logo',
   unpublished: 'Unpublished',

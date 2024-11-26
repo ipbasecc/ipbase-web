@@ -301,7 +301,9 @@ export default {
   ctrl_enter_send: 'Ctrl + Enter 发送',
   channel_not_join_or_was_blocked: '您尚未正式加入该频道、或您已被该项目管理员屏蔽',
   project_not_join_or_was_blocked: '您尚未正式加入该项目、或您已被该项目管理员屏蔽',
-
+  project_is_unconfirmed: '您已加入，请等待管理员审核。',
+  project_is_not_member: '您尚未加入该项目',
+  project_is_blocked: '您已被该项目管理员屏蔽',
   no_verifild_cant_access: '您尚未通过管理员验证，暂时不能访问此团队',
   was_blocked_cant_access: '您已被该团队管理员屏蔽，请尝试联系管理员申诉',
 
@@ -459,6 +461,7 @@ export default {
   project_settings: '项目设置',
   please_wait: '请稍候...',
   project_setting_basic: '基本信息',
+  project_service_content: '服务信息',
   project_setting_enable: '功能设置',
   project_setting_preferences: '偏好设置',
   project_setting_role: '权限',
@@ -790,6 +793,8 @@ export default {
   tiptap_slash_menu_insert: '插入',
 
   buy: '购买',
+  buy_service: '购买服务',
+  buy_completed: '购买完成',
   drop_or_pick_cover: '拖拽或点击选择封面',
   drop_or_pick_logo: '拖拽或点击选择Logo',
   unpublished: '未发布',

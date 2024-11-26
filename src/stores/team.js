@@ -11,6 +11,7 @@ export default defineStore("team", {
     direct_user: null,
     navigation: null,
     project: null,
+    buy_project: null,
     project_id: null,
     board: null,
     kanban: null,
@@ -87,14 +88,14 @@ export default defineStore("team", {
       return state.team?.level_detail; // 计算属性
     },
     $storageCapacityExceeded: (state) => {
-      const limit = state.team?.level_detail.team_storage_max_limit * 1024 * 1024 // 后端返回的是 G 为单位，这里转为kb
+      const limit = state.team?.level_detail?.team_storage_max_limit * 1024 * 1024 // 后端返回的是 G 为单位，这里转为kb
       return limit < state.team?.statistics?.storage_size; // 计算属性
     },
     $cardNumberExceeded: (state) => {
-      return state.team?.level_detail.card_number_limit < state.team?.statistics?.cards_number; // 计算属性
+      return state.team?.level_detail?.card_number_limit < state.team?.statistics?.cards_number; // 计算属性
     },
     $teamMembersExceeded: (state) => {
-      if(state.team?.level_detail.team_members_limit === -1){
+      if(state.team?.level_detail?.team_members_limit === -1){
         return false
       }
       return state.team?.level_detail?.team_members_limit < state.team?.statistics?.member_number;

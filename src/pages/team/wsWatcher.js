@@ -8,6 +8,7 @@ import { cleanCache } from 'src/pages/team/hooks/useAuths.js'
 import { useQuasar } from "quasar";
 import { useDocumentVisibility, useWindowFocus } from '@vueuse/core'
 import { findCard } from "src/api/strapi/project.js";
+import { getOneProject } from "src/api/strapi/project.js";
 
 
 export default function useWatcher() {
@@ -273,10 +274,20 @@ export default function useWatcher() {
         }
       }
       if(val.value.event === 'project:project_modify'){
-        teamStore.project = mergeObjects(teamStore.project, data.project);        
+        let _project
+        const res = await getOneProject(project_id);
+        if(res?.data){
+          _project = res.data;
+        }
+        if(teamStore.project?.id === Number(project_id)){
+          teamStore.project = _project;
+        }
+        if(teamStore.buy_project?.id === Number(project_id)){
+          teamStore.buy_project = _project;
+        }
         const index = teamStore.team.projects.findIndex(i => i.id === Number(project_id));
         if(index > -1){
-          teamStore.team.projects[index] = mergeObjects(teamStore.team.projects[index], data.project);
+          teamStore.team.projects[index] = _project;
         }
       }
 

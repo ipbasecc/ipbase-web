@@ -11,7 +11,6 @@
         >
           <q-btn v-if="uiStore.app === 'teams'" dense flat icon="menu" @click="toggleLeftDrawer" />
           <q-space />
-          loading:{{ loading }}
           <template v-if="hasDetialAuth">
             <q-chip v-if="activeVersion && teamStore.card?.overviews.filter(o => o.media)?.length > 1"
               outline dense flat color="primary" clickable class="q-px-sm no-shadow"
@@ -198,7 +197,8 @@
                 <template #buyBtn>
                   <PayButton
                     class="full-width" btnColor="negative"
-                    subject="card" :commodity="teamStore.card" @buyData="buyData"
+                    subject="card" :commodity="teamStore.card"
+                    @buyData="buyData"
                   />
                 </template>
               </OrderCard>

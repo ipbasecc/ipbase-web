@@ -301,7 +301,9 @@ export default {
   ctrl_enter_send: 'Strg + Eingabetaste zum Senden',
   channel_not_join_or_was_blocked: 'Sie sind noch nicht offiziell diesem Kanal beigetreten oder wurden vom Kanaladministrator blockiert',
   project_not_join_or_was_blocked: 'Sie sind noch nicht offiziell diesem Projekt beigetreten oder wurden vom Projektadministrator blockiert',
-  
+  project_is_unconfirmed: 'Sie sind bereits beigetreten, bitte warten Sie auf die Bestätigung des Administrators',
+  project_is_not_member: 'Sie sind noch nicht diesem Projekt beigetreten',
+  project_is_blocked: 'Sie wurden von diesem Projektadministrator blockiert, bitte versuchen Sie, sich an den Administrator zu wenden',
   no_verifild_cant_access: 'Sie wurden noch nicht vom Administrator bestätigt und können diese Gruppe vorübergehend nicht aufrufen',
   was_blocked_cant_access: 'Sie wurden von diesem Gruppenadministrator blockiert, bitte versuchen Sie, sich an den Administrator zu wenden',
 
@@ -459,6 +461,7 @@ export default {
   project_settings: 'Projekteinstellungen',
   please_wait: 'Bitte warten...',
   project_setting_basic: 'Grundeinstellungen',
+  project_service_content: 'Dienstinformationen',
   project_setting_enable: 'Funktions-Einstellungen',
   project_setting_preferences: 'Einstellungsoptionen',
   project_setting_role: 'Rollen',
@@ -790,6 +793,8 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   tiptap_slash_menu_insert: 'Einfügen',
 
   buy: 'Kaufen',
+  buy_service: 'Service kaufen',
+  buy_completed: 'Kauf abgeschlossen',
   drop_or_pick_cover: 'Ziehen oder Klicken zum Auswählen des Covers',
   drop_or_pick_logo: 'Ziehen oder Klicken zum Auswählen des Logos',
   unpublished: 'Unveröffentlicht',

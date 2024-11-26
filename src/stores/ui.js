@@ -172,6 +172,7 @@ export default defineStore("ui", {
     dialogNotify: null,
     updatedCard_for_userTeamAffairs: null,
     slashMenuOpen: false,
+    reINIT: false,
   }),
   actions: {
     $reset() {

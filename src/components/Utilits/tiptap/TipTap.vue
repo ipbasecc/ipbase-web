@@ -1,5 +1,5 @@
 <template>
-  <div class="fit column no-wrap q-space items-center" :class="toolbar_onBottom ? 'reverse' : ''" ref="tiptap">
+  <div class="column no-wrap" :class="toolbar_onBottom ? 'reverse' : ''" ref="tiptap">
     
     <template v-if="isEditable">
       <div v-if="show_toolbar && isEditable"
@@ -92,7 +92,8 @@
             </q-popup-proxy>
           </q-btn>
 
-          <q-btn v-else-if="i.type === 'save' && i.always_show" flat dense size="sm" class="q-mr-md" :color="saving ? 'primary' : ''" :disable="saving" @click="tiptapSave">
+          <q-btn v-else-if="i.type === 'save' && i.always_show" flat dense size="sm" class="q-mr-md"
+          :color="saving ? 'primary' : ''" :disable="saving" @click="tiptapSave">
             <q-spinner-dots v-if="saving"
               size="1em"
               :thickness="2"

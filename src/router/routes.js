@@ -27,110 +27,107 @@ const routes = [
             path: "/teams/projects",
             component: () => import("pages/team/ProjectBody.vue"),
             name: "team_project_homepage",
+            props: true
+          },
+          {
+            path: "/teams/projects/:project_id",
+            component: () => import("pages/team/ProjectBody.vue"),
+            name: "team_projects_page",
             props: true,
             children: [
               {
-                path: "/teams/projects/:project_id",
-                component: () => import("pages/team/ProjectBody.vue"),
-                name: "team_projects_page",
+                path: "/teams/projects/:project_id/chat",
+                component: () => import("pages/team/chat/TeamChat.vue"),
+                name: "team_project_chat_homepage",
                 props: true,
-                children: [
-                  {
-                    path: "/teams/projects/:project_id/chat",
-                    component: () => import("pages/team/chat/TeamChat.vue"),
-                    name: "team_project_chat_homepage",
-                    props: true,
-                  },
-                  {
-                    path: "/teams/projects/:project_id/chat/:channel_id",
-                    component: () => import("pages/team/chat/TeamChat.vue"),
-                    name: "team_project_chat_page",
-                    props: true,
-                  },
-                  {
-                    path: "/teams/projects/:project_id/kanban",
-                    component: () => import("src/pages/team/kanban/KanbanPage.vue"),
-                    name: "team_kanban_homepage",
-                    props: true,
-                  },
-                  {
-                    path: "/teams/projects/:project_id/kanban/:kanban_id",
-                    component: () => import("src/pages/team/kanban/KanbanPage.vue"),
-                    name: "team_kanban_page",
-                    props: true,
-                  },
-                  {
-                    path: "/teams/projects/:project_id/classroom",
-                    component: () => import("src/pages/team/kanban/KanbanPage.vue"),
-                    name: "team_classroom_homepage",
-                    props: true,
-                  },
-                  {
-                    path: "/teams/projects/:project_id/classroom/:kanban_id",
-                    component: () => import("src/pages/team/kanban/KanbanPage.vue"),
-                    name: "team_classroom_page",
-                    props: true,
-                  },
-                  {
-                    path: "/teams/projects/:project_id/document",
-                    component: () => import("src/pages/team/document/DocumentBody.vue"),
-                    name: "team_project_document_homepage",
-                    props: true,
-                  },
-                  {
-                    path: "/teams/projects/:project_id/document/:document_id",
-                    component: () =>
-                        import("src/pages/team/document/DocumentBody.vue"),
-                    name: "team_project_document_page",
-                    props: true,
-                  },
-                  {
-                    path: "/teams/projects/:project_id/storage",
-                    component: () =>
-                        import("src/pages/team/storage/StoragePage.vue"),
-                    name: "team_project_storage_homepage",
-                    props: true,
-                  },
-                  {
-                    path: "/teams/projects/:project_id/storage/:storage_id",
-                    component: () =>
-                        import("src/pages/team/storage/StoragePage.vue"),
-                    name: "team_project_storage_page",
-                    props: true,
-                  },
-                  {
-                    path: "/teams/projects/:project_id/schedule",
-                    component: () =>
-                        import("src/pages/team/schedule/SchedulePage.vue"),
-                    name: "team_project_schedule_homepage",
-                    props: true,
-                  },
-                  {
-                    path: "/teams/projects/:project_id/schedule/:schedule_id",
-                    component: () =>
-                        import("src/pages/team/schedule/SchedulePage.vue"),
-                    name: "team_project_schedule_page",
-                    props: true,
-                  },
-                  {
-                    path: "/teams/projects/:project_id/segment",
-                    component: () => import("src/pages/team/kanban/KanbanPage.vue"),
-                    name: "team_segment_homepage",
-                    props: true,
-                  },
-                  {
-                    path: "/teams/projects/:project_id/segment/:kanban_id",
-                    component: () => import("src/pages/team/kanban/KanbanPage.vue"),
-                    name: "team_segment_page",
-                    props: true,
-                  },
-                  {
-                    path: "/teams/projects/:project_id/budget",
-                    component: () => import("src/pages/team/budget/BudgetPage.vue"),
-                    name: "team_budget_homepage",
-                    props: true,
-                  },
-                ],
+              },
+              {
+                path: "/teams/projects/:project_id/chat/:channel_id",
+                component: () => import("pages/team/chat/TeamChat.vue"),
+                name: "team_project_chat_page",
+                props: true,
+              },
+              {
+                path: "/teams/projects/:project_id/kanban",
+                component: () => import("src/pages/team/kanban/KanbanPage.vue"),
+                name: "team_kanban_homepage",
+                props: true,
+              },
+              {
+                path: "/teams/projects/:project_id/kanban/:kanban_id",
+                component: () => import("src/pages/team/kanban/KanbanPage.vue"),
+                name: "team_kanban_page",
+                props: true,
+              },
+              {
+                path: "/teams/projects/:project_id/classroom",
+                component: () => import("src/pages/team/kanban/KanbanPage.vue"),
+                name: "team_classroom_homepage",
+                props: true,
+              },
+              {
+                path: "/teams/projects/:project_id/classroom/:kanban_id",
+                component: () => import("src/pages/team/kanban/KanbanPage.vue"),
+                name: "team_classroom_page",
+                props: true,
+              },
+              {
+                path: "/teams/projects/:project_id/document",
+                component: () => import("src/pages/team/document/DocumentBody.vue"),
+                name: "team_project_document_homepage",
+                props: true,
+              },
+              {
+                path: "/teams/projects/:project_id/document/:document_id",
+                component: () => import("src/pages/team/document/DocumentBody.vue"),
+                name: "team_project_document_page",
+                props: true,
+              },
+              {
+                path: "/teams/projects/:project_id/storage",
+                component: () =>
+                    import("src/pages/team/storage/StoragePage.vue"),
+                name: "team_project_storage_homepage",
+                props: true,
+              },
+              {
+                path: "/teams/projects/:project_id/storage/:storage_id",
+                component: () =>
+                    import("src/pages/team/storage/StoragePage.vue"),
+                name: "team_project_storage_page",
+                props: true,
+              },
+              {
+                path: "/teams/projects/:project_id/schedule",
+                component: () =>
+                    import("src/pages/team/schedule/SchedulePage.vue"),
+                name: "team_project_schedule_homepage",
+                props: true,
+              },
+              {
+                path: "/teams/projects/:project_id/schedule/:schedule_id",
+                component: () =>
+                    import("src/pages/team/schedule/SchedulePage.vue"),
+                name: "team_project_schedule_page",
+                props: true,
+              },
+              {
+                path: "/teams/projects/:project_id/segment",
+                component: () => import("src/pages/team/kanban/KanbanPage.vue"),
+                name: "team_segment_homepage",
+                props: true,
+              },
+              {
+                path: "/teams/projects/:project_id/segment/:kanban_id",
+                component: () => import("src/pages/team/kanban/KanbanPage.vue"),
+                name: "team_segment_page",
+                props: true,
+              },
+              {
+                path: "/teams/projects/:project_id/budget",
+                component: () => import("src/pages/team/budget/BudgetPage.vue"),
+                name: "team_budget_homepage",
+                props: true,
               },
             ],
           },

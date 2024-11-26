@@ -41,33 +41,38 @@
           }}</q-item-section>
         </q-item>
       </q-list>
-      <div class="column q-space q-pa-sm scroll-y">
+      <div class="column q-space q-pa-sm">
         <OverView v-if="settingforRef === 'basic'"
+          class="q-space scroll-y"
           wasAttached_to="project"
           :members="teamStore.project?.project_members" :roles="teamStore.project?.member_roles"
         />
         <template v-if="settingforRef === 'enable'">
-          <EnableSetting v-if="useAuths('preferences', ['project'])" />
+          <EnableSetting v-if="useAuths('preferences', ['project'])" class="q-space scroll-y" />
           <span v-else class="fit flex flex-center">{{ $t('no_premission_to_edit') }}</span>
         </template>
 
+        <template v-if="settingforRef === 'serviceContent'">
+          <ServiceContent v-if="teamStore.project?.type === 'service'" />
+        </template>
+
         <template v-if="settingforRef === 'preferences'">
-          <PreferencesSetting v-if="useAuths('preferences', ['project'])" />
+          <PreferencesSetting v-if="useAuths('preferences', ['project'])" class="q-space scroll-y" />
           <span v-else class="fit flex flex-center">{{ $t('no_premission_to_edit') }}</span>
         </template>
 
         <template v-if="settingforRef === 'role'">
-          <roleSettings v-if="useAuths('manageRole', ['project'])" :members :roles />
+          <roleSettings v-if="useAuths('manageRole', ['project'])" :members :roles class="q-space scroll-y" />
           <span v-else class="fit flex flex-center">{{ $t('no_premission_to_edit') }}</span>
         </template>
 
         <template v-if="settingforRef === 'members'">
-          <MemberManager v-if="useAuths('manageMember', ['project'])" :byInfo />
+          <MemberManager v-if="useAuths('manageMember', ['project'])" :byInfo class="q-space scroll-y" />
           <span v-else class="fit flex flex-center">{{ $t('no_premission_to_edit') }}</span>
         </template>
 
         <template v-if="settingforRef === 'more'">
-          <MoreOptions v-if="useAuths('delete', ['project'])" :members :roles />
+          <MoreOptions v-if="useAuths('delete', ['project'])" :members :roles class="q-space scroll-y" />
           <span v-else class="fit flex flex-center">{{ $t('no_premission_to_edit') }}</span>
         </template>
       </div>
@@ -82,7 +87,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import roleSettings from "./roleSettings.vue";
 import MemberManager from "./MemberManager.vue";
 import MoreOptions from "./MoreOptions.vue";
@@ -90,6 +95,7 @@ import PreferencesSetting from "./PreferencesSetting.vue";
 import EnableSetting from "./EnableSetting.vue";
 import OverView from "src/pages/team/components/OverView.vue";
 import { teamStore } from "src/hooks/global/useStore.js";
+import ServiceContent from './initialization/ServiceContent.vue'
 
 const props = defineProps({
   settingfor: {
@@ -115,6 +121,14 @@ const setting_items = ref([
   { val: "more", label: "project_setting_more", icon: "more_horiz" },
 ]);
 const loading = ref(false);
+onMounted(() => {
+  if(teamStore.project?.type === 'service'){
+    const item = {
+      val: "serviceContent", label: "project_service_content", icon: "info"
+    }
+    setting_items.value.splice(1, 0, item)
+  }
+});
 </script>
 
 <style lang="scss" scoped></style>

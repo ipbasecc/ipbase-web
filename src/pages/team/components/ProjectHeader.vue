@@ -27,12 +27,13 @@
         <q-dialog
           v-model="uiStore.project_settings"
           persistent
+          allow-focus-outside
           position="top"
           transition-show="slide-down"
           transition-hide="slide-up"
           :maximized="!$q.screen.gt.xs"
         >
-          <div v-if="$q.screen.gt.xs" class="q-pt-xl" style="min-width: 61dvw; min-height: 61dvh">
+          <div v-if="$q.screen.gt.xs" class="q-pt-xl overflow-hidden" style="min-width: 61dvw; height: 61dvh">
             <ProjectSetting />
           </div>
           <ProjectSetting v-else />
