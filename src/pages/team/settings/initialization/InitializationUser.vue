@@ -48,8 +48,8 @@
         <div class="row no-wrap items-center">
           <q-btn v-if="step < 3" color="primary" :disable="nextDisabled" @click="next()" :label="$t('next_step')" />
           <q-btn v-if="step > 1" flat color="primary" @click="back()" :label="$t('previous_step')" class="q-ml-md" />
+        <q-space />
         <template v-if="step > 2">
-          <q-space />
           <span class="q-mr-lg op-6">{{$t( Initialized ? 'onboarding_completed_tip' : 'read_functions_tip')}}</span>
         </template>
         <q-btn color="primary" padding="sm lg"

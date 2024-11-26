@@ -1,5 +1,6 @@
 <template>
   <div class="fit column no-wrap q-space items-center" :class="toolbar_onBottom ? 'reverse' : ''" ref="tiptap">
+    
     <template v-if="isEditable">
       <div v-if="show_toolbar && isEditable"
         class="full-width row no-wrap gap-xs items-center justify-start q-py-xs q-px-sm"
@@ -480,6 +481,7 @@ const init = () => {
   });
 };
 
+const isSlashMenuOpen = computed(() => editor.value?.slashMenuOpen || false)
 const sourceContent = ref();
 const setSourceContent = () => {
   sourceContent.value = editor.value && editor.value.getJSON();
@@ -637,7 +639,8 @@ onKeyStroke([ControlKey.value, "s"], (e) => {
 
 defineExpose({
   tiptapBlur,
-  clear
+  clear,
+  isSlashMenuOpen
 })
 
 const tiptapUpdate = () => {

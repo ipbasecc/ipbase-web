@@ -19,6 +19,7 @@ import {
 import SlashCommandList from "./CommandsList.vue";
 import { startImageUpload } from "./plugins/upload-images";
 import {i18n} from 'src/boot/i18n.js';
+import { uiStore } from "src/hooks/global/useStore";
 
 const $t = i18n.global.t;
 
@@ -211,6 +212,9 @@ const renderItems = () => {
     component?.destroy();
     component = null;
     popup = null;
+    if (currentEditor) {
+      uiStore.slashMenuOpen = false;
+    }
   };
 
   const handleClose = () => {
@@ -225,6 +229,7 @@ const renderItems = () => {
   return {
     onStart: (props) => {
       currentEditor = props.editor;
+      uiStore.slashMenuOpen = true;
 
       const handleGlobalEscape = (e) => {
         if (e.key === 'Escape' && (component || popup)) {

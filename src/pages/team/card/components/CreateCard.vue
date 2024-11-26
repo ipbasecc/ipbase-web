@@ -1,8 +1,6 @@
 <template>
-    <q-card
-      v-if="view_model === 'kanban'"
-      v-bind="$attrs"
-      bordered
+    <q-card v-if="view_model === 'kanban'"
+      v-bind="$attrs" bordered
       class="q-mt-xs column no-wrap"
       :style="$q.screen.gt.xs ? 'width: 322px' : 'width: 100%'"
       @mouseenter="uiStore.dragKanbanScrollEnable = false"
@@ -177,7 +175,7 @@
 </template>
 
 <script setup>
-import {ref, toRefs, watchEffect, computed, watch, onMounted, onBeforeUnmount} from 'vue';
+import {ref, toRefs, nextTick, watchEffect, computed, watch, onMounted, onBeforeUnmount} from 'vue';
 import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
 import { createCard } from "src/api/strapi/project.js";
 import { board_type } from "src/pages/team/kanban/BoradsList.js";
@@ -341,9 +339,12 @@ const createTodoCard = () => {
   if(type_for_create.value === 'classroom') return;
   createCardFn(); 
 }
-const closeCreate = () => {
-  isCannel.value = true;
-  emit("closeCreate");
+const closeCreate = async () => {  
+  await nextTick();
+  if(!uiStore.slashMenuOpen){
+    isCannel.value = true;
+    emit("closeCreate");
+  }
 };
 onMounted(() => {
   uiStore.disable_shortcut = true

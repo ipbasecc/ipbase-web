@@ -525,7 +525,6 @@ import {
   teamStore,
   uiStore,
 } from "src/hooks/global/useStore.js";
-import { useMagicKeys } from "@vueuse/core";
 import { i18n } from 'src/boot/i18n.js';
 const $t = i18n.global.t;
 
@@ -745,19 +744,6 @@ watch(filter_txt, () => {
     }
   }
 },{ immediate: true, deep: false });
-
-const { current } = useMagicKeys();
-const keys = computed(() => Array.from(current));
-watch(keys, () => {
-  if (keys.value) {
-    if (
-      keys.value?.includes("escape") &&
-      createCard_in.value === columnRef.value?.id
-    ) {
-      createCard_in.value = void 0;
-    }
-  }
-}, { immediate: false, deep: false });
 
 // 有竖向滚动条，当鼠标进入分栏后，禁用滚轮横向滚动
 const hasScrollBar = ref();
