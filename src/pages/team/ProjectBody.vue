@@ -9,9 +9,8 @@
 import {
   ref,
   toRefs,
-  onBeforeMount,
-  onBeforeUnmount,
   provide,
+  watch
 } from "vue";
 import { useRouter } from "vue-router";
 import BgBrand from "src/components/VIewComponents/BgBrand.vue";
@@ -57,15 +56,10 @@ const getProject = async (_id) => {
   loading.value = false;
   teamStore.mm_channel = teamStore.project?.mm_channel;
 };
-onBeforeMount(async () => {
-  if (project_id.value) {
-    const id = Number(project_id.value);
-    if(id){
-      await getProject(id);
-      teamStore.mm_channel = project.value?.mm_channel
-    }
-  }
-})
+watch(() => project_id.value, () => {
+  getProject(project_id.value);
+  teamStore.mm_channel = project.value?.mm_channel
+}, { immediate: true })
 
 const projectRemoved = ref(false);
 const projectRemovedFn = () => {
@@ -76,14 +70,6 @@ const projectRemovedFn = () => {
     router.push("/teams");
   }, 3000);
 };
-
-onBeforeUnmount(
-  () => {
-    teamStore.project = null;
-    document.removeEventListener("visibilitychange");
-  },
-  { passive: true }
-);
 </script>
 
 <style lang="scss"></style>

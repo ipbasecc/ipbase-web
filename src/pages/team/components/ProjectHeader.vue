@@ -15,7 +15,17 @@
         <MembersIndicator
           v-if="teamStore?.project?.id && membersForAvatar && $q.screen.gt.xs"
           :members="membersForAvatar"
-          @click="toggleRightpannel"
+          @click="toggleRightpannel('member_manager')"
+        />
+
+        <q-btn
+          v-if="useAuths('approve_join_request',['project'])"
+          flat
+          dense
+          round
+          icon="notifications"
+          :color="teamStore.project.join_requests?.length > 0 ? 'orange' : ''"
+          @click="toggleRightpannel('join_request')"
         />
         <q-btn
           v-if="teamStore.project?.id"
@@ -59,11 +69,11 @@ const emit = defineEmits(["toggleRightpannel", "toggleleftDrawer"]);
 const toggleleftDrawer = () => {
   uiStore.projectLeftDrawer = !uiStore.projectLeftDrawer
 };
-const toggleRightpannel = () => {
-  if (teamStore.rightDrawer === "member_manager") {
+const toggleRightpannel = (val) => {
+  if (teamStore.rightDrawer === val) {
     teamStore.rightDrawerOpen = !teamStore.rightDrawerOpen;
   } else {
-    teamStore.rightDrawer = "member_manager"
+    teamStore.rightDrawer = val
     if (!teamStore.rightDrawerOpen) {
       teamStore.rightDrawerOpen = !teamStore.rightDrawerOpen;
     }

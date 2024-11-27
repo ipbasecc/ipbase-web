@@ -18,7 +18,36 @@ export default function useWatcher() {
   const val = computed(() => teamStore.income);
   watch(val, async(newVal, oldVal) => {
     if(!newVal) return;
+    console.log('val', val.value);
     let { team_id, project_id, board_id, group_id, card_id, data } = val.value?.data;
+
+    if(val.value.event === 'user:project:joined'){
+      // console.log('user:project:joined')
+      const index = teamStore.team.projects.findIndex(i => i.id === Number(project_id));
+      
+      if(index > -1){
+        teamStore.team.projects[index].auth.read = true;
+        teamStore.team.projects[index].is_project_member = true;
+        teamStore.init.default_team.projects = teamStore.team.projects
+      }
+      console.log('projects[index]', teamStore.team.projects[index]);
+    }
+    if(val.value.event === 'project:new_join_request'){
+      const data = val.value?.data;
+      const {project_id} = data;
+      const index = teamStore.team.projects.findIndex(i => i.id === Number(project_id));
+      if(index > -1){
+        if(teamStore.team.projects[index].join_requests?.length > 0){ 
+          teamStore.team.projects[index].join_requests.push(data);
+        } else {
+          teamStore.team.projects[index].join_requests = [data];
+        }
+        if(teamStore.project?.id === Number(project_id)){
+          teamStore.project.join_requests = teamStore.team.projects[index].join_requests;
+        }
+      }
+    }
+
     if(teamStore.team?.id === Number(team_id)){
       if(val.value.event === 'team:update'){
         teamStore.team = data;
@@ -306,14 +335,16 @@ export default function useWatcher() {
           router.push("/teams");
         }
       }
-      if(val.value.event === 'project:join'){        
-        teamStore.project.project_members = teamStore.project?.project_members || [];
-        const index = teamStore.team.projects.findIndex(i => i.id === Number(project_id));
-        if(teamStore.project.id === Number(project_id)){
-          teamStore.project.project_members.push(data.member);
-          teamStore.team.projects[index].project_members = teamStore.project.project_members;
-        } else {
-          teamStore.team.projects[index].project_members.push(data.member);
+      if(val.value.event === 'project:join'){
+        if(teamStore.project?.id === project_id){
+          teamStore.project.project_members = teamStore.project?.project_members || [];
+          const index = teamStore.team.projects.findIndex(i => i.id === Number(project_id));
+          if(teamStore.project.id === Number(project_id)){
+            teamStore.project.project_members.push(data.member);
+            teamStore.team.projects[index].project_members = teamStore.project.project_members;
+          } else {
+            teamStore.team.projects[index].project_members.push(data.member);
+          }
         }
 
         const _teamMemberIndex = teamStore.team?.members?.findIndex(i => i.id === Number(data.member?.id));

@@ -65,7 +65,7 @@
         <div v-if="dragWidth" class="absolute-full"></div>
       </q-drawer>
       <q-drawer
-        v-if="teamStore?.project_id && $q.screen.gt.xs"
+        v-if="teamStore?.project_id && $q.screen.gt.xs && teamStore.rightDrawerOpen"
         v-model="teamStore.rightDrawerOpen"
         side="right"
         :width="teamStore.rightDrawerWidth"
@@ -78,6 +78,10 @@
         <FlagsContainder
           v-else-if="teamStore.rightDrawer === 'flaggeds'"
           :headerless="false"
+        />
+        <JoinRequestlist
+          v-else-if="teamStore.rightDrawer === 'join_request' && teamStore?.project?.id"
+          :project="teamStore.project"
         />
       </q-drawer>
 
@@ -155,7 +159,7 @@ import { findRoles } from 'src/pages/team/hooks/useMember.js'
 import SideNavigation from "pages/team/components/SideNavigation.vue";
 import TeamList from "pages/team/components/TeamList.vue";
 import BudgetList from './budget/BudgetList.vue'
-
+import JoinRequestlist from './settings/JoinRequestlist.vue'
 const route = useRoute();
 const router = useRouter();
 

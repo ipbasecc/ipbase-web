@@ -326,6 +326,9 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="join_request" persistent>
+      <JoinRequest :project="request_project" @close="join_request = false" />
+    </q-dialog>
   </q-scroll-area>
 </template>
 
@@ -354,6 +357,7 @@ import ChannelMenu from './ChannelMenu.vue'
 import {updateUnreads} from 'src/pages/team/chat/hooks/useMm.js';
 import TipTap from 'src/components/Utilits/tiptap/TipTap.vue'
 import PayButton from 'src/components/order/PayButton.vue'
+import JoinRequest from './JoinRequest.vue'
 
 const props = defineProps({
   width: {
@@ -443,6 +447,8 @@ watch(mm_team, async(newVal, oldVal) => {
 
 const buy_service = ref(false);
 const buy_project = computed(() => teamStore.buy_project);
+const request_project = ref(null);
+const join_request = ref(false);
 const enterProject = async (project) => {
   console.log('project', project);
   
@@ -451,8 +457,13 @@ const enterProject = async (project) => {
       if(project.type === 'service'){
         buy_service.value = true;
         teamStore.buy_project = project;
-      } else {
-        $q.notify($t('project_is_not_member'));
+      }else if(!project.is_project_member){
+        if(project.allow_join_requests){
+          request_project.value = project;
+          join_request.value = true;
+        } else {
+          $q.notify($t('project_is_not_member'));
+        }
       }
     }
     if(project.roles?.includes('unconfirmed')){

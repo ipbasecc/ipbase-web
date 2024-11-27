@@ -1,7 +1,30 @@
 <template>
-  <div v-if="card_settings?.length > 0" class="row gap-md">
+  <div class="column gap-md">
     <q-list>
-      <template v-if="card_settings">
+      <template v-if="project_settings?.length > 0">
+        <q-item-label header>{{ $t('card_preference_settings') }}</q-item-label>
+        <q-separator spaced inset class="op-5" />
+        <q-item
+          v-for="i in project_settings"
+          :key="i.val"
+          tag="label"
+          v-ripple
+          class="radius-sm"
+        >
+          <q-item-section>
+            <q-item-label class="font-larger font-bold-600">{{
+              $t(i.label)
+            }}</q-item-label>
+            <q-item-label v-if="i.description" caption lines="2" class="op-7">{{
+              $t(i.description)
+            }}</q-item-label>
+          </q-item-section>
+          <q-item-section avatar>
+            <q-toggle v-model="i.enable" color="green" @update:model-value="updatePreferences()" />
+          </q-item-section>
+        </q-item>
+      </template>
+      <template v-if="card_settings?.length > 0">
         <q-item-label header>{{ $t('card_preference_settings') }}</q-item-label>
         <q-separator spaced inset class="op-5" />
         <q-item
@@ -35,9 +58,11 @@ import { userStore, teamStore } from "src/hooks/global/useStore.js";
 
 const preferences = ref([]);
 const card_settings = ref([]);
+const project_settings = ref([]);
 watchEffect(() => {
   preferences.value = teamStore.project?.preferences;
   card_settings.value = teamStore.project?.preferences?.card_settings;
+  project_settings.value = teamStore.project?.preferences?.project_settings;
 })
 
 const loading = ref(false);

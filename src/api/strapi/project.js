@@ -1124,3 +1124,35 @@ export async function findSales(offset,limit) {
     return error;
   }
 }
+
+// 申请加入
+/**
+ * 
+ * @param {Number} project_id 
+ * @param {Object} params 内容包含在data中
+ * @returns 
+ */
+export async function createJoinProjectRequest(project_id,params) {
+  try {
+    const res = await api.post(`/projects/:${project_id}/join_request`, params);
+    return res;
+  } catch (error) {
+    return error;
+  }
+}
+export async function checkJoinProjectRequest(project_id) {
+  try {
+    const res = await api.get(`projects/${project_id}/check_join_request`);
+    return res;
+  } catch (error) {
+    return error;
+  }
+}
+export async function approveJoinProjectRequest(project_id, params) {
+  try {
+    const res = await api.post(`projects/${project_id}/approve_join_request`, params);
+    return res;
+  } catch (error) {
+    return error;
+  }
+}

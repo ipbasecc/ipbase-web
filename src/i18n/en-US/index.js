@@ -521,7 +521,9 @@ export default {
   card_settings_follow_desc: 'Display and configure the Attention feature for the card; once disabled, the Attention Card feature will not be visible.',
   card_settings_color_marker_label: 'color marker',
   card_settings_color_marker_desc: 'A color indicator light will be displayed at the bottom right corner of the card; this feature will be unusable if it is disabled.',
-  
+  project_settings_allow_join_requests_label: 'allow join requests',
+  project_settings_allow_join_requests_desc: 'Allow members to apply to join, if disabled, members can only join through the invitation link',
+
   enable_settings_multiple_boards_label: 'workspace',
   enable_settings_multiple_boards_desc: 'Allow the creation of multiple workspaces to enable the use of multiple task management applications within the same project.',
   enable_settings_multiple_boards_locked_tip: 'The project already has multiple workspaces in place, and this feature cannot be disabled, otherwise, all workspaces except the first one will not be accessible properly.',
@@ -841,4 +843,11 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
 
   need_fill_business_account: 'You have not yet completed the business account information!',
   fill_business_account: 'Complete Information',
+  
+  join_request: 'Join Request',
+  create_join_request: 'Create Join Request',
+  create_join_request_success: 'Request sent, please wait for the administrator to review',
+  join_request_message: 'Request Message',
+  accept: 'Accept',
+  reject: 'Reject',
 }

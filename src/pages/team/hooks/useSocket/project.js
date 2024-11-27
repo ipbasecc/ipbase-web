@@ -41,4 +41,10 @@ export default function (socket, processEvent) {
             ...data
         });
     });
+    socket.on("project:new_join_request", (data) => {
+        processEvent({
+            event: "project:new_join_request",
+            ...data
+        });
+    });
   }

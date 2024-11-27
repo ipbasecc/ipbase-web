@@ -521,6 +521,8 @@ export default {
   card_settings_follow_desc: '显示和设置卡片的“关注”功能，禁用后“关注卡片”功能不可见',
   card_settings_color_marker_label: '颜色标签',
   card_settings_color_marker_desc: '卡片右下角会显示颜色指示灯，仅用该功能将不可用',
+  project_settings_allow_join_requests_label: '允许申请加入',
+  project_settings_allow_join_requests_desc: '允许成员申请加入，禁用后，成员只能通过邀请连接加入',
 
   enable_settings_multiple_boards_label: '工作空间',
   enable_settings_multiple_boards_desc: '允许创建多个工作空间，以便在同一个项目中，启用多个任务管理应用',
@@ -841,4 +843,11 @@ export default {
 
   need_fill_business_account: '您尚未完善经营账号信息！',
   fill_business_account: '完善信息',
+
+  join_request: '申请加入',
+  create_join_request: '请求加入',
+  create_join_request_success: '请求已发送，请等待管理员审核',
+  join_request_message: '申请留言',
+  accept: '接受',
+  reject: '拒绝',
 };

@@ -521,7 +521,9 @@ export default {
   card_settings_follow_desc: 'Zeige und setze die "Folgen"-Funktion der Karte. Wenn deaktiviert, ist die "Karte folgen"-Funktion nicht sichtbar',
   card_settings_color_marker_label: 'Farbmarkierung',
   card_settings_color_marker_desc: 'Die untere rechte Ecke der Karte zeigt eine Farbleuchte an. Diese Funktion wird nicht verfügbar sein, wenn sie nicht verwendet wird',
-
+  project_settings_allow_join_requests_label: 'Anfragen zum Beitritt erlauben',
+  project_settings_allow_join_requests_desc: 'Ermöglicht es Mitgliedern, einen Beitritt anzufordern. Wenn deaktiviert, können Mitglieder nur durch einen Einladungslink beitreten',
+  
   enable_settings_multiple_boards_label: 'Arbeitsbereich',
   enable_settings_multiple_boards_desc: 'Erlaube die Erstellung mehrerer Arbeitsbereiche, um in einem Projekt mehrere Aufgabenmanagementanwendungen zu aktivieren',
   enable_settings_multiple_boards_locked_tip: 'Dieses Projekt hat bereits mehrere Arbeitsbereiche. Diese Funktion kann nicht deaktiviert werden, sonst können die anderen Arbeitsbereiche außer dem ersten nicht normal zugegriffen werden',
@@ -841,4 +843,11 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
 
   need_fill_business_account: 'Sie haben Ihre Geschäftskontoinformationen noch nicht vervollständigt!',
   fill_business_account: 'Informationen vervollständigen',
+  
+  join_request: 'Beitrittserklärung',
+  create_join_request: 'Beitrittserklärung erstellen',
+  create_join_request_success: 'Anfrage gesendet, bitte warten Sie auf die Genehmigung des Administrators',
+  join_request_message: 'Anfrage-Nachricht',
+  accept: 'Annehmen',
+  reject: 'Ablehnen',
 };
