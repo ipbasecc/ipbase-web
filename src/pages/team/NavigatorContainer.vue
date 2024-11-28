@@ -104,6 +104,7 @@
           <FollowedList v-if="uiStore.app === 'brand'" />
           <NotebookList v-if="uiStore.app === 'notebooks'" />
           <BussinessMenu v-if="uiStore.app === 'business'" />
+          <DiscoverNavigator v-if="uiStore.app === 'discover'" />
         </q-drawer>
         <RightPannel />
       </template>
@@ -171,6 +172,7 @@ import NavigatorHeader from './components/NavigatorHeader.vue'
 import RightPannel from './components/RightPannel.vue'
 import NotebookList from './notebook/NotebookList.vue'
 import BussinessMenu from '../business/BussinessMenu.vue'
+import DiscoverNavigator from './discover/DiscoverNavigator.vue'
 
 // 团队状态是否存在 blocked 或 unconfirmed
 const userStatus_byTeam = computed(() => teamStore.team?.status);

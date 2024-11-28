@@ -8,7 +8,7 @@
   >
     <div
       v-if="$q.screen.gt.xs"
-      class="row no-wrap items-center cursor-pointer q-pb-sm relative-position"
+      class="row no-wrap items-center unselected q-pb-sm relative-position"
     >
       <q-img src="../../../public/logo.png"
         :ratio="1"
@@ -21,7 +21,7 @@
         :class="{ 'loading': uiStore.axiosStauts === 'pending' }"
       />
       <span class="radius-xs bg-black border absolute-top-right" style="font-size: 0.5rem; transform: translateX(7px)">Alpha</span>
-      <BrandMenu :offset="[0, -24]" />
+      <!-- <BrandMenu :offset="[0, -24]" /> -->
     </div>
 
     <template v-if="$q.screen.gt.xs">

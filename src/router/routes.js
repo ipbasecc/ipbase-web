@@ -216,6 +216,16 @@ const routes = [
         props: true,
       },
       {
+        path: "/discover",
+        component: () => import("src/pages/team/discover/DiscoverPage.vue"),
+        props: true,
+        name: "discover",
+        meta: {
+          requireAuth: false,
+          title: "discover",
+        }
+      },
+      {
         path: "/affairs",
         component: () => import("pages/team/AffairsPage.vue"),
         name: "AffairsPage",

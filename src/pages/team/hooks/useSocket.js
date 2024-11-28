@@ -2,6 +2,8 @@ import { ref, reactive } from "vue";
 import { io, Socket } from "socket.io-client";
 import { onMounted, onUnmounted } from 'vue';
 import { teamStore } from 'src/hooks/global/useStore.js';
+import { Notify } from 'quasar';
+import { errorProcess } from 'src/boot/error.js';
 import team from './useSocket/team.js'
 import channel from './useSocket/channel.js'
 import project from './useSocket/project.js'
@@ -26,6 +28,8 @@ export function useSocket() {
 
   let socket = null;
   const events = reactive(new Set());
+  let reconnectAttempts = 0;
+  const MAX_RECONNECT_ATTEMPTS = 3;
 
   onMounted(() => {
     if (JWT_TOKEN) {
@@ -34,10 +38,54 @@ export function useSocket() {
           strategy: "jwt",
           token: JWT_TOKEN,
         },
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionAttempts: MAX_RECONNECT_ATTEMPTS,
       });
+
+      // 添加 Strapi Socket.IO 错误处理
+      socket.on("connect_error", (error) => {
+        console.error("Strapi Socket.IO connection error:", error);
+        reconnectAttempts++;
+
+        if (error.message?.includes('blocked by CORS policy') || 
+            error.message?.includes('502') || 
+            error.message?.includes('Bad Gateway')) {
+          
+          Notify.create({
+            message: 'Strapi 实时连接失败，10秒后将尝试重新连接...',
+            icon: 'sync',
+            color: 'warning',
+            position: 'top',
+            timeout: 3000
+          });
+
+          errorProcess(10000);
+        }
+
+        if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+          Notify.create({
+            message: 'Strapi 服务连接失败，请检查网络后刷新页面',
+            icon: 'error',
+            color: 'negative',
+            position: 'top',
+            timeout: 5000,
+            actions: [
+              { 
+                label: '刷新',
+                color: 'white',
+                handler: () => {
+                  errorProcess(0);
+                }
+              }
+            ]
+          });
+          errorProcess(5500);
+        }
+      });
+
       const processEvent = (props) => {
         const { event, data } = props;
-        
         events.add(event);
         teamStore.income = {
           event: event,
@@ -47,6 +95,7 @@ export function useSocket() {
       
       socket.on("connect", () => {
         console.log("Socket connected!");
+        reconnectAttempts = 0; // 重置重连次数
         socket.on("room:join", (data) => {
             processEvent({
               event: "room:join",

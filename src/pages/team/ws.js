@@ -2,6 +2,7 @@ import { Notify } from "quasar";
 import { mm_wsStore } from "src/hooks/global/useStore.js";
 import { $server } from 'src/boot/server.js'
 import { i18n } from 'src/boot/i18n.js';
+import { errorProcess } from 'src/boot/error.js';
 const $t = i18n.global.t;
 
 const TYPE = process.env.DEV ? 'wss' : 'wss'
@@ -41,9 +42,10 @@ export async function _ws() {
         position: "top",
         color: "negative",
         actions: [
-          { label: $t('refresh'), color: 'positive', handler: () => { window.location.reload() } },
+          { label: $t('refresh'), color: 'positive', handler: () => { errorProcess(0) } },
         ]
       });
+      errorProcess(0);
     }
   }
 

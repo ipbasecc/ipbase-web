@@ -14,6 +14,14 @@ export default defineStore("ui", {
         enable: true,
       },
       {
+        val: "discover",
+        label: 'discover',
+        icon: "mdi-compass-outline",
+        description: 'app_discover_purpose',
+        to: "discover",
+        enable: true,
+      },
+      {
         val: "affairs",
         label: 'affairs',
         icon: "mdi-checkbox-marked-circle-outline",

@@ -27,7 +27,7 @@ const setAPI = async () => {
   }
 }
 
-export default boot(async ({ app }) => {
+export default boot(async ({ app, router }) => {
   await setAPI();
   // 发布订阅
   class EventEmitter {
@@ -173,6 +173,17 @@ export default boot(async ({ app }) => {
       if (error.response) {
         uiStore.axiosStauts = 'error';
         uiStore.axiosError = error;
+        
+        // 处理 401 错误
+        if (error.response.status === 401 && !localStorage.getItem("jwt")) {
+          console.log('未授权访问或 Token 不存在');
+          
+          // 清除相关存储
+          sessionStorage.clear();
+          
+          // 使用 router 进行导航
+          router.push('/login');
+        }
       }
       if (error.code === 'ERR_NETWORK') {
         uiStore.serverResfused = true;
