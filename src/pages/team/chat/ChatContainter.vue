@@ -15,7 +15,6 @@
           @click="backList()"
       />
       <!-- {{ teamStore.channel?.name }} -->
-        <q-btn color="primary" dense icon="check" label="view" @click="__viewChannel(_channel_id)" />
       <q-space />
       <q-btn
           v-if="strapi_channel_id"

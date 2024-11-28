@@ -451,12 +451,12 @@ watch( mm_wsStore, async () => {
   const cur_mmChannel = route.params.channel_id
   if (mm_wsStore?.event?.event === "posted") {
     let message = JSON.parse(mm_wsStore.event.data.post);
-    console.log('unread ++', uiStore.unreads?.channels);
     if(message.message === '') return
     const index = uiStore.unreads?.channels?.findIndex(i => i.channel_id === message.channel_id);
     if(index > -1 && cur_mmChannel !== message.channel_id){
       uiStore.unreads.channels[index].msg_count++;
-      console.log('unread ++ 2', uiStore.unreads.channels[index].msg_count);
+
+      uiStore.unreads.team.msg_count++;
     }
   }
 }, { immediate: true, deep: true });
