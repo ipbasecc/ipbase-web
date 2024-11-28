@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute-full column no-wrap overflow-hidden" :class="$q.dark.mode ? 'bg-darker text-grey-1' : 'bg-grey-1 text-grey-10'">
+  <div :key="_channel_id" class="absolute-full column no-wrap overflow-hidden" :class="$q.dark.mode ? 'bg-darker text-grey-1' : 'bg-grey-1 text-grey-10'">
     <q-bar
         class="border-bottom"
         :class="$q.dark.mode ? 'bg-dark text-grey-1' : 'bg-grey-1 text-grey-10'"
@@ -15,6 +15,7 @@
           @click="backList()"
       />
       <!-- {{ teamStore.channel?.name }} -->
+        <q-btn color="primary" dense icon="check" label="view" @click="__viewChannel(_channel_id)" />
       <q-space />
       <q-btn
           v-if="strapi_channel_id"
@@ -233,6 +234,7 @@ import { __viewChannel } from "src/hooks/mattermost/useMattermost.js";
 import ChannelHeader from './components/ChannelHeader.vue'
 import ChannelInfo from './components/ChannelInfo.vue'
 
+
 const router = useRouter();
 const route = useRoute();
 const $t = i18n.global.t;
@@ -429,7 +431,6 @@ onMounted(async () => {
   await scroll_bottom()
 })
 
-
 const mm_me = computed(() => mmUser.me);
 watch(
     mm_wsStore,
@@ -439,6 +440,8 @@ watch(
         let message = JSON.parse(mm_wsStore.event.data.post);
 
         if (message?.channel_id === channel_id) {
+          if(message.message === '') return
+          
           if (message.root_id) {
             messages.value.find(msg => msg.id === message.root_id).reply_count = message.reply_count;
           }

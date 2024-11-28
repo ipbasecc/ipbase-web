@@ -1,5 +1,5 @@
 import { Dark } from "quasar";
-import { teamStore, userStore } from "src/hooks/global/useStore";
+import { teamStore, userStore, uiStore } from "src/hooks/global/useStore";
 
 import { fetch_MmMe, fetch_StrapiMe } from "src/hooks/global/useFetchme";
 const process = (res) => {
@@ -15,6 +15,7 @@ const process = (res) => {
       teamStore.team = res.default_team;
       teamStore.mm_team = res.default_team?.mm_team;
     }
+    uiStore.$syncMmUnreads();
     userStore.todogroups = res.todogroups;
     teamStore.need_refecth_projects = false;
     JSON.stringify(res);

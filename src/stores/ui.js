@@ -1,5 +1,6 @@
 import {defineStore} from "pinia";
 import {Platform,Screen} from 'quasar'
+import teamStore from './team'; // 引入 team store
 
 export default defineStore("ui", {
   state: () => ({
@@ -175,6 +176,26 @@ export default defineStore("ui", {
     reINIT: false,
   }),
   actions: {
+    $syncMmUnreads() {
+      const team = teamStore()?.team; // 获取 team store 实例并访问 team 属性
+      if (!team) return;
+
+      // 获取所有项目的 mm_channel_id，过滤掉 undefined/null
+      const projectChannel = team.projects
+        ?.map(project => project.mm_channel)
+        .filter(Boolean) || [];
+
+      // 获取所有团队频道的 id，过滤掉 undefined/null
+      const teamChannel = team.team_channels
+        ?.map(channel => channel.mm_channel)
+        .filter(Boolean) || [];
+
+      // 设置团队 ID
+      this.unreads.team = team.mm_team;
+      
+      // 合并所有频道 ID
+      this.unreads.channels = [...projectChannel, ...teamChannel];
+    },
     $reset() {
       this.projectLeftDrawer = true;
       this.pageLoaded = false;

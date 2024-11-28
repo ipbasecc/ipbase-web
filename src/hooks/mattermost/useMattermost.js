@@ -139,49 +139,81 @@ const findIndex = (_mm_channel_id) => {
     channelIndex.value = index
   }
 }
-const updateUnreadCount = (_mm_channel_id) => {
-  // console.log('updateUnreadCount');
-  
-  if(!channelIndex.value) return
+const updateUnreadCount = (_mm_channel_id) => {  
+  if(channelIndex.value < 0) return
+
   const unreadCount = uiStore.unreads.channels[channelIndex.value].msg_count;
-  uiStore.unreads.channels[channelIndex.value].msg_count = 0;
   uiStore.unreads.team.msg_count = uiStore.unreads.team.msg_count - unreadCount
+  if(uiStore.unreads.team.msg_count < 0){
+    uiStore.unreads.team.msg_count = 0;
+  }
+
+  uiStore.unreads.channels[channelIndex.value].msg_count = 0;
 }
 
 // 执行view事件，保持与Mattermost的连接
 const viewed = ref(false);
+let viewTimer = null;
+let autoViewTimer = null;
 
 export async function __viewChannel(channel_id) {
-  if (!channel_id || viewed.value) return;
-
-  let timerId
-  let autoView
-  const view = async () => {
-    findIndex(channel_id);
-    if(!channelIndex.value) return
-    if (viewed.value) return;
+  // 清理之前的定时器
+  if (viewTimer) clearTimeout(viewTimer);
+  if (autoViewTimer) clearTimeout(autoViewTimer);
+  
+  if (!channel_id) return;
+  const view = async () => {    
     viewed.value = true;
-    mm_channel_id.value = channel_id
+    mm_channel_id.value = channel_id;
+
     let params = {
       channel_id: channel_id,
-    };
+    };    
     let res = await viewChannel(mm_user_id, params);
+    
     if (res) {
-      updateUnreadCount(channel_id);
-
-      // 清除之前的定时器
-      if (timerId) {
-        clearTimeout(timerId);
-      }
-
-      timerId = setTimeout(() => {
-        viewed.value = false; // 5秒后将viewed设置为false
+      // 5秒内不重复执行
+      viewTimer = setTimeout(() => {
+        viewed.value = false;
       }, 5000);
 
-      autoView = setTimeout(() => {
-        view();
-      }, 50000);
+      findIndex(channel_id);
+      console.log('findIndex', channelIndex.value);
+      
+      if (channelIndex.value < 0) return;
+      updateUnreadCount(channel_id);
     }
-  }
+  };
+
+  // 初始执行
   await view();
+
+  // 设置10秒循环执行
+  const startAutoView = () => {
+    autoViewTimer = setInterval(view, 30000);
+  };
+
+  // 页面可见性变化处理
+  const handleVisibilityChange = () => {
+    if (document.visibilityState === 'visible') {
+      view(); // 页面变为可见时立即执行一次
+      startAutoView(); // 重新开始自动执行
+    } else {
+      // 页面不可见时清除定时器
+      if (autoViewTimer) clearInterval(autoViewTimer);
+    }
+  };
+
+  // 监听页面可见性变化
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+
+  // 开始自动执行
+  startAutoView();
+
+  // 组件卸载时清理
+  onUnmounted(() => {
+    if (viewTimer) clearTimeout(viewTimer);
+    if (autoViewTimer) clearInterval(autoViewTimer);
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
+  });
 }

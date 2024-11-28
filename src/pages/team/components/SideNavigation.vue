@@ -2,7 +2,7 @@
   <q-scroll-area>
     <q-list class="column gap-xs">
       <template v-if="$q.screen.gt.xs">
-        <q-list :dense="$q.screen.gt.sm" class="q-px-sm">
+        <q-list :dense="$q.screen.gt.sm" class="q-px-sm column gap-xs">
           <!-- 讨论主题-->
           <q-item v-if="enable_threads"
             :class="`${
@@ -94,7 +94,7 @@
           {{ $t('community_channel') }}
         </q-item-label>
         <template v-if="team.team_channels?.length > 0">
-          <q-list :dense="$q.screen.gt.sm" class="q-px-sm">
+          <q-list :dense="$q.screen.gt.sm" class="q-px-sm column gap-xs">
             <q-item v-for="i in team.team_channels"
               :key="i.id" clickable v-ripple
               :class="`${teamStore?.mm_channel?.id === i.mm_channel?.id
@@ -333,7 +333,7 @@
 </template>
 
 <script setup>
-import {computed, ref, watch, watchEffect} from 'vue';
+import {computed, ref, watch, watchEffect, nextTick} from 'vue';
 import {useRoute, useRouter} from "vue-router";
 import {fetch_userPreferences, getTeamMembers,} from "src/hooks/mattermost/useMattermost.js";
 import {getChannelByID, updateChannel} from 'src/api/strapi/team.js'
@@ -343,7 +343,7 @@ import UnreadBlock from 'src/pages/team/components/widgets/UnreadBlock.vue'
 import CreateProject from "./CreateProject.vue";
 import {createChannel} from "src/pages/team/hooks/useCreateChannel.js";
 import {useQuasar} from "quasar";
-import {teamStore, uiStore} from 'src/hooks/global/useStore.js';
+import {teamStore, uiStore, mm_wsStore } from 'src/hooks/global/useStore.js';
 import {i18n} from 'src/boot/i18n.js';
 import {
   enable_threads,
@@ -444,6 +444,22 @@ watch(mm_team, async(newVal, oldVal) => {
 
   }
 },{immediate:true,deep:false})
+
+watch( mm_wsStore, async () => {
+  await nextTick();
+  // 判断消息类型
+  const cur_mmChannel = route.params.channel_id
+  if (mm_wsStore?.event?.event === "posted") {
+    let message = JSON.parse(mm_wsStore.event.data.post);
+    console.log('unread ++', uiStore.unreads?.channels);
+    if(message.message === '') return
+    const index = uiStore.unreads?.channels?.findIndex(i => i.channel_id === message.channel_id);
+    if(index > -1 && cur_mmChannel !== message.channel_id){
+      uiStore.unreads.channels[index].msg_count++;
+      console.log('unread ++ 2', uiStore.unreads.channels[index].msg_count);
+    }
+  }
+}, { immediate: true, deep: true });
 
 const buy_service = ref(false);
 const buy_project = computed(() => teamStore.buy_project);
