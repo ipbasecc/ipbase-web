@@ -850,4 +850,8 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   join_request_message: 'Request Message',
   accept: 'Accept',
   reject: 'Reject',
+  show_in_discover: 'Show in Discover',
+
+  get_more: 'Get More',
+  no_more: 'No More',
 }

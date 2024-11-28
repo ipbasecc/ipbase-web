@@ -35,6 +35,9 @@
         </q-input>
       </q-card-section>
       <template v-if="type_for_create === 'classroom'">
+        <q-card-section class="q-pa-xs">
+          <q-checkbox v-model="allow_discover" :label="$t('show_in_discover')" />
+        </q-card-section>
         <q-card-section class="border cursor-pointer q-pa-xs">
           <q-img
             v-if="cover"
@@ -253,6 +256,7 @@ const setCover = (val) => {
   }
 }
 const price = ref();
+const allow_discover = ref(true);
 const name = ref();
 const jsonContent = ref();
 watchEffect(() => {

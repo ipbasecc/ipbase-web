@@ -146,14 +146,19 @@ const income = computed(() => teamStore.income);
 watch(income, () => {
     const { data, event } = income.value
     if(event === 'pay:completed' && data?.payOrderId === payOrderId.value){
+        console.log('data', data)
         state.value = data?.state
-        if(data.commodity && data.card_id){
-            data.commodity.payState = {
-                cardState: {
-                    isPaied: true
+        if(data.card_id){
+            if(data.commodity){
+                data.commodity.payState = {
+                    cardState: {
+                        isPaied: true
+                    }
                 }
+                emit('buyData', data.commodity)
+            } else {
+                emit('buyData', data)
             }
-            emit('buyData', data.commodity)
         }
         if(data.project_id){
             emit('buyData', data)

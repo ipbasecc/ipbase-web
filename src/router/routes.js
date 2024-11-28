@@ -223,7 +223,15 @@ const routes = [
         meta: {
           requireAuth: false,
           title: "discover",
-        }
+        },
+        children: [
+          {
+            path: "/discover/:card_id",
+            component: () => import("src/pages/team/discover/DiscoverDetail.vue"),
+            name: "discover_card_detail",
+            props: true,
+          }
+        ]
       },
       {
         path: "/affairs",

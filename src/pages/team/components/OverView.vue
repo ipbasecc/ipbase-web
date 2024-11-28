@@ -118,13 +118,15 @@
                   class="radius-xs"
                   clickable
                   @click="set_current_version(i.id)"
-                  :class="activeVersion.id === i.id ? 'bg-primary' : ''"
+                  :class="activeVersion.id === i.id ? 'bg-primary text-white' : ''"
                   v-close-popup
                 >
                   <q-item-section side>
-                    <q-avatar size="sm">{{ index }}</q-avatar>
+                    <q-avatar size="sm">
+                      <span :class="activeVersion.id === i.id ? 'text-white' : ''">{{ index }}</span>
+                    </q-avatar>
                   </q-item-section>
-                  <q-item-section>{{ i.name === 'Initial_Version' ? $t(i.name) : i.name }}</q-item-section>
+                  <q-item-section class="text-no-wrap">{{ i.name === 'Initial_Version' ? $t(i.name) : i.name }}</q-item-section>
                   <q-item-section side>
                     <q-btn dense size="sm" flat round icon="star"
                       :color="overView_attachedTo.default_version === i.id ? 'yellow' : ''"
@@ -327,6 +329,7 @@ const set_current_version = (id) => {
     );
   }
   setActive()
+  emit('sync_version', id)
 };
 
 onMounted(() => {

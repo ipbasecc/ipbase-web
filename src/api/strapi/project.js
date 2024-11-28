@@ -1156,3 +1156,32 @@ export async function approveJoinProjectRequest(project_id, params) {
     return error;
   }
 }
+
+
+export async function queryDiscover(start, limit) {
+  if (start < 0 || limit < 0) {
+    Notify.create($t('need_pagination_info'));
+    return;
+  }
+  let options = `?start=${start}&limit=${limit}`;
+  try {
+    const res = await api.get(`discover/cards${options}`);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create(error?.response?.data?.error?.message);
+    return error;
+  }
+}
+export async function queryOneDiscover(card_id) {
+  try {
+    const res = await api.get(`discover/cards/${card_id}`);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create(error?.response?.data?.error?.message);
+    return error;
+  }
+}

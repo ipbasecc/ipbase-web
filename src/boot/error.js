@@ -40,15 +40,22 @@ export const errorProcess = async (timeout = 1000) => {
   }
 };
 
-export default async ({ router }) => {
+export default async () => {
   // PWA 更新处理
   window.addEventListener('unhandledrejection', async (event) => {
+    await process(event);
+  });
+  
+  window.addEventListener('error', async (event) => {
+    await process(event);
+  });
+
+  const process = async (event) => {
     const import_error = event.reason?.message?.includes('Failed to fetch dynamically imported module')
     const resource_error = event.reason?.message?.includes('Failed to load resource')
     const PWA_ERROR = import_error || resource_error
     const CORS_ERROR = event.reason?.message?.includes('blocked by CORS policy')
     const BAD_GATEWAY_ERROR = event.reason?.message?.includes('502') || event.reason?.message?.includes('Bad Gateway')
-
     if ( PWA_ERROR && (!CORS_ERROR || !BAD_GATEWAY_ERROR) ) {
       showUpdateNotification();
       try {
@@ -83,5 +90,5 @@ export default async ({ router }) => {
 
       await errorProcess();
     }
-  });
+  }
 }; 

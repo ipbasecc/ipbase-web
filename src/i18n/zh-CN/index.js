@@ -850,4 +850,8 @@ export default {
   join_request_message: '申请留言',
   accept: '接受',
   reject: '拒绝',
+  show_in_discover: '在“发现”中显示',
+
+  get_more: '获取更多',
+  no_more: '没有更多了',
 };

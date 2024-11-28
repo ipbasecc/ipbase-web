@@ -850,4 +850,8 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   join_request_message: 'Anfrage-Nachricht',
   accept: 'Annehmen',
   reject: 'Ablehnen',
+  show_in_discover: 'In "Entdecken" anzeigen',
+
+  get_more: 'Weitere erhalten',
+  no_more: 'Keine weiteren',
 };
