@@ -10,12 +10,12 @@
       
       <!-- 成功消息 -->
       <div class="text-h6">
-        注册成功！
+        {{ $t('register_success') }}
       </div>
       
       <!-- 用户名显示 -->
       <div class="text-subtitle1 q-mt-sm">
-        欢迎加入，{{ username }}
+        {{ $t('welcome_to_join') }}, {{ username }}
       </div>
       
       <!-- 倒计时显示 -->
@@ -23,14 +23,14 @@
         v-if="count" 
         class="text-caption q-mt-sm"
       >
-        {{ count }}秒后自动跳转到主页
+        {{ $t('auto_redirect') }} {{ count }} {{ $t('seconds') }} {{ $t('redirect_now') }}
       </div>
       
       <!-- 立即跳转按钮 -->
       <q-btn
         flat
         color="primary"
-        label="立即进入"
+        :label="$t('redirect_now')"
         class="q-mt-md"
         @click="$emit('redirect')"
       />

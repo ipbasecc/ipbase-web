@@ -1,19 +1,21 @@
 import { login as strapi_login } from 'src/api/strapi.js';
 import { login as mmLogin } from 'src/api/mattermost.js';
+import { i18n } from 'src/boot/i18n.js';
 
 export const authService = {
   async login(credentials) {
-    const strapiResult = await strapi_login(credentials);
-    
-    if (strapiResult?.data) {
-      const mmResult = await mmLogin({
+    let strapiResult, mmResult;
+    try {
+      strapiResult = await strapi_login(credentials);
+      mmResult = await mmLogin({
         login_id: credentials.identifier,
         password: credentials.password
       });
-      
-      return { strapiResult, mmResult };
+      if (strapiResult?.data && mmResult?.data) {
+        return { strapiResult, mmResult };
+      }
+    } catch (error) {
+      console.error(error);
     }
-    
-    throw new Error('Login failed');
   }
 };

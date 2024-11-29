@@ -2,7 +2,7 @@
     <!-- 未确认状态 -->
     <EmailConfirmation
       v-if="!me.confirmed"
-      :app-name="appName"
+      :app-name="$t(appName)"
     />
     
     <!-- 登录状态 -->
@@ -40,7 +40,7 @@
   
   const emit = defineEmits(['loginComplete']);
   
-  const appName = ref('易乎APP');
+  const appName = ref('app_name');
   const loading = ref(false);
   const error = ref(null);
   

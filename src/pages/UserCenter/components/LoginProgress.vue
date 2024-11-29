@@ -7,7 +7,7 @@
           size="2em"
         />
         <span>
-          {{ loading ? '用户创建成功，正在登录，请稍后...' : '登录成功！' }}
+          {{ loading ? $t('user_created_successfully_logging_in') : $t('login_success') }}
         </span>
       </div>
     </q-card-section>

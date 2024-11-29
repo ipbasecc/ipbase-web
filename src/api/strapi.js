@@ -24,14 +24,20 @@ export async function server(_url) {
 export async function login(params) {
   try {
     const res = await api.post(`auth/local`, params);
-    if (res) {
-      if (res?.data) {
-        localStorage.setItem("jwt", JSON.stringify(res.data.jwt));
-      }
+    if (res?.data) {
+      localStorage.setItem("jwt", JSON.stringify(res.data.jwt));
       return res;
     }
   } catch (error) {
-    return error;
+    if (error.response?.data?.error?.message === 'Invalid identifier or password') {
+      Notify.create({
+        message: $t('invalid_identifier_or_password'),
+        color: 'negative',
+        icon: 'mdi-alert-circle',
+        position: 'top'
+      });
+    }
+    throw error;
   }
 }
 
@@ -91,6 +97,7 @@ export async function updateUserTodogroups(params) {
       message: $t('updateUserTodogroups_error_feedback'),
       actions: [{ label: $t('refresh'), handler: () => { window.location.reload(); } }],
     });
+    throw error;
   }
 }
 //更新用户头像
@@ -242,8 +249,8 @@ export async function addFriend(params) {
     Notify.create({
       color: 'red',
       message: error.response.data.error.message
-    })    
-    return error;
+    });
+    throw error;
   }
 }
 // 处理好友请求 不带 data
@@ -342,7 +349,7 @@ export async function notiy() {
   // 将查询字符串参数转换为对象
   const params = Object.fromEntries(searchParams);
 
-  // 打印结果，以便查看
+  // 打印��果，以便查看
   console.log(params);
 
   try {

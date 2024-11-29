@@ -1,24 +1,18 @@
 <template>
-    <div class="column items-center q-pa-md">
-      <q-icon name="check_circle" color="positive" size="4em" />
-      <div class="text-h6 q-mt-md">登录成功</div>
-      <div class="text-subtitle1 q-mt-sm">
-        欢迎回来, {{ username }}
-      </div>
-      <div v-if="count" class="text-caption q-mt-sm">
-        {{ count }}秒后自动跳转
-      </div>
-      <q-btn
-        flat
-        color="primary"
-        label="立即跳转"
-        class="q-mt-md"
-        @click="$emit('redirect')"
-      />
+  <div class="column items-center q-pa-md">
+    <q-icon name="check_circle" color="positive" size="4em" />
+    <div class="text-h6 q-mt-md">{{ $t('login_success') }}</div>
+    <div class="text-subtitle1 q-mt-sm">
+      {{ $t('welcome_back') }}, {{ username }}
     </div>
-  </template>
-  
-  <script setup>
+    <div v-if="count" class="text-caption q-mt-sm">
+      {{ $t('auto_redirect') }} {{ count }} {{ $t('seconds') }}
+    </div>
+    <q-btn flat color="primary" :label="$t('redirect_now')" class="q-mt-md" @click="redirect()" />
+  </div>
+</template>
+
+<script setup>
   defineProps({
     username: {
       type: String,
@@ -29,6 +23,9 @@
       default: null
     }
   });
-  
-  defineEmits(['redirect']);
-  </script>
+
+  const emit = defineEmits(['redirect']);
+  const redirect = () => {
+    emit('redirect');
+  }
+</script>

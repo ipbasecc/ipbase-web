@@ -1,4 +1,4 @@
-import { ref, onUnmounted } from 'vue';
+import { ref, onUnmounted } from "vue";
 
 /**
  * 倒计时钩子函数
@@ -9,11 +9,7 @@ import { ref, onUnmounted } from 'vue';
  * @returns {Object} 倒计时控制对象
  */
 export function useCountdown(options = {}) {
-  const {
-    initialCount = 2,
-    interval = 1000,
-    onComplete
-  } = options;
+  const { initialCount = 2, interval = 1000, onComplete } = options;
 
   const count = ref(null);
   let timer = null;
@@ -28,11 +24,11 @@ export function useCountdown(options = {}) {
   const startCountdown = (seconds = initialCount) => {
     clearTimer();
     count.value = seconds;
-    
+
     timer = setInterval(() => {
       if (count.value !== null) {
         count.value--;
-        
+
         if (count.value <= 0) {
           clearTimer();
           onComplete?.();
@@ -54,6 +50,6 @@ export function useCountdown(options = {}) {
     count,
     startCountdown,
     stopCountdown,
-    clearTimer
+    clearTimer,
   };
 }
