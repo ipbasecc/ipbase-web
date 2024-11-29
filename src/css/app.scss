@@ -67,7 +67,9 @@ body {
 .pointer-cross {
   pointer-events: none;
 }
-
+.no-hover-style:hover .q-focus-helper {
+  opacity: 0 !important;
+}
 input:-internal-autofill-selected {
   appearance: menulist-button;
   background-image: none !important;

@@ -1174,9 +1174,178 @@ export async function queryDiscover(start, limit) {
     return error;
   }
 }
-export async function queryOneDiscover(card_id) {
+export async function queryOneDiscover(element, type, card_id) {
+  const options = `?element=${element}&type=${type}`;
   try {
-    const res = await api.get(`discover/cards/${card_id}`);
+    const res = await api.get(`discover/cards/${card_id}${options}`);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create(error?.response?.data?.error?.message);
+    return error;
+  }
+}
+export async function queryBuied(element, type, start, limit) {
+  if (start < 0 || limit < 0) {
+    Notify.create($t('need_pagination_info'));
+    return;
+  }
+  let options = `?element=${element}&type=${type}&start=${start}&limit=${limit}`;
+  try {
+    const res = await api.get(`buied/cards${options}`);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create(error?.response?.data?.error?.message);
+    return error;
+  }
+}
+export async function queryFavoritedCards(element, type, start, limit) {
+  if (start < 0 || limit < 0) {
+    Notify.create($t('need_pagination_info'));
+    return;
+  }
+  let options = `?element=${element}&type=${type}&start=${start}&limit=${limit}`;
+  try {
+    const res = await api.get(`users-permissions/user/me/favorites/cards${options}`);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create(error?.response?.data?.error?.message);
+    return error;
+  }
+}
+/**
+ * 
+ * @param {Object} params {
+  * data: {
+  *  card_id: Number
+  * }
+ * }
+ * @returns 
+ */
+export async function favoriteCard(params) {
+  try {
+    const res = await api.post(`users-permissions/user/me/favorites/cards/add`, params);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create(error?.response?.data?.error?.message);
+    return error;
+  }
+}
+/**
+ * 
+ * @param {Object} params {
+  * data: {
+  *  card_id: Number
+  * }
+ * }
+ * @returns 
+ */
+export async function removefavoriteCard(params) {
+  try {
+    const res = await api.post(`users-permissions/user/me/favorites/cards/remove`, params);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create(error?.response?.data?.error?.message);
+    return error;
+  }
+}
+export async function queryLikedCards(element, type, start, limit) {
+  if (start < 0 || limit < 0) {
+    Notify.create($t('need_pagination_info'));
+    return;
+  }
+  let options = `?element=${element}&type=${type}&start=${start}&limit=${limit}`;
+  try {
+    const res = await api.get(`users-permissions/user/me/likes/cards${options}`);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create(error?.response?.data?.error?.message);
+    return error;
+  }
+}
+/**
+ * 
+ * @param {Object} params {
+  * data: {
+  *  card_id: Number
+  * }
+ * }
+ * @returns 
+ */
+export async function likeCard(params) {
+  try {
+    const res = await api.post(`users-permissions/user/me/likes/cards/add`, params);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create(error?.response?.data?.error?.message);
+    return error;
+  }
+}
+/**
+ * 
+ * @param {Object} params {
+  * data: {
+  *  card_id: Number
+  * }
+ * }
+ * @returns 
+ */
+export async function removeLikeCard(params) {
+  try {
+    const res = await api.post(`users-permissions/user/me/likes/cards/remove`, params);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create(error?.response?.data?.error?.message);
+    return error;
+  }
+}
+/**
+ * 
+ * @param {Object} params {
+  * data: {
+  *  card_id: Number
+  * }
+ * }
+ * @returns 
+ */
+export async function unlikeCard(params) {
+  try {
+    const res = await api.post(`users-permissions/user/me/unlikes/cards/add`, params);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create(error?.response?.data?.error?.message);
+    return error;
+  }
+}
+/**
+ * 
+ * @param {Object} params {
+  * data: {
+  *  card_id: Number
+  * }
+ * }
+ * @returns 
+ */
+export async function removeUnlikeCard(params) {
+  try {
+    const res = await api.post(`users-permissions/user/me/unlikes/cards/remove`, params);
     if (res) {
       return res;
     }

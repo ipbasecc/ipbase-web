@@ -14,9 +14,10 @@
 </template>
 <script setup>
     import { ref, computed, onMounted, watch, nextTick } from 'vue'
-    import { queryDiscover } from "src/api/strapi/project.js";
+    import { queryFavoritedCards } from "src/api/strapi/project.js";
     import { useRouter, useRoute } from "vue-router";
-    import ItemCard from './ItemCard.vue'
+    import ItemCard from '../ItemCard.vue'
+    import { discoverStore } from 'src/hooks/global/useStore';
 
     const emit = defineEmits(['enterCardDetail'])
     const router = useRouter();
@@ -29,26 +30,26 @@
     const hasMore = computed(() => total_cards.value > cards.value.length);
     const alt_image = ref('https://cdn.quasar.dev/img/mountains.jpg')
 
-    const queryDiscoverFn = async () => {
+    const queryFavoritedCardsFn = async () => {
         const process = (_data) => {
             total_cards.value = _data.total;
             cards.value = [...cards.value, ..._data.cards];
         };
-        const res = await queryDiscover(start.value, limit.value);
+        const res = await queryFavoritedCards(discoverStore.list_element, discoverStore.list_type, start.value, limit.value);
         if (res?.data) {
             process(res?.data);
         }
     };
     const getMoreCardsFn = async () => {
         page.value++
-        await queryDiscoverFn();
+        await queryFavoritedCardsFn();
     };
     async function onLoad(index, done) {
         await getMoreCardsFn();
         done()
     }
     onMounted(async () => {
-        await queryDiscoverFn();
+        await queryFavoritedCardsFn();
     })
     const active_id = computed(() => Number(route.params?.card_id));
     watch([active_id, cards], async () => {
@@ -61,6 +62,6 @@
 
     const enterCardDetail = (card) => {
         emit('enterCardDetail', card)
-        router.push(`/discover/${card.id}`)
+        router.push(`/discover/my/favorite/${card.id}`)
     }
 </script>

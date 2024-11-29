@@ -46,20 +46,25 @@
 
         <q-page-container>
             <q-page>
-                <q-toolbar class="transparent z-fab absolute-top text-grey">
+                <q-toolbar class="transparent z-fab absolute-top text-grey row gap-sm">
                     <q-btn dense flat icon="mdi-chevron-left" @click="closeDetial" />
                     <template v-if="!need_buy">
                         <q-space />
-                        <q-btn dense flat padding="xs md" :label="version_label(activeVersion?.name)">
-                            <q-menu class='radius-sm'>
-                                <q-list bordered dense class='radius-sm q-pa-xs' style="min-width: 100px">
-                                    <q-item v-for="i in overviews" :key="i.id" clickable v-close-popup class="radius-xs"
-                                        @click="changeVersion(i)">
-                                        <q-item-section>{{ version_label(i.name) }}</q-item-section>
-                                    </q-item>
-                                </q-list>
-                            </q-menu>
-                        </q-btn>
+                        <div class="row items-center">
+                            {{ card.name }} - {{ version_label(activeVersion?.name) }}
+                            <q-btn dense flat round size="sm" class="q-ml-xs" icon="mdi-chevron-down">
+                                <q-menu class='radius-sm'>
+                                    <q-list bordered dense class='radius-sm q-pa-xs' style="min-width: 100px">
+                                        <q-item v-for="i in overviews" :key="i.id" clickable v-close-popup class="radius-xs"
+                                            @click="changeVersion(i)">
+                                            <q-item-section>{{ version_label(i.name) }}</q-item-section>
+                                        </q-item>
+                                    </q-list>
+                                </q-menu>
+                            </q-btn>
+                        </div>
+                        <LikeBtn :item="card" />
+                        <FavoriteBtn :item="card" />
                         <q-space />
                         <q-btn flat dense round icon="menu" @click="toggleRightDrawer" />
                     </template>
@@ -96,10 +101,12 @@
     import DocumentList from "src/pages/team/document/DocumentList.vue";
     import DocumentBody from "src/pages/team/document/DocumentBody.vue";
 
-    import { teamStore, uiStore } from 'src/hooks/global/useStore';
+    import { teamStore, uiStore, discoverStore } from 'src/hooks/global/useStore';
     import useOverview from 'src/pages/team/hooks/useOverview.js'
     import { useI18n } from 'vue-i18n'
     import { useMouse } from '@vueuse/core'
+    import LikeBtn from './components/LikeBtn.vue'
+    import FavoriteBtn from './components/FavoriteBtn.vue'
     const { t } = useI18n()
     const { activeCard } = defineProps(['activeCard'])
     const emit = defineEmits(['close'])
@@ -125,7 +132,7 @@
     const quality = ref()
     const need_buy = ref(false);
     const queryOneDiscoverFn = async (_id) => {
-        const res = await queryOneDiscover(_id)
+        const res = await queryOneDiscover(discoverStore.list_element, discoverStore.list_type, _id)
         if (res?.data?.is_buyer === false) {
             card.value = activeCard
             need_buy.value = true
@@ -134,9 +141,12 @@
             changeVersion(card.value?.overviews[0])
 
             need_buy.value = false
+
             teamStore.card = card.value
         }
     }
+
+
     const changeVersion = (version) => {
         activeVersion.value = version;
         const resps = useOverview(activeVersion.value);
@@ -171,6 +181,7 @@
         
         document.removeEventListener('mousemove', handleMouseMove)
         document.removeEventListener('mouseup', handleMouseUp)
+        emit('close')
     })
     const buyData = async (data) => {
         console.log('buyData', data)

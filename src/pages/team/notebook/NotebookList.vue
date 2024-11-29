@@ -1,5 +1,5 @@
 <template>
-    <div class="absolute-full column no-wrap" :class="$q.dark.mode ? '' : 'bg-primary-9 text-grey-1'">
+    <div class="absolute-full column no-wrap" :class="!$q.dark.mode && uiStore.app === 'notebooks' ? 'bg-primary-9 text-grey-1' : ''">
         <q-toolbar class="transparent border-bottom">
             <q-btn flat dense class="q-mr-sm" :icon="targetList !== 'notebooks' ? 'mdi-chevron-left' : 'mdi-book-open-page-variant'"
             @click="enterLibrary()" />

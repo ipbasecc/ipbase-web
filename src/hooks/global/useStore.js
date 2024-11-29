@@ -9,6 +9,7 @@ import useMmstore from "src/stores/mmstore.js";
 import mmUserStore from "src/stores/mmuser.js";
 
 import useOss from "src/stores/oss.js";
+import useDiscoverStore from "src/stores/discover.js";
 
 export const uiStore = useUIStore();
 export const mm_wsStore = useMmws();
@@ -21,3 +22,4 @@ export const mmstore = useMmstore();
 export const mmUser = mmUserStore();
 
 export const ossStore = useOss();
+export const discoverStore = useDiscoverStore();

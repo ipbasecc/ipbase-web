@@ -230,7 +230,43 @@ const routes = [
             component: () => import("src/pages/team/discover/DiscoverDetail.vue"),
             name: "discover_card_detail",
             props: true,
-          }
+          },
+          {
+            path: "/discover/my/tutorial",
+            component: () => import("src/pages/team/discover/my/TutorialList.vue"),
+            name: "discover_my_tutorial",
+            props: true,
+          },
+          {
+            path: "/discover/my/tutorial/:card_id",
+            component: () => import("src/pages/team/discover/DiscoverDetail.vue"),
+            name: "tutorial_card_detail",
+            props: true,
+          },
+          {
+            path: "/discover/my/favorite",
+            component: () => import("src/pages/team/discover/my/FavoriteList.vue"),
+            name: "discover_my_favorite",
+            props: true,
+          },
+          {
+            path: "/discover/my/favorite/:card_id",
+            component: () => import("src/pages/team/discover/DiscoverDetail.vue"),
+            name: "favorite_card_detail",
+            props: true,
+          },
+          {
+            path: "/discover/my/liked",
+            component: () => import("src/pages/team/discover/my/LikedList.vue"),
+            name: "discover_my_like",
+            props: true,
+          },
+          {
+            path: "/discover/my/liked/:card_id",
+            component: () => import("src/pages/team/discover/DiscoverDetail.vue"),
+            name: "like_card_detail",
+            props: true,
+          },
         ]
       },
       {
