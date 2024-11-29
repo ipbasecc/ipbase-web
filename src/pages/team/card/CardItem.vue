@@ -589,7 +589,7 @@
 </template>
 
 <script setup>
-import {computed, reactive, ref, toRef, toRefs, watch, watchEffect, nextTick, onMounted} from "vue";
+import {computed, reactive, ref, toRef, toRefs, watch, watchEffect, nextTick, onMounted, onBeforeUnmount} from "vue";
 import {useMagicKeys} from "@vueuse/core";
 import StatusMenu from "src/pages/team/components/user/StatusMenu.vue";
 import CardPage from "./CardPage.vue";
@@ -690,11 +690,6 @@ const editCareDlg = ref(false);
 const updated = () => {
   editCareDlg.value = false
 }
-
-watchEffect(() => {
-  isDilgMode.value = !isExternal.value && !uiStore.isFocusMode
-  actived.value = teamStore.thread?.id === cardRef.value.mm_thread?.id || teamStore.card?.id === cardRef.value.id;
-})
 const project_card_preference = computed(
   () =>
     teamStore.project?.preferences?.card_settings || useProjectCardPreference()
@@ -749,31 +744,6 @@ const toggleVersion = (i) => {
   media.value = i.media;
   cardRef.value.activeVersion = i
 }
-watch(cardRef, () => {
-  if (cardRef.value && cardRef.value.overviews?.length > 0) {
-    let version
-    if (cardRef.value?.activeVersion) {
-      version = cardRef.value?.activeVersion
-    } else {
-      version = cardRef.value.overviews?.find((i) => 
-        i.version === cardRef.value.default_version
-      ) || cardRef.value.overviews[0];
-    }
-    media.value = version.media;
-    const { quality: _quality } = useOverview(version)
-    quality.value = _quality.value;
-  }
-  belong_card.value = teamStore.card || null;
-},{immediate:true,deep:true});
-
-watch([storeCard, storeCardMedia, storeCardVersion], () => {
-  if (storeCard.value?.id === cardRef.value.id && storeCardMedia.value && storeCardVersion.value) {    
-    media.value = storeCardMedia.value
-
-    const { quality: _quality } = useOverview(storeCardVersion.value)
-    quality.value = _quality.value;
-  }
-},{immediate:false,deep:false})
 
 const executor = ref();
 const edgeStyle = computed(() => clac_cardEdgeStyle(cardRef.value));
@@ -789,19 +759,6 @@ const color_marker = computed(() => {
     return null
   } else {
     return _card_colorMarker
-  }
-});
-watchEffect(() => {
-  isInCard.value = teamStore.card?.id === cardRef.value?.id;
-
-  if(cardRef.value?.type !== 'classroom'){
-    const executorRole = cardRef.value?.member_roles?.find(
-      (i) => i.subject === "executor"
-    );
-    // 一个卡片只能有一个负责人，因此这里可以使用 find 方法
-    executor.value = cardRef.value?.card_members?.find((i) =>
-      i.member_roles.map((j) => j.id)?.includes(executorRole.id)
-    );
   }
 });
 
@@ -889,11 +846,6 @@ const hideCtxMent = () => {
   }
 };
 const show_cardDetial = ref(false);
-watchEffect(() => {
-  if(!teamStore.card){
-    show_cardDetial.value = false;
-  }
-})
 const _enterCard = async (auth) => {
   if(cardRef.value?.type === 'note') return
   if (!isDilgMode.value) {
@@ -929,12 +881,6 @@ const expandCard = async (card) => {
   cardRef.value.expand = "expand";
   await cacheExpand(card, "expand");
 };
-
-watchEffect(() => {
-  if (content_channging.value) {
-    expandCard(cardRef.value);
-  }
-});
 const collapseCard = async (card) => {
   cardRef.value.expand = "collapse";
   await cacheExpand(card, "collapse");
@@ -951,23 +897,113 @@ const cardSize = ref();
 
 const { current } = useMagicKeys();
 const keys = computed(() => Array.from(current));
-watch(keys, () => {
-  if (keys.value) {
-    if (keys.value?.includes("escape") && content_channging.value) {
-      toggleOffEditting();
-    }
-  }
-},{ immediate: false, deep: false });
 
 const _leaveCard = () => {
   leaveCard();
 };
 
-onMounted(async() => {
+const cleanupFunctions = [];
+
+const setupWatchers = () => {
+  cleanupFunctions.push(
+    watch(keys, () => {
+      if (keys.value) {
+        if (keys.value?.includes("escape") && content_channging.value) {
+          toggleOffEditting();
+        }
+      }
+    },{ immediate: false, deep: false }),
+
+    watch(cardRef, () => {
+      if (cardRef.value && cardRef.value.overviews?.length > 0) {
+        let version
+        if (cardRef.value?.activeVersion) {
+          version = cardRef.value?.activeVersion
+        } else {
+          version = cardRef.value.overviews?.find((i) => 
+            i.version === cardRef.value.default_version
+          ) || cardRef.value.overviews[0];
+        }
+        media.value = version.media;
+        const { quality: _quality } = useOverview(version)
+        quality.value = _quality.value;
+      }
+      belong_card.value = teamStore.card || null;
+    },{immediate:true,deep:true}),
+
+    watch([storeCard, storeCardMedia, storeCardVersion], () => {
+      if (storeCard.value?.id === cardRef.value.id && storeCardMedia.value && storeCardVersion.value) {    
+        media.value = storeCardMedia.value
+
+        const { quality: _quality } = useOverview(storeCardVersion.value)
+        quality.value = _quality.value;
+      }
+    },{immediate:false,deep:false}),
+
+
+    watchEffect(() => {
+      if (content_channging.value) {
+        expandCard(cardRef.value);
+      }
+    }),
+    watchEffect(() => {
+      if(!teamStore.card){
+        show_cardDetial.value = false;
+      }
+    }),
+    watchEffect(() => {
+      isInCard.value = teamStore.card?.id === cardRef.value?.id;
+
+      if(cardRef.value?.type !== 'classroom'){
+        const executorRole = cardRef.value?.member_roles?.find(
+          (i) => i.subject === "executor"
+        );
+        // 一个卡片只能有一个负责人，因此这里可以使用 find 方法
+        executor.value = cardRef.value?.card_members?.find((i) =>
+          i.member_roles.map((j) => j.id)?.includes(executorRole.id)
+        );
+      }
+    }),
+
+    watchEffect(() => {
+      isDilgMode.value = !isExternal.value && !uiStore.isFocusMode
+      actived.value = teamStore.thread?.id === cardRef.value.mm_thread?.id || teamStore.card?.id === cardRef.value.id;
+    })
+  )
+}
+
+// 组件生命周期钩子
+onMounted(() => {
+  setupWatchers();
+});
+
+onBeforeUnmount(() => {
+  cleanupFunctions.forEach(cleanup => cleanup());
+});
+
+// 优化事件监听器
+const setupEventListeners = () => {
+  const cleanupFns = [];
+  
+  if (cardDomRef.value) {
+    const resizeObserver = new ResizeObserver((entries) => {
+      cardSize.value = entries[0].contentRect;
+    });
+    
+    resizeObserver.observe(cardDomRef.value);
+    cleanupFns.push(() => resizeObserver.disconnect());
+  }
+
+  onBeforeUnmount(() => {
+    cleanupFns.forEach(fn => fn());
+  });
+};
+
+onMounted(async () => {
   await nextTick();
-  useSocket(cardRef);
+  setupEventListeners();
   updateCardThread(cardRef);
-})
+});
 </script>
 
 <style lang="scss" scoped>

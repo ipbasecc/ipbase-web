@@ -14,7 +14,7 @@
 
 <script setup>
 import { teamStore, uiStore } from 'src/hooks/global/useStore';
-import { onMounted, useTemplateRef, ref, onBeforeUnmount, computed, watch } from 'vue';
+import { onMounted, useTemplateRef, ref, onBeforeUnmount } from 'vue';
 import useMeet from './useMeet.js';
 import { useQuasar } from 'quasar';
 import { preloadMeetAPI, isMeetAPILoaded } from 'src/utils/meetLoader';

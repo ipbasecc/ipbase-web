@@ -4,13 +4,60 @@
 
 <script setup>
     import { onMounted, onBeforeUnmount } from 'vue'
-    //页面加载的时候
-    onMounted(() => {
 
-        var canvas = document.getElementById("canv");
+    // 创建一个事件监听器管理对象
+    const listeners = {
+        mousemove: (e) => {
+            toX = (e.clientX - w / 2) * -0.8
+            toY = (e.clientY - w / 2) * 0.8
+        },
+        touchmove: (e) => {
+            e.preventDefault()
+            toX = (e.touches[0].clientX - w / 2) * -0.8
+            toY = (e.touches[0].clientY - w / 2) * 0.8
+        },
+        mousedown: () => {
+            for (let i = 0; i < 100; i++) {
+                app?.add()
+            }
+        },
+        touchstart: (e) => {
+            e.preventDefault()
+            for (let i = 0; i < 100; i++) {
+                app?.add()
+            }
+        },
+        resize: () => {
+            w = w = window.innerWidth
+            w = h = window.innerHeight
+        }
+    }
+
+    // 统一的事件绑定和解绑函数
+    const bindEvents = () => {
+        Object.entries(listeners).forEach(([event, handler]) => {
+            window.addEventListener(event, handler, { passive: event !== 'touchmove' && event !== 'touchstart' })
+        })
+    }
+
+    const unbindEvents = () => {
+        Object.entries(listeners).forEach(([event, handler]) => {
+            window.removeEventListener(event, handler)
+        })
+    }
+
+    let canvas, app, w, h, toX = 0, toY = 0
+
+    onMounted(() => {
+        canvas = document.getElementById("canv")
+        w = window.innerWidth
+        h = window.innerHeight
+        
+        // 初始化画布
+        canvas.width = w
+        canvas.height = h
+
         var num = 200;
-        var w = window.innerWidth;
-        var h = window.innerHeight;
         var max = 100;
         var _x = 0;
         var _y = 0;
@@ -192,8 +239,6 @@
             };
 
             Build.prototype.go = function () {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
                 this.$ = canv.getContext("2d");
                 this.$.globalCompositeOperation = 'source-over';
                 this.varr = [];
@@ -252,7 +297,7 @@
             };
 
             Build.prototype.draw = function () {
-                this.$.clearRect(0, 0, canvas.width, canvas.height);
+                this.$.clearRect(0, 0, w, h);
                 cam.upd();
                 this.rotObj.x += 0.1;
                 this.rotObj.y += 0.1;
@@ -307,63 +352,47 @@
                 this.anim();
 
                 window.addEventListener('mousemove', function (e) {
-                    this.toX = (e.clientX - canvas.width / 2) * -0.8;
-                    this.toY = (e.clientY - canvas.height / 2) * 0.8;
-                }.bind(this), {passive: false});
+                    this.toX = (e.clientX - w / 2) * -0.8;
+                    this.toY = (e.clientY - w / 2) * 0.8;
+                }.bind(this), { passive: false });
                 window.addEventListener('touchmove', function (e) {
                     e.preventDefault();
-                    this.toX = (e.touches[0].clientX - canvas.width / 2) * -0.8;
-                    this.toY = (e.touches[0].clientY - canvas.height / 2) * 0.8;
-                }.bind(this), {passive: false});
+                    this.toX = (e.touches[0].clientX - w / 2) * -0.8;
+                    this.toY = (e.touches[0].clientY - w / 2) * 0.8;
+                }.bind(this), { passive: false });
                 window.addEventListener('mousedown', function (e) {
                     for (var i = 0; i < 100; i++) {
                         this.add();
                     }
-                }.bind(this), {passive: false});
+                }.bind(this), { passive: false });
                 window.addEventListener('touchstart', function (e) {
                     e.preventDefault();
                     for (var i = 0; i < 100; i++) {
                         this.add();
                     }
-                }.bind(this), {passive: false});
+                }.bind(this), { passive: false });
             };
             var app = new Build();
             app.run();
 
-
-            onBeforeUnmount(() => {
-                window.removeEventListener('mousemove', function (e) {
-                    this.toX = (e.clientX - canvas.width / 2) * -0.8;
-                    this.toY = (e.clientY - canvas.height / 2) * 0.8;
-                }.bind(this), {passive: false});
-                window.removeEventListener('touchmove', function (e) {
-                    e.preventDefault();
-                    this.toX = (e.touches[0].clientX - canvas.width / 2) * -0.8;
-                    this.toY = (e.touches[0].clientY - canvas.height / 2) * 0.8;
-                }.bind(this), {passive: false});
-                window.removeEventListener('mousedown', function (e) {
-                    for (var i = 0; i < 100; i++) {
-                        this.add();
-                    }
-                }.bind(this));
-                window.removeEventListener('touchstart', function (e) {
-                    e.preventDefault();
-                    for (var i = 0; i < 100; i++) {
-                        this.add();
-                    }
-                }.bind(this), {passive: false});
-            })
         })();
-        window.addEventListener('resize', function () {
-            canvas.width = w = window.innerWidth;
-            canvas.height = h = window.innerHeight;
-        }, false);
-        onBeforeUnmount(() => {
-            window.removeEventListener('resize', function () {
-                canvas.width = w = window.innerWidth;
-                canvas.height = h = window.innerHeight;
-            }, false);
-        })
+        
+        // 绑定所有事件
+        bindEvents()
+    })
+
+    onBeforeUnmount(() => {
+        // 解绑所有事件
+        unbindEvents()
+        
+        // 停止动画循环（如果有的话）
+        if (app?.anim) {
+            cancelAnimationFrame(app.anim)
+        }
+        
+        // 清空引用
+        canvas = null
+        app = null
     })
 </script>
 

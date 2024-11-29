@@ -118,46 +118,41 @@ const wsMsgs = ref([]);
 
 const init = (channel_id) => {
     getMessages();
-    // 创建一个websocket客户端
     ws = new WebSocket(
         `wss://${process.env.MM_SITE}/api/v4/websocket?channel_id=${channel_id}`
     );
-    // 监听websocket连接事件
-    ws.addEventListener("open", () => {
-        // 连接成功后，发送一个认证请求，使用您的mattermost用户ID和令牌
-        ws.send(
-            JSON.stringify({
-                seq: 1,
-                action: "authentication_challenge",
-                data: {
-                    token: mmtoken,
-                },
-            })
-        );
-    });
-    // 监听websocket消息事件
-    ws.addEventListener("message", (event) => {
-        // 解析收到的消息数据
-        const data = JSON.parse(event.data);
-
-        // 判断消息类型
-        if (data.event === "posted") {
-            // 如果是新消息事件，获取消息内容和频道ID
-            const message = JSON.parse(data.data.post);
-            const channelId = message.channel_id;
-
-            // 判断是否是您关注的频道
-            if (channelId === directChannelId.value) {
-                // 如果是，显示消息内容到页面上
-                messages.value.push(message);
-            }
-        }
-    });
+    ws.addEventListener("open", handleOpen);
+    ws.addEventListener("message", handleMessage);
 }
 
-// 定义一个函数来关闭ws连接
+const handleOpen = () => {
+    ws.send(
+        JSON.stringify({
+            seq: 1,
+            action: "authentication_challenge",
+            data: {
+                token: mmtoken,
+            },
+        })
+    );
+};
+
+const handleMessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (data.event === "posted") {
+        const message = JSON.parse(data.data.post);
+        const channelId = message.channel_id;
+        if (channelId === directChannelId.value) {
+            messages.value.push(message);
+        }
+    }
+};
+
 const closeWs = () => {
     if (ws) {
+        ws.removeEventListener("open", handleOpen);
+        ws.removeEventListener("message", handleMessage);
+        
         ws.close();
         ws = null;
         console.log("断开ws");

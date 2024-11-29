@@ -67,6 +67,7 @@ import {
   ref,
   watch,
   onBeforeMount,
+  onBeforeUnmount
 } from "vue";
 
 import BrandMenu from "src/components/VIewComponents/BrandMenu.vue";
@@ -135,6 +136,9 @@ const handleScroll = () => {
 
 onMounted(async () => {
   window.addEventListener("scroll", handleScroll);
+});
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", handleScroll);
 });
 </script>
 <style scoped lang="scss">

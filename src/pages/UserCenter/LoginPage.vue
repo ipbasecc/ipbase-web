@@ -113,6 +113,7 @@
     timer = setInterval(() => {
       count.value--;
       if (count.value <= 0) {
+        count.value = 0;
         clearTimer();
         router.push('/teams');
       }

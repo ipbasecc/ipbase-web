@@ -42,9 +42,8 @@ export function _ws() {
 
   // 连接到Mattermost WebSocket
   function wsConnect() {
-    ws.addEventListener("open", () => {
-      // 连接成功后，发送一个认证请求，使用您的mattermost用户ID和令牌
-      // console.log("ws connecting...");
+    // 定义具名处理函数
+    function handleOpen() {
       ws.send(
         JSON.stringify({
           seq: 1,
@@ -54,15 +53,14 @@ export function _ws() {
           },
         })
       );
-    });
+    }
 
-    // 监听websocket消息事件
-    ws.addEventListener("message", (event) => {
+    function handleMessage(event) {
       mm_wsStore.online = true;
       mm_wsStore.event = JSON.parse(event.data);
-    });
+    }
 
-    ws.addEventListener("error", async (event) => {
+    async function handleError(event) {
       console.error(`WebSocket错误: ${event}`);
       if (mm_loged === false) {
         localStorage.clear();
@@ -77,15 +75,14 @@ export function _ws() {
         localStorage.clear();
         return;
       }
-      // 重新连接
       setTimeout(() => {
         console.log(`WebSocke 离线，10秒后尝试重连...`);
         closeWs();
         reConnect();
       }, 10000);
-    });
+    }
 
-    ws.addEventListener("disconnect", () => {
+    function handleDisconnect() {
       console.log(`WebSocket已断开`);
       mm_wsStore.online = false;
       setTimeout(() => {
@@ -93,9 +90,9 @@ export function _ws() {
         closeWs();
         reConnect();
       }, 10000);
-    });
+    }
 
-    ws.addEventListener("close", (event) => {
+    function handleClose(event) {
       mm_wsStore.online = false;
       console.log("WebSocket closed:", event.code, event.reason);
       if (!isReconnecting) {
@@ -105,13 +102,27 @@ export function _ws() {
           reConnect();
         }, 10000);
       }
-    });
+    }
+
+    // 使用具名函数添加事件监听器
+    ws.addEventListener("open", handleOpen);
+    ws.addEventListener("message", handleMessage);
+    ws.addEventListener("error", handleError);
+    ws.addEventListener("disconnect", handleDisconnect);
+    ws.addEventListener("close", handleClose);
   }
   wsConnect();
 }
 
 export function closeWs() {
   if (ws) {
+    // 移除所有事件监听器
+    ws.removeEventListener('open', wsConnect);
+    ws.removeEventListener('message', handleMessage);
+    ws.removeEventListener('error', handleError);
+    ws.removeEventListener('disconnect', handleDisconnect);
+    ws.removeEventListener('close', handleClose);
+    
     ws.close();
     mm_wsStore.online = false;
   }

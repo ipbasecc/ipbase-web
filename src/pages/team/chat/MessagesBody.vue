@@ -714,7 +714,6 @@ onUnmounted(() => {
   if (separatorElement) {
     separatorElement.removeEventListener("mouseenter", () => {});
     separatorElement.removeEventListener("mouseleave", () => {});
-    separatorElement.removeEventListener("mousedown", () => {});
   }
   document.removeEventListener("mouseup", () => {});
 });

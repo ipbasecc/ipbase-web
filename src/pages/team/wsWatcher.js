@@ -18,7 +18,7 @@ export default function useWatcher() {
   const val = computed(() => teamStore.income);
   watch(val, async(newVal, oldVal) => {
     if(!newVal) return;
-    console.log('val', val.value);
+    // console.log('val', val.value);
     let { team_id, project_id, board_id, group_id, card_id, data } = val.value?.data;
 
     if(val.value.event === 'user:project:joined'){

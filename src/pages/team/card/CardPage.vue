@@ -504,6 +504,7 @@ import {
   toRefs,
   computed,
   watch,
+  onMounted,
   onBeforeMount,
   onBeforeUnmount,
   watchEffect,
@@ -549,13 +550,6 @@ provide("isExternal", isExternal.value);
 const inDilg = ref(true);
 const personal_kanbanTodo = ref();
 const feedback = ref([]);
-watchEffect(() => {
-  if(teamStore.card?.feedback){
-    feedback.value = [teamStore.card?.feedback];
-  }
-  inDilg.value = !isExternal.value && !uiStore.isFocusMode;
-  personal_kanbanTodo.value = teamStore.init?.todogroups?.filter(i => i.kanban?.id === teamStore.card?.card_kanban?.id) || []
-})
 const emit = defineEmits([
   "closeCardList",
 ]);
@@ -618,23 +612,6 @@ const refetchFeedback = async (card_id) => {
   }
 }
 const isIntro = ref(false);
-
-watchEffect(async () => {
-  if (route.name === "teams") {
-    isIntro.value = true;
-  }
-  if (teamStore.card?.belongedInfo?.belonged_project && !teamStore.project) {
-    const _project_id = teamStore.card.belongedInfo.belonged_project.id;
-    const res = await getOneProject(_project_id);
-    if (res?.data) {
-      teamStore.project = res.data;
-      teamStore.project_id = res.data.id;
-    }
-  }
-  if(uiStore.showMainContentList){
-    teamStore.active_document = void 0
-  }
-});
 
 const closeCard = (id, index) => {
   teamStore.card = teamStore.cards[index - 1];
@@ -742,12 +719,47 @@ const autoSetModel = async () => {
     current_model.value = _model;
   }
 };
-watch(activedCard_id, () => {
-  if (activedCard_id.value) {
-    getCard(activedCard_id.value);
-    autoSetModel();
-  }
-},{ immediate: true, deep: false });
+
+const cleanupFunctions = [];
+
+const setupWatchers = () => {
+  cleanupFunctions.push(
+    watchEffect(() => {
+      if(teamStore.card?.feedback){
+        feedback.value = [teamStore.card?.feedback];
+      }
+      inDilg.value = !isExternal.value && !uiStore.isFocusMode;
+      personal_kanbanTodo.value = teamStore.init?.todogroups?.filter(i => i.kanban?.id === teamStore.card?.card_kanban?.id) || []
+    }),
+    watchEffect(async () => {
+      if (route.name === "teams") {
+        isIntro.value = true;
+      }
+      if (teamStore.card?.belongedInfo?.belonged_project && !teamStore.project) {
+        const _project_id = teamStore.card.belongedInfo.belonged_project.id;
+        const res = await getOneProject(_project_id);
+        if (res?.data) {
+          teamStore.project = res.data;
+          teamStore.project_id = res.data.id;
+        }
+      }
+      if(uiStore.showMainContentList){
+        teamStore.active_document = void 0
+      }
+    }),
+    watch(activedCard_id, () => {
+      if (activedCard_id.value) {
+        getCard(activedCard_id.value);
+        autoSetModel();
+      }
+    },{ immediate: true, deep: false })
+  )
+}
+
+// 组件生命周期钩子
+onMounted(() => {
+  setupWatchers();
+});
 
 const current_document = ref();
 onBeforeUnmount(() => {
@@ -757,6 +769,7 @@ onBeforeUnmount(() => {
     teamStore.project = null;
     teamStore.project_id = NaN;
   }
+  cleanupFunctions.forEach(cleanup => cleanup());
 });
 
 const toggleCardList = () => {

@@ -117,7 +117,7 @@
 </template>
 
 <script setup>
-import {ref, toRefs, watch, watchEffect, computed, provide, nextTick} from "vue";
+import {ref, toRefs, watch, watchEffect, computed, provide, nextTick, onBeforeUnmount, onMounted} from "vue";
 import { VueDraggable } from 'vue-draggable-plus'
 import { kanbanUpdate, createColumn } from "src/api/strapi/project.js";
 import ColumnContainer from "./ColumnContainer.vue";
@@ -231,40 +231,43 @@ const init = async (res) => {
     syncKanbanStore(_attachExpand)
   }
 };
+
+// 重构初始化逻辑
 const initKanban = async (kid) => {
-  if (loading.value) return;
-  loading.value = true;
-  if(isShared.value){
-    await init(teamStore.card?.card_kanban)
-  } else {
-    let cache = await getKanbanCache(kid);
+  try {
+    if (loading.value) return;
+    loading.value = true;
+    
+    if(isShared.value) {
+      await init(teamStore.card?.card_kanban);
+      return;
+    }
+
+    const cache = await getKanbanCache(kid);
     if (cache) {
       await init(cache);
     }
+
     const fetch = await getKanban(kid);
     if (fetch) {
       await init(fetch);
     }
+  } catch (error) {
+    console.error('Failed to initialize kanban:', error);
+  } finally {
     loading.value = false;
   }
 };
+
+// 导出组件方法
 defineExpose({
   initKanban
-})
-watch(kanban_id, async () => {
-  if(kanban_id.value){
-    await initKanban(kanban_id.value);
-  }
-},{immediate: true,deep:false})
+});
 
 const kanbanHeight = computed(() => uiStore.mainWindowSize?.height - 2);
 const reelHeight = computed( () =>
   (uiStore.mainWindowSize?.height - 48) / _kanbanSource.value?.columns?.length - 64 || 240
 );
-watch(reelHeight, () => {
-  uiStore.reelHeight = !uiStore.activeReel ? reelHeight.value : 160;
-  uiStore.reelHeight_SC = reelHeight.value;
-});
 
 const scrollAreaRef = ref(null);
 const handleScroll = (event) => {
@@ -279,27 +282,6 @@ const handleScroll = (event) => {
   scrollAreaRef.value?.setScrollPosition("horizontal", x + moveAmount, 0);
   uiStore.dragging = false;
 };
-watch(
-  [project_id, kanban_id],
-  () => {
-    if (project_id.value && kanban_id.value) {
-      initKanban(kanban_id.value);
-    }
-  },
-  { immediate: true, deep: true }
-);
-
-watch(
-  teamStore,
-  async () => {
-    // Card详情对话框开启时收到来自ws的刷新看板数据时，不能立刻刷新，否则弹框会关闭，先记住要刷新的状态，在关闭弹框时再刷新
-    if (teamStore.need_refecth_kanban && !teamStore.card) {
-      teamStore.need_refecth_kanban = false;
-      await initKanban(kanban_id.value);
-    }
-  },
-  { immediate: false, deep: false }
-);
 
 const oldColumns = computed(() => kanban.value?.columns?.length > 0 ? [...kanban.value?.columns] : []); // 获取一个浅拷贝，在更新时辅助：1.判断是否需要重新fetch数据；2.作为排序赋值的数据源
 const __dragging_column = ref(false);
@@ -387,228 +369,6 @@ const draging = () => {
 const dragscrollend = () => {
   
 };
-
-const kanbanCards = computed(() => teamStore.kanban?.columns?.map(i => i.cards).flat(2) || []);
-const dropKanbanCards = computed(() => teamStore.dropKanban?.columns.map(i => i.cards).flat(2) || []);
-const allCards = computed(() => [...kanbanCards.value, ...dropKanbanCards.value])
-const val = computed(() => teamStore.income);
-watch(val, async(newVal, oldVal) => {
-  if(!newVal || newVal === oldVal) return;
-  const { team_id, column_id, card_id, kanban_id, data, order } = val.value.data;
-  if(teamStore.team?.id === Number(team_id)){
-
-    if(val.value.event === 'kanban:updated' && order && kanban.value?.id === Number(data.id)) {
-      if(order?.length > 0){
-        /**
-         * @description: 从所有已打开的看板以及当前看板的分栏浅拷贝中获取所有分栏数据，
-         * @description: 当前用户拥有完整的数据，因此只需要根据排序索引排序即可
-         * @description: 其它用户接收到ws数据后，如果有新分栏被拖入，可能没有该分栏的数据，因此需要重新获取数据
-         */
-        let _columns = [...oldColumns.value];
-        if(teamStore.dropKanban?.columns?.length > 0){
-          _columns = [..._columns, ...teamStore.dropKanban.columns];
-        }
-        if(teamStore.cardKanban?.columns?.length > 0){
-          _columns = [..._columns, ...teamStore.cardKanban.columns];
-        }
-
-        const oldColums_ids = _columns.map(i => i.id);
-        const havaAddColumn = order?.filter(i => !oldColums_ids.includes(i))?.length > 0;
-        const orderColumns = (columns) => {
-          return order.map(i => columns.find(j => j.id === Number(i)))
-        }
-        if(havaAddColumn){
-          const fetch = await getKanban(kanban.value?.id);
-          if (fetch) {
-            const _attachExpand = await attachExpand(fetch);
-            kanban.value.columns = orderColumns(_attachExpand.columns)
-          }
-        } else {
-          kanban.value.columns = orderColumns(_columns)
-        }
-      } else {
-        kanban.value.columns = []
-      }
-      syncKanbanStore(kanban.value);
-    }
-    if(val.value.event === 'kanban:deleted' && kanban.value?.id === Number(data.removed_kanban)) {
-      kanban.value = null;
-    }
-    
-    if(val.value.event === 'card:created'){
-      // classroom 新建时不会发布，因此后端在新建classroom卡片后不会发ws，这里直接处理即可，不需要处理classroom的情况
-      const column = kanban.value?.columns?.find(i => i.id === column_id);
-      if(column) {
-        if(column.cards?.length > 0){
-          if(kanban.value.type === 'kanban' || kanban.value.type === 'classroom'){
-            column.cards.unshift(data);
-          } else {
-            column.cards = [...column.cards, data];
-          }
-        } else {
-          column.cards = [data];
-        }
-      }
-    }
-    if(val.value.event === 'card:deleted'){
-      const syncRemove = () => {
-        const column = kanban.value?.columns?.find(i => i.cards?.map(j => j.id).includes(Number(card_id)));
-        if(column) {
-          const isInColumn = column.cards.find(i => i.id === Number(card_id));
-          if(isInColumn){
-            kanban.value.columns.find(i => i.id === column.id).cards = column.cards.filter(i => i.id !== Number(card_id));
-          }
-        }
-      }
-      if(teamStore.card?.id === Number(card_id)){
-        $q.notify({
-          progress: true,
-          color: 'negative',
-          message: '卡片已删除',
-          position: 'top',
-          timeout: 0,
-          actions: [
-            { label: $t('confirm'), color: 'white', handler: () => {
-              syncRemove();
-              teamStore.card = null;
-            } }
-          ]
-        })
-      } else {
-        syncRemove();
-      }
-    }
-    if(val.value.event === 'card:updated'){
-      // console.log('card:updated start');
-      if(!kanban.value?.columns) return;
-      const _column = kanban.value?.columns?.find(i => i.id === Number(column_id));
-
-      
-      /**
-       * ws收到数据：
-       * {
-            team_id: ctx.default_team?.id, // 团队ID
-            card_id: card_id, // card ID
-            updator: user_id, // 更新卡片的用户的ID
-            column_id: belongedInfo.belonged_column?.id, // 卡片所在分栏的ID
-            data: { // 重构的卡片数据
-                id: card_id,
-                cards: belongedInfo.belonged_column?.cards?.map(i => i.id), // 卡片所在分栏的所有卡片ID，用来根据此内容重建分栏内卡片、排序
-                message: 'refetch card datam please' // 提示消息
-            }
-        }
-       * @param cardData 根据后端返回的数据获取到card的数据，因为ws不能根据角色推送不同的内容，因此只会推送card的id，前端再去获取
-       * 
-       */
-      const applyCardData = (cardData) => {
-        if(_column?.cards){ // 正常的修改
-          const cardIndex = _column.cards.findIndex(i => i.id === cardData.id);
-          if(cardIndex !== -1){
-            Object.keys(cardData).forEach(key => {
-              if(cardData[key] !== undefined){
-                _column.cards[cardIndex][key] = cardData[key];
-              }
-            });
-          } else { // 如果是未发布的内容改为了发布 - 根据返回的card排序重构数据
-            _column.cards = data.cards.map(i => {
-              return _column.cards.find(j => j.id === i) || cardData
-            })
-          }
-        } else { // 可能新发布的卡片所在的分栏内原来是空的，这里直接添加
-          _column.cards = [cardData]
-        }
-        uiStore.updatedCard_for_userTeamAffairs = cardData;
-      }
-      if(_column){
-        let res
-        // 重新上架
-        const {column_cards, updator} = val.value.data;
-        if(data.unpulled_card_id){
-          if(updator !== teamStore.init?.id){
-            res = await findCard(data.unpulled_card_id);
-            if(res?.data){
-              _column.cards = column_cards.map(i => _column.cards.find(j => j.id === i) || res.data)
-            }
-          } else {
-            const index = _column.cards.findIndex(i => i.id === data.unpulled_card_id)
-            if(index !== -1){
-              _column.cards[index].pulled = false
-            }
-          }
-          if(teamStore.card?.id == data.unpulled_card_id){
-            teamStore.card.pulled = false
-          }
-          return
-        }
-        // 下架
-        if(data.pulled_card_id){
-          if(updator !== teamStore.init?.id){
-            _column.cards = _column.cards.filter(i => i.id !== data.pulled_card_id)
-          } else {
-            const index = _column.cards.findIndex(i => i.id === data.pulled_card_id)
-            if(index !== -1){
-              _column.cards[index].pulled = true
-            }
-          }
-          if(teamStore.card && teamStore.card.id == data.pulled_card_id){
-            teamStore.card.pulled = true
-          }
-          return
-        }
-        // 其它状态
-        res = await findCard(data.id);
-        if(res?.data){
-          console.log('card:updated findCard');
-          applyCardData(res.data)
-        }
-        if(teamStore.card?.id === Number(card_id)){
-          teamStore.card = res.data;
-          if(teamStore.card.pulled && teamStore.card.creator.id !== teamStore.init?.id){
-            $q.notify({
-              message: $t('is_pulled'),
-              actions: [
-                { label: $t('confirm'), color: 'white', handler: () => {
-                  teamStore.card = null;
-                } }
-              ]
-            })
-          }
-        }
-      }
-    }
-
-    if(val.value.event === 'column:created' && kanban.value?.id === Number(kanban_id)){
-      if (kanban.value.columns?.length > 0) {
-        kanban.value.columns.push(data);
-      } else {
-        kanban.value.columns = [data];
-      }
-      syncKanbanStore(kanban.value);
-    }
-
-    if(val.value.event === 'column:updated'){
-      // 如果是当前用户执行的修改，直接用返回的数据赋值
-      // const { updator } = val.value.data;
-      // if(updator === teamStore.init.id) return
-
-      //如果接收到ws的更新数据，按方法执行
-      const index = kanban.value.columns?.findIndex(i => i.id === Number(data.id));
-      if(index > -1){
-        updateColumn(index, data)
-        syncKanbanStore(kanban.value);
-      }
-    }
-
-    if(val.value.event === 'column:deleted'){
-      const index = kanban.value.columns?.findIndex(i => i.id === Number(data.removed_column_id));
-      if(index > -1){
-        kanban.value.columns.splice(index, 1);
-        syncKanbanStore(kanban.value);
-      }
-    }
-  }
-},{immediate: true, deep: true})
-
 // 更新kanban的列
 const updateColumn = async (index, data) => {
     const existingColumn = kanban.value.columns[index];
@@ -635,6 +395,282 @@ const updateColumn = async (index, data) => {
     
     kanban.value.columns[index] = existingColumn;
 };
+
+const kanbanCards = computed(() => teamStore.kanban?.columns?.map(i => i.cards).flat(2) || []);
+const dropKanbanCards = computed(() => teamStore.dropKanban?.columns.map(i => i.cards).flat(2) || []);
+const allCards = computed(() => [...kanbanCards.value, ...dropKanbanCards.value])
+const val = computed(() => teamStore.income);
+
+
+
+const cleanupFunctions = [];
+
+const setupWatchers = () => {
+  cleanupFunctions.push(
+    // 监听项目和看板ID
+    watch([project_id, kanban_id], async () => {
+      try {
+        if (project_id.value && kanban_id.value) {
+          await initKanban(kanban_id.value);
+        }
+      } catch (error) {
+        console.error('Failed to initialize kanban:', error);
+      }
+    }, { immediate: true }),
+
+    // 监听reelHeight
+    watch(reelHeight, () => {
+      try {
+        uiStore.reelHeight = !uiStore.activeReel ? reelHeight.value : 160;
+        uiStore.reelHeight_SC = reelHeight.value;
+      } catch (error) {
+        console.error('Failed to update reel height:', error);
+        // 设置默认值
+        uiStore.reelHeight = 160;
+        uiStore.reelHeight_SC = 240;
+      }
+    }),
+
+    // 监听需要重新获取看板的状态
+    watch(() => teamStore.need_refecth_kanban, async (newVal) => {
+      try {
+        if (newVal && !teamStore.card) {
+          teamStore.need_refecth_kanban = false;
+          await initKanban(kanban_id.value);
+        }
+      } catch (error) {
+        console.error('Failed to refetch kanban:', error);
+      }
+    }, { immediate: false }),
+
+    watch(val, async(newVal, oldVal) => {
+      if(!newVal || newVal === oldVal) return;
+      const { team_id, column_id, card_id, kanban_id, data, order } = val.value.data;
+      if(teamStore.team?.id === Number(team_id)){
+
+        if(val.value.event === 'kanban:updated' && order && kanban.value?.id === Number(data.id)) {
+          if(order?.length > 0){
+            /**
+             * @description: 从所有已打开的看板以及当前看板的分栏浅拷贝中获取所有分栏数据，
+             * @description: 当前用户拥有完整的数据，因此只需要根据排序索引排序即可
+             * @description: 其它用户接收到ws数据后，如果有新分栏被拖入，可能没有该分栏的数据，因此需要重新获取数据
+             */
+            let _columns = [...oldColumns.value];
+            if(teamStore.dropKanban?.columns?.length > 0){
+              _columns = [..._columns, ...teamStore.dropKanban.columns];
+            }
+            if(teamStore.cardKanban?.columns?.length > 0){
+              _columns = [..._columns, ...teamStore.cardKanban.columns];
+            }
+
+            const oldColums_ids = _columns.map(i => i.id);
+            const havaAddColumn = order?.filter(i => !oldColums_ids.includes(i))?.length > 0;
+            const orderColumns = (columns) => {
+              return order.map(i => columns.find(j => j.id === Number(i)))
+            }
+            if(havaAddColumn){
+              const fetch = await getKanban(kanban.value?.id);
+              if (fetch) {
+                const _attachExpand = await attachExpand(fetch);
+                kanban.value.columns = orderColumns(_attachExpand.columns)
+              }
+            } else {
+              kanban.value.columns = orderColumns(_columns)
+            }
+          } else {
+            kanban.value.columns = []
+          }
+          syncKanbanStore(kanban.value);
+        }
+        if(val.value.event === 'kanban:deleted' && kanban.value?.id === Number(data.removed_kanban)) {
+          kanban.value = null;
+        }
+        
+        if(val.value.event === 'card:created'){
+          // classroom 新建时不会发布，因此后端在新建classroom卡片后不会发ws，这里直接处理即可，不需要处理classroom的情况
+          const column = kanban.value?.columns?.find(i => i.id === column_id);
+          if(column) {
+            if(column.cards?.length > 0){
+              if(kanban.value.type === 'kanban' || kanban.value.type === 'classroom'){
+                column.cards.unshift(data);
+              } else {
+                column.cards = [...column.cards, data];
+              }
+            } else {
+              column.cards = [data];
+            }
+          }
+        }
+        if(val.value.event === 'card:deleted'){
+          const syncRemove = () => {
+            const column = kanban.value?.columns?.find(i => i.cards?.map(j => j.id).includes(Number(card_id)));
+            if(column) {
+              const isInColumn = column.cards.find(i => i.id === Number(card_id));
+              if(isInColumn){
+                kanban.value.columns.find(i => i.id === column.id).cards = column.cards.filter(i => i.id !== Number(card_id));
+              }
+            }
+          }
+          if(teamStore.card?.id === Number(card_id)){
+            $q.notify({
+              progress: true,
+              color: 'negative',
+              message: '卡片已删除',
+              position: 'top',
+              timeout: 0,
+              actions: [
+                { label: $t('confirm'), color: 'white', handler: () => {
+                  syncRemove();
+                  teamStore.card = null;
+                } }
+              ]
+            })
+          } else {
+            syncRemove();
+          }
+        }
+        if(val.value.event === 'card:updated'){
+          // console.log('card:updated start');
+          if(!kanban.value?.columns) return;
+          const _column = kanban.value?.columns?.find(i => i.id === Number(column_id));
+
+          
+          /**
+           * ws收到数据：
+           * {
+                team_id: ctx.default_team?.id, // 团队ID
+                card_id: card_id, // card ID
+                updator: user_id, // 更新卡片的用户的ID
+                column_id: belongedInfo.belonged_column?.id, // 卡片所在分栏的ID
+                data: { // 重构的卡片数据
+                    id: card_id,
+                    cards: belongedInfo.belonged_column?.cards?.map(i => i.id), // 卡片所在分栏的所有卡片ID，用来根据此内容重建分栏内卡片、排序
+                    message: 'refetch card datam please' // 提示消息
+                }
+            }
+          * @param cardData 根据后端返回的数据获取到card的数据，因为ws不能根据角色推送不同的内容，因此只会推送card的id，前端再去获取
+          * 
+          */
+          const applyCardData = (cardData) => {
+            if(_column?.cards){ // 正常的修改
+              const cardIndex = _column.cards.findIndex(i => i.id === cardData.id);
+              if(cardIndex !== -1){
+                Object.keys(cardData).forEach(key => {
+                  if(cardData[key] !== undefined){
+                    _column.cards[cardIndex][key] = cardData[key];
+                  }
+                });
+              } else { // 如果是未发布的内容改为了发布 - 根据返回的card排序重构数据
+                _column.cards = data.cards.map(i => {
+                  return _column.cards.find(j => j.id === i) || cardData
+                })
+              }
+            } else { // 可能新发布的卡片所在的分栏内原来是空的，这里直接添加
+              _column.cards = [cardData]
+            }
+            uiStore.updatedCard_for_userTeamAffairs = cardData;
+          }
+          if(_column){
+            let res
+            // 重新上架
+            const {column_cards, updator} = val.value.data;
+            if(data.unpulled_card_id){
+              if(updator !== teamStore.init?.id){
+                res = await findCard(data.unpulled_card_id);
+                if(res?.data){
+                  _column.cards = column_cards.map(i => _column.cards.find(j => j.id === i) || res.data)
+                }
+              } else {
+                const index = _column.cards.findIndex(i => i.id === data.unpulled_card_id)
+                if(index !== -1){
+                  _column.cards[index].pulled = false
+                }
+              }
+              if(teamStore.card?.id == data.unpulled_card_id){
+                teamStore.card.pulled = false
+              }
+              return
+            }
+            // 下架
+            if(data.pulled_card_id){
+              if(updator !== teamStore.init?.id){
+                _column.cards = _column.cards.filter(i => i.id !== data.pulled_card_id)
+              } else {
+                const index = _column.cards.findIndex(i => i.id === data.pulled_card_id)
+                if(index !== -1){
+                  _column.cards[index].pulled = true
+                }
+              }
+              if(teamStore.card && teamStore.card.id == data.pulled_card_id){
+                teamStore.card.pulled = true
+              }
+              return
+            }
+            // 其它状态
+            res = await findCard(data.id);
+            if(res?.data){
+              console.log('card:updated findCard');
+              applyCardData(res.data)
+            }
+            if(teamStore.card?.id === Number(card_id)){
+              teamStore.card = res.data;
+              if(teamStore.card.pulled && teamStore.card.creator.id !== teamStore.init?.id){
+                $q.notify({
+                  message: $t('is_pulled'),
+                  actions: [
+                    { label: $t('confirm'), color: 'white', handler: () => {
+                      teamStore.card = null;
+                    } }
+                  ]
+                })
+              }
+            }
+          }
+        }
+
+        if(val.value.event === 'column:created' && kanban.value?.id === Number(kanban_id)){
+          if (kanban.value.columns?.length > 0) {
+            kanban.value.columns.push(data);
+          } else {
+            kanban.value.columns = [data];
+          }
+          syncKanbanStore(kanban.value);
+        }
+
+        if(val.value.event === 'column:updated'){
+          // 如果是当前用户执行的修改，直接用返回的数据赋值
+          // const { updator } = val.value.data;
+          // if(updator === teamStore.init.id) return
+
+          //如果接收到ws的更新数据，按方法执行
+          const index = kanban.value.columns?.findIndex(i => i.id === Number(data.id));
+          if(index > -1){
+            updateColumn(index, data)
+            syncKanbanStore(kanban.value);
+          }
+        }
+
+        if(val.value.event === 'column:deleted'){
+          const index = kanban.value.columns?.findIndex(i => i.id === Number(data.removed_column_id));
+          if(index > -1){
+            kanban.value.columns.splice(index, 1);
+            syncKanbanStore(kanban.value);
+          }
+        }
+      }
+    },{immediate: true, deep: true})
+  );
+};
+
+// 组件生命周期钩子
+onMounted(() => {
+  setupWatchers();
+});
+
+onBeforeUnmount(() => {
+  cleanupFunctions.forEach(cleanup => cleanup());
+});
+
 
 </script>
 <style scoped></style>

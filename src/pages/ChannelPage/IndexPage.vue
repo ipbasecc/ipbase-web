@@ -154,8 +154,9 @@
       opacity.value = o <= 1 ? o : 1;
       pt.value = pt.value < 92 && scrollTop;
     };
-  onMounted(() => {
-    window.addEventListener("scroll", handleScroll);
+  onBeforeUnmount(() => {
+    window.removeEventListener("scroll", handleScroll);
+
   })
 
   userStore.location = 'channel';
