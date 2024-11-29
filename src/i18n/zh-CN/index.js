@@ -32,6 +32,7 @@ export default {
   password_not_match: "两次输入的密码不一致",
   have_account: "已有账号？",
   login_now: "立即登录",
+  please_login: "请先登录",
   user_created_successfully_logging_in: "用户创建成功，正在登录，请稍后...",
   login_success: "登录成功！",
   register_success: "注册成功！",

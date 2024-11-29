@@ -32,6 +32,7 @@ export default {
   password_not_match: "Passwörter stimmen nicht überein",
   have_account: "Bereits ein Konto?",
   login_now: "Jetzt anmelden",
+  please_login: "Bitte melden Sie sich an",
   user_created_successfully_logging_in: "Benutzer erfolgreich erstellt, Anmeldung wird durchgeführt, bitte warten...",
   login_success: "Anmeldung erfolgreich!",
   register_success: "Registrierung erfolgreich!",

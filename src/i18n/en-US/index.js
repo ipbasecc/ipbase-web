@@ -32,6 +32,7 @@ export default {
   password_not_match: "Passwords do not match",
   have_account: "Have an account?",
   login_now: "Login now",
+  please_login: "Please login",
   user_created_successfully_logging_in: "User created successfully, logging in, please wait...",
   login_success: "Login success!",
   register_success: "Register success!",
