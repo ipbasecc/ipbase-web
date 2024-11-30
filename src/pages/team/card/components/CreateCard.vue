@@ -22,7 +22,7 @@
           @keydown.esc="closeCreate()"
           @keyup.enter="createTodoCard()"
         >
-          <template v-if="params.data.name && type_for_create !== 'classroom'" v-slot:append>
+          <template v-if="params.data.name && !teamStore.saleTypes.includes(type_for_create)" v-slot:append>
             <q-btn
               icon="check"
               dense
@@ -34,8 +34,8 @@
           </template>
         </q-input>
       </q-card-section>
-      <template v-if="type_for_create === 'classroom'">
-        <q-card-section class="q-pa-xs">
+      <template v-if="teamStore.saleTypes.includes(type_for_create)">
+        <q-card-section v-if="type_for_create === 'classroom'" class="q-pa-xs">
           <q-checkbox v-model="allow_discover" :label="$t('show_in_discover')" />
         </q-card-section>
         <q-card-section class="border cursor-pointer q-pa-xs">
@@ -47,10 +47,11 @@
             spinner-size="82px"
           />
           <DrapUpload v-else :isOSS="true"
-          :allowedFormats="['image/jpg','image/jpeg','image/png','image/svg','image/webp',]"
-          @uploaded="setCover" style="min-height: 8rem;" :caption="$t('drop_or_pick_cover')" />
+          :allowedFormats="['image/jpg','image/jpeg','image/png','video/mp4','video/m4v']"
+          @uploaded="setCover" style="min-height: 8rem;" :caption="$t('drop_or_pick_preview')" :maxFileSize="15 * 1024 * 1024" />
         </q-card-section>
-        <q-card-section class="q-pa-xs">
+        <q-card-section v-if="type_for_create === 'classroom'" class="q-pa-xs">
+          <span class="op-5 q-pl-xs">{{ $t('price_limit') }}</span>
           <q-input
             v-model="price"
             type="number"
@@ -101,7 +102,7 @@
       <div v-if="loading" class="absolute-full bg-black op-5 flex flex-center">
         <q-spinner-orbit color="primary" size="2em" />
       </div>
-      <template v-else-if="teamStore.navigation === 'classroom'">
+      <template v-else-if="teamStore.saleTypes.includes(type_for_create)">
         <q-card-section class="border-top q-pa-sm">
           <q-btn color="primary" :label="$t('create')" class="full-width" @click="createCardFn" />
         </q-card-section>
@@ -219,7 +220,7 @@ const {
 // 新建卡片的类型
 /**
  * 任务看板卡片类型： "task", "note", "todo"
- * 其它看板卡片类型与board类型一致： 'classroom', 'segment'
+ * 其它看板卡片类型与board类型一致： 'classroom', 'resource', 'segment'
  */
 const type_for_create = computed(() => {
   const _cardType =
@@ -237,7 +238,7 @@ const type_for_create = computed(() => {
 });
 // 新建表单是不是只需要 name 字段
 const create_with_name = computed(() => {
-  const asNames = ["todo", "classroom"];
+  const asNames = ["todo", ...teamStore.saleTypes];
   let _nameOnly = false;
   if (asNames.includes(type_for_create.value)) {
     _nameOnly = true;
@@ -263,7 +264,7 @@ watchEffect(() => {
   params.value = {
     column_id: column_idRef.value,
     data: {
-      status: type_for_create.value === 'classroom' ? 'completed' : "pending",
+      status: teamStore.saleTypes.includes(type_for_create.value) ? 'completed' : "pending",
       type: type_for_create.value,
       name: name.value,
       jsonContent: jsonContent.value,
@@ -333,14 +334,14 @@ const createCardFn = async () => {
   // console.log('createCardFn 5');
   let {data} = await createCard(params.value);
   if (data) {
-    if(type_for_create.value === 'classroom'){
+    if(teamStore.saleTypes.includes(type_for_create.value)){
       emit('created', data)
     }
     closeCreate(); // 父组件关闭创建窗口
   }
 };
 const createTodoCard = () => {
-  if(type_for_create.value === 'classroom') return;
+  if(teamStore.saleTypes.includes(type_for_create.value)) return;
   createCardFn(); 
 }
 const closeCreate = async () => {  

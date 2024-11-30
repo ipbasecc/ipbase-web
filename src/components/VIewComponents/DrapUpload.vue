@@ -1,12 +1,16 @@
 <template>
-  <div
-    class="fit flex flex-center"
+  <div class="fit flex flex-center"
     :class="`${
       showUpdateArea ? 'border radius-sm bg-selected' : ''
     } drop-zone_${dom_id}`"
     @click="openFilePicker"
   >
-    {{ caption || $t('click_or_drag_to_upload') }}
+    <div class="column gap-sm items-center">
+      <span class="font-medium q-mb-sm">{{ caption || $t('click_or_drag_to_upload') }}</span>
+      <span class="op-5 font-small">{{$t('support_type')}}: {{ getMimeExtensions(allowedFormats) }}</span>
+      <span class="op-5 font-small">{{$t('max_file_size')}}: {{ maxFileSize / (1024 * 1024) }}MB</span>
+    </div>
+
     <input
       ref="fileInputRef"
       type="file"
@@ -26,6 +30,7 @@ import { updateUserAvatar } from "src/api/strapi.js";
 import localforage from "localforage";
 import { teamStore, userStore } from "src/hooks/global/useStore";
 import { useI18n } from "vue-i18n";
+import { getMimeExtensions } from "src/hooks/utilits";
 
 const { t } = useI18n();
 const me = computed(() => teamStore.init)
@@ -36,6 +41,10 @@ const props = defineProps({
   multiple: {
     type: Boolean,
     default: false,
+  },
+  maxFileSize: {
+    type: Number,
+    default: 15 * 1024 * 1024, // 15MB in bytes
   },
   isMattermost: {
     type: Boolean,
@@ -61,7 +70,7 @@ const props = defineProps({
   }
 });
 const emit = defineEmits(["uploaded"]);
-const { multiple, isAvatar, isOSS, isMattermost, allowedFormats } = toRefs(props);
+const { multiple, isAvatar, isOSS, isMattermost, allowedFormats, maxFileSize } = toRefs(props);
 
 const dropZone = ref(null);
 const dom_id = uid(); // 如果一个页面中引用了两次本组件，那么会有一个失效，因此这里给dom加上uid
@@ -140,6 +149,18 @@ defineExpose({ openFilePicker });
 const handleFileChange = (event) => {
   const selectedFile = event.target.files;
   if (selectedFile) {
+    // Check file size
+    for (let i = 0; i < selectedFile.length; i++) {
+      if (selectedFile[i].size > maxFileSize.value) {
+        $q.notify({
+          type: 'negative',
+          message: t('file_too_large', { size: maxFileSize.value / (1024 * 1024) }),
+          position: 'top'
+        });
+        event.target.value = ''; // Reset input
+        return;
+      }
+    }
     onDrop(selectedFile);
   }
 };
@@ -189,13 +210,23 @@ const handleDrop = (e) => {
   e.stopPropagation();
   if (showUpdateArea.value) {
     let items_asfile = e.dataTransfer?.files;
-    // console.log(items_asfile);
     if (items_asfile.length > 1 && !multiple.value) {
       $q.notify(t('upload_not_support_mutiple'));
       return;
     }
     let files = [];
     for (let i = 0; i < items_asfile.length; i++) {
+      // Check file size
+      if (items_asfile[i].size > maxFileSize.value) {
+        $q.notify({
+          type: 'negative',
+          message: t('file_too_large', { size: maxFileSize.value / (1024 * 1024) }),
+          position: 'top'
+        });
+        showUpdateArea.value = false;
+        return;
+      }
+      
       if (items_asfile[i].type !== "") {
         if (!allowedFormats.value.includes(items_asfile[i].type)) {
           $q.notify({
@@ -210,7 +241,6 @@ const handleDrop = (e) => {
       }
     }
     if (files.length > 0) {
-      // console.log("handleDrop", files);
       onDrop(files);
     }
   }

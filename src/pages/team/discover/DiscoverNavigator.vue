@@ -132,24 +132,24 @@
             active.value = menu[0].value;
         }
     }, { immediate: true });
-    watch(routeName, () => {
-        if (routeName.value === 'home') return
-        const all_menu_items = menu.reduce((acc, item) => {
-          if (item.to) acc.push(item);
-          if (item.children) acc.push(...item.children.filter(child => child.to));
-          return acc;
-        }, []);
-        if (routeName.value === 'discover_my_tutorial') {
-            const val = all_menu_items.find(i => i.value === 'tutorial')            
-            enter(val)
-        }
-        if (routeName.value === 'discover_my_favorite') {
-            const val = all_menu_items.find(i => i.value === 'favorite')
-            enter(val)
-        }
-        if (routeName.value === 'discover_my_like') {
-            const val = all_menu_items.find(i => i.value === 'liked')
-            enter(val)
-        }
-    }, { immediate: true });
+    // watch(routeName, () => {
+    //     if (routeName.value === 'home') return
+    //     const all_menu_items = menu.reduce((acc, item) => {
+    //       if (item.to) acc.push(item);
+    //       if (item.children) acc.push(...item.children.filter(child => child.to));
+    //       return acc;
+    //     }, []);
+    //     if (routeName.value === 'discover_my_tutorial') {
+    //         const val = all_menu_items.find(i => i.value === 'tutorial')            
+    //         enter(val)
+    //     }
+    //     if (routeName.value === 'discover_my_favorite') {
+    //         const val = all_menu_items.find(i => i.value === 'favorite')
+    //         enter(val)
+    //     }
+    //     if (routeName.value === 'discover_my_like') {
+    //         const val = all_menu_items.find(i => i.value === 'liked')
+    //         enter(val)
+    //     }
+    // }, { immediate: true });
 </script>

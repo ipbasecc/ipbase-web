@@ -342,6 +342,7 @@ export default {
   default_version: 'Standardversion',
   'Default version': 'Standardversion',
   classroom: 'Klasse',
+  resource: 'Ressource',
   segment: 'Segment',
   ctrl_enter_send: 'Strg + Eingabetaste zum Senden',
   channel_not_join_or_was_blocked: 'Sie sind noch nicht offiziell diesem Kanal beigetreten oder wurden vom Kanaladministrator blockiert',
@@ -402,6 +403,7 @@ export default {
   
   classroom_file: 'Klassenzimmer-Datei',
   preview_file: 'Dateivorschau',
+  resource_file: 'Ressourcendatei',
   doubel_click_rename: 'Doppelklicken zum Umbenennen',
   
   invite_member_to_project: 'Mitglied zum Projekt einladen:',
@@ -440,6 +442,7 @@ export default {
   new_kanban: 'Neues Kanban',
   new_reel: 'Neue Klassenraum', 
   new_classroom: 'Neuer Kurs', 
+  new_resource: 'Neue Ressource',
   kanban_name: 'Kanban-Name',
   new_group: 'Neue Gruppe',
   group_name: 'Gruppenname',
@@ -456,6 +459,7 @@ export default {
   workspace_kanban: 'Arbeitsplatz',
   workspace_classroom: 'Kurs',
   workspace_segment: 'Desktop',
+  workspace_resource: 'Ressource Sammlung',
 
   column: 'Spalte',
   Reel: 'Spule',
@@ -578,6 +582,8 @@ export default {
   enable_settings_kanban_description: 'Zeige die Projektkarten, Kernfunktion, wird empfohlen, aktiviert zu sein',
   enable_settings_classroom_label: 'Klasse',
   enable_settings_classroom_description: 'Ein Funktionsmodul, das von Kanban abgeleitet und für den "Klassenraum"-Szenario speziell angepasst wurde, Sie können Lehrmaterialien in Form von Kanban verwalten',
+  enable_settings_resource_label: 'Ressource',
+  enable_settings_resource_description: 'Veröffentlichen, verkaufen, Video, Audio, Bild, Dokument, usw. Ressourcen hier, stellen Sie Ressourcen für Mitglieder bereit',
   enable_settings_segment_label: 'Segment',
   enable_settings_segment_description: 'Referenziert die Oberfläche von Autodesk Flame und bietet der Postproduktionsteam die "Segmenterstellungs"-Verwaltungsfunktion',
   enable_settings_document_label: 'Dokument',
@@ -850,6 +856,9 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   purchased: 'Erworben',
   home: 'Startseite',
   drop_or_pick_cover: 'Ziehen oder Klicken zum Auswählen des Covers',
+  drop_or_pick_preview: 'Ziehen oder Klicken zum Auswählen des Vorschau',
+  support_type: 'Unterstützter Typ',
+  max_file_size: 'Maximale Dateigröße',
   drop_or_pick_logo: 'Ziehen oder Klicken zum Auswählen des Logos',
   unpublished: 'Unveröffentlicht',
   publish: 'Veröffentlichen',
@@ -908,4 +917,12 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   no_more: 'Keine weiteren',
   discover: 'Entdecken',
   app_discover_purpose: 'Ansehen, Kaufen, Vermögenswerte oder Dienstleistungen verwalten',
+
+  file_too_large: 'Dateigröße nicht mehr als {size}MB',
+  exclusive: 'Exklusive Lizenz',
+  commercial: 'Kommerzielle Lizenz',
+  'non-commercial': 'Nicht-kommerzielle Lizenz',
+  educational: 'Bildungslizenz',
+  personal: 'Persönliche Lizenz',
+  price_limit: 'Mindestpreis: Je nach Dateigröße, mindestens 1 Yuan / pro GB'
 };

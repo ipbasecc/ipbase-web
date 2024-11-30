@@ -72,6 +72,18 @@ const routes = [
                 props: true,
               },
               {
+                path: "/teams/projects/:project_id/resource",
+                component: () => import("src/pages/team/kanban/KanbanPage.vue"),
+                name: "team_resource_homepage",
+                props: true,
+              },
+              {
+                path: "/teams/projects/:project_id/resource/:kanban_id",
+                component: () => import("src/pages/team/kanban/KanbanPage.vue"),
+                name: "team_resource_page",
+                props: true,
+              },
+              {
                 path: "/teams/projects/:project_id/document",
                 component: () => import("src/pages/team/document/DocumentBody.vue"),
                 name: "team_project_document_homepage",

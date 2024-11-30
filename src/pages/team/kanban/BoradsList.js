@@ -4,6 +4,9 @@ import { groupCreate, kanbanCreate } from "src/api/strapi/project.js";
 import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 
 import { teamStore, userStore } from "src/hooks/global/useStore.js";
+import { i18n } from 'src/boot/i18n.js';
+
+const $t = i18n.global.t;
 
 export async function getLastKanban(project_id, board_type) {
   const key = `___last_${board_type}_of_project_${project_id}`;
@@ -59,9 +62,43 @@ export const board_type = computed(() => {
     _type = "classroom";
   } else if (teamStore.navigation === "segment") {
     _type = "segment";
+  } else if (teamStore.navigation === "resource") {
+    _type = "resource";
   }
   return _type;
 });
+export const space_name = computed(() => {
+  let _space;
+  if (teamStore.navigation === "kanban") {
+    _space = $t('workspace_kanban');
+  }
+  if (teamStore.navigation === "classroom") {
+    _space = $t('workspace_classroom');
+  }
+  if (teamStore.navigation === "resource") {
+    _space = $t('workspace_resource');
+  }
+  if (teamStore.navigation === "segment") {
+    _space = $t('workspace_segment');
+  }
+  return _space;
+});
+export const space_icon = computed(() => {
+  let _space;
+  if (teamStore.navigation === "kanban") {
+    _space = "mdi-chart-gantt";
+  } else if (teamStore.navigation === "classroom") {
+    _space = "mdi-school";
+  } else if (teamStore.navigation === "resource") {
+    _space = "mdi-sale";
+  } else if (teamStore.navigation === "segment") {
+    _space = "mdi-film";
+  } else {
+    _space = "mdi-plus";
+  }
+  return _space;
+});
+
 export const boards = ref([]);
 watchEffect(() => {
   boards.value = teamStore.project?.boards?.filter((i) => i.type === board_type.value)

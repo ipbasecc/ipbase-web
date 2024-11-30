@@ -201,7 +201,7 @@ import {
 import { useRouter } from "vue-router";
 import { VueDraggable } from 'vue-draggable-plus'
 import { teamStore} from "src/hooks/global/useStore.js";
-import { boards } from "./BoradsList.js";
+import { boards, space_name, space_icon } from "./BoradsList.js";
 import { i18n } from 'src/boot/i18n.js';
 
 const $t = i18n.global.t;
@@ -218,46 +218,12 @@ const router = useRouter();
 
 const create_board_ing = ref(false);
 const create_name = ref("");
-const space_name = computed(() => {
-  let _space;
-  if (teamStore.navigation === "kanban") {
-    _space = $t('workspace_kanban');
-  }
-  if (teamStore.navigation === "classroom") {
-    _space = $t('workspace_classroom');
-  }
-  if (teamStore.navigation === "segment") {
-    _space = $t('workspace_segment');
-  }
-  return _space;
-});
-const space_icon = computed(() => {
-  let _space;
-  if (isEmpty.value) {
-    _space = "mdi-plus";
-  } else if (teamStore.navigation === "kanban") {
-    _space = "mdi-chart-gantt";
-  } else if (teamStore.navigation === "classroom") {
-    _space = "mdi-school";
-  }
-  return _space;
-});
 
 const createBoardFn = async () => {
-  let _type;
-  if (teamStore.navigation === "kanban") {
-    _type = "kanban";
-  }
-  if (teamStore.navigation === "classroom") {
-    _type = "classroom";
-  }
-  if (teamStore.navigation === "segment") {
-    _type = "segment";
-  }
   let params = {
     project_id: teamStore.project.id,
     name: create_name.value,
-    type: _type,
+    type: teamStore.navigation,
   };
   let res = await createBoard(params);
   if (res) {

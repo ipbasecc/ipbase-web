@@ -473,3 +473,22 @@ export function isTokenExpired(token) {
   const currentTime = Date.now() / 1000; // 将当前时间转换为秒
   return payload.exp < currentTime;
 }
+
+export function getMimeExtension(mimeType) {
+  const mimeMap = {
+    'image/jpg': '.jpg',
+    'image/jpeg': '.jpg',
+    'image/png': '.png',
+    'image/svg': '.svg',
+    'image/webp': '.webp',
+    'video/mov': '.mov',
+    'video/mp4': '.mp4',
+    'video/m4v': '.m4v'
+  };
+
+  return mimeMap[mimeType] || ''; // 如果找不到对应的扩展名，返回空字符串
+}
+
+export function getMimeExtensions(mimeTypes) {
+  return mimeTypes.map(i => getMimeExtension(i)).join(', ');
+}

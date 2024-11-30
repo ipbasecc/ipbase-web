@@ -1,7 +1,7 @@
 <template>
   <q-list v-if="(teamStore.project && teamStore.board) || isEmpty" class="fit column no-wrap q-pa-xs">
     <template v-if="useAuths('read', ['board'])">
-      <div v-if="multiple_boards || isEmpty || teamStore.navigation === 'classroom'"
+      <div v-if="multiple_boards || isEmpty"
         class="row no-wrap"
       >
         <BoradToggler :isEmpty />
@@ -204,9 +204,9 @@ const route = useRoute();
 
 const multiple_boards = computed(
   () =>
-    teamStore.project?.preferences?.enable_settings?.find(
-      (i) => i.name === "multiple_boards"
-    )?.enable || false
+    teamStore.project?.preferences?.enable_settings?.find(i => i.name === "multiple_boards")?.enable
+    || teamStore.multipleBoardType.includes(teamStore.navigation)
+    || false
 );
 
 onMounted(async() => {

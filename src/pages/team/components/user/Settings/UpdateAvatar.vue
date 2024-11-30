@@ -22,6 +22,7 @@
     <div class="absolute-full z-max">
       <DrapUpload
         class="fit unselected cursor-pointer"
+        :allowedFormats="uiStore.allowedFormatsImage"
         :isAvatar="true"
         @uploaded="uploaded"
       />

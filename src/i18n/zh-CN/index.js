@@ -342,6 +342,7 @@ export default {
   default_version: '默认版本',
   'Default version': '默认版本',
   classroom: '课堂',
+  resource: '资源',
   segment: '镜头',
   ctrl_enter_send: 'Ctrl + Enter 发送',
   channel_not_join_or_was_blocked: '您尚未正式加入该频道、或您已被该项目管理员屏蔽',
@@ -401,6 +402,7 @@ export default {
   remove_overview_preview: '移除概览图',
 
   classroom_file: '课程文件',
+  resource_file: '资源文件',
   preview_file: '预览文件',
   doubel_click_rename: '双击改名',
 
@@ -440,6 +442,7 @@ export default {
   new_kanban: '新看板',
   new_reel: '新轨',
   new_classroom: '新课堂',
+  new_resource: '新资源',
   kanban_name: '看板名称',
   new_group: '新分组',
   group_name: '分组名称',
@@ -456,6 +459,7 @@ export default {
   workspace_kanban: '工作空间',
   workspace_classroom: '课程',
   workspace_segment: '桌面',
+  workspace_resource: '资源集合',
 
   column: '分栏',
   Reel: 'Reel',
@@ -577,7 +581,9 @@ export default {
   enable_settings_kanban_label: '看板',
   enable_settings_kanban_description: '展示项目卡片，核心功能，建议开启',
   enable_settings_classroom_label: '课堂',
-  enable_settings_classroom_description: '由看板衍生而来的为“课堂”场景定制的功能模块，您可以以看板的形式展示和管理课程资源',
+  enable_settings_classroom_description: '为“课堂”场景定制的功能模块，您可以以看板的形式展示和管理课程资源',
+  enable_settings_resource_label: '资源',
+  enable_settings_resource_description: '在此发布、销售视频、音频、图像、文档等资源，为成员提供资源服务',
   enable_settings_segment_label: '镜头',
   enable_settings_segment_description: '参考Autodesk Flame的界面，为后期制作团队提供的“镜头制作”管理功能',
   enable_settings_document_label: '文档',
@@ -850,6 +856,9 @@ export default {
   purchased: '已购',
   home: '首页',
   drop_or_pick_cover: '拖拽或点击选择封面',
+  drop_or_pick_preview: '拖拽或点击选择预览',
+  support_type: '支持类型',
+  max_file_size: '最大文件大小',
   drop_or_pick_logo: '拖拽或点击选择Logo',
   unpublished: '未发布',
   publish: '发布',
@@ -908,4 +917,12 @@ export default {
   no_more: '没有更多了',
   discover: '发现',
   app_discover_purpose: '查看、购买、管理资产或服务',
+
+  file_too_large: '文件大小不能超过 {size}MB',
+  exclusive: '独占授权',
+  commercial: '商用授权',
+  'non-commercia': '非商用授权',
+  educational: '教育授权',
+  personal: '个人授权',
+  price_limit: '最低价格： 按文件大小，最低1元 / 每GB'
 };

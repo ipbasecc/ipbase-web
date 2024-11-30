@@ -13,7 +13,7 @@
         </q-img>
         <div class="absolute-full">
             <DrapUpload :isOSS="true"
-            :allowedFormats="['image/jpg','image/jpeg','image/png','image/svg','image/webp',]"
+            :allowedFormats="['image/jpg','image/jpeg','image/png','image/svg','image/webp','video/mov','video/mp4','video/m4v']"
             @uploaded="setCover" style="min-height: 8rem;" :caption="$t('drop_or_pick_cover')" />
         </div>
     </q-card-section>

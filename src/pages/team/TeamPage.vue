@@ -139,7 +139,7 @@
 </template>
 
 <script setup>
-import {ref, watch, computed, reactive, provide, watchEffect} from "vue";
+import {ref, watch, computed, reactive, provide, watchEffect, onUnmounted} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useMouse } from '@vueuse/core'
 
@@ -220,7 +220,7 @@ const createing = ref(false);
 
 // you need filter Boards by Type in different Models, use teamStore.navigation value as filter's Key
 const showBoard = computed(() => {
-  const _show = ["kanban", "classroom", "segment"];
+  const _show = ["kanban", "classroom", "resource", "segment"];
   return _show.includes(teamStore.navigation);
 });
 
@@ -237,6 +237,10 @@ watch(teamStore, () => {
 },{ immediate: true, deep: true });
 
 provide('isExternal', isExternal.value)
+onUnmounted(() => {
+  teamStore.$reset_project();
+  teamStore.$reset_channel();
+})
 </script>
 
 <style lang="scss" scoped></style>

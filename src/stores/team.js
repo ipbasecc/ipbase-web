@@ -82,8 +82,14 @@ export default defineStore("team", {
     storageCapacityExceeded: false,
     cardNumberExceeded: false,
     teamMembersExceeded: false,
+    multipleBoardType: ['classroom', 'resource'],
+    saleTypes: ['classroom', 'resource'],
+    authType: ['exclusive', 'commercial', 'non-commercia', 'educational', 'personal']
   }),
   getters: {
+    $isMultipleBoard(state) {
+      return state.multipleBoardType.includes(state.navigation);
+    },
     $level_detail: (state) => {
       return state.team?.level_detail; // 计算属性
     },

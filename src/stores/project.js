@@ -29,6 +29,7 @@ export default defineStore("project", {
       { name: "待审核", val: "review", icon: "fact_check", color: "orange" },
       { name: "已完成", val: "completed", icon: "task_alt", color: "green" },
     ],
+    multipleBoardType: ['classroom', 'resource'],
     init: null,
     project: null,
     projects: null,
@@ -56,6 +57,9 @@ export default defineStore("project", {
     schedule: null,
   }),
   actions: {
+    $isMultipleBoard(type) {
+      return this.multipleBoardType.includes(type);
+    },
     $reset_project() {
       this.cardDragging = false;
       this.project = null;

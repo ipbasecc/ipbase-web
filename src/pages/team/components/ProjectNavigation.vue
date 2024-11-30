@@ -67,6 +67,12 @@ watchEffect(() => {
       icon: "mdi-school",
     },
     {
+      name: "resource",
+      label: "resource",
+      to: `/teams/projects/${project.value.id}/resource`,
+      icon: "mdi-sale",
+    },
+    {
       name: "segment",
       label: "segment",
       to: `/teams/projects/${project.value.id}/segment`,
@@ -137,6 +143,12 @@ watch(
       route?.name === "team_classroom_page"
     ) {
       teamStore.navigation = "classroom";
+    }
+    if (
+      route?.name === "team_resource_homepage" ||
+      route?.name === "team_resource_page"
+    ) {
+      teamStore.navigation = "resource";
     }
     if (
       route.name === "team_project_document_homepage" ||

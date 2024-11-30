@@ -1,8 +1,8 @@
 <template>
-    <q-layout v-if="card" view="hhh LpR fFf" container class="absolute-full" @mousemove="handleMouseMove"
+    <q-layout v-if="card" :key="card.id" view="hhh LpR fFf" container class="absolute-full" @mousemove="handleMouseMove"
         @mouseup="handleMouseUp">
         <q-drawer v-if="!need_buy" v-model="rightDrawerOpen" side="right" bordered class="column"
-            :width="rightDrawerWidth">
+            :width="pannelWidth">
             <q-bar class="transparent border-bottom" style="height: 36px;">
                 <q-tabs v-model="current_classExtend" inline-label dense no-caps stretch>
                     <template v-for="i in classExtends" :key="i.id">
@@ -45,7 +45,7 @@
         </q-drawer>
 
         <q-page-container>
-            <q-page>
+            <q-page :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-3'">
                 <q-toolbar class="transparent z-fab absolute-top text-grey row gap-sm">
                     <q-btn dense flat icon="mdi-chevron-left" @click="closeDetial" />
                     <template v-if="!need_buy">
@@ -181,7 +181,6 @@
         
         document.removeEventListener('mousemove', handleMouseMove)
         document.removeEventListener('mouseup', handleMouseUp)
-        emit('close')
     })
     const buyData = async (data) => {
         console.log('buyData', data)
@@ -211,7 +210,7 @@
         }
     })
 
-    const rightDrawerWidth = ref(640);
+    const pannelWidth = ref(640);
     const { x } = useMouse({ touch: false })
     const leftDrawerMinWidth = ref(360);
     const leftDrawerMaxWidth = ref(1280);
@@ -224,7 +223,7 @@
     const handleMouseDown = () => {
         position.x = x.value;
         dragWidth.value = true
-        _ori_width.value = rightDrawerWidth.value
+        _ori_width.value = pannelWidth.value
         uiStore.dragging = true
     }
     const handleMouseUp = () => {
@@ -236,11 +235,11 @@
 
         const deltaX = x.value - position.x;
         if (_ori_width.value - deltaX >= leftDrawerMinWidth.value && _ori_width.value - deltaX <= leftDrawerMaxWidth.value) {
-            rightDrawerWidth.value = _ori_width.value - deltaX
+            pannelWidth.value = _ori_width.value - deltaX
         } else if (_ori_width.value - deltaX > leftDrawerMaxWidth.value) {
-            rightDrawerWidth.value = leftDrawerMaxWidth.value
+            pannelWidth.value = leftDrawerMaxWidth.value
         } else if (_ori_width.value - deltaX === leftDrawerMaxWidth.value) {
-            rightDrawerWidth.value = leftDrawerMinWidth.value
+            pannelWidth.value = leftDrawerMinWidth.value
         } else if (_ori_width.value - deltaX < 50) {
             uiStore.projectLeftDrawer = false
         }

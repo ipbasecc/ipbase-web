@@ -342,6 +342,7 @@ export default {
   default_version: 'default version',
   'Default version': 'default version',
   classroom: 'classroom',
+  resource: 'resource',
   segment: 'segment',
   ctrl_enter_send: 'Ctrl + Enter send',
   channel_not_join_or_was_blocked: 'You have not formally joined this channel or you have been blocked by the channel administrator',
@@ -401,6 +402,7 @@ export default {
   remove_overview_preview: 'remove preview image',
 
   classroom_file: 'classroom file',
+  resource_file: 'resource file',
   preview_file: 'preview file',
   doubel_click_rename: 'double click to rename',
 
@@ -440,6 +442,7 @@ export default {
   new_kanban: 'new kanban',
   new_reel: 'new reel',
   new_classroom: 'new course',
+  new_resource: 'new resource',
   kanban_name: 'kanban name',
   new_group: 'new group',
   group_name: 'group name',
@@ -456,6 +459,7 @@ export default {
   workspace_kanban: 'workspace',
   workspace_classroom: 'course',
   workspace_segment: 'desktop',
+  workspace_resource: 'resource collection',
 
   column: 'Column',
   Reel: 'Reel',
@@ -578,6 +582,8 @@ export default {
   enable_settings_kanban_description: 'Display project cards, a core functionality, it is recommended to keep it enabled.',
   enable_settings_classroom_label: 'classrom',
   enable_settings_classroom_description: 'Derived from the Kanban system, this is a customized functional module for classroom scenarios. You can display and manage course resources in the form of a Kanban board.',
+  enable_settings_resource_label: 'resource',
+  enable_settings_resource_description: 'Publish, sell video, audio, image, document, etc. resources here, providing resources for members',
   enable_settings_segment_label: 'segment',
   enable_settings_segment_description: 'Taking inspiration from the Autodesk Flame interface, this feature is designed to provide shot production management for post-production teams.',
   enable_settings_document_label: 'document',
@@ -850,6 +856,9 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   purchased: 'Purchased',
   home: 'Home',
   drop_or_pick_cover: 'Drag or Click to Select Cover',
+  drop_or_pick_preview: 'Drag or Click to Select Preview',
+  support_type: 'Support Type',
+  max_file_size: 'Max File Size',
   drop_or_pick_logo: 'Drag or Click to Select Logo',
   unpublished: 'Unpublished',
   publish: 'Publish',
@@ -908,4 +917,12 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   no_more: 'No More',
   discover: 'Discover',
   app_discover_purpose: 'View, Purchase, Manage Assets or Services',
+
+  file_too_large: 'File size cannot exceed {size}MB',
+  exclusive: 'Exclusive License',
+  commercial: 'Commercial License',
+  'non-commercial': 'Non-Commercial License',
+  educational: 'Educational License',
+  personal: 'Personal License',
+  price_limit: 'Minimum Price: By file size, at least 1 yuan / per GB'
 }

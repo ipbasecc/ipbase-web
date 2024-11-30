@@ -10,6 +10,7 @@
       class="fit unselected cursor-pointer"
       ref="uploadRef"
       :isOSS="true"
+      :allowedFormats="['image/jpg','image/jpeg','image/png','image/svg','image/webp']"
       @uploaded="uploaded"
     />
   </div>
