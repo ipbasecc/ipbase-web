@@ -69,7 +69,7 @@
 </template>
 
 <script setup>
-import { ref, watch, watchEffect, computed, nextTick } from "vue";
+import { ref, watch, watchEffect, computed, onBeforeUnmount } from "vue";
 import { getCards, getFollowedCards } from "src/api/strapi/project.js";
 import localforage from "localforage";
 
@@ -99,7 +99,7 @@ const team_id = computed(() => teamStore.team?.id);
 const getCardsFn = async () => {
   const process = (_data) => {
     total_cards.value = _data.total;
-    cards.value = [...cards.value, ..._data.cards];
+    cards.value = [...cards.value, ..._data];
   };
 
   const cacheKey = `team_${team_id.value}cards`
@@ -114,11 +114,15 @@ const getCardsFn = async () => {
   );
   if (res?.data) {
     // 删掉缓存中已有的卡片
-    cards.value = cards.value.filter(i => !_cache?.cards?.map(j => j.id).includes(i.id))
-    process(res?.data);
-    await localforage.setItem(cacheKey, JSON.parse(JSON.stringify(res?.data)));
+    cards.value = cards.value.filter(i => !_cache?.map(j => j.id).includes(i.id))
+    process(res?.data?.cards);
+    // 时删除缓存，这样调用getMoreCardsFn时就不会删除已存在的cards了,组件卸载时再保存缓存
+    await localforage.setItem(cacheKey, []);
   }
 };
+onBeforeUnmount(() => {
+  localforage.setItem(`team_${team_id.value}cards`, JSON.parse(JSON.stringify(cards.value)));
+})
 const getMoreCardsFn = async () => {
   start.value = cards.value?.length || 0;
   await getCardsFn(teamStore.init?.id);
@@ -132,7 +136,7 @@ const followedCards_hasMore = computed(() => total_followedCards.value < followe
 const getFollowedCardsCardsFn = async () => {
   const process = (_data) => {
     total_followedCards.value = _data.total;
-    followedCards.value = [...followedCards.value, ..._data.cards];
+    followedCards.value = [...followedCards.value, ..._data];
   };
   const cacheKey = `team_${team_id.value}followedCards`
   const _cache = await localforage.getItem(cacheKey);
@@ -145,14 +149,17 @@ const getFollowedCardsCardsFn = async () => {
     followedCards_limit.value
   );
   if (res?.data) {
-    followedCards.value = followedCards.value.filter(i => !_cache?.cards?.map(j => j.id).includes(i.id))
-    process(res?.data);
+    followedCards.value = followedCards.value.filter(i => !_cache?.map(j => j.id).includes(i.id))
+    process(res?.data?.cards);
     await localforage.setItem(
       cacheKey,
-      JSON.parse(JSON.stringify(res?.data))
+      []
     );
   }
 };
+onBeforeUnmount(() => {
+  localforage.setItem(`team_${team_id.value}followedCards`, JSON.parse(JSON.stringify(followedCards.value)));
+})
 const getMoreFollowedCardsFn = async () => {
   followedCards_start.value = followedCards.value?.length || 0;
   await getFollowedCardsCardsFn(teamStore.init?.id);

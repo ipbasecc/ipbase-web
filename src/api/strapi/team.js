@@ -45,10 +45,12 @@ export async function getTeamByID(team_id) {
  */
 export async function getTeamMembers(team_id, offset, limit) {
   try {
-    let options = '';
-    if (offset) options += `?offset=${offset}`;
-    if (limit) options += `&limit=${limit}`;
-    const res = await api.get(`teams/${team_id}/members${options}`);
+    const res = await api.get(`teams/${team_id}/members`, {
+      params: {
+        offset,
+        limit
+      }
+    });
     if (res?.data) {
       return res;
     }
@@ -143,7 +145,12 @@ export async function getTeamDocuments(team_id, page, per_page) {
     throw new Error("per_page is required")
   }
   try {
-    const res = await api.get(`teams/${team_id}/documents?page=${page}&per_page=${per_page}`);
+    const res = await api.get(`teams/${team_id}/documents`, {
+      params: {
+        page,
+        per_page
+      }
+    });
     if (res?.data) {
       return res;
     }

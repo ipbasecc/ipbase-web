@@ -221,7 +221,7 @@ const routes = [
         props: true,
         name: "discover",
         meta: {
-          requireAuth: false,
+          requireAuth: true,
           title: "discover",
         },
         children: [

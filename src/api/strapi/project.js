@@ -70,9 +70,14 @@ export async function getCards(team_id, start, limit) {
     Notify.create($t('need_pagination_info'));
     return;
   }
-  let options = `?team_id=${team_id}&start=${start}&limit=${limit}`;
   try {
-    const res = await api.get(`cards${options}`);
+    const res = await api.get('cards', {
+      params: {
+        team_id,
+        start,
+        limit
+      }
+    });
     if (res) {
       return res;
     }
@@ -86,9 +91,14 @@ export async function getFollowedCards(team_id, start, limit) {
     Notify.create($t('need_pagination_info'));
     return;
   }
-  let options = `?team_id=${team_id}&start=${start}&limit=${limit}`;
   try {
-    const res = await api.get(`follows${options}`);
+    const res = await api.get('follows', {
+      params: {
+        team_id,
+        start,
+        limit
+      }
+    });
     if (res) {
       return res;
     }
