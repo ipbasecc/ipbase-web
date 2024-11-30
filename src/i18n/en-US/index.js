@@ -906,4 +906,6 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
 
   get_more: 'Get More',
   no_more: 'No More',
+  discover: 'Discover',
+  app_discover_purpose: 'View, Purchase, Manage Assets or Services',
 }

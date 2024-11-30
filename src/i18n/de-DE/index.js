@@ -906,4 +906,6 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
 
   get_more: 'Weitere erhalten',
   no_more: 'Keine weiteren',
+  discover: 'Entdecken',
+  app_discover_purpose: 'Ansehen, Kaufen, Vermögenswerte oder Dienstleistungen verwalten',
 };

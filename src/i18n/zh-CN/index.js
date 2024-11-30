@@ -906,4 +906,6 @@ export default {
 
   get_more: '获取更多',
   no_more: '没有更多了',
+  discover: '发现',
+  app_discover_purpose: '查看、购买、管理资产或服务',
 };

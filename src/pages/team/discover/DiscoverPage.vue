@@ -25,6 +25,6 @@ const enterCardDetail = (card) => {
 
 const close = () => {
     discoverStore.actived = null
-    router.back()
+    router.push('/discover')
 }
 </script>
