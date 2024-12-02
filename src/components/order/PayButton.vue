@@ -1,5 +1,5 @@
 <template>
-    <q-btn v-bind="$attrs" :color="btnColor ? btnColor : 'primary'" icon="check" :label="$t(buyLabel || 'buy')" @click="openCreateOrder()" />
+    <q-btn v-bind="$attrs" :color="btnColor ? btnColor : 'primary'" unelevated icon="check" :label="$t(buyLabel || 'buy')" @click="openCreateOrder()" />
     <q-dialog v-model="showCreate" persistent>
         <q-card bordered class="column no-wrap" style="min-width: 24rem; min-height: 18rem;">
             <q-card-section class="q-space column no-wrap q-pa-none" :class="`bg-${color}`">
@@ -63,7 +63,7 @@ import AliPay from 'src/pages/team/components/widgets/icons/AliPay.vue'
 
 const { paymentWays } = usePayment();
 
-const { subject, commodity, btnColor, buyLabel } = defineProps(['subject','commodity', 'btnColor', 'buyLabel'])
+const { subject, commodity, auth_type, btnColor, buyLabel } = defineProps(['subject','commodity', 'auth_type', 'btnColor', 'buyLabel'])
 const emit = defineEmits(['buyData'])
 
 const showCreate = ref(false);
@@ -85,10 +85,12 @@ const params = computed(() => {
         commodity: {
             subject: subject,
             id: commodity.id,
-            name: commodity.name
+            name: commodity.name,
+            type: commodity.type
         },
         wayCode: wayCode.value,
         currency: 'cny',
+        auth_type: auth_type,
         distroy_order: distroy_order.value
     }
 })
@@ -112,6 +114,10 @@ const createOrderFn = async () => {
     }
     if (!params.value.currency || typeof params.value.currency !== 'string') {
         console.error('Invalid currency type. Expected string.');
+        return;
+    }
+    if (commodity.type === 'resource' && !auth_type) {
+        console.error('resource must have auth_type. but auth_type is null.');
         return;
     }
     loading.value = true

@@ -1,7 +1,7 @@
 <template>
     <div>
         <q-btn v-if="!uiStore.meet && !teamStore.project?.meeting" :dense="$q.screen.lt.md"
-        color="positive" class="full-width" @click="startMeet">
+        color="positive" unelevated class="full-width" @click="startMeet">
         <div class="row no-wrap items-center gap-md">
             <MeetIcon color="#efefef" />
             <span v-if="$q.screen.gt.sm" class="font-small">{{ $t('start_meet') }}</span>

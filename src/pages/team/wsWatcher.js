@@ -430,8 +430,10 @@ export default function useWatcher() {
           })
         }
         if(card_id) {
+          const is_sale_type = teamStore.saleTypes.includes(data.card?.type);
+          const is_creator = teamStore.init?.id === data.card?.creator?.id;
           // 当新增overview的卡片是课堂时，只需要更新已经打开详情的card的overviews即可，因为课堂卡片在分栏中只显示封面
-          if(data.card?.type === 'classroom' && teamStore.card?.id === data.card.id){
+          if(is_sale_type && !is_creator && teamStore.card?.id === data.card.id){
             const res = await findCard(card_id);
             if(res?.data){
               if(teamStore.card?.id === res.data.id){
@@ -440,7 +442,7 @@ export default function useWatcher() {
             }
             return // 提前返回，后续不需要继续执行了
           }
-          if(data.card?.type === 'classroom') return
+          if(is_sale_type) return
 
           if (card_id === teamStore.card?.id) {
             if (teamStore.card?.overviews?.length > 0) {
@@ -554,8 +556,10 @@ export default function useWatcher() {
         // 这里重新请求数据，由于课堂卡片不会在分栏中显示媒体，所以不需要执行更新媒体的操作
         // 只需要更新正在查看详情详情内容
 
-        // 当更新overviews的卡片是课堂时，只需要更新已经打开详情的card的overviews即可，因为课堂卡片在分栏中只显示封面
-        if(data.card?.type === 'classroom' && teamStore.card?.id === data.card.id){
+        // 当更新overviews的卡片是销售内容时，只需要更新已经打开详情的card的overviews即可，因为课堂卡片在分栏中只显示封面
+        const is_sale_type = teamStore.saleTypes.includes(data.card?.type);
+        const is_creator = teamStore.init?.id === data.card?.creator?.id;
+        if(is_sale_type && !is_creator && teamStore.card?.id === data.card.id){
           const res = await findCard(data.card.id);
           if(res?.data){
             if(teamStore.card?.id === res.data.id){
@@ -565,7 +569,7 @@ export default function useWatcher() {
           }
           return // 提前返回，后续不需要继续执行了
         }
-        if(data.card?.type === 'classroom') return
+        if(is_sale_type) return
 
         const isIn = (overviews) => {
           if (!overviews || overviews.length === 0) return false;

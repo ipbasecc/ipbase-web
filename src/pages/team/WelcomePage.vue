@@ -113,6 +113,7 @@ const getCardsFn = async () => {
     limit.value
   );
   if (res?.data) {
+    if(!res?.data?.cards || res?.data?.cards?.length === 0) return;
     // 删掉缓存中已有的卡片
     cards.value = cards.value.filter(i => !_cache?.map(j => j.id).includes(i.id))
     process(res?.data?.cards);
@@ -149,6 +150,7 @@ const getFollowedCardsCardsFn = async () => {
     followedCards_limit.value
   );
   if (res?.data) {
+    if(!res?.data?.cards || res?.data?.cards?.length === 0) return;
     followedCards.value = followedCards.value.filter(i => !_cache?.map(j => j.id).includes(i.id))
     process(res?.data?.cards);
     await localforage.setItem(

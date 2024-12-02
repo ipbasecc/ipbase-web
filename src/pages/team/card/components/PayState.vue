@@ -18,7 +18,7 @@
                     <span class="font-medium font-bold-600">{{ `${card.price / 100}` }}</span>
                 </template>
             </template>
-            <span v-else class="border q-px-sm q-py-xs radius-xs">{{ $t('price_free') }}</span>
+            <span v-else-if="card.type === 'classroom'" class="border q-px-sm q-py-xs radius-xs">{{ $t('price_free') }}</span>
         </template>
         <span v-else-if="!cardState?.isPaied && !cardState?.isCreator">
             {{ `${card.price / 100}` }}

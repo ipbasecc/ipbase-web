@@ -1,5 +1,5 @@
 <template>
-  <div v-if="cardRef.expand"
+  <div v-if="cardRef.expand || teamStore.saleTypes.includes(cardRef.type)"
     :key="`card-${cardRef.id}`"
     class="flex flex-center"
     :class="`
@@ -27,7 +27,7 @@
       @dblclick="tryEnter"
     >
       <!-- 卡片顶部 -->
-      <div v-if="cardRef.type !== 'note' && cardRef.type !== 'classroom'"
+      <div v-if="cardRef.type !== 'note' && !isSale"
         class="row no-wrap items-center q-pa-xs gap-xs border-bottom hovered-item q-px-xs"
         :class="`
           ${
@@ -80,7 +80,7 @@
           <q-space />
         </template>
         <q-btn
-          v-if="!content_channging && cardRef.type !== 'classroom'"
+          v-if="!content_channging && !isSale"
           dense
           size="sm"
           unelevated
@@ -98,7 +98,7 @@
             {{ cardRef.expand === "collapse" ? $t('expand') : $t('collapse') }} {{ $t('card') }}
           </q-tooltip>
         </q-btn>
-        <q-chip v-if="multiple_versions && cardRef.type === 'classroom'" dense outline color="green" :label="$t('multiple_versions')" class="undrag cursor-pointer">
+        <q-chip v-if="multiple_versions && isSale" dense outline color="green" :label="$t('multiple_versions')" class="undrag cursor-pointer">
           <q-menu v-if="!uiStore.only_electron.includes(teamStore.navigation) || $q.platform.is.electron">
             <q-list bordered dense class="radius-sm q-pa-xs column gap-xs">
               <q-item
@@ -120,7 +120,7 @@
           v-if="
             show_byPreference?.executor?.value &&
             !isExternal &&
-            cardRef.type !== 'classroom' &&
+            !isSale &&
             !isShared
           "
           :card="cardRef"
@@ -138,7 +138,7 @@
       >
         <template v-if="!isElectron">
           <FileViewer
-            v-if="media?.url && cardRef.type !== 'classroom'"
+            v-if="media?.url && !isSale"
             :key="media.url"
             :file="quality?.length > 0 ? {
               id: media.id,
@@ -150,7 +150,7 @@
             mainStyle="no-padding"
           />
           <q-img
-            v-else-if="cardRef.cover?.url && cardRef.type === 'classroom'"
+            v-else-if="cardRef.cover?.url && isSale"
             :src="cardRef.cover?.url"
             :ratio="16/7"
             spinner-color="primary"
@@ -177,7 +177,7 @@
       </q-card-section>
       <!-- 任务、备忘 -->
       <q-card-section
-        v-if="cardRef.type !== 'todo' && cardRef.type !== 'classroom'"
+        v-if="cardRef.type !== 'todo' && !isSale"
         class="q-space column no-wrap card overflow-hidden no-padding"
         :style="cardRef.expand === 'collapse' ? 'max-height: 6rem' : ''"
         @click="expandCard(cardRef)"
@@ -203,7 +203,7 @@
       </q-card-section>
       <!-- 待办 -->
       <q-card-section
-        v-if="cardRef.type === 'todo' && cardRef.type !== 'classroom'"
+        v-if="cardRef.type === 'todo' && !isSale"
         class="column no-wrap q-pa-none overflow-hidden relative-position"
         :class="
           uiStore.todoDragging
@@ -233,28 +233,28 @@
         :class="`
           ${isDilgMode && orderAuth ? 'dragBar' : ''}
           ${cardRef.type !== 'note' ? 'border-top' : 'border-bottom'}
-          ${cardRef.type === 'classroom' ? `absolute-full bg-gradient-bottom-${$q.dark.mode ? 'black' : 'white'}` : ''}
+          ${isSale ? `absolute-full bg-gradient-bottom-${$q.dark.mode ? 'black' : 'white'}` : ''}
         `"
         :style="cardRef.type === 'note' ? 'order: -1' : ''"
         @dblclick="_enterCard(useAuths('read', ['card']))"
       >
         <template v-if="cardRef.type !== 'note'">
-          <div v-if="cardRef.type === 'classroom'"
+          <div v-if="isSale"
           class="q-px-sm q-space column no-wrap gap-sm undrag cursor-pointer"
           @click="_enterCard(useAuths('read', ['card']))">
             <span v-if="cardRef.name">{{ cardRef.name }}</span>
-            <PayState :card="cardRef" />
+            <PayState v-if="cardRef.type === 'classroom'" :card="cardRef" />
           </div>
           <ThreadBtn
             v-if="
-              cardRef.mm_thread && !teamStore.card && isDilgMode && !isShared && cardRef.type !== 'classroom'
+              cardRef.mm_thread && !teamStore.card && isDilgMode && !isShared && !isSale
             "
             :thread="cardRef.mm_thread"
             :show="true"
             @enterThread="enterThread"
           />
           <template
-            v-if="show_byPreference?.follow?.value && !isExternal && !isShared && cardRef.type !== 'classroom'"
+            v-if="show_byPreference?.follow?.value && !isExternal && !isShared && !isSale"
           >
             <overlappingAvatar
               v-if="cardRef.followed_bies?.length > 0"
@@ -346,23 +346,27 @@
                         "
                       >
                         <q-tooltip>
-                          <span class="font-medium">{{ cardRef.type !== 'classroom' ? $t('task_detial') : $t('course_detial') }}</span>
+                          <span class="font-medium">
+                            {{ isSale ? cardRef.type === 'classroom' ? $t('course_detial') : $t('resource_detial') : $t('task_detial') }}
+                          </span>
                         </q-tooltip>
                       </q-btn>
-                      <template v-if="cardRef.type === 'classroom' && cardRef.creator?.id === teamStore.init?.id">
+                      <template v-if="cardRef.creator?.id === teamStore.init?.id">
                         <q-space />
                         <q-btn
                           flat dense size="sm" stack
                           class="op-5" padding="sm" v-close-popup
-                          @click="editCareDlg = true"
+                          @click="editCard()"
                         >
                           <ReName />
                           <q-tooltip>
-                            <span class="font-medium">{{ $t('rename_card') }}</span>
+                            <span class="font-medium">
+                              {{ isSale ? cardRef.type === 'classroom' ? $t('edit_course') : $t('edit_resource') : $t('rename_card') }}
+                            </span>
                           </q-tooltip>
                         </q-btn>
                       </template>
-                      <template v-if="cardRef.type !== 'classroom'">
+                      <template v-if="!isSale">
                         <q-btn
                           v-if="useAuths('name', ['card'])"
                           flat dense size="sm" stack
@@ -431,7 +435,7 @@
                 v-if="
                   (useAuths('type', ['card']) ||
                     useAuths('status', ['card'])) &&
-                  cardRef.type !== 'classroom'
+                  !isSale
                 "
                 spaced
                 class="op-5"
@@ -439,7 +443,7 @@
               <q-item
                 v-if="
                   useAuths('type', ['card']) &&
-                  cardRef.type !== 'classroom'
+                  !isSale
                 "
                 class="radius-xs"
                 clickable
@@ -502,8 +506,8 @@
                   @click="removeCard(cardRef, belong_card)"
                 >
                   <q-item-section
-                    >{{ $t('delete') }} {{
-                      cardRef.type === "classroom" ? $t('class_card') : $t('task_card')
+                    >{{ $t('delete') }}{{
+                      isSale ? cardRef.type === 'classroom' ? $t('class_card') : $t('resource_card') : $t('task_card')
                     }}</q-item-section
                   >
                 </q-item>
@@ -533,31 +537,18 @@
       ></div>
     </q-card>
     <!-- 对话框中，需要使用esc来取消输入框的聚焦状态，这里关闭组件的esc事件 -->
-    <q-dialog
-      v-model="show_cardDetial"
-      ref="card_detial"
-      :full-height="$q.screen.gt.sm"
-      :full-width="$q.screen.gt.sm"
+    <q-dialog ref="card_detial" v-model="show_cardDetial"
+      :full-height="$q.screen.gt.sm" :full-width="$q.screen.gt.sm"
       :maximized="!$q.screen.gt.sm"
-      persistent
-      no-shake
-      allow-focus-outside
+      persistent no-shake allow-focus-outside
       :transition-show="teamStore?.card ? '' : 'slide-down'"
-      transition-hide="slide-up"
-      transition-duration="300"
-      @show="teamStore.showCards = true"
-      @hide="_leaveCard()"
+      transition-hide="slide-up" transition-duration="300"
+      @show="teamStore.showCards = true" @hide="_leaveCard()"
       class="blur-sm transition"
     >
-    <template v-if="cardRef.type === 'classroom'">
-      <ClassPage v-if="!isElectron"
-        :card="cardRef"
-        @buyData="buyData"
-        @publishCard="publishCard(cardRef)"
-        @pulledCard="pulledCard(cardRef)"
-        @unpulledCard="unpulledCard(cardRef)"
-      />
-      <q-card v-else bordered class="column">
+    <template v-if="isSale">
+      <!-- 仅限客户端查看，此功能暂不开启，因此设置为false -->
+      <q-card v-if="false" bordered class="column">
         <q-toolbar class="bg-deep-orange text-white">
           <div class="text-h6">{{ $t('only_electron') }}</div>
           <q-space />
@@ -567,10 +558,35 @@
           <DownloadApp flat :nobar="true" />
         </q-card-section>
       </q-card>
-    </template>
-      <CardPage
-        v-else
+      <ClassPage v-else-if="cardRef.type === 'classroom'"
+        :card="cardRef"
+        @buyData="buyData"
+        @publishCard="publishCard(cardRef)"
+        @pulledCard="pulledCard(cardRef)"
+        @unpulledCard="unpulledCard(cardRef)"
       />
+      <template v-else-if="cardRef.type === 'resource'">
+        <SalePage v-if="editResource"
+          :card_id="cardRef.id"
+          @publishCard="publishCard(cardRef)"
+          @pulledCard="pulledCard(cardRef)"
+          @unpulledCard="unpulledCard(cardRef)"
+        />
+      <q-card v-else bordered class="column no-wrap">
+          <q-bar dark class="row no-wrap q-pa-sm transparent">
+              <q-space />
+              <q-btn flat dense size="sm" round icon="mdi-close" v-close-popup />
+          </q-bar>
+          <ResourcePage
+            style="margin: 0 auto;"
+            class="q-py-none"
+            :card_id="cardRef.id"
+            @buyData="buyData"
+          />
+      </q-card>
+      </template>
+    </template>
+    <CardPage v-else />
     </q-dialog>
     <q-dialog v-model="shareDlg" persistent>
       <CreateShare
@@ -631,10 +647,11 @@ import FileViewer from "src/components/VIewComponents/FileViewer.vue";
 import CreateShare from "pages/team/components/CreateShare.vue";
 import DownloadApp from 'src/components/VIewComponents/DownloadApp.vue'
 import useOverview from 'src/pages/team/hooks/useOverview.js'
-import useSocket from "src/pages/team/card/hooks/useSocket.js";
 import useMember from "src/hooks/team/useMember.js";
 import PayState from './components/PayState.vue'
 import EditCard from './components/EditCard.vue'
+import SalePage from './SalePage.vue'
+import ResourcePage from './ResourcePage.vue'
 
 const $q = useQuasar();
 const route = useRoute();
@@ -667,7 +684,7 @@ const props = defineProps({
 });
 const { card: cardRef, orderAuth } = toRefs(props);
 const alwaysShowCover = computed(() => {
-  const _navsAlwaysShowCover = ['classroom', 'segment'];
+  const _navsAlwaysShowCover = ['segment', ...teamStore.saleTypes];
   return _navsAlwaysShowCover.includes(teamStore.navigation);
 });
 
@@ -686,6 +703,7 @@ const isExternal = computed(() => teamStore.project?.isExternal || false);
 const isDilgMode = ref(true);
 const actived = ref(false);
 const editCareDlg = ref(false);
+const editResource = ref(false);
 
 const updated = () => {
   editCareDlg.value = false
@@ -715,21 +733,22 @@ const isElectron = computed(() => {
     return false
   }
 })
+const isSale = computed(() => teamStore.saleTypes.includes(cardRef.value?.type))
 const cardMembers = computed(() => cardRef.value?.card_members || []);
 const { _isCreator } = useMember();
 const isCreator = computed(() => {
-  if(cardRef.value?.type === 'classroom'){
+  if(isSale.value){
     return cardRef.value?.creator?.id === teamStore.init?.id
   }
   return _isCreator(userStore.userId, cardMembers.value, cardRef.value?.member_roles)
 })
 const show_unpublished_chip = computed(() => {
   /**
-   * 是课程
+   * 是销售内容
    * 未发布
    * 是作者
    */
-  return cardRef.value?.type === 'classroom' && !cardRef.value?.published && isCreator.value
+  return isSale.value && !cardRef.value?.published && isCreator.value
 })
 const isInCard = ref(false);
 const multiple_versions = computed(() => cardRef.value?.overviews?.length > 1);
@@ -860,6 +879,14 @@ const _enterCard = async (auth) => {
     show_cardDetial.value = true;
   }
 };
+const editCard = (card) => {
+  if(cardRef.value.type === 'resource'){
+    editResource.value = true;
+    show_cardDetial.value = true;
+  } else {
+    editCareDlg.value = true;
+  }
+}
 
 const tryEnter = async () => {
   if (teamStore.shareInfo) {
@@ -899,6 +926,7 @@ const { current } = useMagicKeys();
 const keys = computed(() => Array.from(current));
 
 const _leaveCard = () => {
+  editResource.value = false;
   leaveCard();
 };
 
@@ -952,9 +980,10 @@ const setupWatchers = () => {
       }
     }),
     watchEffect(() => {
+      if(!cardRef.value) return;
       isInCard.value = teamStore.card?.id === cardRef.value?.id;
 
-      if(cardRef.value?.type !== 'classroom'){
+      if(!isSale.value){
         const executorRole = cardRef.value?.member_roles?.find(
           (i) => i.subject === "executor"
         );

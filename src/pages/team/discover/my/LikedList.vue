@@ -1,5 +1,6 @@
 <template>
     <q-infinite-scroll @load="onLoad" :offset="250" :disable="!hasMore" class="column gap-xl items-center q-py-md">
+        LikedList
         <template v-for="i in cards" :key="i.id">
             <ItemCard :card="i" @enterCardDetail="enterCardDetail" />
         </template>

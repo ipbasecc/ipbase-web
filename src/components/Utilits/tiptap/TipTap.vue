@@ -385,7 +385,7 @@ const init = () => {
   editor.value = new Editor({
     content: tiptapContent.value,
     editable: isEditable.value,
-    autofocus: isEmpty.value,
+    autofocus: autofocus.value && isEmpty.value,
     editorProps: {
       handleKeyDown: (view, event) => {
         // 检查是否是 Ctrl+Enter 或 Cmd+Enter

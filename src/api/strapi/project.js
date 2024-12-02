@@ -340,7 +340,7 @@ export async function deleteProject(project_id, option) {
 }
 
 // Overview - 对应为版本
-// 新增时需要制定Overview要附加的对象是 project 还是 card
+// 新增时需要指定Overview要附加的对象是 project 还是 card
 export async function addVersion(params) {
   try {
     const res = await api.post(`overviews`, params);
@@ -1184,6 +1184,13 @@ export async function queryDiscover(start, limit) {
     return error;
   }
 }
+/**
+ * 
+ * @param {string} element 内容模型：card, project, team
+ * @param {*} type 内容类型： classroom, resource
+ * @param {*} card_id 卡片ID
+ * @returns 
+ */
 export async function queryOneDiscover(element, type, card_id) {
   const options = `?element=${element}&type=${type}`;
   try {
@@ -1196,12 +1203,12 @@ export async function queryOneDiscover(element, type, card_id) {
     return error;
   }
 }
-export async function queryBuied(element, type, start, limit) {
+export async function queryBuied(element, start, limit) {
   if (start < 0 || limit < 0) {
     Notify.create($t('need_pagination_info'));
     return;
   }
-  let options = `?element=${element}&type=${type}&start=${start}&limit=${limit}`;
+  let options = `?element=${element}&start=${start}&limit=${limit}`;
   try {
     const res = await api.get(`buied/cards${options}`);
     if (res) {

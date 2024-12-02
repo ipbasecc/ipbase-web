@@ -483,7 +483,14 @@ export function getMimeExtension(mimeType) {
     'image/webp': '.webp',
     'video/mov': '.mov',
     'video/mp4': '.mp4',
-    'video/m4v': '.m4v'
+    'video/m4v': '.m4v',
+    'audio/mp3': '.mp3',
+    'audio/wav': '.wav',
+    'application/zip': '.zip',
+    'application/rar': '.rar',
+    'application/7z': '.7z',
+    'application/pdf': '.pdf',
+    'application/tar': '.tar',
   };
 
   return mimeMap[mimeType] || ''; // 如果找不到对应的扩展名，返回空字符串
@@ -491,4 +498,32 @@ export function getMimeExtension(mimeType) {
 
 export function getMimeExtensions(mimeTypes) {
   return mimeTypes.map(i => getMimeExtension(i)).join(', ');
+}
+
+export function mediaType(url) {
+  console.log('url', url);
+  
+  const urlObj = new URL(url);
+  const path = urlObj.pathname;
+  const extension = path.substring(path.lastIndexOf('.') + 1).toLowerCase();
+
+  const imageExtensions = ['jpg', 'jpeg', 'png', 'svg', 'webp'];
+  const videoExtensions = ['mov', 'mp4', 'm4v'];
+  const audioExtensions = ['mp3', 'wav'];
+  const officeExtensions = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'];
+  const pdfExtension = 'pdf';
+
+  if (imageExtensions.includes(extension)) {
+    return 'image';
+  } else if (videoExtensions.includes(extension)) {
+    return 'video';
+  } else if (audioExtensions.includes(extension)) {
+    return 'audio';
+  } else if (officeExtensions.includes(extension)) {
+    return 'office';
+  } else if (extension === pdfExtension) {
+    return 'pdf';
+  } else {
+    return 'others';
+  }
 }

@@ -244,9 +244,9 @@ const routes = [
             props: true,
           },
           {
-            path: "/discover/my/tutorial",
-            component: () => import("src/pages/team/discover/my/TutorialList.vue"),
-            name: "discover_my_tutorial",
+            path: "/discover/my/purchased",
+            component: () => import("src/pages/team/discover/my/PurchasedList.vue"),
+            name: "discover_my_purchased",
             props: true,
           },
           {

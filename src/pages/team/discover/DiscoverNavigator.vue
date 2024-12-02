@@ -1,11 +1,10 @@
 <template>
     <div class="absolute-full" :class="$q.dark.mode ? '' : 'bg-primary-9 text-grey-1'">
-        {{all_menu_items}}
         <q-list class="column no-wrap gap-xs q-pa-sm">
             <template v-for="i in menu" :key="i.value">
-                <div v-if="i.value === 'separator'" class="border-bottom q-mt-lg"></div>
+                <div v-if="i.value === 'separator'" class="border-bottom q-mt-lg op-4"></div>
                 <q-expansion-item v-else-if="i.value === 'category' && i.children?.length > 0"
-                    default-opened dense expand-icon-class="no-padding op-5"
+                    :default-opened="i.label === 'favorite'" group="discover" dense expand-icon-class="no-padding op-5"
                     header-class="no-hover-style">
                     <template #header>
                         <span class="q-space op-5">{{ $t(i.label) }}</span>
@@ -57,58 +56,22 @@
             to: '/discover'
         },
         {
-            value: 'separator',
-        },
-        {
-            value: 'category',
+            value: 'purchased',
             label: 'purchased',
             icon: 'mdi-cart',
-            children: [
-                {
-                    icon: 'mdi-school',
-                    label: 'tutorial',
-                    value: 'tutorial',
-                    element: 'card',
-                    type: 'classroom',
-                    to: '/discover/my/tutorial',
-                }
-            ]
+            to: '/discover/my/purchased'
         },
         {
-            value: 'separator',
-        },
-        {
-            value: 'category',
+            value: 'favorite',
             label: 'favorite',
             icon: 'mdi-heart',
-            children: [
-                {
-                    icon: 'mdi-school',
-                    label: 'tutorial',
-                    value: 'favorite',
-                    element: 'card',
-                    type: 'classroom',
-                    to: '/discover/my/favorite',
-                }
-            ]
+            to: '/discover/my/favorite'
         },
         {
-            value: 'separator',
-        },
-        {
-            value: 'category',
+            value: 'liked',
             label: 'liked',
             icon: 'mdi-thumb-up',
-            children: [
-                {
-                    icon: 'mdi-school',
-                    label: 'tutorial',
-                    value: 'liked',
-                    element: 'card',
-                    type: 'classroom',
-                    to: '/discover/my/liked',
-                }
-            ]
+            to: '/discover/my/liked'
         }
     ]
 

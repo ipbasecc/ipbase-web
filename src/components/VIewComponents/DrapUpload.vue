@@ -260,6 +260,7 @@ onMounted(async () => {
 
 // 在组件卸载时，移除事件监听器
 onUnmounted(() => {
+  if(!dropZone.value) return
   // 移除事件监听器
   dropZone.value.removeEventListener("dragenter", handleDragEnter, false);
   dropZone.value.removeEventListener("dragover", handleDragOver, false);

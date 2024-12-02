@@ -32,7 +32,7 @@
         />
         <VueDraggable v-else v-model="kanban.columns"
           :animation="300" :delay="1" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
-          filter=".undrag" group="column"
+          filter=".undrag" group="column" :disabled="!useAuths('order', ['column'])"
           chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
           :handle="setDragHandle(view_model)"
           class="no-wrap border-placeholder"
@@ -552,14 +552,18 @@ const setupWatchers = () => {
           * 
           */
           const applyCardData = (cardData) => {
+            console.log('applyCardData start');
             if(_column?.cards){ // 正常的修改
               const cardIndex = _column.cards.findIndex(i => i.id === cardData.id);
               if(cardIndex !== -1){
+                console.log('card in column');
+                
                 Object.keys(cardData).forEach(key => {
                   if(cardData[key] !== undefined){
                     _column.cards[cardIndex][key] = cardData[key];
                   }
                 });
+                console.log('applyCardData end', _column.cards);
               } else { // 如果是未发布的内容改为了发布 - 根据返回的card排序重构数据
                 _column.cards = data.cards.map(i => {
                   return _column.cards.find(j => j.id === i) || cardData
@@ -567,8 +571,10 @@ const setupWatchers = () => {
               }
             } else { // 可能新发布的卡片所在的分栏内原来是空的，这里直接添加
               _column.cards = [cardData]
+              console.log('column is empty');
             }
             uiStore.updatedCard_for_userTeamAffairs = cardData;
+            console.log('applyCardData end', _column.cards);
           }
           if(_column){
             let res

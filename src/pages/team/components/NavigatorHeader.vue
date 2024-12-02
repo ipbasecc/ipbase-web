@@ -45,6 +45,13 @@
           <q-icon name="mdi-creation" />
           <span class="font-small unselected">圈子</span>
         </div>
+        <div v-if="uiStore.app === 'discover'"
+             class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
+             @click="goDiscover()"
+        >
+          <q-icon name="mdi-check-all" />
+          <span class="font-small unselected">{{ $t('discover') }}</span>
+        </div>
         <q-space />
         <template v-if="$q.screen.gt.xs">
           <q-btn
@@ -132,7 +139,7 @@
 
 <script setup>
 import { ref, onMounted, computed, onBeforeMount, watch, nextTick } from 'vue'
-import {ossStore, teamStore, uiStore} from "src/hooks/global/useStore.js";
+import {ossStore, teamStore, uiStore, discoverStore} from "src/hooks/global/useStore.js";
 import {isExternal,} from "src/pages/team/hooks/useConfig.js";
 import localforage from "localforage";
 import {useQuasar} from "quasar";
@@ -201,6 +208,15 @@ onBeforeMount(async () => {
   uiStore.isFocusMode = res || false;
   await checkNotification();
 });
+
+const goDiscover = () => {
+  if(discoverStore.actived){
+    discoverStore.actived = null;
+  } else {
+    discoverStore.list = 'home'
+    router.push('/discover');
+  }
+}
 
 watch(
   isExternal,

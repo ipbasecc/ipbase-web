@@ -84,7 +84,27 @@ export default defineStore("team", {
     teamMembersExceeded: false,
     multipleBoardType: ['classroom', 'resource'],
     saleTypes: ['classroom', 'resource'],
-    authType: ['exclusive', 'commercial', 'non-commercia', 'educational', 'personal']
+    authType: ['exclusive', 'commercial', 'non-commercia', 'educational', 'personal'],
+    resourceType: [
+      {
+        label: 'video',
+        value: 'video',
+        description: 'resource_video_description',
+        icon: 'mdi-video'
+      },
+      {
+        label: 'audio',
+        value: 'audio',
+        description: 'resource_audio_description',
+        icon: 'mdi-music'
+      },
+      {
+        label: 'file',
+        value: 'file',
+        description: 'resource_file_description',
+        icon: 'mdi-file'
+      }
+    ]
   }),
   getters: {
     $isMultipleBoard(state) {

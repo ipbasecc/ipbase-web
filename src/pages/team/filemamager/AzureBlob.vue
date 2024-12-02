@@ -19,7 +19,7 @@
     @menuClick="onMenuClick($event)"
   ></ejs-filemanager>
   <link
-    :href="$q.dark.mode ? $pathService('/css/dark.css') : $pathService('/public/css/light.css')"
+    :href="$q.dark.mode ? $pathService('/css/dark.css') : $pathService('/css/light.css')"
     rel="stylesheet"
   />
 </template>

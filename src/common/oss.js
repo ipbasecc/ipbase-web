@@ -96,14 +96,27 @@ export default function oss() {
   };
 
   // 获取oss文件访问权限
-  this.catchFile = async (uploadPath, fileBlob) => {
+  this.catchFile = async (uploadPath) => {
     if (!ossStore.client) {
       await getToken();
     }
     try {
-      return ossStore.client.signatureUrl(uploadPath);
+      // 1. 移除域名前缀，获取纯路径
+      const cleanPath = uploadPath.replace(/^https?:\/\/[^\/]+\//, '');
+      // console.log('cleanPath', cleanPath);
+      // 2. 解码URL编码的路径
+      const decodedPath = decodeURIComponent(cleanPath);
+      // console.log('decodedPath', decodedPath);
+      // 3. 生成签名URL
+      const signedUrl = await ossStore.client.signatureUrl(decodedPath);
+      // console.log('signedUrl', signedUrl);
+      // if (signedUrl.startsWith('http:')) {
+      //   signedUrl = signedUrl.replace(/^http?:\/\//, '');
+      // }
+      return signedUrl
+      
     } catch (e) {
-      console.log(e);
+      console.log('OSS download error:', e);
       Notify.create({
         message: $t('oss_premission_error'),
         position: "top",

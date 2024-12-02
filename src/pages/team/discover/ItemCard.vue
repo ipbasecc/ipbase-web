@@ -1,9 +1,9 @@
 <template>
-    <q-card bordered style="max-width: 540px;" class="shadow-0 full-width">
-        <img :src="card.cover?.url || alt_image">
+    <q-card bordered style="max-width: 540px;" class="shadow-0 full-width overflow-hidden">
+        <MediaViewer :url="card.cover?.url || alt_image" />
         <q-item>
-            <q-item-section v-if="card.creator?.profile?.avatar?.url" top avatar>
-                <q-avatar>
+            <q-item-section v-if="card.creator?.profile?.avatar?.url" side>
+                <q-avatar size="md">
                     <q-img :src="card.creator.profile.avatar.url" :ratio="1" spinner-color="primary"
                         spinner-size="22px" />
                 </q-avatar>
@@ -16,12 +16,15 @@
                 <q-item-label caption>
                     <FavoriteBtn :item="card" />
                     <LikeBtn :item="card" />
-                    <q-chip square v-if="isCreator" :label="$t('my_publish')" color="primary" outline />
-                    <template v-else-if="card.price">
-                        <q-chip square v-if="buied" :label="$t('buied')" color="positive" outline />
-                        <q-chip v-else square :label="`￥：${card.price / 100}`" color="info" outline />
+                    <template v-if="card.type === 'classroom'">
+                        <q-chip square v-if="isCreator" :label="$t('my_publish')" color="primary" outline />
+                        <template v-else-if="card.price">
+                            <q-chip square v-if="buied" :label="$t('buied')" color="positive" outline />
+                            <q-chip v-else square :label="`￥：${card.price / 100}`" color="info" outline />
+                        </template>
+                        <q-chip square v-else :label="$t('price_free')" color="info" outline />
                     </template>
-                    <q-chip square v-else :label="$t('price_free')" color="info" outline />
+                    <q-chip v-else square :label="$t('my_publish')" color="primary" outline />
                 </q-item-label>
             </q-item-section>
         </q-item>
@@ -31,8 +34,9 @@
 <script setup>
     import { computed } from 'vue'
     import { teamStore } from 'src/hooks/global/useStore';
-import FavoriteBtn from './components/FavoriteBtn.vue'
-import LikeBtn from './components/LikeBtn.vue'
+    import FavoriteBtn from './components/FavoriteBtn.vue'
+    import LikeBtn from './components/LikeBtn.vue'
+    import MediaViewer from 'src/components/VIewComponents/MediaViewer.vue'
     const props = defineProps({
         card: {
             type: Object,
