@@ -1,5 +1,5 @@
 <template>
-  <div v-if="cardRef.expand || teamStore.saleTypes.includes(cardRef.type)"
+  <div
     :key="`card-${cardRef.id}`"
     class="flex flex-center"
     :class="`
@@ -137,6 +137,8 @@
         style="max-height: 61vh;padding: 0 1px"
       >
         <template v-if="!isElectron">
+          <q-bar class="transparent dragBar absolute-top z-fab">
+          </q-bar>
           <FileViewer
             v-if="media?.url && !isSale"
             :key="media.url"
@@ -149,14 +151,7 @@
             :by_width="true"
             mainStyle="no-padding"
           />
-          <q-img
-            v-else-if="cardRef.cover?.url && isSale"
-            :src="cardRef.cover?.url"
-            :ratio="16/7"
-            spinner-color="primary"
-            spinner-size="82px"
-            class="radius-xs"
-          />
+          <MediaViewer v-else-if="cardRef.cover?.url && isSale" class="dragBar" :ratio="mediaType(cardRef.cover?.url) === 'video' ? 16/9 : 16/7" :url="cardRef.cover?.url" />
           <q-responsive v-else-if="alwaysShowCover"
           :ratio="16/5">
             <div class="rounded-borders flex flex-center">
@@ -229,7 +224,7 @@
       <!-- 卡片底部 -->
       <q-card-section
         v-show="cardRef?.expand !== 'collapse'"
-        class="row no-wrap gap-sm items-end q-pa-sm q-py-xs hovered-item"
+        class="row no-wrap gap-sm items-end q-pa-sm q-py-xs hovered-item z-fab"
         :class="`
           ${isDilgMode && orderAuth ? 'dragBar' : ''}
           ${cardRef.type !== 'note' ? 'border-top' : 'border-bottom'}
@@ -613,6 +608,7 @@ import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
 import overlappingAvatar from "src/pages/team/components/widgets/overlappingAvatar.vue";
 import AffairsContainer from 'src/pages/team/todo/AffairsContainer.vue'
 import CardExecutor from "src/pages/team/card/components/CardExecutor.vue";
+import { mediaType } from 'src/hooks/utilits';
 
 import {useRoute} from "vue-router";
 import {useQuasar} from "quasar";
@@ -652,6 +648,7 @@ import PayState from './components/PayState.vue'
 import EditCard from './components/EditCard.vue'
 import SalePage from './SalePage.vue'
 import ResourcePage from './ResourcePage.vue'
+import MediaViewer from 'src/components/VIewComponents/MediaViewer.vue'
 
 const $q = useQuasar();
 const route = useRoute();

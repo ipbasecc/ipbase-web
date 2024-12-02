@@ -501,9 +501,8 @@ import {
   watch,
   watchEffect,
   computed,
-  nextTick,
-  onBeforeUnmount,
-  onMounted
+  onBeforeMount,
+  nextTick
 } from "vue";
 import { VueDraggable } from 'vue-draggable-plus'
 import CardItem from "src/pages/team/card/CardItem.vue";
@@ -574,6 +573,17 @@ let column_executor = ref();
 watchEffect(() => {
   filter_txt.value = teamStore.filter_txt;
 });
+watch(columnRef, () => {
+  if(columnRef.value){
+    cards.value = columnRef.value?.cards.filter(i => !i.pulled || i.creator?.id === teamStore.init?.id);
+    filteredCards.value = cards.value;
+    column_name.value = columnRef.value?.name;
+    column_unread_count.value = columnRef.value?.unread_count;
+    column_status.value = columnRef.value?.status;
+    column_type.value = columnRef.value?.type;
+    column_executor.value = columnRef.value?.executor;
+  }
+},{ immediate: true, deep: true });
 
 const deleteColumnFn = () => {
   const deleteFn = async () => {
@@ -704,7 +714,7 @@ const getDefaultCreateCardType = async () => {
   try {
     // 使用await等待localforage.getItem的结果
     const res = await localforage.getItem(DefaultCreateCardType_key);
-    // 如果获取到值，就置为该值，否则设置为’note’
+    // 如果获取到值，就设置为该值，否则设置为’note’
     DefaultCreateCardType.value = res || "note";
   } catch (e) {
     console.log(e);
@@ -725,10 +735,24 @@ const setDefaultCreateCardType = async (val) => {
   }
 };
 
+watch(filter_txt, () => {
+  if (cards.value) {
+    if (filter_txt.value) {
+      filteredCards.value = filterCardsByString(filter_txt.value,cards.value);
+    } else {
+      filteredCards.value = cards.value;
+    }
+  }
+},{ immediate: true, deep: false });
 
 // 有竖向滚动条，当鼠标进入分栏后，禁用滚轮横向滚动
 const hasScrollBar = ref();
 const columnScrollRef = ref(null);
+const setMouseWheelScroll = () => {
+  if(!columnScrollRef.value) return
+  const {verticalSize, verticalContainerSize} = columnScrollRef.value.getScroll();
+  hasScrollBar.value = verticalSize > verticalContainerSize;
+}
 const dragHandler = (val) => {
   if (uiStore.dragging || $q.screen.lt.sm) return;
   uiStore.scrollX_byWheel = hasScrollBar.value ? val : true;
@@ -753,6 +777,9 @@ const uiOptions = ref([
     icon: "mdi-checkbox-marked-circle",
   },
 ]);
+onBeforeMount(() => {
+  sync_uiOptions();
+});
 const update_uiOptions = async (i) => {
   i.enable = !i.enable;
   uiOptions.value = uiOptions.value.map((ui) => (ui.val === i.val && i) || ui);
@@ -763,97 +790,14 @@ const update_uiOptions = async (i) => {
       console.log(err);
     });
 };
-
-const cleanupFunctions = [];
-
-// 本地存储操作封装
-const localStorageOps = {
-  async getOptions() {
-    try {
-      const res = await localforage.getItem(
-        `___column_${columnRef.value.id}_uiOptions`
-      );
-      return res ? JSON.parse(res) : null;
-    } catch (error) {
-      console.error('Failed to get column options:', error);
-      return null;
-    }
-  },
-
-  async setOptions(options) {
-    try {
-      await localforage.setItem(
-        `___column_${columnRef.value.id}_uiOptions`,
-        JSON.stringify(options)
-      );
-    } catch (error) {
-      console.error('Failed to save column options:', error);
-    }
-  }
-};
-
-// 同步UI选项
 const sync_uiOptions = async () => {
-  const savedOptions = await localStorageOps.getOptions();
-  if (savedOptions) {
-    uiOptions.value = savedOptions;
+  let res = await localforage.getItem(
+    `___column_${columnRef.value.id}_uiOptions`
+  );
+  if (res) {
+    uiOptions.value = JSON.parse(res);
   }
 };
-
-// 设置鼠标滚轮滚动
-const setMouseWheelScroll = () => {
-  if (!columnScrollRef.value) return;
-  const { verticalSize, verticalContainerSize } = columnScrollRef.value.getScroll();
-  hasScrollBar.value = verticalSize > verticalContainerSize;
-};
-
-// 只保留必要的监听器设置
-const setupWatchers = () => {
-  cleanupFunctions.push(
-    // 监听卡片过滤
-    watch(filter_txt, () => {
-      if (cards.value) {
-        filteredCards.value = filter_txt.value 
-          ? filterCardsByString(filter_txt.value, cards.value)
-          : cards.value;
-      }
-    }, { immediate: true }),
-
-    // 监听列设置
-    watch(columnRef, () => {
-      if(columnRef.value){
-        cards.value = columnRef.value?.cards.filter(i => !i.pulled || i.creator?.id === teamStore.init?.id);
-        filteredCards.value = cards.value;
-        column_name.value = columnRef.value?.name;
-        column_unread_count.value = columnRef.value?.unread_count;
-        column_status.value = columnRef.value?.status;
-        column_type.value = columnRef.value?.type;
-        column_executor.value = columnRef.value?.executor;
-        sync_uiOptions();
-      }
-    },{ immediate: true, deep: true }),
-
-    // 监听卡片拖拽状态
-    watch(() => uiStore.dragging, (val) => {
-      if (!val && $q.screen.lt.sm) return;
-      uiStore.scrollX_byWheel = hasScrollBar.value ? val : true;
-      uiStore.dragKanbanScrollEnable = val;
-    })
-  );
-};
-
-onMounted(() => {
-  setupWatchers();
-});
-
-onBeforeUnmount(() => {
-  cleanupFunctions.forEach(cleanup => cleanup());
-});
-
-defineExpose({
-  pushCard,
-  update_uiOptions
-});
 </script>
 
 <style lang="scss">
