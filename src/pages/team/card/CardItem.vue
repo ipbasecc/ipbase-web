@@ -135,13 +135,13 @@
       </q-card-section>
       <!-- 卡片底部 -->
       <q-card-section v-show="cardRef?.expand !== 'collapse'"
-        class="row no-wrap gap-sm items-center q-pa-xs hovered-item z-fab" :class="`
+        class="row no-wrap gap-sm q-pa-xs hovered-item z-fab" :class="`
           ${isDilgMode && orderAuth ? 'dragBar' : ''}
-          ${cardRef.type !== 'note' ? 'border-top' : 'border-bottom'}
+          ${cardRef.type !== 'note' ? 'border-top items-end q-pb-sm' : 'border-bottom items-center'}
           ${isSale ? `absolute-full bg-gradient-bottom-${$q.dark.mode ? 'black' : 'white'}` : ''}
         `" :style="cardRef.type === 'note' ? 'order: -1' : ''" @dblclick="_enterCard(useAuths('read', ['card']))">
         <template v-if="cardRef.type !== 'note'">
-          <div v-if="isSale" class="q-px-sm q-space column no-wrap gap-sm undrag cursor-pointer"
+          <div v-if="isSale" class="q-px-sm q-space column no-wrap gap-xs undrag cursor-pointer"
             @click="_enterCard(useAuths('read', ['card']))">
             <span v-if="cardRef.name">{{ cardRef.name }}</span>
             <PayState v-if="cardRef.type === 'classroom'" :card="cardRef" />

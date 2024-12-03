@@ -17,14 +17,13 @@
           :members="membersForAvatar"
           @click="toggleRightpannel('member_manager')"
         />
-
         <q-btn
           v-if="useAuths('approve_join_request',['project'])"
           flat
           dense
           round
           icon="notifications"
-          :color="teamStore.project.join_requests?.length > 0 ? 'orange' : ''"
+          :color="show_join_alert ? 'orange' : ''"
           @click="toggleRightpannel('join_request')"
         />
         <q-btn
@@ -112,6 +111,11 @@ const toggleMeet = () => {
   }
   uiStore.show_meet = !uiStore.show_meet
 }
+
+const show_join_alert = computed(() => {
+  const filter_requests = teamStore.project.join_requests?.filter(item => !item.approved)
+  return filter_requests?.length > 0
+})
 
 onBeforeMount(async() => {
   const _cacheKey = `${teamStore.team?.id}_showTeamNotification`;
