@@ -640,7 +640,7 @@ const updateCannel = () => {
 const emit = defineEmits(["cardChange", "cardDelete", "orderCard"]);
 const sortRes = ref();
 const dragCard_sort = async () => {
-  console.log("dragCard_sort", filteredCards.value);
+  // console.log("dragCard_sort", filteredCards.value);
   await nextTick();
   let params = {
     project_id: teamStore.project.id,

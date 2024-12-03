@@ -588,14 +588,14 @@ watch(val, async(newVal, oldVal) => {
 
     if(val.value.event === 'column:updated' && kanban.value){
       // 如果是当前用户执行的修改，直接用返回的数据赋值
-      // const { updator } = val.value.data;
-      // if(updator === teamStore.init.id) return
+      const { updator } = val.value.data;
+      if(updator === teamStore.init.id) return
 
       //如果接收到ws的更新数据，按方法执行
       const index = kanban.value.columns?.findIndex(i => i.id === Number(data.id));
       if(index > -1){
         updateColumn(index, data)
-        // syncKanbanStore(kanban.value);
+        syncKanbanStore(kanban.value);
       }
     }
 
@@ -619,27 +619,42 @@ const updateColumn = async (index, data) => {
             existingColumn[key] = data[key];
         }
     }
-    // ws只会推送card id的数组，card内容使用当前已存在的card组装，如果有不存在的card，向后端获取后再组装
-    if(Array.isArray(data.cardSort)){
-      console.log('cardSort', data.cardSort);
-      const allCardIds = allCards.value.map(card => card.id);
-      const missingSortedCards = data.cardSort.filter(sortedCardId => !allCardIds.includes(sortedCardId));
-      console.log('missingSortedCards', missingSortedCards);
-      if (missingSortedCards.length > 0) {
-        console.log('missingSortedCards 2', missingSortedCards);
-        const fetchMissingCards = await Promise.all(missingSortedCards.map(async (cardId) => {
-          const res = await findCard(cardId);
-          return res?.data;
-        }));
-        console.log('fetchMissingCards', fetchMissingCards);
-        allCards.value.push(...fetchMissingCards);
-      }
-      kanban.value.columns[index].cards = data.cardSort.map(i => allCards.value.find(card => card.id === i))
+
+    if(Array.isArray(data.cardSort)) {
+        // 找出从当前分栏移出的卡片
+        const removedCards = existingColumn.cards?.filter(
+            card => !data.cardSort.includes(card.id)
+        ) || [];
+
+        // 检查新的卡片排序中是否有本地不存在的卡片
+        const allCardIds = allCards.value.map(card => card.id);
+        const missingCardIds = data.cardSort.filter(
+            cardId => !allCardIds.includes(cardId)
+        );
+
+        // 获取缺失的卡片数据
+        if (missingCardIds.length > 0) {
+            const fetchMissingCards = await Promise.all(
+                missingCardIds.map(async (cardId) => {
+                    const res = await findCard(cardId);
+                    return res?.data;
+                })
+            );
+            allCards.value.push(...fetchMissingCards.filter(Boolean));
+        }
+
+        // 重建分栏卡片数据
+        kanban.value.columns[index].cards = data.cardSort
+            .map(cardId => allCards.value.find(card => card.id === cardId))
+            .filter(Boolean);
+
+        // 将移出的卡片添加回 allCards，以供后续更新使用
+        if (removedCards.length > 0) {
+            allCards.value.push(...removedCards);
+        }
     }
     
     kanban.value.columns[index] = existingColumn;
-    console.log('existingColumn cards', index, existingColumn.cards);
-    
 };
 
 </script>
