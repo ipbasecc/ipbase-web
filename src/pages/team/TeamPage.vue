@@ -83,6 +83,12 @@
           v-else-if="teamStore.rightDrawer === 'join_request' && teamStore?.project?.id"
           :project="teamStore.project"
         />
+        <ChatContainter v-else-if="teamStore.rightDrawer === 'chat_pannel'"
+          class="border-left"
+          :channel_id="teamStore.project?.mm_channel?.id"
+          :pannel_mode="true"
+          :key="teamStore.project?.mm_channel?.id"
+        />
       </q-drawer>
 
       <q-page-container>
@@ -160,6 +166,7 @@ import SideNavigation from "pages/team/components/SideNavigation.vue";
 import TeamList from "pages/team/components/TeamList.vue";
 import BudgetList from './budget/BudgetList.vue'
 import JoinRequestlist from './settings/JoinRequestlist.vue'
+import ChatContainter from "./chat/ChatContainter.vue";
 const route = useRoute();
 const router = useRouter();
 
@@ -169,6 +176,9 @@ const user_roles = computed(() => findRoles(team.value?.members, team.value?.mem
 watchEffect(() => {
   // console.log('user_roles',user_roles.value);
   isExternal.value = user_roles.value?.includes('external')
+  if(teamStore.rightDrawer === 'chat_pannel' && teamStore.navigation === 'chat'){
+    teamStore.rightDrawerOpen = false
+  }
 })
 
 const toggleleftDrawer = () => {

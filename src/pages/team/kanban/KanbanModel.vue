@@ -394,7 +394,7 @@ const allCards = computed(() => [...kanbanCards.value, ...dropKanbanCards.value]
 const val = computed(() => teamStore.income);
 watch(val, async(newVal, oldVal) => {
   if(!newVal || newVal === oldVal) return;
-  const { team_id, column_id, card_id, kanban_id, data, order } = val.value.data;
+  const { team_id, column_id, card_id, kanban_id, data, order, position } = val.value.data;
   if(teamStore.team?.id === Number(team_id)){
 
     if(val.value.event === 'kanban:updated' && order && kanban.value?.id === Number(data.id)) {
@@ -439,7 +439,14 @@ watch(val, async(newVal, oldVal) => {
       // classroom 新建时不会发布，因此后端在新建classroom卡片后不会发ws，这里直接处理即可，不需要处理classroom的情况
       const column = kanban.value?.columns?.find(i => i.id === column_id);
       if(column) {
-        if(column.cards?.length > 0){
+        if(position){
+          if(position.start){
+            column.cards.unshift(data);
+          } else {
+            const afterIndex = column.cards.findIndex(i => i.id === position.after);
+            column.cards.splice(afterIndex + 1, 0, data);
+          }
+        } else if(column.cards?.length > 0){
           if(kanban.value.type === 'kanban' || kanban.value.type === 'classroom'){
             column.cards.unshift(data);
           } else {
@@ -588,8 +595,8 @@ watch(val, async(newVal, oldVal) => {
 
     if(val.value.event === 'column:updated' && kanban.value){
       // 如果是当前用户执行的修改，直接用返回的数据赋值
-      const { updator } = val.value.data;
-      if(updator === teamStore.init.id) return
+      // const { updator } = val.value.data;
+      // if(updator === teamStore.init.id) return
 
       //如果接收到ws的更新数据，按方法执行
       const index = kanban.value.columns?.findIndex(i => i.id === Number(data.id));

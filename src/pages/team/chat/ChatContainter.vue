@@ -1,6 +1,6 @@
 <template>
   <div :key="_channel_id" class="absolute-full column no-wrap overflow-hidden" :class="$q.dark.mode ? 'bg-darker text-grey-1' : 'bg-grey-1 text-grey-10'">
-    <q-bar
+    <q-bar v-if="!pannel_mode"
         class="border-bottom"
         :class="$q.dark.mode ? 'bg-dark text-grey-1' : 'bg-grey-1 text-grey-10'"
         :style="`height: ${!$q.screen.gt.sm ? '48px' : ''}`"
@@ -48,7 +48,7 @@
           @click="togglePowerpannel('directMemberInfo')"
       />
     </q-bar>
-    <q-splitter v-if="$q.screen.gt.xs"
+    <q-splitter v-if="$q.screen.gt.xs && !pannel_mode"
                 v-model="splitterModel"
                 :limits="limits"
                 :separator-style="uiStore.chat_pannel ? '' : 'display: none'"
@@ -133,7 +133,7 @@
         </div>
       </template>
     </q-splitter>
-    <template v-else>
+    <template v-if="pannel_mode || !$q.screen.gt.xs">
       <div class="q-space column">
         <template v-if="uiStore.chat_pannel">
           <div
@@ -184,22 +184,21 @@
                     <q-spinner color="primary" name="dots" size="40px" />
                   </div>
                 </template>
-                <ChannelHeader :class="hasMore ? 'op-0' : 'op-none'" />
-                <template v-for="(i, index) in messages" :key="i.id">
-                  <KeepAlive>
+                <ChannelHeader v-if="!pannel_mode" :class="hasMore ? 'op-0' : 'op-none'" />
+                  <template v-for="(i, index) in messages" :key="i.id">
                     <MessageItem
-                        v-if="!i.root_id"
-                        :msg="i"
-                        :prev="messages[index - 1]"
-                        :index="index"
-                        :inThread="false"
-                        :MsgOnly="!$q.screen.gt.xs"
-                        container="channel"
-                        @togglePowerpannel="togglePowerpannel"
-                        @enterThread="enterThread"
+                      v-if="i.message && !i.type.includes('system_')"
+                      :msg="i"
+                      :prev="messages[index - 1]"
+                      :index="index"
+                      :inThread="false"
+                      :MsgOnly="!$q.screen.gt.xs"
+                      :pannel_mode="pannel_mode"
+                      container="channel"
+                      @togglePowerpannel="togglePowerpannel"
+                      @enterThread="enterThread"
                     />
-                  </KeepAlive>
-                </template>
+                  </template>
               </q-infinite-scroll>
             </q-pull-to-refresh>
           </q-scroll-area>
@@ -233,14 +232,14 @@ import { __viewChannel } from "src/hooks/mattermost/useMattermost.js";
 import ChannelHeader from './components/ChannelHeader.vue'
 import ChannelInfo from './components/ChannelInfo.vue'
 
-
 const router = useRouter();
 const route = useRoute();
 const $t = i18n.global.t;
 const $q = useQuasar();
 
-const { channel_id } = defineProps({
+const { channel_id, pannel_mode } = defineProps({
   channel_id: String,
+  pannel_mode: Boolean,
 });
 const strapi_channel_id = computed(() => teamStore?.channel?.id);
 const byInfo = computed(() => ({
@@ -387,6 +386,7 @@ const merageMsg = async (newMessages = {}) => {
     let newMessageEntries = order.reverse().map(postId => posts[postId]).filter(msg => !currentMessageIds.has(msg.id));
     await nextTick();
     messages.value = [...newMessageEntries, ...messages.value];
+    messages.value = messages.value.filter(i => !i.root_id || i.root_id !== '')
   }
 }
 
@@ -495,7 +495,7 @@ onMounted(() => {
         ".q-splitter__separator"
     );
     if (!separatorElement) {
-      console.error("没有找到class为q-splitter__separator的div");
+      // console.error("没有找到class为q-splitter__separator的div");
       return;
     }
 

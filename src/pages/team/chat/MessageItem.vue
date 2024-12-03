@@ -1,5 +1,6 @@
 <template>
   <div v-if="msg?.message" v-bind="$attrs"
+    ref="dragRef"
     class="row no-wrap gap-md q-py-xs q-px-md message"
     :class="`
       ${is_sameUser ? '' : 'q-mt-sm'}
@@ -8,9 +9,14 @@
       ${!msg?.root_id && !msg.type.includes('system_') && msg.props?.strapi?.event !== 'class_publish' ? 'mm_message' : msg.props?.strapi ? 'unselected' : ''}
     `"
   >
-    <template v-if="msg.type.includes('system_')">
-      <div class="full-width flex flex-center op-5">{{ msg.message }}</div>
-    </template>
+    <div v-if="msg.type.includes('system_')" class="row no-wrap gap-md items-center text-grey-6">
+      <div class="transition row items-center justify-end"
+        :class="pannel_mode ? '' : 'hover-hide transition'"
+        :style="`min-width: ${pannel_mode ? 32 : avatar_size + (!MsgOnly ? 48 : 0)}px;height: 25px`">
+        <q-icon name="mdi-information-outline" />
+      </div>
+      <span>{{ msg.message }}</span>
+    </div>
     <template v-else>
       <template v-if="show_avatar">
         <template v-if="isExternal">
@@ -28,17 +34,18 @@
           :size="avatar_size"
           :status="member_status"
           :strapi_member
-          :class="!MsgOnly && $q.screen.gt.xs ? 'q-ml-xl' : ''"
+          :class="!MsgOnly && $q.screen.gt.xs && !pannel_mode ? 'q-ml-xl' : ''"
         />
       </template>
       <template v-else>
         <div class="hover-show transition row items-center justify-end text-grey-6"
-          :style="`min-width: ${avatar_size + (!MsgOnly ? 48 : 0)}px;`"
+          :style="`min-width: ${pannel_mode ? 32 : avatar_size + (!MsgOnly ? 48 : 0)}px;`"
         >
-          <TimeAgo v-if="!MsgOnly" :time="msg.create_at" />
+          <TimeAgo v-if="!MsgOnly && !pannel_mode" :time="msg.create_at" />
         </div>
-        <div v-if="msg.props?.strapi" class="hover-hide transition absolute row items-center justify-end text-grey-6 hover-hide transition"
-          :style="`min-width: ${avatar_size + (!MsgOnly ? 48 : 0)}px;height: 25px`">
+        <div v-if="msg.props?.strapi" class="transition absolute row items-center justify-end text-grey-6"
+          :class="pannel_mode ? '' : 'hover-hide transition'"
+          :style="`min-width: ${pannel_mode ? 32 : avatar_size + (!MsgOnly ? 48 : 0)}px;height: 25px`">
           <q-icon name="mdi-information-outline" />
         </div>
       </template>
@@ -55,7 +62,10 @@
         <div
           v-html="html"
           class="message_body"
-          :class="!msg?.root_id && msg.props?.strapi?.event !== 'class_publish' ? 'cursor-pointer' : ''"
+          :class="`
+            ${!msg?.root_id && msg.props?.strapi?.event !== 'class_publish' ? 'cursor-pointer' : ''}
+            ${msg.props.strapi ? 'text-grey-6' : ''}
+          `"
           @click="enterThread(msg)"
         ></div>
         <template v-if="msg.metadata?.files?.length > 0">
@@ -84,7 +94,7 @@
           </template>
         </div>
         <!-- float action btns-->
-        <div v-if="(wiget_show || menu_expend) && !MsgOnly && msg.props?.strapi?.event !== 'class_publish'"
+        <div v-if="!dragging && (wiget_show || menu_expend) && !MsgOnly && msg.props?.strapi?.event !== 'class_publish'"
           class="absolute transition blur-sm mm_message_wiget radius-sm border overflow-hidden"
           style="right: 10%; bottom: 0"
         >
@@ -190,17 +200,20 @@
 </template>
 
 <script setup>
-import {computed, ref, toRefs} from "vue";
+import {computed, ref, toRefs, nextTick} from "vue";
 import {useFetch_mmMember} from "src/hooks/mattermost/api.js";
 import UserAvatar from "src/pages/team/components/user/UserAvatar.vue";
 import showFile from "src/pages/Chat/components/wigets/showFile.vue";
 
 import {deleteUserPreferences, followThread, pinPost, unpinPost, updateUserPreferences,} from "src/api/mattermost.js";
 import {fetch_userPreferences} from "src/hooks/mattermost/useMattermost.js";
+import { useQuasar } from "quasar";
 
 import {marked} from "marked";
 import {mmstore, mmUser, teamStore} from "src/hooks/global/useStore.js";
 import TimeAgo from "pages/team/components/widgets/TimeAgo.vue";
+import { useDrag, useBoolean } from 'vue-hooks-plus'
+import { useAuths } from "../hooks/useAuths";
 
 import { useImagePreview } from 'src/hooks/useImagePreview.js'
 const { preview } = useImagePreview()
@@ -242,6 +255,10 @@ const props = defineProps({
     type: String,
     default: "channel",
   },
+  pannel_mode: {
+    type: Boolean,
+    default: false,
+  },
 });
 const emit = defineEmits([
   "togglePowerpannel",
@@ -249,8 +266,86 @@ const emit = defineEmits([
   "getUnreadAfterCache",
   "toggle_flagged",
 ]);
+const $q = useQuasar();
+
+const [dragging, { set: setDragging }] = useBoolean(false)
+const dragRef = ref(null)
+
+useDrag(props.msg, dragRef, {
+  onDragStart: async (event) => {
+    if(!useAuths('create', ['project']) || teamStore.navigation !== 'kanban'){
+      event.preventDefault() // 阻止拖拽
+      return;
+    }
+    setDragging(true)
+    await nextTick();
+    
+    // 计算鼠标与拖拽元素的相对位置
+    const rect = dragRef.value.getBoundingClientRect()
+    const offsetX = event.clientX - rect.left
+    const offsetY = event.clientY - rect.top
+
+    // 创建一个透明的占位符
+    const transparentPlaceholder = document.createElement('div')
+    transparentPlaceholder.style.width = '1px'
+    transparentPlaceholder.style.height = '1px'
+    transparentPlaceholder.style.opacity = '0'
+    document.body.appendChild(transparentPlaceholder)
+
+    // 创建自定义拖拽图像
+    const dragImage = dragRef.value.cloneNode(true)
+    const computedStyle = window.getComputedStyle(dragRef.value)
+    dragImage.style.opacity = '1'
+    dragImage.style.backgroundColor = computedStyle.backgroundColor
+    dragImage.style.width = computedStyle.width
+    dragImage.style.height = computedStyle.height
+    dragImage.style.position = 'fixed'  // 改为 fixed 定位
+    dragImage.style.top = `${event.clientY - offsetY}px`
+    dragImage.style.left = `${event.clientX - offsetX}px`
+    dragImage.style.zIndex = '9999'
+    dragImage.style.pointerEvents = 'none'
+    dragImage.classList.add($q.dark.mode ? 'bg-grey-10' : 'bg-grey-1')
+    dragImage.classList.add('border')
+    dragImage.classList.add('radius-sm')
+    dragImage.classList.add('shadow-24')
+    document.body.appendChild(dragImage)    
+
+    // 设置透明占位符为拖拽影像
+    event.dataTransfer.setDragImage(transparentPlaceholder, 0, 0)
+    event.dataTransfer.effectAllowed = 'move'
+
+    // 更新拖拽图像位置
+    const updateDragImagePosition = (moveEvent) => {
+      requestAnimationFrame(() => {
+        dragImage.style.top = `${moveEvent.clientY - offsetY}px`
+        dragImage.style.left = `${moveEvent.clientX - offsetX}px`
+      })
+    }
+
+    // 监听 drag 事件而不是 mousemove
+    document.addEventListener('drag', updateDragImagePosition)
+
+    // 移除事件监听和克隆节点
+    const cleanup = () => {
+      document.removeEventListener('drag', updateDragImagePosition)
+      if (dragImage.parentNode) {
+        dragImage.parentNode.removeChild(dragImage)
+      }
+      if (transparentPlaceholder.parentNode) {
+        transparentPlaceholder.parentNode.removeChild(transparentPlaceholder)
+      }
+    }
+
+    // 在拖拽结束时清理
+    document.addEventListener('dragend', cleanup, { once: true })
+  },
+  onDragEnd: () => {
+    setDragging(false)
+  },
+})
+
 const isExternal = computed(() => teamStore.isExternal);
-const { msg, prev, container, curThreadId } = toRefs(props);
+const { msg, prev, container, curThreadId, pannel_mode } = toRefs(props);
 
 const html = msg.value?.message && marked.parse(msg.value.message);
 const member = ref();

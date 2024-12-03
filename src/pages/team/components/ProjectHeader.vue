@@ -28,6 +28,13 @@
           @click="toggleRightpannel('join_request')"
         />
         <q-btn
+          v-if="teamStore.project?.id && teamStore.navigation !== 'chat'"
+          flat
+          dense
+          icon="mdi-message"
+          @click="toggleRightpannel('chat_pannel')"
+        />
+        <q-btn
           v-if="teamStore.project?.id"
           flat
           dense
