@@ -1,9 +1,9 @@
 <template>
   <ChatContainter
-    v-if="channel_id"
+    v-if="mm_channel_id"
     v-bind="$attrs"
-    :channel_id
-    :key="channel_id"
+    :mm_channel_id
+    :key="mm_channel_id"
   />
 </template>
 
@@ -19,12 +19,12 @@ const props = defineProps({
     type: String,
     default: null,
   },
-  channel_id: {
+  mm_channel_id: {
     type: String,
     default: null,
   },
 });
-const { channel_id } = toRefs(props);
+const { mm_channel_id } = toRefs(props);
 
 const route = useRoute();
 
@@ -38,7 +38,7 @@ onMounted(async () => {
   }
   if (!teamStore.mm_channel) {
     teamStore.mm_channel = teamStore.team?.team_channels.find(
-      (i) => i.mm_channel?.id === channel_id.value
+      (i) => i.mm_channel?.id === mm_channel_id.value
     );
   }
 });

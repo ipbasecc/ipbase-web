@@ -85,7 +85,7 @@
         />
         <ChatContainter v-else-if="teamStore.rightDrawer === 'chat_pannel'"
           class="border-left"
-          :channel_id="teamStore.project?.mm_channel?.id"
+          :mm_channel_id="teamStore.project?.mm_channel?.id"
           :pannel_mode="true"
           :key="teamStore.project?.mm_channel?.id"
         />

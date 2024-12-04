@@ -99,7 +99,7 @@
           <div v-if="teamStore.mm_channel?.wasblocked || teamStore.mm_channel?.isblocked" class="full-width q-pa-xl border flex flex-center">
             {{ `${teamStore.mm_channel?.wasblocked ? '您已被对方屏蔽' : '您已屏蔽对方'}，不能发送消息` }}
           </div>
-          <SendmsgBox v-else :channel_id="channel_id" />
+          <SendmsgBox v-else :channel_id="mm_channel_id" />
         </div>
       </template>
       <template v-if="uiStore.chat_pannel" v-slot:separator>
@@ -117,9 +117,9 @@
           />
           <PinnedsContainder
               v-if="uiStore.chat_pannel === 'pinneds'"
-              :channel_id="channel_id"
+              :channel_id="mm_channel_id"
               :showClose="false"
-              :key="channel_id"
+              :key="mm_channel_id"
           />
           <MemberManager
               v-if="uiStore.chat_pannel === 'MemberManager'"
@@ -150,8 +150,8 @@
             />
             <PinnedsContainder
                 v-if="uiStore.chat_pannel === 'pinneds'"
-                :channel_id="channel_id"
-                :key="channel_id"
+                :channel_id="mm_channel_id"
+                :key="mm_channel_id"
                 @closePinned="togglePowerpannel('pinneds')"
             />
             <MemberManager
@@ -205,7 +205,7 @@
           <div v-if="teamStore.mm_channel?.wasblocked || teamStore.mm_channel?.isblocked" class="full-width q-pa-xl border flex flex-center">
             {{ `${teamStore.mm_channel?.wasblocked ? '您已被对方屏蔽' : '您已屏蔽对方'}，不能发送消息` }}
           </div>
-          <SendmsgBox v-else :channel_id="channel_id" />
+          <SendmsgBox v-else :channel_id="mm_channel_id" />
         </template>
       </div>
     </template>
@@ -237,8 +237,8 @@ const route = useRoute();
 const $t = i18n.global.t;
 const $q = useQuasar();
 
-const { channel_id, pannel_mode } = defineProps({
-  channel_id: String,
+const { mm_channel_id, pannel_mode } = defineProps({
+  mm_channel_id: String,
   pannel_mode: Boolean,
 });
 const strapi_channel_id = computed(() => teamStore?.channel?.id);
@@ -247,7 +247,7 @@ const byInfo = computed(() => ({
   channel_id: strapi_channel_id.value,
 }));
 const chatInfo = computed(() => ({
-  mm_channel_id: channel_id,
+  mm_channel_id: mm_channel_id,
   post_id: thread.value?.id,
 }));
 
@@ -364,7 +364,7 @@ const fetching = ref(false);
 const getPosts = async () => {
   if(fetching.value) return
   fetching.value = true;
-  const res = await getPostsOfChannel(channel_id, options.value);  
+  const res = await getPostsOfChannel(mm_channel_id, options.value);  
   if (res?.data) {
     fetchCount.value++;
     fetching.value = false
@@ -408,8 +408,10 @@ const initMsgs = async () => {
   }
 }
 
-const _channel_id = computed(() => channel_id || route.params.mm_channel_id);
+const _channel_id = computed(() => mm_channel_id || route.params.mm_channel_id);
 const view = async () => {
+  console.log('_channel_id', _channel_id.value);
+  
   if(_channel_id.value){
     await __viewChannel(_channel_id.value);
   }
@@ -438,7 +440,7 @@ watch(
       if (mm_wsStore?.event?.event === "posted") {
         let message = JSON.parse(mm_wsStore.event.data.post);
 
-        if (message?.channel_id === channel_id) {
+        if (message?.channel_id === mm_channel_id) {
           if(message.message === '') return
           
           if (message.root_id) {

@@ -5,7 +5,7 @@
       v-ripple
       @click="gotoChannel(project_mm_channel)"
       class="radius-xs overflow-hidden q-mb-xs"
-      :class="channel_id === project_mm_channel?.id ? 'border active-sublistitem' : ''"
+      :class="mm_channel_id === project_mm_channel?.id ? 'border active-sublistitem' : ''"
     >
       <q-item-section avatar>
         <q-avatar square :size="`32`" class="radius-xs">
@@ -21,7 +21,7 @@
       <q-item-section v-if="channel_unread(project_mm_channel?.name) > 0" side>
         <q-chip :label="channel_unread(project_mm_channel?.name)" />
       </q-item-section>
-      <div v-if="channel_id === project_mm_channel?.id"
+      <div v-if="mm_channel_id === project_mm_channel?.id"
         class="absolute-left bg-primary"
         style="width: 3px"
       ></div>
@@ -67,7 +67,7 @@ import {teamStore, uiStore, mm_wsStore} from 'src/hooks/global/useStore.js';
 
 const router = useRouter();
 const route = useRoute();
-const channel_id = computed(() => route.params?.channel_id || null);
+const mm_channel_id = computed(() => route.params?.mm_channel_id || null);
 const teamMode = computed(() => teamStore.team?.config?.mode || 'toMany')
 
 const project = computed(() => teamStore?.project);
@@ -146,8 +146,8 @@ const gotoChannel = async (channel) => {
   uiStore.showMainContentList = false;
 };
 const navigation = computed(() => teamStore.navigation);
-const findChannelEnter = async (channel_id) => {
-  const res = await getChannelByID(channel_id);
+const findChannelEnter = async (mm_channel_id) => {
+  const res = await getChannelByID(mm_channel_id);
 
   if (res?.data) {
     await gotoChannel(res.data);
@@ -191,14 +191,14 @@ const showDirectChat = async (member) => {
   }
 };
 watch(
-  [channel_id, navigation, route_name, mm_channel],
+  [mm_channel_id, navigation, route_name, mm_channel],
   async () => {
     const chat_routes = ["team_project_homepage", "team_project_chat_page"];
     if (chat_routes.includes(route_name.value)) {
-      if (channel_id.value && !mm_channel.value) {
-        await findChannelEnter(channel_id.value);
+      if (mm_channel_id.value && !mm_channel.value) {
+        await findChannelEnter(mm_channel_id.value);
       }
-      if (navigation.value && !channel_id.value) {
+      if (navigation.value && !mm_channel_id.value) {
         const _channel = teamStore.project?.mm_channel;
         await gotoChannel(_channel);
       }
