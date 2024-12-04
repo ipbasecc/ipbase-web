@@ -94,7 +94,7 @@
           </template>
         </div>
         <!-- float action btns-->
-        <div v-if="!hide_float_bar && (wiget_show || menu_expend)"
+        <div v-if="!hide_float_bar && (wiget_show || menu_expend) && !dragging"
           class="absolute transition blur-sm mm_message_wiget radius-sm border overflow-hidden"
           style="right: 10%; bottom: 0"
         >
@@ -280,7 +280,7 @@ onMounted(async () => {
   is_system_message = msg.value.type.includes('system_')
   is_strapi_message = !!msg.value.props?.strapi;
   cant_drag = !auth || !is_kanban || is_system_message || is_strapi_message;
-  hide_float_bar = is_system_message || is_strapi_message || MsgOnly.value || dragging.value;
+  hide_float_bar = is_system_message || is_strapi_message || MsgOnly.value;
 })
 useDrag(msg.value, dragRef, {
   onDragStart: async (event) => {
@@ -319,6 +319,7 @@ useDrag(msg.value, dragRef, {
     dragImage.classList.add('border')
     dragImage.classList.add('radius-sm')
     dragImage.classList.add('shadow-24')
+    dragImage.classList.add('transition-xxs') // 添加一个非常快的过渡动画，解决松开鼠标后拖拽图像移动到左上角后再消失的bug
     document.body.appendChild(dragImage)    
 
     // 设置透明占位符为拖拽影像
@@ -333,18 +334,18 @@ useDrag(msg.value, dragRef, {
       })
     }
 
-    // 监听 drag 事件而不是 mousemove
+    // 监听 drag 事件
     document.addEventListener('drag', updateDragImagePosition)
 
     // 移除事件监听和克隆节点
     const cleanup = () => {
-      document.removeEventListener('drag', updateDragImagePosition)
       if (dragImage.parentNode) {
         dragImage.parentNode.removeChild(dragImage)
       }
       if (transparentPlaceholder.parentNode) {
         transparentPlaceholder.parentNode.removeChild(transparentPlaceholder)
       }
+      document.removeEventListener('drag', updateDragImagePosition)
     }
 
     // 在拖拽结束时清理
