@@ -22,7 +22,8 @@
           flat
           dense
           round
-          icon="mdi-message"
+          :color="teamStore.rightDrawer === 'chat_pannel' ? 'positive' : ''"
+          icon="mdi-forum"
           @click="toggleRightpannel('chat_pannel')"
         />
         <q-btn
@@ -31,7 +32,7 @@
           dense
           round
           icon="notifications"
-          :color="show_join_alert ? 'orange' : ''"
+          :color="show_join_alert ? 'orange' : teamStore.rightDrawer === 'join_request' ? 'positive' : ''"
           @click="toggleRightpannel('join_request')"
         />
         <q-btn

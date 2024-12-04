@@ -1,6 +1,7 @@
 <template>
   <div class="q-pa-md fit">
-    <q-list v-if="join_requests.length > 0">
+    <q-list>
+      <template v-if="join_requests.length > 0">
       <q-item v-for="item in join_requests" :key="item.id">
         <q-item-section top avatar>
           <q-avatar>
@@ -33,6 +34,15 @@
               </q-list>
             </q-menu>
           </q-btn>
+        </q-item-section>
+      </q-item>
+      </template>
+      <q-item v-else>
+        <q-item-section side>
+          <q-icon name="info" />
+        </q-item-section>
+        <q-item-section>
+          {{ $t('no_join_request') }}
         </q-item-section>
       </q-item>
     </q-list>

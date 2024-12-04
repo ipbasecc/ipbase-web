@@ -7,8 +7,8 @@
       (val) =>
         /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(
           val
-        ) || '邮箱输入有误，请检查输入！',
-    ]" label="用户名/邮箱" hide-bottom-space :disable="loading" class="border radius-xs overflow-hidden">
+        ) || $t('invalid_email'),
+    ]" :label="$t('email')" hide-bottom-space :disable="loading" class="border radius-xs overflow-hidden">
       <template v-slot:prepend>
         <q-icon name="mdi-email-outline" size="sm" class="q-px-sm" />
       </template>
