@@ -94,7 +94,7 @@
           </template>
         </div>
         <!-- float action btns-->
-        <div v-if="!dragging && (wiget_show || menu_expend) && !MsgOnly && msg.props?.strapi?.event !== 'class_publish'"
+        <div v-if="!hide_float_bar && (wiget_show || menu_expend)"
           class="absolute transition blur-sm mm_message_wiget radius-sm border overflow-hidden"
           style="right: 10%; bottom: 0"
         >
@@ -200,7 +200,7 @@
 </template>
 
 <script setup>
-import {computed, ref, toRefs, nextTick} from "vue";
+import {computed, ref, toRefs, nextTick, onMounted} from "vue";
 import {useFetch_mmMember} from "src/hooks/mattermost/api.js";
 import UserAvatar from "src/pages/team/components/user/UserAvatar.vue";
 import showFile from "src/pages/Chat/components/wigets/showFile.vue";
@@ -260,6 +260,7 @@ const props = defineProps({
     default: false,
   },
 });
+const { msg, prev, container, curThreadId, pannel_mode, MsgOnly } = toRefs(props);
 const emit = defineEmits([
   "togglePowerpannel",
   "enterThread",
@@ -271,9 +272,19 @@ const $q = useQuasar();
 const [dragging, { set: setDragging }] = useBoolean(false)
 const dragRef = ref(null)
 
-useDrag(props.msg, dragRef, {
+let auth, is_kanban, is_system_message, is_strapi_message, cant_drag, hide_float_bar;
+onMounted(async () => {
+  await nextTick();
+  auth = useAuths('create', ['project']);
+  is_kanban = teamStore.navigation === 'kanban';
+  is_system_message = msg.value.type.includes('system_')
+  is_strapi_message = !!msg.value.props?.strapi;
+  cant_drag = !auth || !is_kanban || is_system_message || is_strapi_message;
+  hide_float_bar = is_system_message || is_strapi_message || MsgOnly.value || dragging.value;
+})
+useDrag(msg.value, dragRef, {
   onDragStart: async (event) => {
-    if(!useAuths('create', ['project']) || teamStore.navigation !== 'kanban'){
+    if(cant_drag){
       event.preventDefault() // 阻止拖拽
       return;
     }
@@ -345,7 +356,6 @@ useDrag(props.msg, dragRef, {
 })
 
 const isExternal = computed(() => teamStore.isExternal);
-const { msg, prev, container, curThreadId, pannel_mode } = toRefs(props);
 
 const html = msg.value?.message && marked.parse(msg.value.message);
 const member = ref();
