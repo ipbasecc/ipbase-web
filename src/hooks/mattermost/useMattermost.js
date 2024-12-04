@@ -142,13 +142,14 @@ const findIndex = (_mm_channel_id) => {
 const updateUnreadCount = (_mm_channel_id) => {  
   if(channelIndex.value < 0) return
 
-  const unreadCount = uiStore.unreads.channels[channelIndex.value].msg_count;
-  uiStore.unreads.team.msg_count = uiStore.unreads.team.msg_count - unreadCount
-  if(uiStore.unreads.team.msg_count < 0){
+  const unreadCount = uiStore.unreads?.channels[channelIndex.value]?.msg_count;
+  uiStore.unreads.team.msg_count = uiStore.unreads?.team?.msg_count - unreadCount
+  if(uiStore.unreads?.team?.msg_count < 0){
     uiStore.unreads.team.msg_count = 0;
   }
-
-  uiStore.unreads.channels[channelIndex.value].msg_count = 0;
+  if(uiStore.unreads?.channels[channelIndex.value]){
+    uiStore.unreads.channels[channelIndex.value].msg_count = 0;
+  }
 }
 
 // 执行view事件，保持与Mattermost的连接

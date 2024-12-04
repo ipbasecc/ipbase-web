@@ -1,11 +1,6 @@
 import { getOneProject } from "src/api/strapi/project.js";
 import useProjectStore from "src/stores/project.js";
 
-import {
-  useProjectCardPreference,
-  useProjectCanEnableItems,
-} from "src/hooks/project/useSettingTemplate.js";
-
 const projectStore = useProjectStore();
 
 export async function useGetProject(project_id) {
@@ -18,19 +13,6 @@ export async function useGetProject(project_id) {
       projectStore.project_members = res.data.project_members;
       // 在获取项目后，重置need_refecth_kanban的状态
       projectStore.need_refecth_kanban = false;
-
-      if (!projectStore.project?.preferences) {
-        projectStore.project.preferences.card_settings =
-          useProjectCardPreference();
-        projectStore.project.preferences.enable_settings =
-          useProjectCanEnableItems();
-      } else if (!projectStore.project?.preferences?.card_settings) {
-        projectStore.project.preferences.card_settings =
-          useProjectCardPreference();
-      } else if (!projectStore.project?.preferences?.enable_settings) {
-        projectStore.project.preferences.enable_settings =
-          useProjectCanEnableItems();
-      }
 
       // 如果pinia中的board包含在新请求的项目boards中，更新它
       if (

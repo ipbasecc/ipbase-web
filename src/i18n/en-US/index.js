@@ -541,6 +541,8 @@ export default {
   delete_project: 'delete project',
 
   card_preference_settings: 'card preference settings',
+  project_preference_settings: 'project preference settings',
+  kanban_preference_settings: 'kanban preference settings',
   project_settings: 'project settings',
   please_wait: 'please wait...',
   project_setting_basic: 'bacic',

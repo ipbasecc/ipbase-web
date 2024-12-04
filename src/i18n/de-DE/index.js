@@ -541,6 +541,8 @@ export default {
   delete_project: 'Projekt löschen',
 
   card_preference_settings: 'Karten-Einstellungsoptionen',
+  project_preference_settings: 'Projekt-Einstellungsoptionen',
+  kanban_preference_settings: 'Karten-Einstellungsoptionen',
   project_settings: 'Projekteinstellungen',
   please_wait: 'Bitte warten...',
   project_setting_basic: 'Grundeinstellungen',

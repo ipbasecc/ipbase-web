@@ -109,7 +109,7 @@
           chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
           class="q-py-xs radius-sm column gap-sm no-wrap forbid" :class="teamStore.cardDragging ? 'q-space' : ''"
           @start="dragStart('tasks')" @end="dragEnd" @sort="onSort" ref="dropRef">
-          <template v-for="(element, index) in filteredCards" :key="element.id">
+          <template v-for="element in filteredCards" :key="element.id">
             <CardItem :card="element" :data-card-id="element.id" :isCreator_column="isCreator" :viewType="'card'"
               :uiOptions="uiOptions" :orderAuth="useAuths('order', ['card'])" @buyData="cardChange"
               @cardChange="cardChange" @cardDelete="cardDelete" @mouseenter="dragHandler(false)"

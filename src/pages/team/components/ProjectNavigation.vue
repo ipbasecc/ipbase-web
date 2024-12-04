@@ -41,7 +41,7 @@ const goto = async (i) => {
   await router.push(i.to);
 };
 const enabled = computed(() =>
-  teamStore.project?.preferences?.enable_settings
+  teamStore.project?.preferences.find(i => i.name === 'enable_settings')?.settings
     ?.filter((i) => i.enable)
     ?.map((j) => j.name)
 );
@@ -103,12 +103,12 @@ watchEffect(() => {
       icon: "mdi-cash",
     },
   ];
-  const inSettings = teamStore.project?.preferences?.enable_settings?.map(
+  const inSettings = teamStore.project?.preferences.find(i => i.name === 'enable_settings')?.settings?.map(
     (i) => i.name
   );
-  const unIncludes = tabs.value.filter((i) => !inSettings?.includes(i.name));
 
-  tabs.value = tabs.value.filter((i) => enabled.value?.includes(i.name));
+  tabs.value = enabled.value.map((i) => tabs.value.find((j) => j.name === i));
+  const unIncludes = tabs.value.filter((i) => !inSettings?.includes(i.name));
   if (unIncludes?.length > 0) {
     tabs.value = [...tabs.value, ...unIncludes];
   }

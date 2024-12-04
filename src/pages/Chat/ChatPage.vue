@@ -662,7 +662,7 @@ watch(
   route,
   () => {
     if (route && route.params?.channel_id) {
-      activedChannelId.value = route.params.channel_id;
+      activedChannelId.value = route.params.mm_channel_id;
     }
   },
   { immediate: true, deep: true }

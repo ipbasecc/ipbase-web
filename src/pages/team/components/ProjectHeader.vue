@@ -11,11 +11,19 @@
         <q-btn v-if="teamStore.project?.meeting" flat dense round color="red" icon="radio_button_checked" @click="toggleMeet()" />
         <ProjectNavigation />
         <q-space />
-        <StartMeet v-if="$q.screen.gt.xs" :project="teamStore.project" class="q-pr-sm" />
         <MembersIndicator
           v-if="teamStore?.project?.id && membersForAvatar && $q.screen.gt.xs"
           :members="membersForAvatar"
           @click="toggleRightpannel('member_manager')"
+        />
+        <StartMeet v-if="$q.screen.gt.xs" :project="teamStore.project" />
+        <q-btn
+          v-if="teamStore.project?.id && teamStore.navigation !== 'chat'"
+          flat
+          dense
+          round
+          icon="mdi-message"
+          @click="toggleRightpannel('chat_pannel')"
         />
         <q-btn
           v-if="useAuths('approve_join_request',['project'])"
@@ -27,16 +35,10 @@
           @click="toggleRightpannel('join_request')"
         />
         <q-btn
-          v-if="teamStore.project?.id && teamStore.navigation !== 'chat'"
-          flat
-          dense
-          icon="mdi-message"
-          @click="toggleRightpannel('chat_pannel')"
-        />
-        <q-btn
           v-if="teamStore.project?.id"
           flat
           dense
+          round
           icon="more_vert"
           @click="uiStore.project_settings = true"
         />

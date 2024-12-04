@@ -448,7 +448,7 @@ watch(mm_team, async(newVal, oldVal) => {
 watch( mm_wsStore, async () => {
   await nextTick();
   // 判断消息类型
-  const cur_mmChannel = route.params.channel_id
+  const cur_mmChannel = route.params.mm_channel_id
   if (mm_wsStore?.event?.event === "posted") {
     let message = JSON.parse(mm_wsStore.event.data.post);
     if(message.message === '') return

@@ -540,6 +540,8 @@ export default {
   delete_project: '删除项目',
 
   card_preference_settings: '卡片偏好设置',
+  project_preference_settings: '项目偏好设置',
+  kanban_preference_settings: '看板偏好设置',
   project_settings: '项目设置',
   please_wait: '请稍候...',
   project_setting_basic: '基本信息',

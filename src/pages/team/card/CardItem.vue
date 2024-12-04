@@ -397,7 +397,7 @@
     unpulledCard
   } from "src/hooks/team/useCard.js";
   import { isEqual } from "lodash-es";
-  import { useProjectCardPreference, colorMarks, cardTypes, preferences, shareProps } from "src/pages/team/hooks/useSettingTemplate.js";
+  import { colorMarks, cardTypes, preferences, shareProps } from "src/pages/team/hooks/useSettingTemplate.js";
   import ThreadBtn from "../components/widgets/ThreadBtn.vue";
   import ReName from "../components/widgets/icons/ReName.vue";
   import { teamStore, uiStore, userStore } from "src/hooks/global/useStore.js";
@@ -470,7 +470,7 @@
   }
   const project_card_preference = computed(
     () =>
-      teamStore.project?.preferences?.card_settings || useProjectCardPreference()
+      teamStore.project?.preferences?.find(i => i.name === 'card_settings')?.settings
   );
   const show_inPreference = (val) => {
     return project_card_preference.value.find((item) => item.val === val);

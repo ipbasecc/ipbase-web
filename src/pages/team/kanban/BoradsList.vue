@@ -202,12 +202,13 @@ const $t = i18n.global.t;
 const router = useRouter();
 const route = useRoute();
 
-const multiple_boards = computed(
-  () =>
-    teamStore.project?.preferences?.enable_settings?.find(i => i.name === "multiple_boards")?.enable
-    || teamStore.multipleBoardType.includes(teamStore.navigation)
-    || false
-);
+const multiple_boards = computed(() =>{
+  const kanban_settings = teamStore.project?.preferences?.find(i => i.name === 'kanban_settings')?.settings;
+  const multiple_boards_enable = kanban_settings?.find(i => i.val === "multiple_boards")?.enable;
+  const multiple_boards_by_type = teamStore.multipleBoardType.includes(teamStore.navigation);
+
+  return multiple_boards_enable || multiple_boards_by_type;
+});
 
 onMounted(async() => {
   await nextTick();

@@ -500,7 +500,7 @@ import {
   enterSegment,
   setStatus,
 } from "src/hooks/team/useCard.js";
-import { useProjectCardPreference, colorMarks, preferences } from "src/pages/team/hooks/useSettingTemplate.js";
+import { colorMarks, preferences } from "src/pages/team/hooks/useSettingTemplate.js";
 import ThreadBtn from "../components/widgets/ThreadBtn.vue";
 import ReName from "../components/widgets/icons/ReName.vue";
 import {
@@ -562,7 +562,7 @@ onKeyStroke(['Escape'], (e) => {
 const isExternal = computed(() => teamStore.project?.isExternal || false);
 const project_card_preference = computed(
   () =>
-    teamStore.project?.preferences?.card_settings || useProjectCardPreference()
+    teamStore.project?.preferences?.find(i => i.name === 'card_settings')?.settings
 );
 const show_inPreference = (val) => {
   return project_card_preference.value.find((item) => item.val === val);

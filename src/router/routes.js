@@ -18,7 +18,7 @@ const routes = [
         name: "teams",
         children: [
           {
-            path: "/teams/:channel_id",
+            path: "/teams/:mm_channel_id",
             component: () => import("pages/team/chat/TeamChat.vue"),
             name: "team_channel_homepage",
             props: true,
@@ -42,7 +42,7 @@ const routes = [
                 props: true,
               },
               {
-                path: "/teams/projects/:project_id/chat/:channel_id",
+                path: "/teams/projects/:project_id/chat/:mm_channel_id",
                 component: () => import("pages/team/chat/TeamChat.vue"),
                 name: "team_project_chat_page",
                 props: true,
@@ -313,7 +313,7 @@ const routes = [
         name: "ChatsPage",
         children: [
           {
-            path: "/chats/:channel_id",
+            path: "/chats/:mm_channel_id",
             component: () => import("src/pages/team/chat/ChatContainter.vue"),
             name: "DirectChatPage",
             props: true,

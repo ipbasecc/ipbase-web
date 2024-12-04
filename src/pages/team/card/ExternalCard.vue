@@ -267,7 +267,6 @@ import {
   removeCard,
   setStatus,
 } from "src/hooks/team/useCard.js";
-import { useProjectCardPreference } from "src/pages/team/hooks/useSettingTemplate.js";
 
 const props = defineProps({
   card: {
@@ -295,7 +294,7 @@ const highlight = computed(() => teamStore.card?.id === card.value?.id);
 
 const project_card_preference = computed(
   () =>
-    teamStore.project?.preferences?.card_settings || useProjectCardPreference()
+    teamStore.project?.preferences?.find(i => i.name === 'card_settings')?.settings
 );
 const preferences = {
   status: "status",

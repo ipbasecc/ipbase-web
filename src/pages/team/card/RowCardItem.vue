@@ -427,7 +427,7 @@ import {
   clac_todoData,
 } from "src/hooks/team/useCard.js";
 import { isEqual } from "lodash-es";
-import { useProjectCardPreference, colorMarks, cardTypes, preferences } from "src/pages/team/hooks/useSettingTemplate.js";
+import { colorMarks, cardTypes, preferences } from "src/pages/team/hooks/useSettingTemplate.js";
 import { userStore, teamStore } from "src/hooks/global/useStore.js";
 import FileViewer from "components/VIewComponents/FileViewer.vue";
 import useSocket from "src/pages/team/card/hooks/useSocket.js";
@@ -435,7 +435,7 @@ import useMember from "src/hooks/team/useMember.js";
 
 const project_card_preference = computed(
   () =>
-    teamStore.project?.preferences?.card_settings || useProjectCardPreference()
+    teamStore.project?.preferences?.find(i => i.name === 'card_settings')?.settings
 );
 const show_inPreference = (val) => {
   return project_card_preference.value.find((item) => item.val === val);
