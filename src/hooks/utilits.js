@@ -3,6 +3,9 @@ import StarterKit from "@tiptap/starter-kit";
 import { Editor } from "@tiptap/vue-3";
 import TaskItem from "@tiptap/extension-task-item";
 import TaskList from "@tiptap/extension-task-list";
+import { useQuasar } from 'quasar';
+
+const $q = useQuasar()
 
 export function isJSON(str) {
   if (typeof str == "string") {
@@ -527,3 +530,35 @@ export function mediaType(url) {
     return 'others';
   }
 }
+
+export const clearCache = async () => {
+  try {
+    // 清除 Service Worker
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      for (const registration of registrations) {
+        await registration.unregister();
+      }
+    }
+
+    // 清除缓存
+    if ('caches' in window) {
+      const cacheNames = await caches.keys();
+      await Promise.all(cacheNames.map(name => caches.delete(name)));
+    }
+
+    // 刷新页面
+    window.location.reload(true);
+
+    $q.notify({
+      type: 'positive',
+      message: '缓存已清除'
+    });
+  } catch (error) {
+    console.error('Failed to clear cache:', error);
+    $q.notify({
+      type: 'negative',
+      message: '清除缓存失败'
+    });
+  }
+};

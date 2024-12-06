@@ -40,8 +40,8 @@ export function useErrorHandler($q, options = {}) {
     }
 
     // 处理 API 错误
-    if (err.response?.data?.message) {
-      return err.response.data.message;
+    if (err.response?.data?.error?.message) {
+      return err.response.data.error.message;
     }
 
     // 处理特定的错误码
@@ -62,6 +62,7 @@ export function useErrorHandler($q, options = {}) {
   };
 
   const handleError = (err) => {
+    console.log('handleError', err);
     error.value = err;
     errorMessage.value = getErrorMessage(err);
 

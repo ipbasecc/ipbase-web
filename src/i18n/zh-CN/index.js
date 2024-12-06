@@ -52,6 +52,7 @@ export default {
   server_description: "服务器是指为软件正常运行提供数据存取、用户管理、实时通讯等功能的支持服务端应用。",
   server_deployment_description: "中服务端部署部分",
   current_server: "当前服务器",
+  clear_cache: "清除缓存",
   this_demo: "此演示",
   upload: "上传",
   download: "下载",

@@ -52,6 +52,7 @@ export default {
   server_description: "Ein Server ist eine Unterstützungsserveranwendung, die für den normalen Betrieb von Software Datenzugriff, Benutzerverwaltung und reale Kommunikation bereitstellt.",
   server_deployment_description: "Server-Bereitstellungsleitfaden",
   current_server: "Aktueller Server",
+  clear_cache: "Cache leeren",
   this_demo: "Dieses Demo",
   upload: "Hochladen",
   download: "Herunterladen",

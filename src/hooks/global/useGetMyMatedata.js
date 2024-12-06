@@ -1,4 +1,4 @@
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { findMe, FindUserMatedate } from "src/apollo/api/api.js";
 
 import useUserStore from "src/stores/user.js";
@@ -11,7 +11,7 @@ const userStore = useUserStore();
 const ChannelStore = useChannelStore();
 
 // 检测用户是否登录，并获取登录用户资料
-const jwt = ref(userStore.jwt || localStorage.getItem("jwt") || null);
+const jwt = computed(() => localStorage.getItem("jwt"));
 const me = ref();
 const profile = ref();
 const userId = ref(userStore.userId);

@@ -295,10 +295,10 @@ export default configure((ctx) => {
         productName: "IPBase",
         copyright: "Copyright © 2024 IPBase",
         asar: true,
-        // protocols: {
-        //   name: "ipbase-protocol",
-        //   schemes: ["ipbase", "wss", "ws"]
-        // },
+        protocols: {
+          name: "ipbase-protocol",
+          schemes: ["ipbase", "wss", "ws"]
+        },
         // files: [
         //   'dist/electron/**/*'
         // ],

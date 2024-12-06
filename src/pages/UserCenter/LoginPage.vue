@@ -4,7 +4,7 @@
       <template v-if="!hasError">
         <LoginForm v-if="!store.logged" :loading="isLoading" @submit="handleSubmit" @setServer="setServer" />
 
-        <LoadingStatus v-else-if="start" :strapi-loading="strapi_loading" :mm-loading="mm_loading" />
+        <LoadingStatus v-else-if="start" :strapi-loading="strapi_loading" />
 
         <LoginSuccess v-else-if="userStore.logged" :username="store.me?.username" :count="count"
           @redirect="redirectNow" />
@@ -20,11 +20,11 @@
   import { ref, computed, onMounted, onUnmounted } from 'vue';
   import { useRouter } from 'vue-router';
   import { useQuasar } from 'quasar';
-  import { authService } from 'src/services/auth.service';
   import useUserStore from 'src/stores/user';
   import { uiStore, userStore } from 'src/hooks/global/useStore';
   import { clearLocalDB } from 'src/pages/team/hooks/useUser';
   import { useFetchAvatar } from 'src/pages/Chat/hooks/useFetchAvatar';
+  import { login as strapi_login } from 'src/api/strapi.js';
 
   // 组件导入
   import LoginForm from './components/LoginForm.vue';
@@ -32,6 +32,8 @@
   import LoginSuccess from './components/LoginSuccess.vue';
   import ErrorDisplay from './components/ErrorDisplay.vue';
   import ExtendWarpper from './ExtendWarpper.vue'
+
+  const loginType = ref('wechat')
 
   // 常量定义
   const ERROR_TYPES = {
@@ -56,7 +58,6 @@
   const errorStats = ref(null);
   const start = ref(false);
   const strapi_loading = ref(false);
-  const mm_loading = ref(false);
   const count = ref(null);
   let timer = null;
 
@@ -138,22 +139,20 @@
 
       start.value = true;
       strapi_loading.value = true;
-
-      const { strapiResult, mmResult } = await authService.login({
+      const credentials = {
         identifier: formData.identifier,
         password: formData.password
-      });
-      // console.log(strapiResult, mmResult);
+      }
+      const res = await strapi_login(credentials);
 
-      if (strapiResult?.data) {
+      if (res?.data) {
         strapi_loading.value = false;
         store.logged = true;
         store.needRefetch = true;
-        userStore.me = strapiResult.data.user
-        if (mmResult?.data) {
-          userStore.mm_profile = mmResult.data
-          useFetchAvatar(mmResult.data.id, 'force');
-          mm_loading.value = false;
+        userStore.me = res.data.user
+        if (res?.data?.user?.mm_profile) {
+          userStore.mm_profile = res.data.user.mm_profile
+          useFetchAvatar(res.data.user.mm_profile.id, 'force');
           start.value = false;
           startCountdown();
           loginAttempts.value = 0;
@@ -227,6 +226,76 @@
     // 正确移除事件监听器
     window.removeEventListener('keyup', handleKeyUp);
   });
+
+  const handleWechatLogin = async () => {
+    try {
+      // 生成状态码防止CSRF攻击
+      const state = Math.random().toString(36).substring(7);
+      localStorage.setItem('wechat_state', state);
+      
+      // 构建微信授权URL
+      const authUrl = `https://open.weixin.qq.com/connect/qrconnect?` +
+        `appid=${process.env.WECHAT_APP_ID}&` +
+        `redirect_uri=${encodeURIComponent(process.env.WECHAT_REDIRECT_URI)}&` +
+        `response_type=code&scope=snsapi_login&state=${state}`;
+
+      if (process.env.MODE === 'electron') {
+        // 打开微信登录窗口
+        window.wechatAPI.openAuthWindow(authUrl);
+        
+        // 监听回调
+        window.wechatAPI.onCallback(async ({ code, state: returnedState }) => {
+          try {
+            // 验证状态码
+            if (returnedState !== localStorage.getItem('wechat_state')) {
+              throw new Error('Invalid state');
+            }
+            
+            // 显示加载状态
+            isLoading.value = true;
+            
+            // 处理登录
+            await handleWechatCallback(code);
+          } catch (error) {
+            $q.notify({
+              type: 'negative',
+              message: '微信登录验证失败，请重试'
+            });
+          } finally {
+            isLoading.value = false;
+          }
+        });
+      } else {
+        // Web 环境下直接跳转
+        window.location.href = authUrl;
+      }
+    } catch (error) {
+      console.error('Wechat login error:', error);
+      $q.notify({
+        type: 'negative',
+        message: '微信登录失败，请重试'
+      });
+    }
+  };
+
+  // 处理微信回调的函数保持不变
+  const handleWechatCallback = async (code) => {
+    try {
+      const response = await fetch(
+        `${process.env.BACKEND_URI}api/auth/wechat/callback?code=${code}`
+      );
+      const data = await response.json();
+      
+      if (data.jwt) {
+        await storeUserData({ data });
+        router.push('/');
+      } else {
+        throw new Error('Login failed');
+      }
+    } catch (error) {
+      throw new Error('登录失败，请重试');
+    }
+  };
 </script>
 
 <style scoped>

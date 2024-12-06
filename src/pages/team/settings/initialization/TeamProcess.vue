@@ -5,7 +5,7 @@
                 <span class="font-large text-h1">团队</span>
                 <span class="font-large">您可以在团队中创建讨论频道、协作项目！</span>
 
-                <q-card v-if="!teamStore?.team" bordered class="q-mt-md bg-purple text-white">
+                <q-card v-if="teamStore?.team" bordered class="q-mt-md bg-purple text-white">
                     <q-card-section class="q-px-lg">
                         <div class="text-h6">您已完成了团队初始化</div>
                         <div class="text-x-large">现在可以进行下一步了</div>

@@ -52,6 +52,7 @@ export default {
   server_description: "A server is a support server application that provides data access, user management, and real communication for the normal operation of software.",
   server_deployment_description: "Server deployment guide",
   current_server: "Current server",
+  clear_cache: "Clear cache",
   this_demo: "This demo",
   upload: "Upload",
   download: "Download",

@@ -29,13 +29,13 @@
       ]" :disable="loading" :label="$t('confirm_password')" />
 
       <!-- 提交按钮 -->
-      <q-btn :loading="loading" type="submit" color="primary" class="full-width" :label="$t('register')" />
+      <q-btn :loading="loading" type="submit" color="primary" class="full-width q-mt-xl" :label="$t('register')" />
     </q-form>
-    <q-separator spaced class="op-5 full-width" />
-    <q-btn color="info" icon="mdi-server-network" :label="$t('set_server_address')" unelevated class="full-width"
-      @click="$emit('set-server')" />
+    <!-- <q-separator spaced class="op-5 full-width" /> -->
+    <!-- <q-btn color="info" icon="mdi-server-network" :label="$t('set_server_address')" unelevated class="full-width"
+      @click="$emit('set-server')" /> -->
     <!-- 已有账号提示 -->
-    <div class="text-left">
+    <div class="text-right">
       {{ $t('have_account') }}
       <router-link to="/login" class="text-primary">
         {{ $t('login_now') }}

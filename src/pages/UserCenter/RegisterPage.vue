@@ -3,8 +3,7 @@
     <q-card-section class="q-space" :style="$q.screen.gt.sm ? 'order: 99;' : ''">
       <RegisterCard v-if="step === 0" :loading="loading" :form="form" :rules="formRules" @submit="handleRegister"
         @set-server="setServer" />
-      <LoginStepCard v-else-if="step === 1" :me="me" :form="form" @login-complete="handleLoginComplete" />
-      <CompleteCard v-else-if="step === 2" :count="count" @redirect="redirectNow" />
+      <CompleteCard v-else-if="step === 1" :count="count" :username="me?.username" @redirect="redirectNow" />
     </q-card-section>
   </ExtendWarpper>
 </template>
@@ -22,7 +21,7 @@
 
   // 组件导入
   import RegisterCard from './components/RegisterCard.vue';
-  import LoginStepCard from './components/LoginStepCard.vue';
+  // import LoginStepCard from './components/LoginStepCard.vue';
   import CompleteCard from './RegisterSteps/CompleteCard.vue';
   import ExtendWarpper from './ExtendWarpper.vue'
 
@@ -51,42 +50,38 @@
       loading.value = true;
 
       await clearLocalDB("RegisterPage submitRegister event");
-      const { data } = await register({
+      const { data, error } = await register({
         email: form.email,
         password: form.password,
         username: form.username
       });
 
-      if (data.status_code === 400) {
-        throw new Error(data.message);
+      if (error) {
+        $q.notify({
+          type: 'negative',
+          message: error.message,
+          position: 'top',
+          timeout: 3000,
+        });
       }
       if (data) {
         me.value = data.user;
         userStore.logged = true;
         userStore.needRefetch = true;
         step.value = 1;
+        startCountdown();
       }
 
     } catch (error) {
+      console.log('handleRegister error', error);
       handleError(error);
     } finally {
       loading.value = false;
     }
   };
 
-  // 登录完成处理
-  const handleLoginComplete = () => {
-    if (me.value?.confirmed) {
-      step.value = 2;
-      startCountdown();
-    } else {
-      step.value = 3;
-    }
-  };
-
   // 重定向处理
   const redirectNow = () => {
-    userStore.needRefetch = true;
     router.push("/teams");
   };
 

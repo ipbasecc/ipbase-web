@@ -39,7 +39,7 @@
 
     <q-page-container>
       <q-page class="overflow-hidden">
-        <BgEffects v-if="$q.screen.gt.xs && !uiStore.disableBgEffects" />
+        <!-- <BgEffects v-if="$q.screen.gt.xs && !uiStore.disableBgEffects" /> -->
         <router-view />
       </q-page>
     </q-page-container>
@@ -52,7 +52,7 @@ import {computed, onBeforeMount, ref, onMounted} from "vue";
 import { uiStore } from "src/hooks/global/useStore.js";
 import WindowToggle from "pages/team/components/widgets/icons/WindowToggle.vue";
 import {useQuasar} from "quasar";
-import BgEffects from './BgEffects.vue'
+// import BgEffects from './BgEffects.vue'
 
 const $q = useQuasar();
 const is_development = ref(process.env.DEV);

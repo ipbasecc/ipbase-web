@@ -111,10 +111,10 @@
 
   const initFn = async () => {
     try {
-      if (checkJWTExpiration()) {
-        await toLogin();
-        return;
-      }
+      // if (checkJWTExpiration()) {
+      //   await toLogin();
+      //   return;
+      // }
 
       uiStore.pageLoaded = true;
 

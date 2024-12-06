@@ -15,7 +15,7 @@
       
       <!-- 用户名显示 -->
       <div class="text-subtitle1 q-mt-sm">
-        {{ $t('welcome_to_join') }}, {{ username }}
+        {{ $t('welcome_to_join') }} {{ username }}
       </div>
       
       <!-- 倒计时显示 -->

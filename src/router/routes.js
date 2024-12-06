@@ -566,6 +566,16 @@ const routes = [
     component: () => import("src/pages/JoinPage.vue"),
     props: true,
   },
+  {
+    path: '/api/connect/wechat/callback',
+    name: 'wechat-callback',
+    component: () => import('src/pages/UserCenter/WechatCallback.vue')
+  },
+  {
+    path: '/connect/mattermost/callback',
+    name: 'mattermost-callback',
+    component: () => import('src/pages/UserCenter/MattermostCallback.vue')
+  },
 
   {
     path: "/test",

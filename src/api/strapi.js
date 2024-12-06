@@ -16,6 +16,19 @@ export async function server(_url) {
   }
 }
 
+export const storeUserData = async (res) => {
+  localStorage.setItem("jwt", JSON.stringify(res.data?.jwt));
+  localStorage.setItem("mmUserId", res.data?.user?.mm_profile?.id);
+
+  if(res.data?.mm_token){
+    console.log('has mm_token', res.data?.mm_token);
+    localStorage.setItem("mmtoken", res.data?.mm_token);
+    await localforage.setItem("__mm_token", res.data?.mm_token);
+  }
+  if(res.data?.user?.mm_profile){
+    await localforage.setItem("mm_profile", res.data?.user?.mm_profile);
+  }
+}
 // //登陆
 // {
 //   identifier: 'user@strapi.io',
@@ -25,7 +38,7 @@ export async function login(params) {
   try {
     const res = await api.post(`auth/local`, params);
     if (res?.data) {
-      localStorage.setItem("jwt", JSON.stringify(res.data.jwt));
+      await storeUserData(res);
       return res;
     }
   } catch (error) {
@@ -67,10 +80,25 @@ export async function register(params) {
     const res = await api.post(`auth/local/register`, params);
     if (res) {
       localStorage.setItem("jwt", JSON.stringify(res.data?.jwt));
+      localStorage.setItem("mmUserId", res.data?.user?.mm_profile?.id);
+
+      if(res.data?.mm_token){
+        console.log('has mm_token', res.data?.mm_token);
+        localStorage.setItem("mmtoken", res.data?.mm_token);
+        await localforage.setItem("__mm_token", res.data?.mm_token);
+      }
+      if(res.data?.user?.mm_profile?.token){
+        console.log('has mm_profile.token', res.data?.user?.mm_profile?.token);
+        localStorage.setItem("mmtoken", res.data?.user?.mm_profile?.token);
+        await localforage.setItem("__mm_token", res.data?.user?.mm_profile?.token);
+      }
+      if(res.data?.user?.mm_profile){
+        await localforage.setItem("mm_profile", res.data?.user?.mm_profile);
+      }
       return res;
     }
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 //获取用户
@@ -354,6 +382,17 @@ export async function notiy() {
 
   try {
     const res = await api.post(`order/order_notify`, params);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+
+export async function batchUpdatePasswords() {
+  try {
+    const res = await api.post(`/user/me/batch-update-mm-passwords`);
     if (res?.data) {
       return res;
     }
