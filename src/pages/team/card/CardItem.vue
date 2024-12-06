@@ -412,6 +412,7 @@
   import SalePage from './SalePage.vue'
   import ResourcePage from './ResourcePage.vue'
   import MediaViewer from 'src/components/VIewComponents/MediaViewer.vue'
+  import useSocket from "src/pages/team/card/hooks/useSocket.js";
 
   const $q = useQuasar();
   const route = useRoute();
@@ -761,10 +762,6 @@
     )
   }
 
-  // 组件生命周期钩子
-  onMounted(() => {
-    setupWatchers();
-  });
 
   onBeforeUnmount(() => {
     cleanupFunctions.forEach(cleanup => cleanup());
@@ -792,6 +789,8 @@
     await nextTick();
     setupEventListeners();
     updateCardThread(cardRef);
+    useSocket(cardRef);
+    setupWatchers();
   });
 </script>
 
