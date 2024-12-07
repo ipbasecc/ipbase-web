@@ -13,7 +13,7 @@
             <div v-if="showWebview" class="absolute-full column flex-center">
                 <webview ref="wechatWebview" :src="wechatAuthUrl"
                     style="width: 1px; height: 1px; position: absolute; top: -9999px;" @dom-ready="handleDomReady"
-                    webpreferences="nodeIntegration, contextIsolation" />
+                    webpreferences="nodeIntegration, contextIsolation" allowpopups />
                 <q-card bordered v-if="QRCodeURL" class="radius-sm overflow-hidden">
                     <q-card-section class="q-pa-xl">
                         <q-img :src="QRCodeURL" :ratio="1" width="20rem" height="20rem" spinner-color="primary"
@@ -73,16 +73,32 @@
         try {
             console.log('Webview DOM ready');
 
+            // 添加错误事件监听
+            webview.addEventListener('did-fail-load', (error) => {
+                console.error('Webview failed to load:', error);
+            });
+
             // 等待 webview 加载完成
             webview.addEventListener('did-finish-load', async () => {
                 console.log('Webview finished loading');
 
-                // 执行脚本获取二维码
+                // 修改获取二维码的脚本，增加等待时间和错误处理
                 const result = await webview.executeJavaScript(`
-            document.querySelector('img')?.src;
-          `);
-                QRCodeURL.value = result;
+                    new Promise((resolve) => {
+                        setTimeout(() => {
+                            const img = document.querySelector('img');
+                            console.log('Found image:', img);
+                            resolve(img ? img.src : null);
+                        }, 1000); // 等待 1 秒确保页面完全加载
+                    });
+                `);
+                
                 console.log('QR code result:', result);
+                if (result) {
+                    QRCodeURL.value = result;
+                } else {
+                    console.error('Failed to get QR code image');
+                }
 
                 // 监听导航事件
                 webview.addEventListener('will-navigate', async (event) => {
