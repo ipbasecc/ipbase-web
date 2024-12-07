@@ -25,13 +25,14 @@
                 spinner-color="primary"
                 spinner-size="82px"
                 fit="contain"
-                class="radius-full"
+                class="radius-lg"
               >
                 <div class="absolute-full column flex-center">
                   <DrapUpload
                     :isOSS="true"
                     :allowedFormats="uiStore.allowedFormatsImage"
                     :caption="$t('drop_or_pick_cover')"
+                    tipClass="flex-center"
                     @uploaded="fileUploaded"
                   />
                 </div>

@@ -731,7 +731,7 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
 
   interact: 'Interagieren',
   toManyMode_team: 'Gemeinschaftsdienst',
-  toOneMode_team: 'Ein-zu-Eins-Service',
+  toOneMode_team: 'Privatwirtschaft',
   channels_teamFunc: 'Kanalfunktion',
   projects_teamFunc: 'Projektfunktion',
   disable_teamFunc_labe: 'Deaktivieren',
@@ -742,7 +742,7 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   team_disableChanel_tip: 'Die Kanalfunktion ist nicht verfügbar',
 
   team_id_cant_lose: 'Team-ID-Parameter darf nicht fehlen',
-  initialization_step3_label_1: 'Betriebsmodus: Gemeinschaftsdienst VS Einzelservice',
+  initialization_step3_label_1: 'Betriebsmodus: Gemeinschaftsdienst VS Privatwirtschaft',
   initialization_step3_label_2: 'Diskussionskanal',
   initialization_step3_label_3: 'Projektmanagement',
   initialization_step3_label_4: '"Objektorientierte" Diskussion',

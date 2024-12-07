@@ -22,7 +22,7 @@ export const generateWechatLoginUrl = (isWechatBrowser) => {
         ? 'https://open.weixin.qq.com/connect/oauth2/authorize'
         : 'https://open.weixin.qq.com/connect/qrconnect'
     
-    const scope = isWechatBrowser ? 'snsapi_base' : 'snsapi_login'
+    const scope = isWechatBrowser ? 'snsapi_userinfo' : 'snsapi_login'
     
     // 只对 redirectUri 进行一次编码
     return `${baseUrl}?appid=${appId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`

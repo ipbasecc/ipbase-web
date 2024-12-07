@@ -731,7 +731,7 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
 
   interact: 'Interact',
   toManyMode_team: 'Community Service',
-  toOneMode_team: 'One-to-One Service',
+  toOneMode_team: 'Private Domain Operation',
   channels_teamFunc: 'Channels',
   projects_teamFunc: 'Projects',
   disable_teamFunc_labe: 'Disable Team Function',
@@ -742,7 +742,7 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   team_disableChanel_tip: 'The channel function will be unavailable',
 
   team_id_cant_lose: 'Team ID parameter cannot be missing',
-  initialization_step3_label_1: 'Operation mode: Community Service VS One-on-one service',
+  initialization_step3_label_1: 'Operation mode: Community Service VS Private Domain Operation',
   initialization_step3_label_2: 'Discussion Channel',
   initialization_step3_label_3: 'Project Management',
   initialization_step3_label_4: '"Object-oriented" Discussion',

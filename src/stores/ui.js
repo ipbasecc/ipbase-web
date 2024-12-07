@@ -187,6 +187,7 @@ export default defineStore("ui", {
     updatedCard_for_userTeamAffairs: null,
     slashMenuOpen: false,
     reINIT: false,
+    logging: false,
   }),
   actions: {
     $syncMmUnreads() {

@@ -5,7 +5,7 @@
     } drop-zone_${dom_id}`"
     @click="openFilePicker"
   >
-    <div class="column gap-sm items-center">
+    <div class="column gap-sm items-center" :class="tipClass">
       <span class="font-medium q-mb-sm">{{ caption || $t('click_or_drag_to_upload') }}</span>
       <span class="op-5 font-small">{{$t('support_type')}}: {{ getMimeExtensions(allowedFormats) }}</span>
       <span class="op-5 font-small">{{$t('max_file_size')}}: {{ maxFileSize / (1024 * 1024) }}MB</span>
@@ -67,6 +67,10 @@ const props = defineProps({
     default: () => {
       return ['image/*']
     },
+  },
+  tipClass: {
+    type: String,
+    default: '',
   }
 });
 const emit = defineEmits(["uploaded"]);

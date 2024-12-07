@@ -85,7 +85,16 @@ const all_users = computed(() => project.value?.project_members?.map((i) => i.by
 const project_users = computed(() => {
   let users;
   if (all_users.value) {
-    users = uniqueById(all_users.value);
+    const creator_role = teamStore.project?.member_roles?.find(i => i.subject === 'creator');
+    const creator_members = teamStore.project?.project_members?.filter(i => i.member_roles.map(j => j.id).includes(creator_role?.id));
+    const creator_users = creator_members?.map(i => i.by_user);
+    const isCreator = creator_users?.map(i => i.id)?.includes(teamStore.init?.id);
+    console.log('isCreator', isCreator);
+    if(teamMode.value === 'toMany' || isCreator){
+      users = uniqueById(all_users.value);
+    } else {
+      users = creator_users;
+    }
   }
   return users;
 });
@@ -190,9 +199,13 @@ const showDirectChat = async (member) => {
     await gotoChannel(created_channel);
   }
 };
-watch(
-  [mm_channel_id, navigation, route_name, mm_channel],
-  async () => {
+
+const autoEnterChannel = async (mm_channel_id, navigation, route_name, mm_channel) => {
+    // 如果当前频道是项目频道，并且团队模式不是多人模式，则不进行频道自动切换
+    const isProjectMMChannel = mm_channel_id.value === teamStore.project?.mm_channel?.id;
+    const is_toMany = teamMode.value === 'toMany';
+    if(isProjectMMChannel && !is_toMany) return;
+
     const chat_routes = ["team_project_homepage", "team_project_chat_page"];
     if (chat_routes.includes(route_name.value)) {
       if (mm_channel_id.value && !mm_channel.value) {
@@ -203,6 +216,11 @@ watch(
         await gotoChannel(_channel);
       }
     }
+}
+watch(
+  [mm_channel_id, navigation, route_name, mm_channel],
+  async () => {
+    await autoEnterChannel(mm_channel_id, navigation, route_name, mm_channel);
   },
   { immediate: true, deep: false }
 );

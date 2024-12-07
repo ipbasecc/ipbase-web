@@ -730,7 +730,7 @@ export default {
 
   interact: '沟通',
   toManyMode_team: '社群服务',
-  toOneMode_team: '一对一服务',
+  toOneMode_team: '私域经营',
   channels_teamFunc: '频道功能',
   projects_teamFunc: '项目功能',
   disable_teamFunc_labe: '禁用功能',
@@ -741,7 +741,7 @@ export default {
   team_disableChanel_tip: '频道功能将不可用',
 
   team_id_cant_lose: '团队ID参数不能缺少',
-  initialization_step3_label_1: '运营模式：社群服务 VS 一对一服务',
+  initialization_step3_label_1: '运营模式：社群服务 VS 私域经营',
   initialization_step3_label_2: '讨论频道',
   initialization_step3_label_3: '项目管理',
   initialization_step3_label_4: '“对象型”讨论',

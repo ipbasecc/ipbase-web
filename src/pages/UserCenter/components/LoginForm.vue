@@ -34,7 +34,7 @@
 <script setup>
   import { reactive } from 'vue';
   import { clearCache } from 'src/hooks/utilits';
-
+  import { uiStore } from 'src/hooks/global/useStore';
 
   const props = defineProps({
     loading: {
@@ -52,6 +52,7 @@
 
 
   const handleSubmit = () => {
+    uiStore.logging = true;
     emit('submit', { ...form });
   };  
   const setServer = () => {

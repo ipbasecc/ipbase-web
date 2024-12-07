@@ -9,10 +9,10 @@ export default function useMember(){
         return userMemberRoles?.includes(creatorRolesId)
     };
     const _isCurTeamCreator = () => {
-        console.log(teamStore.team);
+        // console.log(teamStore.team);
         const adminRole = teamStore.team.member_roles.find(i => i.subject === 'admin');
         const userMemberRoles = teamStore.team.members.filter(i => i.by_user?.id === teamStore.init?.id).map(j => j.member_roles).flat(2);
-        console.log(adminRole, userMemberRoles);
+        // console.log(adminRole, userMemberRoles);
         
         return userMemberRoles?.map(i => i.id).includes(adminRole?.id)
     }

@@ -54,7 +54,7 @@
         @mouseleave="wiget_show = false"
       >
         <span v-if="show_avatar" class="op-5">
-          <template v-if="!isExternal"> {{ member?.username }}</template>
+          <template v-if="!isExternal"> {{ user_display_name }}</template>
           <template v-if="!MsgOnly"> · 
             <TimeAgo :time="msg.create_at" />
           </template>
@@ -360,6 +360,9 @@ const isExternal = computed(() => teamStore.isExternal);
 
 const html = msg.value?.message && marked.parse(msg.value.message);
 const member = ref();
+const user_display_name = computed(() => {
+  return member.value?.props?.strapi_username || member.value?.nickname || member.value?.username;
+});
 const strapi_member = computed(() => {  
   return teamStore.team?.members?.find((i) => i.by_user?.mm_profile?.id === msg.value?.user_id);
 })

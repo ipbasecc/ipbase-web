@@ -45,8 +45,9 @@
 </template>
 
 <script setup>
-  import { ref, computed } from 'vue';
+  import { ref, computed, onMounted, onUnmounted } from 'vue';
   import PasswordInput from './PasswordInput.vue';
+  import { uiStore } from 'src/hooks/global/useStore';
 
   const props = defineProps({
     loading: {
@@ -73,6 +74,7 @@
   });
 
   const handleSubmit = async () => {
+    uiStore.logging = true;
     const isValid = await formRef.value.validate();
     if (isValid) {
       emit('submit');
