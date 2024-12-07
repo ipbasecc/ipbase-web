@@ -10,7 +10,7 @@
       :style="`width: 16px;z-index: ${index * 100 - index}`"
     >
       <UserAvatar
-        v-if="item.by_user.mm_profile"
+        v-if="item.by_user?.mm_profile"
         :user_id="item.by_user.mm_profile.id"
         :size="24"
         :disable_card="true"

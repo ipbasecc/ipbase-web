@@ -336,15 +336,13 @@ export default function useWatcher() {
         }
       }
       if(val.value.event === 'project:join'){
-        if(teamStore.project?.id === project_id){
-          teamStore.project.project_members = teamStore.project?.project_members || [];
-          const index = teamStore.team.projects.findIndex(i => i.id === Number(project_id));
-          if(teamStore.project.id === Number(project_id)){
-            teamStore.project.project_members.push(data.member);
-            teamStore.team.projects[index].project_members = teamStore.project.project_members;
-          } else {
-            teamStore.team.projects[index].project_members.push(data.member);
-          }
+        teamStore.project.project_members = teamStore.project?.project_members || [];
+        const index = teamStore.team.projects.findIndex(i => i.id === Number(project_id));
+        if(teamStore.project.id === Number(project_id)){
+          teamStore.project.project_members.push(data.member);
+          teamStore.team.projects[index].project_members = teamStore.project.project_members;
+        } else {
+          teamStore.team.projects[index].project_members.push(data.member);
         }
 
         const _teamMemberIndex = teamStore.team?.members?.findIndex(i => i.id === Number(data.member?.id));
@@ -356,11 +354,11 @@ export default function useWatcher() {
       }
       if(val.value.event === 'project:leave'){
         const curUserMember = teamStore.team.members.find(i => i.by_user.id === teamStore.init?.id);
-        console.log('curUserMember', curUserMember);
+        // console.log('curUserMember', curUserMember);
         const index = teamStore.team.projects.findIndex(i => i.id === Number(project_id));
         teamStore.team.projects[index].project_members = teamStore.team.projects[index].project_members.filter(i => i.id !== Number(data.removeMember_id));
         const membersIDs_by_leave = teamStore.team.projects[index].project_members.map(i => i.id);
-        console.log(membersIDs_by_leave, curUserMember.id, typeof membersIDs_by_leave, typeof curUserMember.id);
+        // console.log(membersIDs_by_leave, curUserMember.id, typeof membersIDs_by_leave, typeof curUserMember.id);
         if(!membersIDs_by_leave.includes(curUserMember.id)){
           let _i = teamStore.team.projects[index]
           teamStore.team.projects[index] = {
@@ -369,7 +367,8 @@ export default function useWatcher() {
             overviews: _i.overviews,
             auth: {
               read: false
-            }
+            },
+            allow_join_requests: _i.allow_join_requests
           }
           if(teamStore.project.id === Number(project_id)){
             teamStore.$reset_project();

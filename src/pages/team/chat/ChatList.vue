@@ -81,7 +81,7 @@ const overview = computed(
 const projectCover = computed(() => overview.value?.media?.url);
 const mm_channel = computed(() => teamStore?.mm_channel);
 const project_mm_channel = computed(() => teamStore?.project?.mm_channel);
-const all_users = computed(() => project.value?.project_members?.map((i) => i.by_user));
+const all_users = computed(() => project.value?.project_members?.filter((i) => i.by_user)?.map((i) => i.by_user) || []);
 const project_users = computed(() => {
   let users;
   if (all_users.value) {
@@ -89,7 +89,7 @@ const project_users = computed(() => {
     const creator_members = teamStore.project?.project_members?.filter(i => i.member_roles.map(j => j.id).includes(creator_role?.id));
     const creator_users = creator_members?.map(i => i.by_user);
     const isCreator = creator_users?.map(i => i.id)?.includes(teamStore.init?.id);
-    console.log('isCreator', isCreator);
+    // console.log('isCreator', isCreator);
     if(teamMode.value === 'toMany' || isCreator){
       users = uniqueById(all_users.value);
     } else {
