@@ -12,6 +12,7 @@
         <VueDraggable v-model="teamStore.board.groups"
           :disabled="!$q.screen.gt.xs" :animation="300" :delay="1" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
           group="groups" handle=".dragBar" filter=".undrag"
+          :preventOnFilter="false"
           chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
           class="radius-sm column gap-sm no-wrap"
           @sort="groupOrderFn()"
@@ -95,7 +96,8 @@
               </div>
               <VueDraggable v-model="element.kanbans"
                 :animation="300" :delay="1" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
-                filter=".undrag" group="kanbans"
+                filter=".undrag" group="kanbans" handle=".dragBar"
+                :preventOnFilter="false"
                 chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
                 class="q-py-xs radius-sm column no-wrap gap-xs q-pa-xs"
                 :style="kanbanDraging ? 'min-height: 1rem;' : ''"
@@ -104,17 +106,17 @@
                 @end="kanbanDraging = false"
               >
                 <template v-for="kanban in element.kanbans" :key="kanban.id">
-                  <KanbanListitem :kanban="kanban" @enterKanban="enterKanban" @removeKanban="removeKanban" />
+                  <KanbanListitem :kanban="kanban" class="dragBar" @enterKanban="enterKanban" @removeKanban="removeKanban" />
                 </template>
                 <template v-if="useAuths('create', ['kanban']) && addKanban_targetId === element.id">
-                  <div class="row no-wrap items-center border radius-xs q-pa-xs undrag">
+                  <div class="row no-wrap items-center border radius-xs q-pa-xs undrag" draggable="false">
                     <q-input v-model="createKanba_title"
                       square filled dense autofocus type="text"
                       :placeholder="$t('kanban_name')"
                       @keyup.esc="addKanban_targetId = null"
                       @keyup.enter="kanbanCreateFn(element.id, teamStore?.navigation)"
                       @keyup.ctrl.enter="kanbanCreateFn(element.id, teamStore?.navigation)"
-                      class="col border-bottom"
+                      class="col border-bottom no-drag"
                     >
                       <template v-slot:append>
                         <q-btn flat round dense size="sm" icon="check"

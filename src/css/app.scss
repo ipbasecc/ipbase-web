@@ -651,6 +651,13 @@ input:-internal-autofill-selected {
 .hover-highlight-lg {
   opacity: 0.3;
 }
+.no-drag {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+}
 .transition {
   -o-transition: 0.25s all ease-in-out;
   -webkit-transition: 0.25s all ease-in-out;
