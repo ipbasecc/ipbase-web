@@ -1,14 +1,16 @@
 <template>
   <div
     class="full-width no-wrap flex-center"
-    :class="`${$q.screen.gt.xs ? 'column' : 'row'} ${
-      $q.screen.gt.md ? 'gap-md' : 'gap-md'
-    }`"
+    :class="`
+      ${$q.screen.gt.xs ? 'column' : 'row'}
+      ${$q.screen.gt.md ? 'gap-md' : 'gap-md'}
+    `"
     :style="`${$q.screen.gt.xs ? '' : 'height: 72px'}`"
   >
     <div
       v-if="$q.screen.gt.xs"
       class="row no-wrap items-center unselected q-pb-sm relative-position"
+      :class="$q.platform.is.electron ? 'q-electron-drag' : ''"
     >
       <q-img src="../../../public/logo.png"
         :ratio="1"

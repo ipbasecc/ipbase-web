@@ -163,7 +163,7 @@ export async function __viewChannel(channel_id) {
   if (autoViewTimer) clearTimeout(autoViewTimer);
   
   if (!channel_id) return;
-  const view = async () => {    
+  const view = async () => {
     viewed.value = true;
     mm_channel_id.value = channel_id;
 
@@ -179,7 +179,7 @@ export async function __viewChannel(channel_id) {
       }, 5000);
 
       findIndex(channel_id);
-      console.log('findIndex', channelIndex.value);
+      // console.log('findIndex', channelIndex.value);
       
       if (channelIndex.value < 0) return;
       updateUnreadCount(channel_id);

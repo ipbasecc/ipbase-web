@@ -102,7 +102,7 @@ const props = defineProps({
 const view_modelRef = ref("kanban");
 const { project_id, kanban_id, hiddenToolbar } = toRefs(props);
 const onResize = (size) => {  
-  console.log('onResize card', size);
+  // console.log('onResize card', size);
   uiStore.mainWindowSize = size;
 };
 const project_mainWindowSize = uiStore.mainWindowSize;

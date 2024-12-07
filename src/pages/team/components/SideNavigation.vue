@@ -466,8 +466,6 @@ const buy_project = computed(() => teamStore.buy_project);
 const request_project = ref(null);
 const join_request = ref(false);
 const enterProject = async (project) => {
-  console.log('project', project);
-  
   if (project?.auth && !project?.auth?.read) {
     if(project.roles?.length === 0){
       if(project.type === 'service'){

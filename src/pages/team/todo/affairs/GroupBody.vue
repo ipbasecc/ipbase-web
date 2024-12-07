@@ -20,9 +20,11 @@
         :dense
         class=""
         @todoDeleted="todoDeleted"
+        @hoveredBtn="hoveredBtn = $event"
       />
       <div v-if="!openCreatetodo && !uiStore.dragging"
       class="absolute-bottom row q-px-md undrag card-todo-create transition bg-primary overflow-show"
+      :class="hoveredBtn ? 'hovered-btn' : ''"
       style="height: 1px;">
           <q-space />
           <q-btn color="primary" icon="mdi-plus" round size="0.4rem" style="transform: translateY(-50%);"
@@ -67,6 +69,8 @@ const { card, displayType, dense, uiOptions, _for } = defineProps({
 
 const $q = useQuasar();
 const modelValue = defineModel();
+
+const hoveredBtn = ref(false);
 
 const hidecompletedTodo = (i) => {
   if(teamStore?.card){
@@ -143,5 +147,8 @@ const todoDeleted = (id) => {
 }
 .card-todo:hover .card-todo-create {
   opacity: 1;
+}
+.card-todo:hover .card-todo-create.hovered-btn {
+  opacity: 0;
 }
 </style>

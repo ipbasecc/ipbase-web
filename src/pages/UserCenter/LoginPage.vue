@@ -1,6 +1,6 @@
 <template>
   <ExtendWarpper>
-    <q-card-section class="q-space" :style="$q.screen.gt.sm ? 'order: 99;' : ''">
+    <q-card-section class="q-space">
       <template v-if="!hasError">
         <LoginForm v-if="!store.logged" :loading="isLoading" @submit="handleSubmit" @setServer="setServer" />
 

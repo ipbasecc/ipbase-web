@@ -62,6 +62,11 @@ export default defineStore("ui", {
         enable: false
       },
     ],
+    localeOptions: [
+      { val: "zh-CN", label: "中文", flag_key: 'cn' },
+      { val: "en-US", label: "English", flag_key: 'gb' },
+      { val: "de-DE", label: "Deutsch", flag_key: 'de' },
+    ],
     colorMarks: [
       "primary",
       "secondary",

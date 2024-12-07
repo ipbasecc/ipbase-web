@@ -211,7 +211,7 @@
                           </span>
                         </q-tooltip>
                       </q-btn>
-                      <template v-if="cardRef.creator?.id === teamStore.init?.id">
+                      <template v-if="isSale && cardRef.creator?.id === teamStore.init?.id">
                         <q-space />
                         <q-btn flat dense size="sm" stack class="op-5" padding="sm" v-close-popup @click="editCard()">
                           <ReName />
@@ -762,15 +762,9 @@
     )
   }
 
-
-  onBeforeUnmount(() => {
-    cleanupFunctions.forEach(cleanup => cleanup());
-  });
-
   // 优化事件监听器
+  const cleanupFns = [];
   const setupEventListeners = () => {
-    const cleanupFns = [];
-
     if (cardDomRef.value) {
       const resizeObserver = new ResizeObserver((entries) => {
         cardSize.value = entries[0].contentRect;
@@ -779,11 +773,11 @@
       resizeObserver.observe(cardDomRef.value);
       cleanupFns.push(() => resizeObserver.disconnect());
     }
-
-    onBeforeUnmount(() => {
-      cleanupFns.forEach(fn => fn());
-    });
   };
+  onBeforeUnmount(() => {
+    cleanupFunctions.forEach(cleanup => cleanup());
+      cleanupFns.forEach(fn => fn());
+  });
 
   onMounted(async () => {
     await nextTick();

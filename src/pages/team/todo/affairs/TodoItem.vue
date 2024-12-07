@@ -7,7 +7,9 @@
         ${isFocused ? 'border-info border-solid border-xs' : ''}
     `"
   >
-    <q-checkbox v-model="todo.status" dense class="q-mt-xs" @update:model-value="updateTodoFn()" />
+    <q-checkbox v-model="todo.status" dense class="q-mt-xs" @update:model-value="updateTodoFn()"
+      @mouseover="emit('hoveredBtn', true)" @mouseleave="emit('hoveredBtn', false)"
+    />
     <div class="column no-wrap gap-xs q-space">
         <InputDiv
             v-model="todo.content"
@@ -54,7 +56,9 @@
             </div>
         </template>
     </div>
-    <div class="absolute-right q-pa-xs undrag todo-menu-btn transition">
+    <div class="absolute-right q-pa-xs undrag todo-menu-btn transition"
+      @mouseover="emit('hoveredBtn', true)" @mouseleave="emit('hoveredBtn', false)"
+    >
         <q-btn flat dense size="sm" round icon="mdi-dots-vertical" >
             <q-menu class="radius-sm shadow-24">
                 <TodoMenu
@@ -132,7 +136,7 @@ const props = defineProps({
         type: Boolean
     }
 });
-const emit = defineEmits(['todoDeleted']);
+const emit = defineEmits(['todoDeleted', 'hoveredBtn']);
 const { group, todo, card } = toRefs(props);
 const _todo = toRaw(todo.value);
 

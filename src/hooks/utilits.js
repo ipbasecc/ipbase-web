@@ -3,9 +3,8 @@ import StarterKit from "@tiptap/starter-kit";
 import { Editor } from "@tiptap/vue-3";
 import TaskItem from "@tiptap/extension-task-item";
 import TaskList from "@tiptap/extension-task-list";
-import { useQuasar } from 'quasar';
+import { Notify } from 'quasar';
 
-const $q = useQuasar()
 
 export function isJSON(str) {
   if (typeof str == "string") {
@@ -550,13 +549,13 @@ export const clearCache = async () => {
     // 刷新页面
     window.location.reload(true);
 
-    $q.notify({
+    Notify.create({
       type: 'positive',
       message: '缓存已清除'
     });
   } catch (error) {
     console.error('Failed to clear cache:', error);
-    $q.notify({
+    Notify.create({
       type: 'negative',
       message: '清除缓存失败'
     });

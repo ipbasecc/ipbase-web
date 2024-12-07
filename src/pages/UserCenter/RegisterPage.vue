@@ -1,6 +1,6 @@
 <template>
   <ExtendWarpper>
-    <q-card-section class="q-space" :style="$q.screen.gt.sm ? 'order: 99;' : ''">
+    <q-card-section class="q-space">
       <RegisterCard v-if="step === 0" :loading="loading" :form="form" :rules="formRules" @submit="handleRegister"
         @set-server="setServer" />
       <CompleteCard v-else-if="step === 1" :count="count" :username="me?.username" @redirect="redirectNow" />

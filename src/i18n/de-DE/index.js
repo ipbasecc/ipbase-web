@@ -38,6 +38,7 @@ export default {
   login_success: "Anmeldung erfolgreich!",
   register_success: "Registrierung erfolgreich!",
   welcome_to_join: "Willkommen bei der Teilnahme,",
+  switch_language: "Sprache wechseln",
   auto_redirect: "Wird in",
   seconds: "Sekunden umgeleitet",
   redirect_now: "Umleitung jetzt",

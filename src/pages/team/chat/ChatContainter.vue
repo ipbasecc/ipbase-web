@@ -409,9 +409,7 @@ const initMsgs = async () => {
 }
 
 const _channel_id = computed(() => mm_channel_id || route.params.mm_channel_id);
-const view = async () => {
-  console.log('_channel_id', _channel_id.value);
-  
+const view = async () => {  
   if(_channel_id.value){
     await __viewChannel(_channel_id.value);
   }

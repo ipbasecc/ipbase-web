@@ -38,6 +38,7 @@ export default {
   login_success: "登录成功！",
   register_success: "注册成功！",
   welcome_to_join: "欢迎加入，",
+  switch_language: "切换语言",
   auto_redirect: "将在",
   seconds: "秒后自动跳转",
   redirect_now: "立即跳转",
