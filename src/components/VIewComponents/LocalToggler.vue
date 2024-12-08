@@ -35,11 +35,11 @@
 import { onBeforeMount } from 'vue';
 import { uiStore } from 'src/hooks/global/useStore';
 import { useI18n } from "vue-i18n";
-const { locale } = useI18n({ useScope: "global" });
 import localforage from 'localforage';
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 
 const { round = true } = defineProps(['round'])
+const { locale } = useI18n({ useScope: "global" });
 
 const setLocale = async (val) => {
   locale.value = val;

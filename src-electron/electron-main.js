@@ -134,7 +134,7 @@ function createWindow() {
   });
   enable(mainWindow.webContents);
   if (process.env.DEV) {
-    mainWindow.loadURL(process.env.APP_URL);
+    mainWindow.loadURL(process.env.VITE_APP_URI);
   } else {
     mainWindow.loadFile("index.html");
   }
