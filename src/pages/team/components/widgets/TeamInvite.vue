@@ -111,7 +111,7 @@ const { byInfo } = toRefs(props);
 
 const $q = useQuasar();
 
-const APP_URI = process.env.APP_URI;
+const APP_URI = import.meta.env.VITE_APP_URI;
 const uptime = ref();
 const uptimes = [
   { val: 1, label: "one_day" },

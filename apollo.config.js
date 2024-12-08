@@ -5,7 +5,7 @@ module.exports = {
   client: {
     service: {
       name: "strapi-http-service",
-      url: process.env.GRAPHQL_URI,
+      url: import.meta.env.VITE_GRAPHQL_URI,
     },
     // Files processed by the extension
     includes: ["src/**/*.vue", "src/**/*.js", "src/**/*.ts"],

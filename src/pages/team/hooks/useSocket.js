@@ -23,7 +23,7 @@ import user from "./useSocket/user.js";
 
 export function useSocket() {
   const jwt = JSON.parse(localStorage.getItem("jwt"));
-  const SERVER_URL = process.env.BACKEND_URI || "https://api.yihu.team";  
+  const SERVER_URL = import.meta.env.VITE_BACKEND_URI || "https://api.yihu.team";  
   const JWT_TOKEN = jwt;
 
   let socket = null;

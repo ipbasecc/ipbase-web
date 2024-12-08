@@ -12,7 +12,7 @@ export default function useProject(_Object) {
         thumbnail = _Object.overviews[0].media?.url
     }
     
-    thumbnail = thumbnail + process.env.THUMBNAIL_RESIZE    
+    thumbnail = thumbnail + import.meta.env.VITE_THUMBNAIL_RESIZE    
     return {
         overview,
         thumbnail

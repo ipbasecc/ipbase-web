@@ -1,9 +1,9 @@
 export const generateWechatLoginUrl = (isWechatBrowser) => {
     
     // 使用已配置的回调地址，electron 环境下使用本地地址
-    const redirectUri = process.env.MODE === 'electron'
-        ? `${process.env.APP_URI}/api/connect/wechat/callback`  // 使用线上地址
-        : `${process.env.APP_URI}/api/connect/wechat/callback`
+    const redirectUri = import.meta.env.MODE === 'electron'
+        ? `${import.meta.env.VITE_APP_URI}/api/connect/wechat/callback`  // 使用线上地址
+        : `${import.meta.env.VITE_APP_URI}/api/connect/wechat/callback`
 
     // 确保 stateData 是一个有效的对象
     const stateData = {
@@ -15,7 +15,7 @@ export const generateWechatLoginUrl = (isWechatBrowser) => {
     // 这样可以避免特殊字符的问题
     const state = btoa(JSON.stringify(stateData));
     
-    const appId = isWechatBrowser ? process.env.WECHAT_SERVICE_APP_ID : process.env.WECHAT_APP_ID
+    const appId = isWechatBrowser ? import.meta.env.VITE_WECHAT_SERVICE_APP_ID : import.meta.env.VITE_WECHAT_APP_ID
     
     // 根据环境选择不同的URL和参数
     const baseUrl = isWechatBrowser 

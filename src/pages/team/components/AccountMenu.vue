@@ -331,7 +331,7 @@ const logout = async () => {
 // 注销动作结束
 
 const mm_user = computed(() => mmUser.user);
-const is_development = ref(process.env.DEV);
+const is_development = ref(import.meta.env.DEV);
 
 const statuses = ref([
   {

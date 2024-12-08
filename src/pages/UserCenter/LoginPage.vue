@@ -235,11 +235,11 @@
       
       // 构建微信授权URL
       const authUrl = `https://open.weixin.qq.com/connect/qrconnect?` +
-        `appid=${process.env.WECHAT_APP_ID}&` +
-        `redirect_uri=${encodeURIComponent(process.env.WECHAT_REDIRECT_URI)}&` +
+        `appid=${import.meta.env.VITE_WECHAT_APP_ID}&` +
+        `redirect_uri=${encodeURIComponent(import.meta.env.VITE_WECHAT_REDIRECT_URI)}&` +
         `response_type=code&scope=snsapi_login&state=${state}`;
 
-      if (process.env.MODE === 'electron') {
+      if (import.meta.env.MODE === 'electron') {
         // 打开微信登录窗口
         window.wechatAPI.openAuthWindow(authUrl);
         
@@ -282,7 +282,7 @@
   const handleWechatCallback = async (code) => {
     try {
       const response = await fetch(
-        `${process.env.BACKEND_URI}api/auth/wechat/callback?code=${code}`
+        `${import.meta.env.BACKEND_URI}api/auth/wechat/callback?code=${code}`
       );
       const data = await response.json();
       

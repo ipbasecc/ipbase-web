@@ -5,67 +5,67 @@ export /* async */ function getClientOptions(/* {app, router, ...} */ options) {
     {
       link: createHttpLink({
         uri:
-          process.env.GRAPHQL_URI ||
+          import.meta.env.VITE_GRAPHQL_URI ||
           // Change to your graphql endpoint.
           'https://api.home.yihu.team/graphql',
       }),
       cache: new InMemoryCache(),
     },
     // Specific Quasar mode options.
-    process.env.MODE === 'spa'
+    import.meta.env.MODE === 'spa'
       ? {
           //
         }
       : {},
-    process.env.MODE === 'ssr'
+    import.meta.env.MODE === 'ssr'
       ? {
           //
         }
       : {},
-    process.env.MODE === 'pwa'
+    import.meta.env.MODE === 'pwa'
       ? {
           //
         }
       : {},
-    process.env.MODE === 'bex'
+    import.meta.env.MODE === 'bex'
       ? {
           //
         }
       : {},
-    process.env.MODE === 'cordova'
+    import.meta.env.MODE === 'cordova'
       ? {
           //
         }
       : {},
-    process.env.MODE === 'capacitor'
+    import.meta.env.MODE === 'capacitor'
       ? {
           //
         }
       : {},
-    process.env.MODE === 'electron'
+    import.meta.env.MODE === 'electron'
       ? {
           //
         }
       : {},
     // dev/prod options.
-    process.env.DEV
+    import.meta.env.DEV
       ? {
           //
         }
       : {},
-    process.env.PROD
+    import.meta.env.PROD
       ? {
           //
         }
       : {},
     // For ssr mode, when on server.
-    process.env.MODE === 'ssr' && process.env.SERVER
+    import.meta.env.MODE === 'ssr' && import.meta.env.SERVER
       ? {
           ssrMode: true,
         }
       : {},
     // For ssr mode, when on client.
-    process.env.MODE === 'ssr' && process.env.CLIENT
+    import.meta.env.MODE === 'ssr' && import.meta.env.CLIENT
       ? {
           ssrForceFetchDelay: 100,
         }

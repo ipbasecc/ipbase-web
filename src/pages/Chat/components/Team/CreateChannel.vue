@@ -16,7 +16,7 @@
                         :rules="[value => /^[0-9a-zA-Z]{6,}$/.test(value) || '仅支持数字、英文字符，最少6位']"
                     >
                         <template v-slot:before>
-                            {{`${process.env.APP_URI}/${teamRef.name}/${parmars.name}`}}
+                            {{`${import.meta.env.VITE_APP_URI}/${teamRef.name}/${parmars.name}`}}
                         </template>
                     </q-input>
                     <div class="row no-wrap gap-lg full-width q-pa-md">

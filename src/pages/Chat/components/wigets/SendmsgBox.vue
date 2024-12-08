@@ -157,7 +157,7 @@ const removeAttachment = (file) => {
   file_ids.value = file_ids.value.filter((i) => i.id !== file.id);
 };
 
-const mmapi = process.env.MM_API;
+const mmapi = import.meta.env.VITE_MM_API;
 const files = ref([]);
 const progress = ref(0);
 const onUploadProgress = (val) => {

@@ -25,7 +25,7 @@ export async function serverInfo() {
     if(servers?.length > 0){
       _backend_url = servers[0].url;
     } else {
-      _backend_url = process.env.BACKEND_URI;
+      _backend_url = import.meta.env.VITE_BACKEND_URI;
     }
   }
   return await fetchServerInfo(_backend_url);

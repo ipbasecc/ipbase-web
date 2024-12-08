@@ -29,7 +29,7 @@
 
   
         // // 调用后端 API 处理登录
-        // const response = await fetch(`${process.env.APP_URI}/api/connect/wechat/callback?code=${code}&state=${state}`)
+        // const response = await fetch(`${import.meta.env.VITE_APP_URI}/api/connect/wechat/callback?code=${code}&state=${state}`)
         // const data = await response.json()
   
         // if (data.jwt) {

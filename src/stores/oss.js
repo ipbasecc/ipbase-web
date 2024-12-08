@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 
 export default defineStore("oss", {
   state: () => ({
-    oss: process.env.OSS_URL,
+    oss: import.meta.env.VITE_OSS_URL,
     ststoken: "",
     process: [],
     uploadQueue: [],

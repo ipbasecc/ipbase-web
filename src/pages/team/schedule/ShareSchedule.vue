@@ -218,7 +218,7 @@ const share_code = ref({
   up_time: user_shareCode.value ? user_shareCode.value.up_time : "",
 });
 const genShareUrl = (code) => {
-  share_url.value = `${process.env.APP_URI}schedule/share/${share_item.value?.id}?share_code=${code}&share_by=${userStore.userId}`;
+  share_url.value = `${import.meta.env.VITE_APP_URI}schedule/share/${share_item.value?.id}?share_code=${code}&share_by=${userStore.userId}`;
 };
 const share_url = ref();
 const shareSchedule = async (schedule_id, share_code) => {

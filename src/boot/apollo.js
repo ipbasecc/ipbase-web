@@ -17,7 +17,7 @@ const setAPI = async () => {
   if(graphql_endpoint && graphql_endpoint !== "") {
     GRAPHQL_URI = graphql_endpoint
   } else {
-    GRAPHQL_URI = process.env.GRAPHQL_URI || 'https://api.yihu.team/graphql'
+    GRAPHQL_URI = import.meta.env.VITE_GRAPHQL_URI || 'https://api.yihu.team/graphql'
   }
   return GRAPHQL_URI
 }

@@ -94,7 +94,7 @@
                         showWebview.value = false;
 
                         // 调用后端 API 处理登录
-                        const response = await fetch(`${process.env.BACKEND_URI}api/auth/wechat/callback?code=${code}&state=${state}`)
+                        const response = await fetch(`${import.meta.env.VITE_BACKEND_URI}api/auth/wechat/callback?code=${code}&state=${state}`)
                         const data = await response.json()
                         const res = {
                             data: data

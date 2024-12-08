@@ -180,7 +180,7 @@ provide("audioType", audioType);
 provide("officeType", officeType);
 provide("attachmentType", attachmentType);
 
-const base_url = process.env.OSS_URL;
+const base_url = import.meta.env.VITE_OSS_URL;
 const defaultCover = base_url + "images/article.jpg";
 provide("defaultCover", defaultCover);
 const defaultAvatar = base_url + "images/panda.jpg";

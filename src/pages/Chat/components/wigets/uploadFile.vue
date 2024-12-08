@@ -45,7 +45,7 @@ const uploadFiles = () => {
       formData.append('file', file)
       // 使用axios发送post请求，上传文件
       axios
-      .post(`${process.env.MM_API}files`, formData, {
+      .post(`${import.meta.env.VITE_MM_API}files`, formData, {
             headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",

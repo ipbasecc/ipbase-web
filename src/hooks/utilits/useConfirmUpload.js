@@ -56,7 +56,7 @@ async function uploadFile(file, username, id) {
     try {
       // 等待OSS.uploadFile方法的结果
       let res = await OSS.uploadFile(
-        `${process.env.ROOT || "ipbase"}/${path_prefix.value}/` + file.name,
+        `${import.meta.env.VITE_ROOT || "ipbase"}/${path_prefix.value}/` + file.name,
         file,
         id
       );

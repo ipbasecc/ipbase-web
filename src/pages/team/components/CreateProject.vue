@@ -105,7 +105,7 @@ const params = ref({
   name: "",
   description: "",
   by_team: team.value,
-  overview_media: process.env.DEFAULT_PROJECT_OVERVIEW_MEIDA,
+  overview_media: import.meta.env.VITE_DEFAULT_PROJECT_OVERVIEW_MEIDA,
   type: "P",
 });
 const media = ref();

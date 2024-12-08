@@ -34,7 +34,7 @@ const emit = defineEmits(['meetEnded'])
 
 const jitsiContainer = useTemplateRef('jitsiContainer');
 const meet = ref();
-const meetSite = process.env.MEET_SITE
+const meetSite = import.meta.env.VITE_MEET_SITE
 const meetAuth = ref(void 0)
 
 const createMeet = async () => {

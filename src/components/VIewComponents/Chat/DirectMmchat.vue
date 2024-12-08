@@ -119,7 +119,7 @@ const wsMsgs = ref([]);
 const init = (channel_id) => {
     getMessages();
     ws = new WebSocket(
-        `wss://${process.env.MM_SITE}/api/v4/websocket?channel_id=${channel_id}`
+        `wss://${import.meta.env.VITE_MM_SITE}/api/v4/websocket?channel_id=${channel_id}`
     );
     ws.addEventListener("open", handleOpen);
     ws.addEventListener("message", handleMessage);

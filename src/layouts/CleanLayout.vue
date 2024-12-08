@@ -55,7 +55,7 @@ import {useQuasar} from "quasar";
 // import BgEffects from './BgEffects.vue'
 
 const $q = useQuasar();
-const is_development = ref(process.env.DEV);
+const is_development = ref(import.meta.env.DEV);
 onBeforeMount(() => {
   uiStore.topbarShow = false
   uiStore.pageLoaded = true

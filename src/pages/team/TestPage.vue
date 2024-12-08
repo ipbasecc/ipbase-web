@@ -59,9 +59,9 @@
 
     // 生成微信登录URL
     const generateWechatLoginUrl = () => {
-        const appId = process.env.WECHAT_APP_ID
+        const appId = import.meta.env.VITE_WECHAT_APP_ID
         // 修改这里：使用 auth/wechat/callback 作为回调路径
-        const redirectUri = encodeURIComponent(`${process.env.APP_URI}/api/auth/wechat/callback`)
+        const redirectUri = encodeURIComponent(`${import.meta.env.VITE_APP_URI}/api/auth/wechat/callback`)
         const state = Math.random().toString(36).substring(7)
         
         // 检测是否在微信浏览器中

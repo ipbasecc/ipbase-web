@@ -2,7 +2,7 @@ import { boot } from "quasar/wrappers";
 import { Platform } from "quasar";
 
 export function $pathService(_path) {
-  const appURI = process.env.APP_URI;
+  const appURI = import.meta.env.VITE_APP_URI;
   let res;
   if (Platform.is.electron) {
     res = window.pathAPI.pathService(_path);

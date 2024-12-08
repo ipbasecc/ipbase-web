@@ -21,7 +21,7 @@ export default function oss() {
       if (ossStore.ststoken) {
         ststoken = ossStore.ststoken;
       } else {
-        const url = `${process.env.REST_API}oss`;
+        const url = `${import.meta.env.VITE_REST_API}oss`;
         const config = {
           headers: { Authorization: `Bearer ${JSON.parse(jwt)}` },
         };
@@ -33,14 +33,14 @@ export default function oss() {
             ossStore.ststoken = token.data;
             ossConfig = {
               // yourRegion填写Bucket所在地域。以华东1（杭州）为例，Region填写为oss-cn-hangzhou。
-              region: process.env.REGION,
+              region: import.meta.env.VITE_REGION,
               // 从STS服务获取的临时访问密钥（AccessKey ID和AccessKey Secret）。
               accessKeyId: ststoken.AccessKeyId,
               accessKeySecret: ststoken.AccessKeySecret,
               // 从STS服务获取的安全令牌（SecurityToken）。
               stsToken: ststoken.SecurityToken,
               // 填写Bucket名称。
-              bucket: process.env.BUCKET,
+              bucket: import.meta.env.VITE_BUCKET,
               // 自动刷新token
               refreshSTSToken: true,
               refreshSTSTokenInterval: 120000,

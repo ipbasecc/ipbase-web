@@ -64,7 +64,7 @@ const locale = "zh";
 const filemanager = [DetailsView, NavigationPane, Toolbar];
 provide("filemanager", filemanager);
 
-const hostUrl = `${process.env.REST_API}storages/${storage.value?.id}/`;
+const hostUrl = `${import.meta.env.VITE_REST_API}storages/${storage.value?.id}/`;
 let jwt = localStorage.getItem(`jwt`);
 jwt = jwt.replace(/"/g, "");
 const ajaxSettings = {

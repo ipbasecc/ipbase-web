@@ -75,7 +75,7 @@ import AppManual from "src/components/VIewComponents/AppManual.vue";
 import AppShortcut from "src/components/VIewComponents/AppShortcut.vue";
 import DownloadApp from './DownloadApp.vue'
 import LocalToggler from './LocalToggler.vue'
-const is_development = process.env.DEV;
+const is_development = import.meta.env.DEV;
 const showDownloadApp = ref(false);
 
 

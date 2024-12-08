@@ -13,7 +13,7 @@ export async function useUploadAvatar(files, updateProgress) {
 
     // 使用axios库发送HTTP请求
     axios
-      .post(`${process.env.MM_API}users/${user_id}/image`, formData, {
+      .post(`${import.meta.env.VITE_MM_API}users/${user_id}/image`, formData, {
         headers: headers,
       })
       .then((response) => {

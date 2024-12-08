@@ -20,7 +20,7 @@ const setAPI = async () => {
   if(ws_api_endpoint && ws_api_endpoint !== "") {
     MM_API = ws_api_endpoint
   } else {
-    MM_API = process.env.MM_API || 'https://mattermost.yihu.team/api/v4/'
+    MM_API = import.meta.env.VITE_MM_API || 'https://mattermost.yihu.team/api/v4/'
   }
   if(MM_API){
     mmapi = axios.create({

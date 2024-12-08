@@ -12,7 +12,7 @@ let isReconnecting = false; // 添加重连锁
 
 export function _ws() {
   if (!token) return;
-  ws = new WebSocket(`wss://${process.env.MM_SITE}/api/v4/websocket`);
+  ws = new WebSocket(`wss://${import.meta.env.VITE_MM_SITE}/api/v4/websocket`);
 
   function reConnect() {
     if (isReconnecting) {
@@ -25,7 +25,7 @@ export function _ws() {
       if (reConnectCount < 10) {
         isReconnecting = true; // 设置重连锁
         if (token) {
-          ws = new WebSocket(`wss://${process.env.MM_SITE}/api/v4/websocket`);
+          ws = new WebSocket(`wss://${import.meta.env.VITE_MM_SITE}/api/v4/websocket`);
           wsConnect();
         }
       } else {

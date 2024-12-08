@@ -35,7 +35,7 @@ export const create = ssrCreate((/* { ... } */) => {
 
   // place here any middlewares that
   // absolutely need to run before anything else
-  if (process.env.PROD) {
+  if (import.meta.env.PROD) {
     app.use(compression())
   }
 
@@ -56,7 +56,7 @@ export const create = ssrCreate((/* { ... } */) => {
 export const listen = ssrListen(async ({ app, port, isReady }) => {
   await isReady()
   return app.listen(port, () => {
-    if (process.env.PROD) {
+    if (import.meta.env.PROD) {
       console.log('Server listening at port ' + port)
     }
   })
@@ -76,7 +76,7 @@ export const close = ssrClose(({ listenResult }) => {
   return listenResult.close()
 })
 
-const maxAge = process.env.DEV
+const maxAge = import.meta.env.DEV
   ? 0
   : 1000 * 60 * 60 * 24 * 30
 

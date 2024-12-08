@@ -5,7 +5,7 @@ import { i18n } from 'src/boot/i18n.js';
 import { errorProcess } from 'src/boot/error.js';
 const $t = i18n.global.t;
 
-const TYPE = process.env.DEV ? 'wss' : 'wss'
+const TYPE = import.meta.env.DEV ? 'wss' : 'wss'
 let token = localStorage.getItem("mmtoken");
 let ws;
 let reConnectCount = 0;
@@ -13,7 +13,7 @@ let wsLink
 const getPoint = async () => {
   let { ws_api_endpoint } = await $server();
   if(!ws_api_endpoint || ws_api_endpoint !== "") {
-    ws_api_endpoint = `${TYPE}://${process.env.MM_SITE}/api/v4/websocket`
+    ws_api_endpoint = `${TYPE}://${import.meta.env.VITE_MM_SITE}/api/v4/websocket`
   }
   wsLink = ws_api_endpoint
 }

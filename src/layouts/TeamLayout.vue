@@ -184,7 +184,7 @@
 
   // 开发环境下，关闭 仅electron可用模式
   onMounted(async () => {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.NODE_ENV === 'development') {
       // uiStore.only_electron = [];
     }
   })
