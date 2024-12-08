@@ -63,7 +63,7 @@
       </q-card>
     </q-dialog>
     <q-dialog v-model="showDownloadApp" persistent maximized class="z-max">
-      <div class="flex flex-center">
+      <div class="flex flex-center overflow-hidden">
         <DownloadApp />
       </div>
     </q-dialog>
