@@ -1,6 +1,6 @@
 <template>
     <q-btn flat dense :round="round" icon="translate">
-      <q-menu anchor="bottom right" self="bottom left" class="transparent">
+      <q-menu anchor="bottom right" self="bottom left" class="transparent q-electron-drag--exception">
         <q-list
           dense
           bordered
