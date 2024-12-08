@@ -140,6 +140,11 @@ export default configure((ctx) => {
             ssr: ctx.modeName === "ssr",
           },
         ],
+        vitePluginIstanbul({
+          include: 'src/**/*.js', // 指定需要仪器化的文件
+          exclude: ['**/*.spec.js', '**/cypress/**'], // 排除测试文件
+          extension: ['.js', '.ts'], // 指定文件扩展名
+        }),
       ],
     },
 
