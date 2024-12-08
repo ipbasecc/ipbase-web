@@ -1,5 +1,7 @@
 <template>
-    <q-card bordered style="max-width: 540px;" class="shadow-0 full-width overflow-hidden">
+    <q-card bordered
+    :style="`flex: 0 0 ${$q.screen.gt.md ? bodySize.width / 3 : bodySize.width / 2}px ;`"
+    class="shadow-0 full-width overflow-hidden">
         <MediaViewer :url="card.cover?.url || alt_image" />
         <q-item>
             <q-item-section v-if="card.creator?.profile?.avatar?.url" side>
@@ -41,6 +43,13 @@
         card: {
             type: Object,
             required: true,
+        },
+        bodySize: {
+            type: Object,
+            default: () => ({
+                width: 0,
+                height: 0
+            })
         }
     })
     const emit = defineEmits(['enterCardDetail'])

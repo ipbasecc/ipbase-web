@@ -1,8 +1,12 @@
 <template>
-    <q-infinite-scroll @load="onLoad" :offset="250" :disable="!hasMore" class="column gap-xl items-center q-py-md">
-        <template v-for="i in cards" :key="i.id">
-            <ItemCard :card="i" @enterCardDetail="enterCardDetail" />
-        </template>
+    <q-infinite-scroll @load="onLoad" :offset="250" :disable="!hasMore" class="column items-center">
+        <div v-if="cards.length > 0" class="row q-py-md gap-lg justify-center" :class="$q.screen.gt.md ? 'q-px-xl' : 'q-px-lg'">
+            <template v-for="i in cards" :key="i.id">
+                <ItemCard :card="i" :bodySize @enterCardDetail="enterCardDetail" />
+            </template>
+            <div v-if="cards.length % 2 !== 0"
+            :style="`flex: 0 0 ${$q.screen.gt.md ? bodySize.width / 3 : bodySize.width / 2}px ;`"></div>
+        </div>
         <q-btn v-if="hasMore" flat :label="$t('get_more')" class="q-mt-lg" @click="getMoreCardsFn" />
         <span v-else class="text-grey-6 q-mt-lg">{{ $t('no_more') }}</span>
         <template v-slot:loading>
@@ -18,6 +22,7 @@
     import { useRouter, useRoute } from "vue-router";
     import ItemCard from './ItemCard.vue'
 
+    const { bodySize } = defineProps(['bodySize'])
     const emit = defineEmits(['enterCardDetail'])
     const router = useRouter();
     const route = useRoute();
