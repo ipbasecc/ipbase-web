@@ -144,6 +144,7 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@cypress/code-coverage": "^3.13.8",
     "@electron/packager": "^18.3.4",
     "@intlify/unplugin-vue-i18n": "^2.0.0",
     "@quasar/quasar-app-extension-apollo": "^2.2.3",
@@ -165,6 +166,7 @@
     "typescript": "^5.5.4",
     "vite": "^5.4.3",
     "vite-plugin-checker": "^0.7.2",
+    "vite-plugin-istanbul": "^6.0.2",
     "workbox-build": "^7.1.1",
     "workbox-cacheable-response": "^7.1.0",
     "workbox-core": "^7.1.0",
