@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpR fff" class="bg-black">
+  <q-layout view="hHh lpR fff">
     <q-header v-if="uiStore.topbarShow || $q.platform.is.electron" class="transparent">
       <q-bar class="transparent" :class="$q.platform.is.electron ? 'q-electron-drag' : ''">
         <template v-if="is_development">

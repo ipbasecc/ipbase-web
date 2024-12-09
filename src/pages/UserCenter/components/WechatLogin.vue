@@ -27,10 +27,6 @@
                         <q-img :src="QRCodeURL" :ratio="1" width="20rem" height="20rem" spinner-color="primary"
                             spinner-size="82px" class="border radius-sm overflow-hidden" />
                     </q-card-section>
-                    <q-card-section class="border-top row no-wrap gap-lg flex-center">
-                        <q-icon name="mdi-wechat" size="xl" />
-                        <div class="text-h4 text-center">微信扫码登陆</div>
-                    </q-card-section>
                 </q-card>
                 <q-item>
                   <q-item-section>
