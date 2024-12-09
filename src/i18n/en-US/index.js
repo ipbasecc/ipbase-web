@@ -87,6 +87,7 @@ export default {
   collaboration_project: "Collaboration and Service",
   video: "Video",
   create_project: 'create project',
+  project_private: 'Only visible to members',
   shortcut_table_header_desc: "Function",
   shortcut_table_header_key: "shortcut",
   shortcut_table_header_props: "Conditions",

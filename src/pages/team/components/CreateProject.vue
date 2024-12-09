@@ -51,15 +51,8 @@
                     $t('project_description_rules_tip'),
                 ]"
               />
-              <div v-if="false" class="row no-wrap gap-sm q-pt-md">
-                <q-radio
-                  v-for="i in project_private"
-                  :key="i.val"
-                  v-model="project_type"
-                  :val="i.val"
-                  :label="$t(i.label)"
-                  @click.stop="setPrivate()"
-                />
+              <div class="row no-wrap gap-sm q-pt-md q-px-sm">
+                <q-checkbox v-model="params.private" dense :label="$t('project_private')" />
               </div>
             </div>
           </q-card-section>
@@ -106,7 +99,8 @@ const params = ref({
   description: "",
   by_team: team.value,
   overview_media: import.meta.env.VITE_DEFAULT_PROJECT_OVERVIEW_MEIDA,
-  type: "P",
+  type: "project",
+  private: false
 });
 const media = ref();
 const fileUploaded = (val) => {

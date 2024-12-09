@@ -267,7 +267,7 @@
                   class="bg-primary absolute-left"
                   style="width: 3px"
                 ></div>
-                <q-tooltip v-if="project.description" class="transparent radius-sm">
+                <q-tooltip v-if="project.description && (project.description.length > 32 || project.description.replace(/[^\u4e00-\u9fa5]/g, '').length > 16)" class="transparent radius-sm">
                   <q-card bordered
                   :style="`width: ${uiStore.navDrawerWidth - 16}px;`">
                     <q-card-section :class="$q.dark.mode ? 'text-white' : 'text-black'" class="font-small q-pa-sm">

@@ -87,6 +87,7 @@ export default {
   collaboration_project: "协作与服务",
   video: "视频",
   create_project: "新建项目",
+  project_private: '仅成员可见',
   shortcut_table_header_desc: "功能",
   shortcut_table_header_key: "快捷键",
   shortcut_table_header_props: "可用条件",

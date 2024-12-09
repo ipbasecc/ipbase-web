@@ -19,7 +19,7 @@ export async function createProjectFn(_params) {
     team_id: mm_team_id,
     name: `${params.by_team?.id}${uid()}mmchannel`, // Mattermost 会使用此字段作为channel url标识，要求唯一
     display_name: params.name,
-    type: params.type,
+    type: 'P',
   };
   // 先在Mattermost中创建一个频道，获取到结果数据后作为创建项目的mm_channel字段数据
   let create_mmChannel_res = await createChannel(create_mmChannel_parmars);
