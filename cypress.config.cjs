@@ -11,15 +11,27 @@ module.exports = defineConfig({
   e2e: {
     setupNodeEvents(on, config) {
       registerCodeCoverageTasks(on, config);
+      
+      on('task', {
+        log(message) {
+          console.log(message);
+          return null;
+        },
+        table(message) {
+          console.table(message);
+          return null;
+        }
+      });
+
       return config;
     },
     baseUrl: 'http://localhost:9000/',
     supportFile: 'test/cypress/support/e2e.js',
     specPattern: 'test/cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
     env: {
-      codeCoverage: true, // 启用代码覆盖率
-      E2E_USERNAME: process.env.E2E_USERNAME, // 从环境变量中读取
-      E2E_PASSWORD: process.env.E2E_PASSWORD, // 从环境变量中读取
+      codeCoverage: true,
+      E2E_USERNAME: process.env.E2E_USERNAME,
+      E2E_PASSWORD: process.env.E2E_PASSWORD,
     },
   },
   component: {
@@ -32,4 +44,17 @@ module.exports = defineConfig({
     indexHtmlFile: 'test/cypress/support/component-index.html',
     devServer: injectQuasarDevServerConfig(),
   },
+  viewportWidth: 1280,
+  viewportHeight: 800,
+  defaultCommandTimeout: 10000,
+  requestTimeout: 10000,
+  responseTimeout: 30000,
+  retries: {
+    runMode: 2,
+    openMode: 0
+  },
+  videoCompression: 32,
+  videoUploadOnPasses: false,
+  screenshotOnRunFailure: true,
+  trashAssetsBeforeRuns: true
 });

@@ -13,10 +13,11 @@
     "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
     "dev": "quasar dev",
     "build": "quasar build",
-    "test:e2e": "cross-env NODE_ENV=test start-test \"quasar dev\" http-get://127.0.0.1:8080 \"cypress open --e2e\"",
-    "test:e2e:ci": "cross-env NODE_ENV=test start-test \"quasar dev\" http-get://127.0.0.1:8080 \"cypress run --e2e\"",
+    "test:e2e": "cross-env COVERAGE=true quasar dev",
+    "test:e2e:ci": "cross-env COVERAGE=true quasar build && cypress run",
     "test:component": "cross-env NODE_ENV=test cypress open --component",
-    "test:component:ci": "cross-env NODE_ENV=test cypress run --component"
+    "test:component:ci": "cross-env NODE_ENV=test cypress run --component",
+    "coverage:report": "nyc report --reporter=text-summary"
   },
   "dependencies": {
     "@apollo/client": "^3.11.8",

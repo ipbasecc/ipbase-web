@@ -12,6 +12,7 @@
 
 import { configure } from "quasar/wrappers";
 import { fileURLToPath } from "node:url";
+import istanbul from 'vite-plugin-istanbul';
 
 export default configure((ctx) => {
   return {
@@ -62,6 +63,9 @@ export default configure((ctx) => {
       // 'localforage'
       // { path: 'websocket', server: false }
     ],
+
+    // https://v2.quasar.dev/quasar-cli/prefetch-feature
+    // preFetch: true,
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
     css: ["app.scss"],
@@ -140,12 +144,15 @@ export default configure((ctx) => {
             ssr: ctx.modeName === "ssr",
           },
         ],
-        vitePluginIstanbul({
-          include: 'src/**/*.js', // 指定需要仪器化的文件
-          exclude: ['**/*.spec.js', '**/cypress/**'], // 排除测试文件
-          extension: ['.js', '.ts'], // 指定文件扩展名
-        }),
-      ],
+        process.env.COVERAGE === 'true' && istanbul({
+          include: 'src/*',
+          exclude: ['node_modules', 'test/', 'cypress/'],
+          extension: ['.js', '.ts', '.vue'],
+          requireEnv: false,
+          cypress: true,
+          forceBuildInstrument: true
+        })
+      ].filter(Boolean),
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
