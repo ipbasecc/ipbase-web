@@ -1,7 +1,7 @@
 <template>
   <div class="absolute-full column flex-center relative-position">
     <div v-if="$q.platform.is.electron" class="absolute-full q-electron-drag z-unfab" />
-    <q-card :bordered="$q.screen.gt.xs" :flat="!$q.screen.gt.xs" class="q-electron-drag--exception z-max"
+    <q-card :bordered="$q.screen.gt.xs" :flat="!$q.screen.gt.xs" class="q-electron-drag--exception"
       :class="$q.screen.gt.xs ? 'focus-form' : 'bg-grey-10 fit'" :style="$q.screen.gt.xs ? 'width: 32rem' : ''">
       <q-card-section :horizontal="$q.screen.gt.sm">
         <div class="row justify-end absolute-top-right z-fab q-pa-sm">

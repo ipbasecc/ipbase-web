@@ -6,7 +6,7 @@
             <div class="op-5 full-width border-bottom" />
         </div>
         <div class="row no-wrap flex-center">
-            <q-btn color="positive" icon="mdi-wechat" label="微信扫码登陆" class="full-width" unelevated
+            <q-btn color="positive" flat icon="mdi-wechat" label="微信扫码登陆" class="full-width" unelevated
                 @click="handleWechatLoginClick()" />
         </div>
         <q-dialog v-model="showWechatDialog" maximized persistent :class="$q.dark.mode ? 'bg-dark' : 'bg-white'">
@@ -14,6 +14,14 @@
                 <webview ref="wechatWebview" :src="wechatAuthUrl"
                     style="width: 1px; height: 1px; position: absolute; top: -9999px;" @dom-ready="handleDomReady"
                     webpreferences="nodeIntegration, contextIsolation" />
+                <q-item>
+                  <q-item-section avatar>
+                    <q-icon name="mdi-wechat" color="positive" size="xl" />
+                  </q-item-section>
+                  <q-item-section>
+                    <span class="text-h6">微信扫码登陆</span>
+                  </q-item-section>
+                </q-item>
                 <q-card bordered v-if="QRCodeURL" class="radius-sm overflow-hidden">
                     <q-card-section class="q-pa-xl">
                         <q-img :src="QRCodeURL" :ratio="1" width="20rem" height="20rem" spinner-color="primary"
@@ -24,6 +32,11 @@
                         <div class="text-h4 text-center">微信扫码登陆</div>
                     </q-card-section>
                 </q-card>
+                <q-item>
+                  <q-item-section>
+                    <q-btn icon="mdi-chevron-left" size="lg" round flat @click="showWechatDialog = false" />
+                  </q-item-section>
+                </q-item>
             </div>
 
             <div v-else class="absolute-full column flex-center">
