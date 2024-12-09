@@ -5,10 +5,14 @@
     <div class="text-subtitle1 q-mt-sm">
       {{ $t('welcome_back') }}, {{ username }}
     </div>
-    <div v-if="count" class="text-caption q-mt-sm">
-      {{ $t('auto_redirect') }} {{ count }} {{ $t('seconds') }}
-    </div>
-    <q-btn flat color="primary" :label="$t('redirect_now')" class="q-mt-md" @click="redirect()" />
+    <transition name="fade-height" mode="out-in">
+      <div v-if="count" class="redirect-container">
+        <div class="text-caption q-mt-sm">
+          {{ $t('auto_redirect') }} {{ count }} {{ $t('seconds') }}
+        </div>
+        <q-btn flat color="primary" :label="$t('redirect_now')" class="q-mt-md" @click="redirect()" />
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -29,3 +33,27 @@
     emit('redirect');
   }
 </script>
+
+<style scoped>
+.redirect-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 过渡动画 */
+.fade-height-enter-active,
+.fade-height-leave-active {
+  transition: all 0.3s ease;
+  max-height: 100px;
+  opacity: 1;
+}
+
+.fade-height-enter-from,
+.fade-height-leave-to {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+}
+</style>
