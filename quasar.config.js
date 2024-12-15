@@ -153,6 +153,12 @@ export default configure((ctx) => {
           forceBuildInstrument: true
         })
       ].filter(Boolean),
+
+      rollupOptions: {
+        external: [
+          /^node:/  // 排除 Node.js 内置模块
+        ]
+      }
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
@@ -366,7 +372,14 @@ export default configure((ctx) => {
             "--socket=wayland",
             "--device=dri"
           ]
-        }
+        },
+        files: [
+          "!node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+          "!node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+          "!node_modules/*.d.ts",
+          "!node_modules/.bin",
+          "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+        ]
       },
 
       // Specify additional parameters when yarn/npm installing
