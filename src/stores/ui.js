@@ -14,6 +14,14 @@ export default defineStore("ui", {
         enable: true,
       },
       {
+        val: "deliver",
+        label: 'deliver',
+        icon: "mdi-cards",
+        description: 'app_deliver_purpose',
+        to: "deliver",
+        enable: true,
+      },
+      {
         val: "discover",
         label: 'discover',
         icon: "mdi-compass-outline",
@@ -188,6 +196,7 @@ export default defineStore("ui", {
     slashMenuOpen: false,
     reINIT: false,
     logging: false,
+    deal_active_item: '',
   }),
   actions: {
     $syncMmUnreads() {

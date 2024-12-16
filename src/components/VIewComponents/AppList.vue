@@ -98,6 +98,7 @@ const route = useRoute();
 const enabledApps = computed(() => uiStore.apps?.filter((i) => i.enable));
 const to = async (i) => {
   uiStore.app = i.val;
+  uiStore.deal_active_item = '';
   teamStore.navigation = null;
   teamStore && teamStore.$reset_channel() && teamStore.$reset_project();
   await localforage.setItem("last_module", i.to);

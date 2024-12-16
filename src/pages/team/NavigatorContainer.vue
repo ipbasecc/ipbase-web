@@ -35,10 +35,10 @@
           :breakpoint="640"
           :width="uiStore.navDrawerWidth"
           class="border-right"
+          :class="$q.dark.mode ? '' : 'bg-primary-9 text-grey-1'"
         >
           <div v-if="uiStore.app === 'teams' || uiStore.app === 'threads'"
             class="absolute-full column no-wrap"
-            :class="$q.dark.mode ? '' : 'bg-primary-9 text-grey-1'"
           >
             <template v-if="team">
               <q-item v-if="!isExternal" class="q-px-sm">
@@ -105,6 +105,7 @@
           <NotebookList v-if="uiStore.app === 'notebooks'" />
           <BussinessMenu v-if="uiStore.app === 'business'" />
           <DiscoverNavigator v-if="uiStore.app === 'discover'" />
+          <DeliverNavigator v-if="uiStore.app === 'deliver'" />
         </q-drawer>
         <RightPannel />
       </template>
@@ -173,6 +174,7 @@ import RightPannel from './components/RightPannel.vue'
 import NotebookList from './notebook/NotebookList.vue'
 import BussinessMenu from '../business/BussinessMenu.vue'
 import DiscoverNavigator from './discover/DiscoverNavigator.vue'
+import DeliverNavigator from '../deliver/DeliverNavigator.vue'
 
 // 团队状态是否存在 blocked 或 unconfirmed
 const userStatus_byTeam = computed(() => teamStore.team?.status);

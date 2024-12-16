@@ -651,6 +651,11 @@ input:-internal-autofill-selected {
 .hover-highlight-lg {
   opacity: 0.3;
 }
+.bg-image-fill {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
 .no-drag {
   -webkit-user-drag: none;
   -khtml-user-drag: none;

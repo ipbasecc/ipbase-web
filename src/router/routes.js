@@ -177,6 +177,40 @@ const routes = [
           title: "团队——易乎APP",
         },
       },
+      // 招投标
+      {
+        path: '/deliver',
+        component: () => import("pages/deliver/DeliverPage.vue"),
+        name: "DeliverPage",
+        props: true,
+        children: [
+          {
+            path: '/deliver/party_a',
+            component: () => import("pages/deliver/PartyA.vue"),
+            name: "PartyA",
+            props: true,
+          },
+          {
+            path: '/deliver/party_b',
+            component: () => import("pages/deliver/PartyB.vue"),
+            name: "PartyB",
+            props: true,
+          },
+          {
+            path: '/deliver/create',
+            component: () => import("pages/deliver/CreateDeal.vue"),
+            name: "CreateDeal",
+            props: true,
+          },
+          {
+            path: '/deliver/deal/:deal_id',
+            component: () => import("pages/deliver/DeliverDetial.vue"),
+            name: "DeliverDetial",
+            props: true,
+          }
+        ]
+      },
+      // 经营
       {
         path: "/business",
         component: () => import("pages/business/BusinessIndex.vue"),
@@ -193,6 +227,12 @@ const routes = [
             path: "/business/info",
             component: () => import("pages/business/AccountInfo.vue"),
             name: "BusinessAccount",
+            props: true,
+          },
+          {
+            path: "/business/certificate",
+            component: () => import("pages/business/CertificateInfo.vue"),
+            name: "BusinessCertificate",
             props: true,
           }
         ]

@@ -359,29 +359,51 @@ export async function findOrders() {
   }
 }
 
+// 招投标部分
 
-/**
- * 测试方法，不要使用
- * @returns 
- */
-export async function notiy() {
-    // 假设这是您的原始链接
-  const urlString = "https://backend.yihu.team/api/order/order_notify?ifCode=wxpay&amount=50&payOrderId=P1854496067150348289&extParam=%7B%22order_id%22:51%7D&mchOrderNo=4d3331333031373330393831323931383831&subject=id%E4%B8%BA7%E7%9A%84card&wayCode=WX_NATIVE&sign=626F1C8789B1BB5CCDA4120BBE31DFD9&channelOrderNo=4200002526202411073394094568&reqTime=1730981306973&body=%E5%95%86%E5%93%81id%E4%B8%BA7%E7%9A%84card%E7%9A%84%E8%AE%A2%E5%8D%95&createdAt=1730981291936&appId=6729b2e6f6d8ea09bd5e5fcf&clientIp=127.0.0.1&successTime=1730981307000&currency=cny&state=2&mchNo=M1730785808";
-
-  // 创建一个新的URL对象
-  const url = new URL(urlString);
-
-  // 使用URLSearchParams来解析查询字符串
-  const searchParams = new URLSearchParams(url.search);
-
-  // 将查询字符串参数转换为对象
-  const params = Object.fromEntries(searchParams);
-
-  // 打印��果，以便查看
-  console.log(params);
-
+export async function findDeals(offset = 0, limit = 10, sort = 'desc') {
   try {
-    const res = await api.post(`order/order_notify`, params);
+    const res = await api.get(`/deals?offset=${offset}&limit=${limit}&sort=${sort}`);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+export async function findDeal(deal_id) {
+  try {
+    const res = await api.get(`/deals/${deal_id}`);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+export async function createDeal(params) {
+  try {
+    const res = await api.post(`/deals`, params);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+export async function updateDeal(deal_id, params) {
+  try {
+    const res = await api.put(`/deals/${deal_id}`, params);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+export async function deleteDeal(deal_id) {
+  try {
+    const res = await api.delete(`/deals/${deal_id}`);
     if (res?.data) {
       return res;
     }
@@ -390,9 +412,40 @@ export async function notiy() {
   }
 }
 
-export async function batchUpdatePasswords() {
+// 账号认证
+export async function createCertificate(params) {
   try {
-    const res = await api.post(`/user/me/batch-update-mm-passwords`);
+    const res = await api.post(`/certifications`, params);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+export async function updateCertificate(certificate_id, params) {
+  try {
+    const res = await api.put(`/certifications/${certificate_id}`, params);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+export async function findSelfCertification(user_id) {
+  try {
+    const res = await api.get(`/certifications/${user_id}`);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+export async function deleteSelfCertification(user_id) {
+  try {
+    const res = await api.delete(`/certifications/${user_id}`);
     if (res?.data) {
       return res;
     }

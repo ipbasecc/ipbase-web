@@ -11,8 +11,8 @@
                 <q-item>
                     <q-item-section>
                         <q-input v-model="params.data.reel_name" outlined filled type="text"
-                            class="radius-xs overflow-hidden" label="真实姓名" :color="$q.dark.mode ? 'grey-9' : 'grey-1'"
-                            placeholder="请输入真实姓名，以便在提现时进行验证"
+                            class="radius-xs overflow-hidden" label="提现验证姓名" :color="$q.dark.mode ? 'grey-9' : 'grey-1'"
+                            placeholder="请输入提现验证时的姓名，以便在提现时进行验证"
                         >
                             <template v-slot:prepend>
                                 <q-icon name="mdi-account-box-outline" size="sm" />
@@ -24,7 +24,7 @@
                     <q-item-section>
                         <q-input v-model="params.data.alipay_account"
                             outlined filled type="text" class="radius-xs overflow-hidden" label="支付宝账号"
-                            placeholder="请输入您本人的支付宝账号，以便在提现时进行验证"
+                            placeholder="请输入提现支付宝账号，以便在提现时进行验证"
                         >
                             <template v-slot:prepend>
                                 <AliPay :width="22" :height="22" color="#f0f0f0" />

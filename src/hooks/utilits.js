@@ -561,3 +561,61 @@ export const clearCache = async () => {
     });
   }
 };
+
+export const isValidIdCard = (idCard) => {
+    // 身份证号码长度为18位
+    if (idCard.length !== 18) {
+        return false;
+    }
+
+    // 正则表达式检查前17位是否为数字
+    if (!/^\d{17}/.test(idCard)) {
+        return false;
+    }
+
+    // 出生年月日检查
+    const year = parseInt(idCard.substr(6, 4), 10);
+    const month = parseInt(idCard.substr(10, 2), 10);
+    const day = parseInt(idCard.substr(12, 2), 10);
+    if (!isValidDate(year, month, day)) {
+        return false;
+    }
+
+    // 校验码检查
+    return isValidCheckCode(idCard);
+}
+
+function isValidDate(year, month, day) {
+    const date = new Date(year, month - 1, day);
+    return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+}
+
+function isValidCheckCode(idCard) {
+    const coefficients = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
+    const checkCodes = '10X98765432';
+    let sum = 0;
+    for (let i = 0; i < 17; i++) {
+        sum += parseInt(idCard[i], 10) * coefficients[i];
+    }
+    const index = sum % 11;
+    return idCard[17] === checkCodes[index];
+}
+
+export const isValidMobile = (mobile) => {
+  // 手机号码长度为11位
+  if (mobile.length !== 11) {
+      return false;
+  }
+
+  // 手机号码由数字组成
+  if (!/^\d{11}$/.test(mobile)) {
+      return false;
+  }
+
+  // 手机号码以1开头，第二位数字是3、4、5、6、7、8、9
+  if (!/^1[3-9]\d{9}$/.test(mobile)) {
+      return false;
+  }
+
+  return true;
+}

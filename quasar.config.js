@@ -73,7 +73,7 @@ export default configure((ctx) => {
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
       'ionicons-v4',
-      "mdi-v5",
+      "mdi-v4",
       // 'fontawesome-v6',
       // 'eva-icons',
       // 'themify',

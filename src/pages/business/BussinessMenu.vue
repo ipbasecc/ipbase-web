@@ -37,6 +37,15 @@ const menu = [
             actived_item_name.value = i.name
             router.push(i.route)
         }
+    },
+    {
+        name: 'business_certificate_info',
+        icon: 'mdi-account-box',
+        route: '/business/certificate',
+        handler: (i) => {
+            actived_item_name.value = i.name
+            router.push(i.route)
+        }
     }
 ]
 </script>
