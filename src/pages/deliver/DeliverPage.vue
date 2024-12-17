@@ -3,7 +3,7 @@
         <q-scroll-area v-if="pageName === 'DeliverPage'" class="absolute-full">
             <div class="column no-wrap gap-lg">
                 <NeedsContainer :deals />
-                <WorkersContainer :deals />
+                <!-- <WorkersContainer :deals /> -->
             </div>
         </q-scroll-area>
         <template v-else>

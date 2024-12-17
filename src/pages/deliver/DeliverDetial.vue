@@ -200,12 +200,15 @@
                     </q-card-section>
                     <q-card-section class="column flex-center q-pa-sm border-top">
                         <q-btn v-if="deal.status === 'deposited'" color="primary" label="开启对接申请" class="full-width" @click="startMatch" />
-                        <q-btn v-if="deal.status === 'pending_matching' && deal.party_a?.id !== teamStore.init?.id" color="positive" unelevated icon="mdi-forum" label="联系 TA" class="full-width" @click="openFloatChat()">
+                        <q-btn v-else-if="(deal.status === 'pending_matching' || deal.status === 'matching') && !is_party_a || is_party_b" color="positive" unelevated icon="mdi-forum" label="联系 TA" class="full-width" @click="openFloatChat()">
                             <q-badge v-if="unread_count > 0 && deal.party_a?.id !== teamStore.init?.id" color="red" floating :label="unread_count" />
                         </q-btn>
-                        <q-btn v-else color="primary" icon="mdi-forum" :label="`${talkHistory ? '关闭' : '查看'}对接历史`" class="full-width" @click="talkHistory = !talkHistory">
+                        <q-btn v-else-if="is_party_a" color="primary" icon="mdi-forum" :label="`${talkHistory ? '关闭' : '查看'}对接历史`" class="full-width" @click="talkHistory = !talkHistory">
                             <q-badge v-if="unread_count > 0" color="red" floating :label="unread_count" />
                         </q-btn>
+                        <div v-else class="radius-xs border q-pa-sm full-width flex flex-center blur-sm text-positive">
+                            已完成合作对接
+                        </div>
                     </q-card-section>
             </q-card>
             </q-responsive>

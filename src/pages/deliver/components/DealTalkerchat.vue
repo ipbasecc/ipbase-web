@@ -25,7 +25,7 @@
 
         <q-card-section class="q-space column no-wrap q-pa-none">
             <q-bar dark class="transparent">
-                <q-btn dense flat color="primary" label="暂定合作，并要求其补充合约中乙方部分" padding="xs sm" @click="set_party_b" />
+                <q-btn v-if="!deal.party_b" dense flat color="primary" label="暂定合作，并要求其补充合约中乙方部分" padding="xs sm" @click="set_party_b" />
                 <q-space />
                 <q-btn dense flat round icon="mdi-close" size="8.5px" color="red" v-close-popup />
             </q-bar>
