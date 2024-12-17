@@ -143,7 +143,9 @@ const updateUnreadCount = (_mm_channel_id) => {
   if(channelIndex.value < 0) return
 
   const unreadCount = uiStore.unreads?.channels[channelIndex.value]?.msg_count;
-  uiStore.unreads.team.msg_count = uiStore.unreads?.team?.msg_count - unreadCount
+  if(uiStore.unreads?.team?.msg_count) {
+    uiStore.unreads.team.msg_count = uiStore.unreads.team.msg_count - unreadCount
+  }
   if(uiStore.unreads?.team?.msg_count < 0){
     uiStore.unreads.team.msg_count = 0;
   }

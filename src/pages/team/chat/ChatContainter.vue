@@ -85,7 +85,7 @@
                         :prev="messages[index - 1]"
                         :index="index"
                         :inThread="false"
-                        :MsgOnly="!$q.screen.gt.xs"
+                        :MsgOnly="MsgOnly || !$q.screen.gt.xs"
                         container="channel"
                         @togglePowerpannel="togglePowerpannel"
                         @enterThread="enterThread"
@@ -192,7 +192,7 @@
                       :prev="messages[index - 1]"
                       :index="index"
                       :inThread="false"
-                      :MsgOnly="!$q.screen.gt.xs"
+                      :MsgOnly="MsgOnly || !$q.screen.gt.xs"
                       :pannel_mode="pannel_mode"
                       container="channel"
                       @togglePowerpannel="togglePowerpannel"
@@ -237,10 +237,12 @@ const route = useRoute();
 const $t = i18n.global.t;
 const $q = useQuasar();
 
-const { mm_channel_id, pannel_mode } = defineProps({
+const { mm_channel_id, pannel_mode, MsgOnly } = defineProps({
   mm_channel_id: String,
   pannel_mode: Boolean,
+  MsgOnly: Boolean,
 });
+const emit = defineEmits(['MsgSended'])
 const strapi_channel_id = computed(() => teamStore?.channel?.id);
 const byInfo = computed(() => ({
   by: "channel",
@@ -445,7 +447,7 @@ watch(
             messages.value.find(msg => msg.id === message.root_id).reply_count = message.reply_count;
           }
           messages.value.push(message);
-
+          emit('MsgSended')
           // 如果是自己发的消息，滚动到底部
           // 如果是别人发的消息：没有向上翻阅一屏，滚动到底部，否则显示提示消息，点击后滚动到底部
           const sender = message.user_id;

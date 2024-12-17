@@ -258,7 +258,7 @@ const props = defineProps({
   pannel_mode: {
     type: Boolean,
     default: false,
-  },
+  }
 });
 const { msg, prev, container, curThreadId, pannel_mode, MsgOnly } = toRefs(props);
 const emit = defineEmits([
