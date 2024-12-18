@@ -32,6 +32,7 @@
 
 <script setup>
 import { computed } from "vue";
+import { uiStore } from 'src/hooks/global/useStore'
 import DrapUpload from "src/components/VIewComponents/DrapUpload.vue";
 import { useFetchAvatar } from "src/pages/Chat/hooks/useFetchAvatar.js";
 import { mmUser } from "src/hooks/global/useStore.js";

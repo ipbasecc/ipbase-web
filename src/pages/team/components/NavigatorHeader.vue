@@ -7,6 +7,11 @@
         } ${$q.platform.is.electron ? 'q-electron-drag q-pr-none' : ''}`"
         style="height: 2.5rem"
       >
+        <div v-if="uiStore.app === 'deliver'"
+          class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
+        >
+          <CreateDealbtn />
+        </div>
         <div v-if="uiStore.app === 'teams'"
           class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
         >
@@ -150,7 +155,7 @@ import WindowToggle from "src/pages/team/components/widgets/icons/WindowToggle.v
 import FileTransfer from "pages/team/components/widgets/icons/FileTransfer.vue";
 import TeamList from "src/pages/team/components/TeamList.vue";
 import TeamNotification from './TeamNotification.vue'
-
+import CreateDealbtn from 'src/pages/deliver/components/CreateDealbtn.vue'
 
 const $q = useQuasar();
 const router = useRouter();

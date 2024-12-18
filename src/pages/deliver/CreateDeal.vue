@@ -16,6 +16,15 @@
                     </q-item>
                     <q-item>
                         <q-item-section>
+                            <DrapUpload :isOSS="true" class="radius-md border-dashed border-xs border-op-sm bg-image-fill"
+                                :allowedFormats="['image/jpg','image/jpeg','image/png']"
+                                @uploaded="setDealCover" style="min-height: 8rem;"
+                                :caption="$t('drop_or_pick_cover')" :maxFileSize="10 * 1024 * 1024"
+                            />
+                        </q-item-section>
+                    </q-item>
+                    <q-item>
+                        <q-item-section>
                             <div class="row items-center gap-sm">
                                 <div class="row items-center gap-sm">
                                     <span>交付日期：</span>
@@ -60,7 +69,7 @@
                             <q-item-label class="q-mt-md q-py-sm">详细需求说明</q-item-label>
                             <TipTap :jsonContent="params.data.jsonContent" :editable="true" :need="'json'" :contentChanged="true"
                                 :square="true" :show_toolbar="true" :show_bubbleMenu="true" styleClass="q-px-md q-py-sm"
-                                class="q-space" :autofocus="false" @tiptapUpdate="tiptapUpdate" />
+                                class="q-space" :autofocus="false" @tiptapUpdate="updateJsonContent" />
                         </q-item-section>
                     </q-item>
                 </q-list>
@@ -104,7 +113,7 @@
             <div class="q-space">
                 <TipTap :jsonContent="params.data.party_a_requirements" :editable="true" :need="'json'" :contentChanged="true"
                     :square="true" :show_toolbar="true" :show_bubbleMenu="true" styleClass="q-px-md q-py-sm"
-                    class="q-space" :autofocus="false" @tiptapUpdate="tiptapUpdate" />
+                    class="q-space" :autofocus="false" @tiptapUpdate="updatePartyARequirements" />
             </div>
 
             <q-stepper-navigation>
@@ -117,8 +126,13 @@
 <script setup>
     import { ref } from 'vue'
     import { createDeal } from 'src/api/strapi'
+    import { useQuasar } from 'quasar'
+    import { useRouter } from 'vue-router'
     import TipTap from 'src/components/Utilits/tiptap/TipTap.vue'
+import DrapUpload from 'src/components/VIewComponents/DrapUpload.vue'
 
+    const $q = useQuasar()
+    const router = useRouter()
     const step = ref(1)
     const done1 = ref(false)
     const done2 = ref(false)
@@ -151,8 +165,11 @@
         tag.value = ''
     }
 
-    const tiptapUpdate = (content) => {
+    const updateJsonContent = (content) => {
         params.value.data.jsonContent = content
+    }
+    const updatePartyARequirements = (content) => {
+        params.value.data.party_a_requirements = content
     }
     const addTodo = () => {
         params.value.data.todogroups[0].todos.push({
@@ -162,12 +179,64 @@
     const removeTodo = (index) => {
         params.value.data.todogroups.splice(index, 1)
     }
+    const setDealCover = (file) => {
+        if(file?.id){
+            params.value.data.cover = file.id
+        }
+    }
     const createDealFn = async () => {
+        if(!params.value.data.amount){
+            $q.notify({
+                message: '请输入任务金额',
+                color: 'red'
+            })
+            return
+        }
+        if(!params.value.data.name){
+            $q.notify({
+                message: '请输入任务名称',
+                color: 'red'
+            })
+            return
+        }
+        if(!params.value.data.description){
+            $q.notify({
+                message: '请输入任务描述',
+                color: 'red'
+            })
+            return
+        }
+        if(!params.value.data.deadline){
+            $q.notify({
+                message: '请输入交付日期',
+                color: 'red'
+            })
+            return
+        }
+        if(!params.value.data.todogroups[0].todos.length){
+            $q.notify({
+                message: '请输入任务需求',
+                color: 'red'
+            })
+            return
+        }
         done3.value = true
-        params.value.data.amount = params.value.data.amount * 100
         console.log(params.value.data)
+        params.value.data.amount = params.value.data.amount * 100
         const res = await createDeal(params.value)
-        console.log(res)
+        if(res.data){
+            $q.notify({
+                message: '创建任务成功',
+                color: 'green'
+            })
+            router.push(`/deliver/deal/${res.data.id}`)
+        }
+        if(res.error){
+            $q.notify({
+                message: res.error.message,
+                color: 'red'
+            })
+        }
     }
 </script>
 

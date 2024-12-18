@@ -77,7 +77,7 @@
   import AppUtils from "src/components/VIewComponents/AppUtils.vue";
   import { clearLocalDB } from "pages/team/hooks/useUser";
   import InitializationUser from 'src/pages/team/settings/initialization/InitializationUser.vue'
-  import { teamStore, uiStore, userStore } from "src/hooks/global/useStore";
+  import { teamStore, uiStore, userStore, dealStore } from "src/hooks/global/useStore";
 
   import { getUserData } from "src/hooks/global/useGetMyMatedata.js";
   import { serverInfo } from 'src/boot/server.js'
@@ -121,6 +121,7 @@
       if (!teamStore.init || !teamStore.team || uiStore.reINIT) {
         await loginAndInit();
         await restoreDefaultTeam();
+        dealStore.verified = teamStore.init.by_certification?.verified || false
       }
 
       await checkNotification();

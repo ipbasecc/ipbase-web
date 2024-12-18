@@ -361,9 +361,10 @@ export async function findOrders() {
 
 // 招投标部分
 
-export async function findDeals(offset = 0, limit = 10, sort = 'desc') {
+export async function findDeals(params) {
+  console.log('findDeals', params);
   try {
-    const res = await api.get(`/deals?offset=${offset}&limit=${limit}&sort=${sort}`);
+    const res = await api.get(`/deals`, { params: params });
     if (res?.data) {
       return res;
     }
@@ -382,13 +383,16 @@ export async function findDeal(deal_id) {
   }
 }
 export async function createDeal(params) {
+  let res = null
   try {
-    const res = await api.post(`/deals`, params);
+    res = await api.post(`/deals`, params);
     if (res?.data) {
       return res;
     }
   } catch (error) {
     return error;
+  } finally {
+    return res
   }
 }
 export async function updateDeal(deal_id, params) {
@@ -413,6 +417,16 @@ export async function deleteDeal(deal_id) {
 }
 
 // 账号认证
+export async function findCertifications(params) {
+  try {
+    const res = await api.get(`/certifications`, { params: params });
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
 export async function createCertificate(params) {
   try {
     const res = await api.post(`/certifications`, params);

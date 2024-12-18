@@ -166,10 +166,13 @@ export default {
   deal_party_a_requirements: '甲方附加要求',
   deal_party_b_requirements: '乙方附加要求',
   deal_deliver: '交付',
+  deal_homepage: '交付首页',
   deal_party_a_list: '找活干',
   deal_party_b_list: '找人干活',
+  deal_no_listdata: '暂无数据',
   deal_my_party_a_list: '我的需求',
   deal_my_party_b_list: '我的承接',
+  to_certification: '去认证',
 
   deal_status_awaiting_deposit: '待预存',
   deal_status_deposited: '已预存',

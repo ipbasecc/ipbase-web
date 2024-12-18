@@ -441,13 +441,17 @@ watch(
         let message = JSON.parse(mm_wsStore.event.data.post);
 
         if (message?.channel_id === mm_channel_id) {
-          if(message.message === '') return
-          
-          if (message.root_id) {
-            messages.value.find(msg => msg.id === message.root_id).reply_count = message.reply_count;
+          if(message.message !== '') {
+            emit('MsgSended')
+            if (message.root_id) {
+              messages.value.find(msg => msg.id === message.root_id).reply_count = message.reply_count;
+            }
+            messages.value.push(message);
           }
-          messages.value.push(message);
-          emit('MsgSended')
+          if(message.root_id){
+            return
+          }
+          
           // 如果是自己发的消息，滚动到底部
           // 如果是别人发的消息：没有向上翻阅一屏，滚动到底部，否则显示提示消息，点击后滚动到底部
           const sender = message.user_id;
@@ -479,6 +483,7 @@ watch(
             });
           } else {
             setTimeout(() => {
+              // console.log('scroll_bottom');
               scroll_bottom();
             }, 1);
           }

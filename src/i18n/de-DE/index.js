@@ -166,8 +166,10 @@ export default {
   deal_party_a_requirements: 'Zusätzliche Anforderungen von Partei A',
   deal_party_b_requirements: 'Zusätzliche Anforderungen von Partei B',
   deal_deliver: 'Lieferung',
+  deal_homepage: 'Lieferungsstartseite',
   deal_party_a_list: 'Arbeit suchen',
   deal_party_b_list: 'Arbeit suchen',
+  deal_no_listdata: 'Keine Daten',
   deal_my_party_a_list: 'Meine Anforderungen',
   deal_my_party_b_list: 'Meine Akzeptanz',
 
@@ -179,6 +181,7 @@ export default {
   deal_status_reviewing: 'Überprüfung',
   deal_status_completed: 'Abgeschlossen',
   deal_status_withdrawn: 'Abgehoben',
+  to_certification: 'Zum Zertifizieren',
 
   manual: 'Bedienungsanleitung',
   shortcut: 'Tastenkürzel',

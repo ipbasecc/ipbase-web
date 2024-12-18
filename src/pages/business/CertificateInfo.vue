@@ -302,6 +302,11 @@ const processCertification = async () => {
     } else {
         const {data} = await updateCertificate(teamStore.init?.id, params.value)
         if(data && !data.code) {
+            $q.notify({
+                type: 'positive',
+                message: '认证信息已提交，请耐心等待审核',
+                position: 'top',
+            })
             certification.value = data
             hasCertification.value = true
             editMode.value = false

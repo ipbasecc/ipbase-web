@@ -7,7 +7,7 @@ import useChannelStore from "src/stores/channel.js";
 
 import useMmstore from "src/stores/mmstore.js";
 import mmUserStore from "src/stores/mmuser.js";
-
+import useDealStore from "src/stores/deal.js";
 import useOss from "src/stores/oss.js";
 import useDiscoverStore from "src/stores/discover.js";
 
@@ -20,6 +20,6 @@ export const channelStore = useChannelStore();
 
 export const mmstore = useMmstore();
 export const mmUser = mmUserStore();
-
+export const dealStore = useDealStore();
 export const ossStore = useOss();
 export const discoverStore = useDiscoverStore();

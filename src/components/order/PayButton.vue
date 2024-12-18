@@ -1,5 +1,5 @@
 <template>
-    <q-btn v-bind="$attrs" :color="btnColor ? btnColor : 'primary'" unelevated icon="check" :label="$t(buyLabel || 'buy')" @click="openCreateOrder()" />
+    <q-btn v-bind="$attrs" :color="btnColor ? btnColor : 'primary'" unelevated :label="$t(buyLabel || 'buy')" @click="openCreateOrder()" />
     <q-dialog v-model="showCreate" persistent>
         <q-card bordered class="column no-wrap" style="min-width: 24rem; min-height: 18rem;">
             <q-card-section class="q-space column no-wrap q-pa-none" :class="`bg-${color}`">
@@ -167,6 +167,9 @@ watch(income, () => {
             }
         }
         if(data.project_id){
+            emit('buyData', data)
+        }
+        if(data.deal_id){
             emit('buyData', data)
         }
         showCreate.value = false

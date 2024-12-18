@@ -77,6 +77,7 @@
 <script setup>
 import { ref, toRef, watchEffect } from "vue";
 import { sendPost } from "src/api/mattermost.js";
+import { teamStore } from 'src/hooks/global/useStore'
 import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
 import uploadFile from "src/pages/Chat/components/wigets/uploadFile.vue";
 
@@ -111,6 +112,9 @@ watchEffect(() => {
   parmars.value = {
     channel_id: channel_idRef.value,
     message: msg.value,
+    props: {
+      strapi_user_id: teamStore.init?.id
+    }
   };
   if (asThreadRef.value) {
     parmars.value.root_id = thread_post_idRef.value;

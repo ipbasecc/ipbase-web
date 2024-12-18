@@ -1,5 +1,5 @@
 <template>
-    <q-list class="q-pa-sm column no-wrap fit">
+    <q-list class="q-pa-sm column no-wrap gap-xs fit">
         <q-item clickable v-ripple
             v-for="item in menu" :key="item.name"
             :class="`${
@@ -15,13 +15,10 @@
                 <q-item-label>{{ $t(`deal_${item.name}`) }}</q-item-label>
             </q-item-section>
         </q-item>
-        <q-space />
-        <q-item clickable v-ripple class="border bg-primary text-white radius-xs" @click="createDeal">
-            <q-item-section class="text-center">发布需求</q-item-section>
-        </q-item>
     </q-list>
 </template>
 <script setup>
+import { watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { uiStore } from 'src/hooks/global/useStore';
 
@@ -31,12 +28,13 @@ const enter = (item) => {
     uiStore.deal_active_item = item.name;
     router.push(item.path);
 }
-const createDeal = () => {
-    uiStore.deal_active_item = 'create_deal';
-    router.push('/deliver/create');
-}
 
 const menu = [
+    {
+        name: 'homepage',
+        icon: 'print',
+        path: '/deliver',
+    },
     {
         name: 'party_a_list',
         icon: 'print',
@@ -55,8 +53,13 @@ const menu = [
     {
         name: 'my_party_b_list',
         icon: 'print',
-        path: '/deliver/party_b',
+        path: '/deliver/party_a',
     }
 ]
+watchEffect(() => {
+    if(!uiStore.deal_active_item) {
+        uiStore.deal_active_item = 'homepage';
+    }
+})
 
 </script>

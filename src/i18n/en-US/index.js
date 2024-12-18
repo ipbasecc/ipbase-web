@@ -166,8 +166,10 @@ export default {
   deal_party_a_requirements: 'Party A Additional requirements',
   deal_party_b_requirements: 'Party B Additional requirements',
   deal_deliver: 'Deliver',
+  deal_homepage: 'Deliver homepage',
   deal_party_a_list: 'Find work',
   deal_party_b_list: 'Find people to work',
+  deal_no_listdata: 'No data',
   deal_my_party_a_list: 'My needs',
   deal_my_party_b_list: 'My accept',
 
@@ -179,6 +181,7 @@ export default {
   deal_status_reviewing: 'Reviewing',
   deal_status_completed: 'Completed',
   deal_status_withdrawn: 'Withdrawn',
+  to_certification: 'To certification',
 
   manual: 'manual',
   shortcut: 'shortcut',

@@ -284,7 +284,7 @@ import UpdateAvatar from "src/pages/team/components/user/Settings/UpdateAvatar.v
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import localforage from "localforage";
-import { userStore } from "src/hooks/global/useStore";
+import { userStore, teamStore } from "src/hooks/global/useStore";
 
 const props = defineProps({
   styleClass: {
@@ -304,26 +304,26 @@ const cover = ref();
 const brand = ref();
 const self_tags = ref();
 onBeforeMount(() => {
-  avatar.value = userStore.avatar;
-  cover.value = userStore.cover;
-  brand.value = userStore.brand;
-  self_tags.value = userStore.self_tags;
-  if(userStore.config?.id){
-    delete userStore.config.id
+  avatar.value = teamStore.init?.profile?.avatar;
+  cover.value = teamStore.init?.profile?.cover;
+  brand.value = teamStore.init?.profile?.brand;
+  self_tags.value = teamStore.init?.self_tags;
+  if(teamStore.init?.config?.id){
+    delete teamStore.init?.config.id
   }
 })
 const update_params = ref({
   data: {
     profile: {
-      title: userStore.profile?.title,
-      description: userStore.profile?.description,
-      bio: userStore.profile?.bio,
-      avatar: userStore.avatar?.id,
-      cover: userStore.cover?.id,
-      brand: userStore.brand?.length > 0 ? userStore.brand.map(i => i.id) : [],
+      title: teamStore.init?.profile?.title,
+      description: teamStore.init?.profile?.description,
+      bio: teamStore.init?.profile?.bio,
+      avatar: teamStore.init?.profile?.avatar?.id,
+      cover: teamStore.init?.profile?.cover?.id,
+      brand: teamStore.init?.profile?.brand?.length > 0 ? teamStore.init?.profile?.brand.map(i => i.id) : [],
     },
-    self_tags: userStore.self_tags,
-    config: userStore.config,
+    self_tags: teamStore.init?.self_tags,
+    config: teamStore.init?.config,
   }
 });
 watch(update_params, () => {
@@ -405,11 +405,17 @@ const coverUploaded = (id, obj) => {
 };
 
 const updateUserFn = async () => {
-  const res = await updateUser(userStore.userId,update_params.value);
+  const res = await updateUser(teamStore.init?.id,update_params.value);
   if (res?.data) {
     // $q.notify("用户资料已更新");
     submitDisable.value = true;
-    userStore.$process(res.data);
+    if (res.data && teamStore.init) {
+      for (let key in res.data) {
+        if (teamStore.init.hasOwnProperty(key)) {
+          teamStore.init[key] = res.data[key];
+        }
+      }
+    }
   }
 }
 

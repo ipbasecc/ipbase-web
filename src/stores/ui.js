@@ -141,6 +141,7 @@ export default defineStore("ui", {
       channels: []
     },
     disableBgEffects: false,
+    no_image_url: 'https://airspace.oss-cn-shanghai.aliyuncs.com/app/no_image.jpeg',
     supportExts: [
       "jpg", "png", "jpeg", "gif", "bmp", "svg", "webp",
       "mp4", "mov", "avi", "mkv", "flv", "wmv", "webm", "m4v", "mxf", "quicktime", "3gp", "3g2",
@@ -196,7 +197,7 @@ export default defineStore("ui", {
     slashMenuOpen: false,
     reINIT: false,
     logging: false,
-    deal_active_item: '',
+    deal_active_item: 'homepage',
   }),
   actions: {
     $syncMmUnreads() {
