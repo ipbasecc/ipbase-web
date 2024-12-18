@@ -172,6 +172,7 @@ export default {
   deal_no_listdata: 'Keine Daten',
   deal_my_party_a_list: 'Meine Anforderungen',
   deal_my_party_b_list: 'Meine Akzeptanz',
+  deal_my_talkers: 'Meine Kommunikation',
 
   deal_status_awaiting_deposit: 'Warten auf Einzahlung',
   deal_status_deposited: 'Einzahlung erfolgreich',

@@ -172,6 +172,7 @@ export default {
   deal_no_listdata: '暂无数据',
   deal_my_party_a_list: '我的需求',
   deal_my_party_b_list: '我的承接',
+  deal_my_talkers: '我的沟通',
   to_certification: '去认证',
 
   deal_status_awaiting_deposit: '待预存',

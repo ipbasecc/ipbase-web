@@ -1,20 +1,22 @@
 <template>
     <q-list class="q-pa-sm column no-wrap gap-xs fit">
-        <q-item clickable v-ripple
-            v-for="item in menu" :key="item.name"
-            :class="`${
-                uiStore.deal_active_item === item.name
-                ? 'border active-listitem'
-                : 'border-placeholder op-7'
-            }`"
-            class="radius-xs text-white"
-            :style="`width: ${uiStore.navDrawerWidth - 16}px;`"
-            @click="enter(item)"
-        >
-            <q-item-section>
-                <q-item-label>{{ $t(`deal_${item.name}`) }}</q-item-label>
-            </q-item-section>
-        </q-item>
+        <template v-for="item in menu" :key="item.name">
+            <q-separator v-if="item.type === 'divider'" spaced />
+            <q-item v-else clickable v-ripple
+                :class="`${
+                    uiStore.deal_active_item === item.name
+                    ? 'border active-listitem'
+                    : 'border-placeholder op-7'
+                }`"
+                class="radius-xs text-white"
+                :style="`width: ${uiStore.navDrawerWidth - 16}px;`"
+                @click="enter(item)"
+            >
+                <q-item-section>
+                    <q-item-label>{{ $t(`deal_${item.name}`) }}</q-item-label>
+                </q-item-section>
+            </q-item>
+        </template>
     </q-list>
 </template>
 <script setup>
@@ -36,6 +38,9 @@ const menu = [
         path: '/deliver',
     },
     {
+        type: 'divider',
+    },
+    {
         name: 'party_a_list',
         icon: 'print',
         path: '/deliver/party_a',
@@ -44,6 +49,17 @@ const menu = [
         name: 'party_b_list',
         icon: 'print',
         path: '/deliver/party_b',
+    },
+    // {
+    //     type: 'divider',
+    // },
+    // {
+    //     name: 'my_talkers',
+    //     icon: 'print',
+    //     path: '/deliver/talkers',
+    // },
+    {
+        type: 'divider',
     },
     {
         name: 'my_party_a_list',

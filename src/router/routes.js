@@ -207,6 +207,12 @@ const routes = [
             component: () => import("pages/deliver/DeliverDetial.vue"),
             name: "DeliverDetial",
             props: true,
+          },
+          {
+            path: '/deliver/talkers',
+            component: () => import("pages/deliver/MyTalkers.vue"),
+            name: "MyTalkers",
+            props: true,
           }
         ]
       },
