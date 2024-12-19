@@ -11,45 +11,28 @@
         <q-btn v-if="teamStore.project?.meeting" flat dense round color="red" icon="radio_button_checked" @click="toggleMeet()" />
         <ProjectNavigation />
         <q-space />
-        <MembersIndicator
-          v-if="teamStore?.project?.id && membersForAvatar && $q.screen.gt.xs"
+        <MembersIndicator v-if="teamStore?.project?.id && membersForAvatar && $q.screen.gt.xs"
           :members="membersForAvatar"
           @click="toggleRightpannel('member_manager')"
         />
         <StartMeet v-if="$q.screen.gt.xs" :project="teamStore.project" />
-        <q-btn
-          v-if="teamStore.project?.id && teamStore.navigation !== 'chat'"
-          flat
-          dense
-          round
+        <q-btn v-if="teamStore.project?.id && teamStore.navigation !== 'chat'"
+          flat dense round icon="mdi-forum"
           :color="teamStore.rightDrawer === 'chat_pannel' ? 'positive' : ''"
-          icon="mdi-forum"
           @click="toggleRightpannel('chat_pannel')"
         />
-        <q-btn
-          v-if="useAuths('approve_join_request',['project'])"
-          flat
-          dense
-          round
-          icon="notifications"
+        <q-btn v-if="useAuths('approve_join_request',['project'])"
+          flat dense round icon="notifications"
           :color="show_join_alert ? 'orange' : teamStore.rightDrawer === 'join_request' ? 'positive' : ''"
           @click="toggleRightpannel('join_request')"
         />
-        <q-btn
-          v-if="teamStore.project?.id"
-          flat
-          dense
-          round
-          icon="more_vert"
+        <q-btn v-if="teamStore.project?.id"
+          flat dense round icon="more_vert"
           @click="uiStore.project_settings = true"
         />
-        <q-dialog
-          v-model="uiStore.project_settings"
-          persistent
-          allow-focus-outside
-          position="top"
-          transition-show="slide-down"
-          transition-hide="slide-up"
+        <q-dialog v-model="uiStore.project_settings"
+          persistent allow-focus-outside position="top"
+          transition-show="slide-down" transition-hide="slide-up"
           :maximized="!$q.screen.gt.xs"
         >
           <div v-if="$q.screen.gt.xs" class="q-pt-xl overflow-hidden" style="min-width: 61dvw; height: 61dvh">
@@ -91,6 +74,7 @@ const toggleRightpannel = (val) => {
 
 const filterArray = (array) => {
   if (!array) return;
+  array = array.filter(item => item.by_user?.mm_profile)
   if (array.length <= 3) {
     return array;
   } else {

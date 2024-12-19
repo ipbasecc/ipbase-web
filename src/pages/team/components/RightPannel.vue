@@ -22,6 +22,11 @@
         :headerless="true"
         class="absolute-full"
       />
+      <TalkerContainer
+        v-if="uiStore.projectRightDrawerContent === 'talkers'"
+        :headerless="true"
+        class="absolute-full"
+      />
     </q-drawer>
 </template>
 
@@ -30,6 +35,7 @@ import { ref } from 'vue'
 import {teamStore, uiStore} from "src/hooks/global/useStore.js";
 import AffairsContainer from 'src/pages/team/todo/AffairsContainer.vue'
 import FlagsContainder from "src/pages/team/chat/FlagsContainder.vue";
+import TalkerContainer from 'src/pages/deliver/components/TalkerContainer.vue'
 </script>
 
 <style scoped>

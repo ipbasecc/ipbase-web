@@ -4,7 +4,7 @@
             dense round unelevated class="full-width"
             @click="startMeet"
         >
-            <MeetIcon color="#efefef" />
+            <MeetIcon :color="$q.dark.mode ? '#efefef' : '#666'" />
         </q-btn>
         <q-btn v-else color="negative" :label="$t('join_meet')" class="full-width" @click="joinMeet" />
     </div>

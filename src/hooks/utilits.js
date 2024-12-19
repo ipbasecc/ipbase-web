@@ -619,3 +619,7 @@ export const isValidMobile = (mobile) => {
 
   return true;
 }
+
+export const generateRandomNumber = (max) => {
+    return Math.floor(Math.random() * max);
+}

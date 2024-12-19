@@ -42,9 +42,12 @@ const handler = async () => {
 }
 const unread_count = ref(0)
 const openFloatChat = async () => {
-    await createDirectFn()
+    uiStore.projectRightDrawer = !uiStore.projectRightDrawer
+    uiStore.projectRightDrawerContent = 'talkers'
+    uiStore.talker = worker;
+    // await createDirectFn()
     unread_count.value = 0
-    showFloatChat.value = true;
+    // showFloatChat.value = true;
 }
 const createDirectFn = async () => {
     const a = teamStore.init?.mm_profile?.id;

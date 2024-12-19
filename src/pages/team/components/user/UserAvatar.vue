@@ -66,8 +66,8 @@
       </q-card>
     </q-popup-proxy>
     <StatusIndicator
-      v-if="member?.status"
-      :status="member?.status"
+      v-if="member?.status || fetchStatuse(user_idRef)"
+      :status="member?.status || fetchStatuse(user_idRef)"
       :size="indicator_size"
     />
     <q-dialog v-model="addFriendDlg" persistent @hide="addFriendResult = null">
@@ -144,14 +144,22 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  image: {
+    type: String,
+    default: null,
+  },
+  mm_member: {
+    type: Object,
+    default: null,
+  },
 });
-const { strapi_member } = toRefs(props);
+const { strapi_member, mm_member } = toRefs(props);
 const user_idRef = toRef(props, "user_id");
 const disable_cardRef = toRef(props, "disable_card");
 const self_user_id = ref(localStorage.getItem("mmUserId"));
 
 const member = computed(() =>
-  mmstore.members.find((i) => i.user_id === user_idRef.value)
+  mmstore.members.find((i) => i.id === user_idRef.value)
 );
 
 const member_roles = computed(() =>{
@@ -166,23 +174,40 @@ const disable_addFriend = computed(() =>{
 
 const avatar = ref();
 watchEffect(() => {
-  if (user_idRef.value === self_user_id.value) {
+  if(props.image){
+    avatar.value = props.image
+  }else if (user_idRef.value === self_user_id.value) {
     avatar.value = mmUser.current_user_avatar;
   }
 });
 const fetchStatuse = async (mm_user_id) => {
+  if(!mm_user_id || mmstore.fetch_status_mm_user_ids.includes(mm_user_id)){
+    return
+  }
+  mmstore.fetch_status_mm_user_ids.push(mm_user_id)
+  const status_in_store = mmstore.members.find((i) => i.id === mm_user_id)?.status
+  if(status_in_store){
+    return status_in_store
+  }
   const res = await getUserStatus(mm_user_id);
   if (res) {
-    if (mmstore.members.find((i) => i.user_id === user_idRef.value)?.status) {
-      mmstore.members.find((i) => i.user_id === user_idRef.value).status = res;
+    if (mmstore.members.find((i) => i.id === mm_user_id)) {
+      mmstore.members.find((i) => i.id === mm_user_id).status = res;
+    } else if(mm_member.value){
+      mmstore.members.push(mm_member.value)
+      mmstore.members.find((i) => i.id === mm_member.value.id).status = res;
     }
   }
 };
 
 const fetchAvatar = async (val) => {
-  let res = await useFetchAvatar(user_idRef.value, val);
-  if (res) {
-    avatar.value = res;
+  if(props.image){
+    avatar.value = props.image
+  }else{
+    let res = await useFetchAvatar(user_idRef.value, val);
+    if (res) {
+      avatar.value = res;
+    }
   }
 };
 

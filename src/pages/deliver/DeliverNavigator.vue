@@ -1,7 +1,7 @@
 <template>
     <q-list class="q-pa-sm column no-wrap gap-xs fit">
         <template v-for="item in menu" :key="item.name">
-            <q-separator v-if="item.type === 'divider'" spaced />
+            <div v-if="item.type === 'divider'" class="op-5 border-bottom q-my-xs" />
             <q-item v-else clickable v-ripple
                 :class="`${
                     uiStore.deal_active_item === item.name
@@ -50,14 +50,6 @@ const menu = [
         icon: 'print',
         path: '/deliver/party_b',
     },
-    // {
-    //     type: 'divider',
-    // },
-    // {
-    //     name: 'my_talkers',
-    //     icon: 'print',
-    //     path: '/deliver/talkers',
-    // },
     {
         type: 'divider',
     },

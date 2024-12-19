@@ -237,10 +237,11 @@ const route = useRoute();
 const $t = i18n.global.t;
 const $q = useQuasar();
 
-const { mm_channel_id, pannel_mode, MsgOnly } = defineProps({
+const { mm_channel_id, pannel_mode, MsgOnly, noReply } = defineProps({
   mm_channel_id: String,
   pannel_mode: Boolean,
   MsgOnly: Boolean,
+  noReply: Boolean,
 });
 const emit = defineEmits(['MsgSended'])
 const strapi_channel_id = computed(() => teamStore?.channel?.id);
@@ -270,6 +271,7 @@ const close_powerPannel = () => {
   limits.value = [100, 100];
 };
 const enterThread = (msg) => {
+  if(noReply) return
   if (!thread.value) {
     togglePowerpannel("thread");
   }

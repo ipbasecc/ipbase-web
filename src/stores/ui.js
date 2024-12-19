@@ -198,6 +198,7 @@ export default defineStore("ui", {
     reINIT: false,
     logging: false,
     deal_active_item: 'homepage',
+    talker: null,
   }),
   actions: {
     $syncMmUnreads() {

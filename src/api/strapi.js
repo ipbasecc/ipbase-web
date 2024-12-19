@@ -427,6 +427,16 @@ export async function findCertifications(params) {
     return error;
   }
 }
+export async function findTalkers(params) {
+  try {
+    const res = await api.get(`/talkers`, { params: params });
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
 export async function createCertificate(params) {
   try {
     const res = await api.post(`/certifications`, params);

@@ -94,26 +94,25 @@
             icon="mdi-checkbox-marked-circle-outline"
             @click="toggleRightDrawer('person_todos')"
           />
-          <q-btn
-            flat
-            dense
-            :color="
-              uiStore.projectRightDrawer &&
+          <q-btn @click="toggleRightDrawer('flaggeds')"
+            icon="bookmarks" flat dense
+            :color="uiStore.projectRightDrawer &&
               uiStore.projectRightDrawerContent === 'flaggeds'
-                ? 'green'
-                : ''
+                ? 'green': ''
             "
-            icon="bookmarks"
-            @click="toggleRightDrawer('flaggeds')"
           />
-          <q-btn
-            flat
-            dense
-            :class="ossStore.showList ? 'toggle-active' : ''"
-            @click="toggleTransfer()"
+          <q-btn @click="toggleTransfer()"
+            flat dense :class="ossStore.showList ? 'toggle-active' : ''"
           >
             <FileTransfer :color="ossStore.showList ? '#21BA45' : '#fff'" />
           </q-btn>
+          <q-btn @click="toggleRightDrawer('talkers')"
+            icon="mdi-forum" flat dense
+            :color="uiStore.projectRightDrawer &&
+              uiStore.projectRightDrawerContent === 'talkers'
+                ? 'green': ''
+            "
+          />
         </template>
         <AccountMenu v-else />
         <!-- <q-btn icon="check" dense @click="$q.dark.toggle()" /> -->

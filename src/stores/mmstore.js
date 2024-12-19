@@ -20,6 +20,7 @@ export default defineStore("mmstore", {
     PrivateTodo: false,
     BoardsList: true,
     Deleted_channel: null,
+    fetch_status_mm_user_ids: [],
   }),
   actions: {
     $reset() {
@@ -39,6 +40,7 @@ export default defineStore("mmstore", {
       this.kanban = null;
       this.PrivateTodo = false;
       this.Deleted_channel = null
+      this.fetch_status_mm_user_ids = []
     },
     $updateMember(_member) {
       this.members = this.members.map((i) =>

@@ -22,7 +22,7 @@
 
 <script setup>
 import UserAvatar from "src/pages/team/components/user/UserAvatar.vue";
-import { toRefs } from "vue";
+import { toRefs, computed } from "vue";
 
 const props = defineProps({
   members: {
