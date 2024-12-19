@@ -1,7 +1,7 @@
 <template>
     <div class="absolute-full q-pa-sm">
         <SaleCards />
-        <SaleTable v-if="filteredSales" :sales="filteredSales" :pageInfo :partner_info @filterBy="filterBy" />
+        <SaleTable v-if="filteredSales && partner_info && platform" :sales="filteredSales" :pageInfo :partner_info :platform @filterBy="filterBy" />
     </div>
 </template>
 
@@ -18,11 +18,13 @@ const offset = computed(() => (page.value - 1) * limit.value);
 
 const sales = ref([]);
 const partner_info = ref({});
+const platform = ref({});
 const getSales = async() => {
     const { data } = await findSales(offset.value,limit.value);
     if(data) {
         sales.value = data.orders
         partner_info.value = data.partner_info
+        platform.value = data.platform
     }
 }
 const pageInfo = computed(() => {

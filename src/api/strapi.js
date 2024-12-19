@@ -358,6 +358,16 @@ export async function findOrders() {
     return error;
   }
 }
+export async function tax(params) {
+  try {
+    const res = await api.post(`/order/tax`, params);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
 
 // 招投标部分
 
@@ -365,6 +375,17 @@ export async function findDeals(params) {
   console.log('findDeals', params);
   try {
     const res = await api.get(`/deals`, { params: params });
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+export async function findCompletedDeals(params) {
+  console.log('findCompletedDeals', params);
+  try {
+    const res = await api.get(`/completed_deals`, { params: params });
     if (res?.data) {
       return res;
     }

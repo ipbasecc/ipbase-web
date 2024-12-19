@@ -230,6 +230,12 @@ const routes = [
             props: true,
           },
           {
+            path: "/business/deal",
+            component: () => import("pages/business/DealPage.vue"),
+            name: "DealPage",
+            props: true,
+          },
+          {
             path: "/business/info",
             component: () => import("pages/business/AccountInfo.vue"),
             name: "BusinessAccount",

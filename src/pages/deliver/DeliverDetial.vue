@@ -52,7 +52,12 @@
                     </div>
                     <q-separator spaced inset vertical />
                     <div v-if="deal.amount" class="column flex-center gap-md">
-                        <span class="text-h4">酬金</span>
+                        <div class="relative-position">
+                            <span class="text-h4">
+                                酬金
+                            </span>
+                            <q-badge v-if="is_paied" floating color="positive" label="已预存" class="shadow-12" />
+                        </div>
                         <span class="text-h5 q-px-sm q-py-xs">
                             ￥：{{ deal.amount / 100 }}
                             <q-popup-proxy v-if="editMode && is_party_a" transition-show="scale" transition-hide="scale">
@@ -124,7 +129,7 @@
                 <q-tab v-for="i in tabs" :key="i" :name="i" :label="$t(`deal_${i}`)" />
             </q-tabs>
             <q-tab-panels v-model="tab" keep-alive class="transparent">
-                <q-tab-panel v-for="i in tabs" :key="i" :name="i">
+                <q-tab-panel v-for="i in tabs" :key="i" :name="i" class="q-pa-none">
                     <TipTap v-if="i === 'jsonContent'" :jsonContent="deal.jsonContent" :editable="editMode && is_party_a"
                         :contentChanged="editMode" :need="'json'" :square="true" :show_toolbar="editMode"
                         :show_bubbleMenu="editMode" styleClass="q-px-md q-py-sm" class="q-space" :autofocus="false"
@@ -173,31 +178,34 @@
                                 </div>
                             </q-tab-panel>
                             <q-tab-panel v-if="deliver_tab === 'deliver_file'" name="deliver_file" class="q-pa-none">
-                                <DrapUpload v-if="is_party_b" :isOSS="true" class="radius-md border-dashed border-xs border-op-sm bg-image-fill"
+                                <DrapUpload v-if="is_party_b" :isOSS="true" class="radius-md border-dashed border-xs border-op-sm bg-image-fill q-mb-sm"
                                     :allowedFormats="['application/rar','application/zip','application/x-tar']"
                                     @uploaded="setDeliverFile" style="min-height: 8rem;"
                                     :caption="$t('drop_or_pick_deliver_file')" :maxFileSize="1000 * 1024 * 1024"
                                 />
-                                <template v-else>
-                                    <q-list v-if="deal.deliver_files?.length > 0" bordered>
-                                        <q-item v-for="file in deal.deliver_files" :key="file.id" clickable v-ripple>
-                                            <q-item-section>
-                                                <q-item-label>{{ file.name }}</q-item-label>
-                                            </q-item-section>
-                                            <q-item-section side>
-                                                <q-btn color="primary" icon="mdi-download" :label="`下载`" @click="downloadDeliverFile(file)" />
-                                            </q-item-section>
-                                        </q-item>
-                                    </q-list>
-                                    <div v-else class="flex flex-center radius-sm border-dotted border-xs border-op-sm op-5" style="height: 8rem;">暂无交付文件</div>
-                                </template>
+                                <q-list v-if="deal.deliver_files?.length > 0" bordered class="radius-xs">
+                                    <q-item v-for="file in deal.deliver_files" :key="file.id" clickable v-ripple>
+                                        <q-item-section>
+                                            <q-item-label>{{ file.name }}</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section side>
+                                            <q-btn color="primary" flat dense padding="xs md" :label="`下载`"
+                                            @click="downloadDeliverFile(file)" />
+                                        </q-item-section>
+                                    </q-item>
+                                </q-list>
+                                <div v-else class="flex flex-center radius-sm border-dotted border-xs border-op-sm op-5" style="height: 8rem;">暂无交付文件</div>
                             </q-tab-panel>
                         </q-tab-panels>
+                        <template v-if="(deal.deliver_files?.length > 0 || deal.deliver_link) && deal.party_a?.id === teamStore.init?.id">
+                            <q-btn v-if="deal.status === 'progressing' || deal.status === 'reviewing'" color="primary" label="确认验收" @click="completeDeliver" />
+                            <div v-if="deal.status === 'completed'" class="q-pa-md radius-xs border text-center">已验收</div>
+                        </template>
                     </div>
                 </q-tab-panel>
             </q-tab-panels>
         </div>
-        <div v-if="deal" class="column q-px-sm q-py-md" style="flex: 0 0 260px;">
+        <div v-if="deal" class="column gap-sm q-px-sm q-py-md" style="flex: 0 0 260px;">
             <q-responsive :ratio="3/4" class="full-width">
                 <PartybCard :party="deal.party_a">
                     <q-card-section class="column flex-center q-pa-sm border-top">
@@ -220,9 +228,54 @@
                     </q-card-section>
                 </PartybCard>
             </q-responsive>
+                <q-list v-if="deal.delay?.length > 0 && (is_party_a || is_party_b)" bordered class="radius-xs">
+                    <q-item v-for="i in deal.delay" v-ripple clickable>
+                        <q-item-section side top>
+                            {{ i.from === 'party_a' ? '甲方' : '乙方' }}
+                        </q-item-section>
+                        <q-item-section>
+                            <q-item-label caption lines="2">{{ i.reason }}</q-item-label>
+                            <q-item-label>{{ i.date }}</q-item-label>
+                        </q-item-section>
+                        <q-item-section side top>
+                            <q-icon v-if="i.accepted" name="check" />
+                            <q-btn v-else color="primary" dense size="sm" padding="xs sm" label="同意"
+                            :disable="disable_delay(i)" @click="acceptDelay(i.id)">
+                                <q-tooltip v-if="disable_delay(i)">
+                                    你要求的延期，需要对方同意！
+                                </q-tooltip>
+                            </q-btn>
+                        </q-item-section>
+                    </q-item>
+                </q-list>
+                <template v-if="deal.status === 'progressing' || deal.status === 'reviewing'">
+                    <q-btn v-if="!delay_show" color="primary" label="要求延期" class="full-width" @click="toggleDelay" />
+                    <q-input v-else v-model="delay_reason" type="text" label="延期理由" outlined autogrow @keydown.esc="toggleDelay">
+                        <template v-slot:append>
+                            <q-btn dense flat round size="sm" icon="mdi-calendar" :disable="!delay_reason">
+                                <q-popup-proxy transition-show="scale" transition-hide="scale">
+                                    <q-date
+                                        v-model="delay_date"
+                                        today-btn
+                                        mask="YYYY-MM-DD"
+                                        minimal
+                                        bordered
+                                        v-close-popup
+                                        :options="getDelayDateOptions"
+                                        @update:model-value="setDelay"
+                                    />
+                                </q-popup-proxy>
+                                <q-tooltip v-if="!delay_reason">
+                                    请输入延期理由
+                                </q-tooltip>
+                            </q-btn>
+                        </template>
+                    </q-input>
+                </template>
         </div>
         <q-dialog v-model="showFloatChat" persistent>
             <FloatChat
+                v-if="floatChatChannelId"
                 :channel_id="floatChatChannelId"
                 :target_user="deal.party_a"
                 @MsgSended="MsgSended"
@@ -236,6 +289,18 @@
                 <q-badge v-if="unread_count > 0" color="red" floating :label="unread_count" />
             </q-btn>
         </div>
+        <q-dialog v-model="completed_tip" persistent>
+            <q-card>
+                <q-card-section class="row items-center">
+                    <q-avatar icon="signal_wifi_off" color="primary" text-color="white" />
+                    <span class="q-ml-sm">验收之后，当前协作将结束，酬金将进入对方账户，是否确认？</span>
+                </q-card-section>
+                <q-card-actions align="right">
+                    <q-btn flat :label="$t('cancel')" color="primary" v-close-popup />
+                    <q-btn flat :label="$t('confirm')" color="primary" v-close-popup @click="completeDeliver" />
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
     </div>
 </template>
 
@@ -263,27 +328,34 @@
 
     const tab = ref('jsonContent');
     const deliver_tab = ref('deliver_file');
-    const tabs = ['jsonContent', 'todogroups', 'party_a_requirements'];
+    const tabs = ref(['jsonContent', 'todogroups', 'party_a_requirements']);
     const findDealFn = async () => {
         const { data } = await findDeal(deal_id);
         deal.value = data;
-        if (data.party_b?.id === teamStore.init?.id || data.party_a?.id === teamStore.init?.id) {
-            tabs.push('party_b_requirements');
-            if(data.status === 'progressing' || data.status === 'reviewing'){
-                tabs.push('deliver');
-            }
+        if(data.party_b?.id === teamStore.init?.id || data.party_a?.id === teamStore.init?.id){
+            tabs.value.includes('party_b_requirements') || tabs.value.push('party_b_requirements');
+        }
+        if(deal.value?.status === 'progressing' || deal.value?.status === 'reviewing'){
+            tabs.value.includes('deliver') || tabs.value.push('deliver');
+        }
+        if(tabs.value.includes('deliver')){
+            tab.value = 'deliver';
         }
         tags.value = data.tags;
     }
     const is_party_b = computed(() => deal.value?.party_b?.id === teamStore.init?.id);
     const is_party_a = computed(() => deal.value?.party_a?.id === teamStore.init?.id);
+    const is_paied = computed(() => deal.value?.order?.jeepay_order?.state === '2');
     const showFloatChat = ref(false);
     const talkHistory = ref(false);
     const floatChatChannelId = ref(null);
     const unread_count = ref(0);
     const unread_count_map = ref({});
     const d_channels_ids = ref([]);
-    const openFloatChat = () => {
+    const openFloatChat = async () => {
+        if(!floatChatChannelId.value) {
+            await createDirectFn();
+        }
         unread_count.value = 0;
         showFloatChat.value = true;
     }
@@ -295,7 +367,10 @@
     }
     const checkUnreadCount = async () => {
         if(!deal.value) return;
-        if(deal.value?.party_a?.id !== teamStore.init?.id && floatChatChannelId.value) {
+        if((deal.value?.party_a?.id !== teamStore.init?.id
+            || deal.value?.party_b?.id !== teamStore.init?.id
+            || deal.value?.talked_users?.includes(teamStore.init?.id))
+        && floatChatChannelId.value) {
             await createDirectFn();
             const {data} = await getChannelUnreads(teamStore.init?.mm_profile?.id, floatChatChannelId.value);
             unread_count.value = data.msg_count;
@@ -316,9 +391,12 @@
     }
     onMounted(async () => {
         await findDealFn();
-        await nextTick();
-        await checkUnreadCount();
     })
+    watch(deal, async () => {
+        if(deal.value){
+            await checkUnreadCount();
+        }
+    },{immediate: true})
     const MsgSended = async () => {
         const talked_users_ids = deal.value?.talked_users?.map(i => i.id) || [];
         if(!talked_users_ids.includes(teamStore.init?.id)){
@@ -327,14 +405,15 @@
                     new_talked_user: teamStore.init?.id,
                 }
             }
-            const { data } = await updateDeal(deal_id, add_talked_user_params);
-            deal.value = data;
+            await updateDeal(deal_id, add_talked_user_params);
         }
     }
     const openChat = async (d_channel_id) => {
         unread_count.value = unread_count.value - unread_count_map.value[d_channel_id];
         unread_count_map.value[d_channel_id] = 0;
-        console.log('unread_count_map', unread_count_map.value);
+        if(unread_count_map.value.length === 0){
+            unread_count.value = 0
+        }
     }
     const buyData = async () => {
         await findDealFn();
@@ -418,35 +497,75 @@
             }
         }
         if (teamStore.init?.id === deal.value.party_a?.id) {
-            delete update_params.value.data.party_a_requirements;
-            delete update_params.value.data.party_a_attachment;
+            delete update_params.value.data.party_b_requirements;
+            delete update_params.value.data.party_b_attachment;
         }
-        const { data } = await updateDeal(deal_id, update_params.value);
-        deal.value = data;
+        await updateDeal(deal_id, update_params.value);
         editMode.value = false;
         syncUpdateParams();
     }
     const startMatch = async () => {
-        const { data } = await updateDeal(deal_id, { data: { status: 'pending_matching' } });
-        deal.value = data;
+        await updateDeal(deal_id, { data: { status: 'pending_matching' } });
     }
     const setPartyB = async (party_b) => {
-        const { data } = await updateDeal(deal_id, { data: { party_b: party_b.id } });
-        deal.value = data;
+        await updateDeal(deal_id, { data: { party_b: party_b.id } });
     }
     const agreeDeal = async () => {
-        const { data } = await updateDeal(deal_id, { data: { agree: true } });
-        deal.value = data;
+        await updateDeal(deal_id, { data: { agree: true } });
+    }
+    const delay_date = ref('');
+    const delay_reason = ref('');
+    const delay_show = ref(false);
+    const disable_delay = (delay_item) => {
+        if(delay_item.from === 'party_a'){
+            return deal.value?.party_b?.id !== teamStore.init?.id;
+        }
+        if(delay_item.from === 'party_b'){
+            return deal.value?.party_a?.id !== teamStore.init?.id;
+        }
+    }
+    const toggleDelay = () => {
+        delay_show.value = !delay_show.value;
+    }
+    function getDelayDateOptions (day) {
+        return day >= date.formatDate(deal.value?.deadline, 'YYYY/MM/DD');
+    }
+    const setDelay = async () => {
+        if(!delay_date.value) {
+            $q.notify({
+                message: '请选择延期日期',
+                color: 'red',
+                icon: 'mdi-alert-circle',
+                position: 'top',
+                timeout: 2000,
+            });
+            return;
+        }
+        if(!delay_reason.value) {
+            $q.notify({
+                message: '请输入延期理由',
+                color: 'red',
+                icon: 'mdi-alert-circle',
+                position: 'top',
+                timeout: 2000,
+            });
+            return;
+        }
+        await updateDeal(deal_id, { data: { delay_date: delay_date.value, delay_reason: delay_reason.value } });
+        toggleDelay();
+    }
+    const acceptDelay = async (delay_id) => {
+        await updateDeal(deal_id, { data: { accept_delay_id: delay_id } });
     }
 
     const deliver_link = ref('');
     const deliver_files = ref([]);
     const setDeliverFile = async (file) => {
+        deliver_files.value = deal.value?.deliver_files?.map(i => i.id) || [];
         if(file?.id){
             deliver_files.value.push(file.id);
         }
-        const { data } = await updateDeal(deal_id, { data: { deliver_files: deliver_files.value } });
-        deal.value = data;
+        await updateDeal(deal_id, { data: { deliver_files: deliver_files.value } });
     }
     const downloadDeliverFile = async (file) => {
         const urlObj = new URL(file.url);
@@ -455,6 +574,15 @@
         const filename = decodeURIComponent(str);
         FileSaver.saveAs(file.url, filename);
     }
+    const completed_tip = ref(false);
+    const completeDeliver = async () => {
+        if(!completed_tip.value){
+            completed_tip.value = true;
+            return;
+        }
+        await updateDeal(deal_id, { data: { status: 'completed' } });
+        completed_tip.value = false;
+    }
 
     watch(
     mm_wsStore,
@@ -462,26 +590,42 @@
       // 判断消息类型
       if (mm_wsStore?.event?.event === "posted") {
         let message = JSON.parse(mm_wsStore.event.data.post);
-        if(floatChatChannelId.value === message?.channel_id && !showFloatChat.value) {
-            if(message?.message === '' || message?.user_id === teamStore.init?.mm_profile?.id) return;
-            unread_count.value++;
-        }
-
-        if (d_channels_ids.value?.includes(message?.channel_id)) {
-            if(message?.message === '' || message?.user_id === teamStore.init?.mm_profile?.id) return;
-            if(!unread_count_map.value[message?.channel_id]) {
-                unread_count_map.value[message?.channel_id] = 0;
+        if(message.message === '') return;
+        
+        if(deal.value?.party_a?.id === teamStore.init?.id){
+            if(!deal.value?.talked_users || deal.value?.talked_users?.length === 0){
+                await findDealFn();
+                await checkUnreadCount();
             }
-            unread_count_map.value[message?.channel_id]++;
-            unread_count.value++;
-            console.log('unread_count_map', unread_count_map.value);
-            console.log('unread_count', unread_count.value);
+            if(floatChatChannelId.value === message?.channel_id && !showFloatChat.value) {
+                if(message?.message === '' || message?.user_id === teamStore.init?.mm_profile?.id) return;
+                unread_count.value++;
+            }
+
+            if (d_channels_ids.value?.includes(message?.channel_id)) {
+                if(message?.message === '' || message?.user_id === teamStore.init?.mm_profile?.id) return;
+                if(!unread_count_map.value[message?.channel_id]) {
+                    unread_count_map.value[message?.channel_id] = 0;
+                }
+                unread_count_map.value[message?.channel_id]++;
+                unread_count.value++;
+            } else {
+                await findDealFn();
+                await checkUnreadCount();
+            }
         } else {
-            await findDealFn();
-            await checkUnreadCount();
+            unread_count.value++;
         }
       }
     },
     { immediate: true, deep: true }
 );
+const income = computed(() => teamStore.income);
+watch(income, async () => {
+    const { data, event } = income.value
+    const { deal_id } = data;
+    if(event === 'deal:updated' && deal_id === deal.value?.id){
+        await findDealFn();
+    }
+})
 </script>

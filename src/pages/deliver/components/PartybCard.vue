@@ -24,5 +24,5 @@
 import { computed } from 'vue'
 import { dealStore, teamStore } from 'src/hooks/global/useStore';
 const { party } = defineProps(['party'])
-const _party = computed(() => teamStore.init?.id === party.id ? teamStore.init : party)
+const _party = computed(() => teamStore.init?.id === party?.id ? teamStore.init : party)
 </script>

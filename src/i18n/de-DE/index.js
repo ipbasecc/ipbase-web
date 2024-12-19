@@ -961,6 +961,7 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
 
   my_business: 'Geschäftszentrum',
   business_overview: 'Geschäftsübersicht',
+  deal_page: 'Verhandlung',
   business_account_info: 'Kontoinformationen',
   business_certificate_info: 'Zertifikatinformationen',
   total_revenue: 'Gesamteinnahmen',

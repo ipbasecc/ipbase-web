@@ -11,7 +11,6 @@
       :rows="rows"
       :columns="columns"
       row-key="name"
-      :selected-rows-label="clacWhitdrawAmount"
       :selection="orderToggler === 'can_withdraw' ? 'multiple' : 'none'"
       v-model:selected="selected"
       :pagination="initialPagination"
@@ -39,12 +38,12 @@
 
     <div v-if="orderToggler === 'can_withdraw'" class="column q-mt-md q-pa-md">
       <div class="row items-end">
-        <span class="font-bold-600" style="font-size: 3rem; line-height: 1;">提现金额: {{ clacWhitdrawAmount() }}</span>
+        <span class="font-bold-600" style="font-size: 3rem; line-height: 1;">提现金额: {{ withdraw_amount }}</span>
         <span class="q-pr-md font-large">￥</span>
-        <span class="font-small op-5">（支付平台费用：{{ transaction_fee }}%, 平台佣金：{{ 100 - interest }}% ）</span>
+        <span class="font-small op-5">（支付平台费用：{{ payment_service_fee }}%, 提现费用：{{ withdraw_service_fee }}%, 平台佣金：{{ 100 - interest }}% ）</span>
       </div>
       <div class="q-mt-md">
-        <q-btn color="primary" label="申请提现" :disable="clacWhitdrawAmount () <= 0" @click="scurity_check = true" />
+        <q-btn color="primary" label="申请提现" :disable="withdraw_amount <= 0" @click="scurity_check = true" />
       </div>
     </div>
     <q-dialog v-model="scurity_check" persistent>
@@ -84,13 +83,14 @@
 <script setup>
 import { ref, computed, watch } from "vue";
 import { date } from 'quasar'
-import {createTransferOrder} from "src/api/strapi.js";
+import {createTransferOrder, tax} from "src/api/strapi.js";
 import { teamStore } from "src/hooks/global/useStore";
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const { sales, pageInfo, partner_info } = defineProps(["sales", "pageInfo", "partner_info"]);
-const { interest, transaction_fee } = partner_info;
+const { sales, pageInfo, partner_info, platform } = defineProps(["sales", "pageInfo", "partner_info", "platform"]);
+const { interest } = partner_info;
+const {payment_service_fee, withdraw_service_fee} = platform;
 const emit = defineEmits(["filterBy"]);
 const columns = [
   {
@@ -149,11 +149,38 @@ const initialPagination = {
 }
 
 const selected = ref([]);
-const clacWhitdrawAmount = () => {
+const withdraw_amount = ref(0);
+const clacWhitdrawAmount = async () => {
   const priceArray = selected.value.map(i => i.price);
   const totalPrice = priceArray.reduce((a, b) => a + b, 0);
-  return Math.round(totalPrice * ((100 - transaction_fee) / 100) * (interest / 100) * 100) / 100;
+  if(totalPrice <= 0){
+    withdraw_amount.value = total;
+  }
+
+  const interest_fee_amount = totalPrice * interest / 100;
+  const withdraw_service_fee_amount = totalPrice * withdraw_service_fee / 100;
+  const payment_service_fee_amount = totalPrice * payment_service_fee / 100;
+  
+  const total = Math.round(totalPrice - interest_fee_amount - withdraw_service_fee_amount - payment_service_fee_amount);
+  // console.log('total', total);
+  const res = await tax({
+    amount: total
+  });
+  if(res || res === 0){ 
+    withdraw_amount.value = total - res;
+  } else {
+    withdraw_amount.value = total;
+  }
 };
+watch(selected, () => {
+  if(selected.value.length > 0){
+    clacWhitdrawAmount();
+  } else {
+    withdraw_amount.value = 0;
+  } 
+}, {immediate:false,deep:false})
+
+
 const exchange_code = ref('');
 const params = computed(() => {
   return {

@@ -960,6 +960,7 @@ export default {
 
   my_business: '经营中心',
   business_overview: '经营概览',
+  deal_page: '协作',
   business_account_info: '账号信息',
   business_certificate_info: '认证信息',
   total_revenue: '总收入',

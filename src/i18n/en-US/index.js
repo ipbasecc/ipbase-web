@@ -961,6 +961,7 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
 
   my_business: 'Business Center',
   business_overview: 'Business Overview',
+  deal_page: 'Deal',
   business_account_info: 'Account Information',
   business_certificate_info: 'Certificate Information',
   total_revenue: 'Total Revenue',

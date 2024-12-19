@@ -20,6 +20,7 @@ import column from './useSocket/column.js'
 import memberRole from './useSocket/member-role.js'
 import payment from "./useSocket/payment.js";
 import user from "./useSocket/user.js";
+import deal from "./useSocket/deal.js";
 
 export function useSocket() {
   const jwt = JSON.parse(localStorage.getItem("jwt"));
@@ -118,6 +119,7 @@ export function useSocket() {
         memberRole(socket, processEvent);
         payment(socket, processEvent);
         user(socket, processEvent);
+        deal(socket, processEvent);
       });
     }
   });

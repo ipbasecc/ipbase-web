@@ -1,5 +1,5 @@
 <template>
-    <q-list class="q-pa-xs">
+    <q-list class="q-pa-xs column gap-xs">
         <q-item v-for="i in menu" :key="i.name"
             clickable v-ripple class="radius-xs"
             :class="[actived_item_name, route.path].includes(i.route) ? 'bg-primary' : ''"
@@ -24,6 +24,15 @@ const menu = [
         name: 'business_overview',
         icon: 'mdi-chart-areaspline',
         route: '/business/main',
+        handler: (i) => {
+            actived_item_name.value = i.name
+            router.push(i.route)
+        }
+    },
+    {
+        name: 'deal_page',
+        icon: 'mdi-chart-areaspline',
+        route: '/business/deal',
         handler: (i) => {
             actived_item_name.value = i.name
             router.push(i.route)
