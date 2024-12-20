@@ -77,7 +77,7 @@
   import AppUtils from "src/components/VIewComponents/AppUtils.vue";
   import { clearLocalDB } from "pages/team/hooks/useUser";
   import InitializationUser from 'src/pages/team/settings/initialization/InitializationUser.vue'
-  import { teamStore, uiStore, userStore, dealStore } from "src/hooks/global/useStore";
+  import { teamStore, uiStore, userStore, dealStore, mm_wsStore, chatStore } from "src/hooks/global/useStore";
 
   import { getUserData } from "src/hooks/global/useGetMyMatedata.js";
   import { serverInfo } from 'src/boot/server.js'
@@ -238,5 +238,23 @@
       // 可以在这里添加错误处理逻辑
     }
   };
+  watch(
+    mm_wsStore,
+    async () => {
+      // 判断消息类型
+      if (mm_wsStore?.event?.event === "posted") {
+        let message = JSON.parse(mm_wsStore.event.data.post);
+        if(message.message !== '') {
+          if(chatStore.unread[message.props.strapi_user_id]) {
+            chatStore.unread[message.props.strapi_user_id]++
+          } else {
+            chatStore.unread[message.props.strapi_user_id] = 1
+          }
+          chatStore.unread[teamStore.direct_user?.id] = 0
+        }
+      }
+    },
+    { immediate: true, deep: true }
+);
 
 </script>

@@ -216,7 +216,7 @@ import {computed, nextTick, onBeforeMount, onMounted, onUnmounted, ref, useTempl
 import {getChannelByID as getMmChannelByID, getPostsOfChannel} from "src/api/mattermost.js";
 import {generateUrlParams} from 'src/hooks/utilits.js'
 import MessageItem from "pages/team/chat/MessageItem.vue";
-import {mm_wsStore, mmUser, teamStore, uiStore} from "src/hooks/global/useStore";
+import {mm_wsStore, mmUser, teamStore, uiStore, chatStore} from "src/hooks/global/useStore";
 import SendmsgBox from "./SendmsgBox.vue";
 // import {getChannelByID} from "src/api/strapi/team";
 import {useFetchAvatar} from "pages/Chat/hooks/useFetchAvatar";

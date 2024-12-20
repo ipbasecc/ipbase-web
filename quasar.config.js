@@ -58,7 +58,8 @@ export default configure((ctx) => {
       "ej2",
       "oss",
       "meet",
-      "error"
+      "error",
+      // 'pinia-persist'
       // 'addressbar-color',
       // 'localforage'
       // { path: 'websocket', server: false }

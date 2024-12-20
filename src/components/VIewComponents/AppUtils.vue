@@ -1,5 +1,6 @@
 <template>
   <div class="app-utils column no-wrap gap-sm">
+    <NotifyContainer />
     <q-btn flat dense round icon="info">
       <q-menu anchor="bottom right" self="bottom left" class="transparent">
         <q-list
@@ -75,6 +76,7 @@ import AppManual from "src/components/VIewComponents/AppManual.vue";
 import AppShortcut from "src/components/VIewComponents/AppShortcut.vue";
 import DownloadApp from './DownloadApp.vue'
 import LocalToggler from './LocalToggler.vue'
+import NotifyContainer from './NotifyContainer.vue'
 const is_development = import.meta.env.DEV;
 const showDownloadApp = ref(false);
 

@@ -10,6 +10,8 @@ import mmUserStore from "src/stores/mmuser.js";
 import useDealStore from "src/stores/deal.js";
 import useOss from "src/stores/oss.js";
 import useDiscoverStore from "src/stores/discover.js";
+import useNotifyStore from "src/stores/notify.js";
+import useChatStore from "src/stores/chat.js";
 
 export const uiStore = useUIStore();
 export const mm_wsStore = useMmws();
@@ -23,3 +25,5 @@ export const mmUser = mmUserStore();
 export const dealStore = useDealStore();
 export const ossStore = useOss();
 export const discoverStore = useDiscoverStore();
+export const notifyStore = useNotifyStore();
+export const chatStore = useChatStore();

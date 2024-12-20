@@ -16,7 +16,7 @@
                             :strapi_member="i.sender?.mm_profile"
                         />
                     </q-item-section>
-                    <q-item-section :class="$q.dark.mode ? 'text-white' : 'text-grey-10'">
+                    <q-item-section class="text-white">
                         {{ i.sender.username }}
                     </q-item-section>
                     <q-item-section side>
@@ -58,7 +58,7 @@
               >
                   <q-item v-for="i in contact.contacters" :key="i.id" v-ripple clickable
                       class="radius-xs"
-                      :class="teamStore?.direct_user?.mm_profile?.id === i?.mm_profile?.id ? 'border active-sublistitem' : ''"
+                      :class="teamStore?.direct_user?.mm_profile?.id === i?.mm_profile?.id ? 'border active-listitem' : 'border-placeholder'"
                       @click="createDirectChannel(self_mm_id, i)"
                   >
                       <q-item-section avatar>
@@ -70,9 +70,13 @@
                               :disable_card="true"
                           />
                       </q-item-section>
-                      <q-item-section :class="$q.dark.mode ? 'text-white' : 'text-grey-10'">
+                      <q-item-section class="text-white">
                           {{ i.username }}
                       </q-item-section>
+                      <q-badge v-if="unread_count(i.id) > 0"
+                        :label="unread_count(i.id)" color="red" rounded floating
+                    />
+                      
                   </q-item>
               </q-expansion-item>
             <q-expansion-item
@@ -82,7 +86,7 @@
             >
                 <q-item v-for="i in contact.blockeds" :key="i.id" v-ripple clickable
                     class="radius-xs"
-                    :class="teamStore?.direct_user?.mm_profile?.id === i?.mm_profile?.id ? 'border active-sublistitem' : ''"
+                    :class="teamStore?.direct_user?.mm_profile?.id === i?.mm_profile?.id ? 'border active-listitem' : 'border-placeholder'"
                     @click="createDirectChannel(self_mm_id, i)"
                 >
                     <q-item-section avatar>
@@ -92,7 +96,7 @@
                             :strapi_member="i?.mm_profile"
                         />
                     </q-item-section>
-                    <q-item-section :class="$q.dark.mode ? 'text-white' : 'text-grey-10'">
+                    <q-item-section class="text-white">
                         {{ i.username }}
                     </q-item-section>
                     <q-item-section v-if="false" side>
@@ -109,7 +113,7 @@
 
 <script setup>
 import {computed, nextTick, onMounted, ref, watchEffect} from 'vue'
-import {teamStore, uiStore} from 'src/hooks/global/useStore';
+import {teamStore, uiStore, chatStore} from 'src/hooks/global/useStore';
 import UserAvatar from '../../components/user/UserAvatar.vue'
 import {processFriend, processFriendReq} from 'src/api/strapi.js'
 import {useCheckBlocked} from 'src/pages/team/chat/hooks/useMm.js'
@@ -194,10 +198,16 @@ const createDirectChannel_fn = async (a, b, _wasBlocked, isblocked) => {
 // a: 聊天对象ID
 const createDirectChannel = async (a, target_strapiUser) => {
     const { wasBlock, isBlock } = await useCheckBlocked(target_strapiUser);
-    teamStore.direct_user = target_strapiUser;    
+    teamStore.direct_user = target_strapiUser;
+    chatStore.unread[teamStore.direct_user?.id] = 0
     await createDirectChannel_fn(a, target_strapiUser.mm_profile?.id, wasBlock, isBlock);
 };
-
+const unread_count = (strapi_user_id) => {
+    if(strapi_user_id === teamStore.direct_user?.id){
+        return 0
+    }
+    return chatStore.unread[strapi_user_id]
+}
 watchEffect(async() => {
     if(!teamStore.direct_user && teamStore?.mm_channel){
         const direct_user_mm_id = extractDMUserID(teamStore.mm_channel?.name, self_mm_id.value);        

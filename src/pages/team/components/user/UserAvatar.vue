@@ -116,9 +116,10 @@ import {mm_wsStore, mmstore, mmUser, teamStore, uiStore, userStore} from "src/ho
 import {addFriend} from 'src/api/strapi.js'
 import {findStrapiUser_by_mmID_inTeam, useCheckBlocked} from 'src/pages/team/chat/hooks/useMm.js'
 import {__dict} from "src/hooks/dict.js";
+import { useQuasar } from 'quasar'
 
 const router = useRouter();
-
+const $q = useQuasar();
 const props = defineProps({
   user_id: {
     type: String,
@@ -324,7 +325,15 @@ const sendFriendReq = async (contact_id) => {
   }
   const { data } = await addFriend(params);
   if(data){
-    addFriendResult.value = data;
+    if(data.code === 403){
+      $q.notify({
+        message: data.message,
+        color: 'red',
+        position: 'top'
+      })
+    }else{
+      addFriendResult.value = data;
+    }
     addFriendLoading.value = false;
     addFriendDlg.value = false;
   }

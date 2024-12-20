@@ -1,5 +1,5 @@
 <template>
-    <div class="absolute-full q-pa-sm">
+    <q-scroll-area class="absolute-full q-pa-sm">
         <div class="row flex-center">
             <q-list style="width: 32rem;">
                 <q-item>
@@ -191,7 +191,7 @@
                 </q-inner-loading>
             </q-list>
         </div>
-    </div>
+    </q-scroll-area>
 </template>
 <script setup>
 import { findSelfCertification, createCertificate, updateCertificate, deleteSelfCertification } from 'src/api/strapi.js'

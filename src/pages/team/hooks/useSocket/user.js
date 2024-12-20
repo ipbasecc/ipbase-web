@@ -5,4 +5,16 @@ export default function (socket, processEvent) {
             ...data
         });
     });
+    socket.on("user:friend:request", (data) => {
+        processEvent({
+            event: "user:friend:request",
+            ...data
+        });
+    });
+    socket.on("user:friend:accept", (data) => {
+        processEvent({
+            event: "user:friend:accept",
+            ...data
+        });
+    });
   }

@@ -1,8 +1,11 @@
 <template>
-    <div class="absolute-full q-pa-sm">
+    <q-scroll-area class="absolute-full q-pa-sm">
         <SaleCards />
-        <SaleTable v-if="filteredSales && partner_info && platform" :sales="filteredSales" :pageInfo :partner_info :platform @filterBy="filterBy" />
-    </div>
+        <SaleTable v-if="filteredSales && partner_info && platform"
+            :sales="filteredSales" :pageInfo :partner_info :platform
+            @filterBy="filterBy"
+        />
+    </q-scroll-area>
 </template>
 
 <script setup>

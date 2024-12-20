@@ -1,5 +1,7 @@
 <template>
-    <DealTable v-if="completed_deals && partner_info && platform" :deals="completed_deals" :pageInfo :platform :partner_info @filterBy="filterBy" />
+    <q-scroll-area class="absolute-full q-pa-sm">
+        <DealTable v-if="completed_deals && partner_info && platform" :deals="completed_deals" :pageInfo :platform :partner_info @filterBy="filterBy" />
+    </q-scroll-area>
 </template>
 
 <script setup>

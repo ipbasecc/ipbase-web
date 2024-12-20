@@ -1,7 +1,6 @@
  
-import { computed, watch, onMounted, onUnmounted } from "vue";
-import { teamStore, uiStore } from "src/hooks/global/useStore.js";
-import { mergeObjects } from 'src/hooks/utilits.js'
+import { computed, watch, onMounted, onUnmounted, ref } from "vue";
+import { teamStore, notifyStore } from "src/hooks/global/useStore.js";
 import { useRouter } from "vue-router";
 import { fetchProject } from "src/hooks/project/useProcess.js";
 import { cleanCache } from 'src/pages/team/hooks/useAuths.js'
@@ -16,21 +15,56 @@ export default function useWatcher() {
   const $q = useQuasar();
 
   const val = computed(() => teamStore.income);
+  const notify_id = ref(0);
   watch(val, async(newVal, oldVal) => {
     if(!newVal) return;
-    // console.log('val', val.value);
-    let { team_id, project_id, board_id, group_id, card_id, data } = val.value?.data;
+    console.log('val', val.value);
+    let { team_id, project_id, board_id, group_id, card_id, data, notify } = val.value?.data;
 
     if(val.value.event === 'user:project:joined'){
       // console.log('user:project:joined')
       const index = teamStore.team.projects.findIndex(i => i.id === Number(project_id));
-      
+
       if(index > -1){
         teamStore.team.projects[index].auth.read = true;
         teamStore.team.projects[index].is_project_member = true;
         teamStore.init.default_team.projects = teamStore.team.projects
       }
-      console.log('projects[index]', teamStore.team.projects[index]);
+    }
+    if(val.value.event === 'user:friend:request'){
+      console.log('user:friend:request', notify);
+      const newMessage = {
+        ...notify,
+        read: false,
+        target: '/chats'
+      };
+      await notifyStore.addMessage(newMessage);
+      const { friend_request } = notify;
+      if(friend_request){
+        if(teamStore.init?.contact?.friend_requests?.length > 0){
+          teamStore.init.contact.friend_requests.push(friend_request);
+        } else {
+          teamStore.init.contact.friend_requests = [friend_request];
+        }
+      }
+    }
+    if(val.value.event === 'user:friend:accept'){
+      console.log('user:friend:accept', notify);
+      const newMessage = {
+        ...notify,
+        read: false,
+        target: '/chats'
+      };
+      console.log('newMessage', newMessage);
+      await notifyStore.addMessage(newMessage);
+      const { friend } = notify;
+      if(friend){
+        if(teamStore.init?.contact?.contacters?.length > 0){
+          teamStore.init.contact.contacters.push(friend);
+        } else {
+          teamStore.init.contact.contacters = [friend];
+        }
+      }
     }
     if(val.value.event === 'project:new_join_request'){
       const data = val.value?.data;
