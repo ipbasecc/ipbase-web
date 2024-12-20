@@ -176,6 +176,7 @@ export default {
   deal_my_party_a_list: 'My needs',
   deal_my_party_b_list: 'My accept',
   deal_my_talkers: 'My talkers',
+  deliver_talkers_panel: 'Deliver: talkers panel',
 
   deal_status_awaiting_deposit: 'Awaiting deposit',
   deal_status_deposited: 'Deposited',

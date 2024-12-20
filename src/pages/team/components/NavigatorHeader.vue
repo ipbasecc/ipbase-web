@@ -112,7 +112,11 @@
               uiStore.projectRightDrawerContent === 'talkers'
                 ? 'green': ''
             "
-          />
+          >
+            <q-tooltip>
+              <span class="text-no-wrap">{{ $t('deliver_talkers_panel') }}</span>
+            </q-tooltip>
+          </q-btn>
         </template>
         <AccountMenu v-else />
         <!-- <q-btn icon="check" dense @click="$q.dark.toggle()" /> -->

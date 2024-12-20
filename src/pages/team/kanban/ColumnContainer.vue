@@ -91,7 +91,7 @@
                 " v-close-popup @click="CreateCardFn(columnRef.id, i.val)">
                 <q-item-section side><q-icon :name="i.icon"
                     :color="DefaultCreateCardType === i.val ? 'orange' : ''" /></q-item-section>
-                <q-item-section class="q-pr-md">{{ $t(i.label) }}</q-item-section>
+                <q-item-section class="q-pr-md text-no-wrap">{{ $t(i.label) }}</q-item-section>
               </q-item>
             </q-list>
           </q-menu>

@@ -177,6 +177,7 @@ export default {
   deal_my_party_b_list: '我的承接',
   deal_my_talkers: '我的沟通',
   to_certification: '去认证',
+  deliver_talkers_panel: '交付：沟通面板',
 
   deal_status_awaiting_deposit: '待预存',
   deal_status_deposited: '已预存',

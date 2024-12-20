@@ -176,6 +176,7 @@ export default {
   deal_my_party_a_list: 'Meine Anforderungen',
   deal_my_party_b_list: 'Meine Akzeptanz',
   deal_my_talkers: 'Meine Kommunikation',
+  deliver_talkers_panel: 'Lieferung: Kommunikationspanel',
 
   deal_status_awaiting_deposit: 'Warten auf Einzahlung',
   deal_status_deposited: 'Einzahlung erfolgreich',
