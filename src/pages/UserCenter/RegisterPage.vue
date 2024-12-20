@@ -1,10 +1,11 @@
 <template>
   <ExtendWarpper>
     <q-card-section class="q-space">
-      <RegisterCard v-if="step === 0" :loading="loading" :form="form" :rules="formRules" @submit="handleRegister"
+      <RegisterCard v-if="step === 0" :loading="loading" v-model:agree="agree" :form="form" :rules="formRules" @submit="handleRegister"
         @set-server="setServer" />
       <CompleteCard v-else-if="step === 1" :count="count" :username="me?.username" @redirect="redirectNow" />
     </q-card-section>
+    <AgreementCard v-model:showAgreement="showAgreement" @agreeAgreement="agreeAgreement" />
   </ExtendWarpper>
 </template>
 
@@ -24,6 +25,8 @@
   // import LoginStepCard from './components/LoginStepCard.vue';
   import CompleteCard from './RegisterSteps/CompleteCard.vue';
   import ExtendWarpper from './ExtendWarpper.vue'
+  import AgreementCard from 'src/components/VIewComponents/AgreementCard.vue'
+
 
   // 状态初始化
   const router = useRouter();
@@ -43,8 +46,21 @@
     confirmPassword: ''
   });
 
+  const agreeAgreementAt = ref();
+  const showAgreement = ref(false);
+  const agree = ref(false);
+  const agreeAgreement = () => {
+    showAgreement.value = false;
+    agree.value = true;
+    agreeAgreementAt.value = new Date();
+    handleRegister();
+  };
   // 注册处理
   const handleRegister = async () => {
+    if(!agreeAgreementAt.value || !agree.value) {
+      showAgreement.value = true;
+      return;
+    }
     try {
       if (loading.value) return;
       loading.value = true;
@@ -53,7 +69,8 @@
       const { data, error } = await register({
         email: form.email,
         password: form.password,
-        username: form.username
+        username: form.username,
+        agreeAgreementAt: agreeAgreementAt.value
       });
 
       if (error) {

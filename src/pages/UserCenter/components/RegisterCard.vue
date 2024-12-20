@@ -41,6 +41,12 @@
         {{ $t('login_now') }}
       </router-link>
     </div>
+    <div class="text-right row items-center justify-end">
+      <q-checkbox v-model="agree" />
+      <span>{{ $t('agree') }}</span>
+      <span @click="showAgreement = !showAgreement" class="cursor-pointer text-primary q-ml-sm">{{ $t('user_agreement') }}</span>
+    </div>
+    <AgreementCard v-model:showAgreement="showAgreement" />
   </q-card-section>
 </template>
 
@@ -48,6 +54,7 @@
   import { ref, computed, onMounted, onUnmounted } from 'vue';
   import PasswordInput from './PasswordInput.vue';
   import { uiStore } from 'src/hooks/global/useStore';
+import AgreementCard from 'src/components/VIewComponents/AgreementCard.vue'
 
   const props = defineProps({
     loading: {
@@ -63,6 +70,8 @@
       required: true
     }
   });
+  const agree = defineModel('agree');
+  const showAgreement = ref(false);
 
   const emit = defineEmits(['submit', 'set-server', 'update:form']);
   const formRef = ref(null);
