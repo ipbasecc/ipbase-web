@@ -134,7 +134,7 @@ function createWindow() {
   });
   enable(mainWindow.webContents);
   if (process.env.DEV) {
-    mainWindow.loadURL(process.env.VITE_APP_URI);
+    mainWindow.loadURL("http://localhost:9000");
   } else {
     mainWindow.loadFile("index.html");
   }
