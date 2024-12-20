@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hHh lpR fff">
     <q-header v-if="uiStore.topbarShow || $q.platform.is.electron" class="transparent">
-      <q-bar class="transparent" :class="$q.platform.is.electron ? 'q-electron-drag' : ''">
+      <q-bar class="transparent q-pr-none" :class="$q.platform.is.electron ? 'q-electron-drag' : ''">
         <template v-if="is_development">
           <q-btn
             flat
@@ -14,26 +14,25 @@
           {{ uiStore?.pageTitle }}
         </template>
         <q-space />
-        <div v-if="$q.platform.is.electron" class="row no-wrap items-center gap-sm q-pl-md">
-          <q-btn dense flat round :color="$q.dark.mode ? 'white' : 'black'" size="sm" icon="mdi-window-minimize" @click="minimize()" />
-          <q-btn dense flat round :color="$q.dark.mode ? 'white' : 'black'" size="sm" @click="toggleMaximize()">
-            <WindowToggle
-                v-if="isMax"
-                :color="$q.dark.mode ? 'white' : 'black'"
+        <template v-if="$q.platform.is.electron">
+          <section class="full-height row no-wrap items-center" style="padding: 2px">
+            <q-btn dense square size="sm" icon="mdi-window-minimize"
+              class="full-height" padding="0 12px"
+              @click="minimize()"
             />
-            <q-icon v-else name="mdi-window-maximize" />
-          </q-btn>
-          <q-btn
-              dense
-              round
-              size="sm"
-              icon="close"
-              :class="hoverClose ? 'bg-red' : $q.dark.mode ? 'bg-black' : 'bg-negative'"
+            <q-btn dense square size="sm" class="full-height" padding="0 12px" @click="toggleMaximize()">
+              <WindowToggle v-if="isMax" :color="$q.dark.mode ? 'white' : 'black'" />
+              <q-icon v-else name="mdi-window-maximize" />
+            </q-btn>
+            <q-btn dense square size="sm" icon="close"
+              class="full-height" padding="0 12px"
               @mouseenter="hoverClose = true"
+              :class="hoverClose ? 'bg-negative' : ''"
               @mouseleave="hoverClose = false"
               @click="closeApp()"
-          />
-        </div>
+            />
+          </section>
+        </template>
       </q-bar>
     </q-header>
 
