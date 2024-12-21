@@ -181,7 +181,7 @@
                         </div>
                     </q-item-section>
                 </q-item>
-                <q-item>
+                <q-item v-if="editMode">
                     <q-item-section>
                         <q-btn color="primary" :label="$t('confirm')" class="full-width" @click="processCertification()" />
                     </q-item-section>
@@ -297,10 +297,14 @@ const processCertification = async () => {
         })
         return
     }
+    let res = null
     if(!hasCertification.value) {
-        await createCertificate(params.value)
+        res = await createCertificate(params.value)
     } else {
-        const {data} = await updateCertificate(teamStore.init?.id, params.value)
+        res = await updateCertificate(teamStore.init?.id, params.value)
+    }
+    if(res){
+        const {data} = res
         if(data && !data.code) {
             $q.notify({
                 type: 'positive',

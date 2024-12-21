@@ -254,7 +254,7 @@
                                 </q-tooltip>
                         </q-btn>
                         <div v-else class="radius-xs border q-pa-sm full-width flex flex-center blur-sm text-positive">
-                            已完成合作对接
+                            合作已完成
                         </div>
                     </q-card-section>
                 </PartybCard>
