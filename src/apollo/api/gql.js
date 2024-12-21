@@ -552,7 +552,7 @@ const gqlAggregate = {
                             }
                           }
                         }
-                        author {
+                        creator {
                           data {
                             id
                             attributes {
@@ -741,7 +741,7 @@ const gqlAggregate = {
                       }
                     }
                   }
-                  author {
+                  creator {
                     data {
                       id
                       attributes {
@@ -810,7 +810,7 @@ const gqlAggregate = {
                       }
                     }
                   }
-                  author {
+                  creator {
                     data {
                       id
                       attributes {
@@ -879,7 +879,7 @@ const gqlAggregate = {
                       }
                     }
                   }
-                  author {
+                  creator {
                     data {
                       id
                       attributes {
@@ -1296,7 +1296,7 @@ const gqlAggregate = {
                       }
                     }
                   }
-                  author {
+                  creator {
                     data {
                       id
                       attributes {
@@ -1578,7 +1578,7 @@ const gqlAggregate = {
                             }
                           }
                         }
-                        author {
+                        creator {
                           data {
                             id
                             attributes {
@@ -2072,7 +2072,7 @@ const gqlAggregate = {
                       }
                     }
                   }
-                  author {
+                  creator {
                     data {
                       id
                       attributes {
@@ -2837,7 +2837,7 @@ const gqlAggregate = {
                       }
                     }
                   }
-                  author {
+                  creator {
                     data {
                       id
                       attributes {
@@ -2937,7 +2937,7 @@ const gqlAggregate = {
                             }
                           }
                         }
-                        author {
+                        creator {
                           data {
                             id
                             attributes {
@@ -3044,7 +3044,7 @@ const gqlAggregate = {
             favorite_count
             liked_count
             unliked_count
-            author {
+            creator {
               data {
                 id
                 attributes {
@@ -3179,7 +3179,7 @@ const gqlAggregate = {
                       }
                     }
                   }
-                  author {
+                  creator {
                     data {
                       id
                       attributes {
@@ -3282,7 +3282,7 @@ const gqlAggregate = {
                 }
               }
             }
-            author {
+            creator {
               data {
                 id
                 attributes {
@@ -3406,7 +3406,7 @@ const gqlAggregate = {
                       }
                     }
                   }
-                  author {
+                  creator {
                     data {
                       id
                       attributes {
@@ -3512,7 +3512,7 @@ const gqlAggregate = {
                       }
                     }
                   }
-                  author {
+                  creator {
                     data {
                       id
                       attributes {
@@ -3622,7 +3622,7 @@ const gqlAggregate = {
                 }
               }
             }
-            author {
+            creator {
               data {
                 id
                 attributes {
