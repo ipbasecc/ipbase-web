@@ -1,10 +1,10 @@
 <template>
-    <q-card bordered class="q-mb-md" style="width: 760px; height: 500px;">
+    <q-card bordered class="q-pb-md" style="width: 760px; height: 500px;">
       <q-card-section horizontal class="fit q-pa-none">
         <q-card-section class="col-4 border-right q-pa-xs">
             <q-list v-if="talkers.length > 0" dense>
                 <q-item v-for="talker in talkers" :key="talker.id" clickable v-ripple class="radius-xs"
-                :class="talker.d_channel_id === d_channel_id ? 'bg-primary' : ''"
+                :class="talker.d_channel_id === d_channel_id ? 'bg-primary text-white' : ''"
                 @click="openChat(talker)">
                     <q-item-section avatar>
                         <q-avatar>

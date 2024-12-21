@@ -15,6 +15,7 @@
       :status="mmUser.status"
       :disable_card="true"
       :indicator_size="'10px'"
+      :image="teamStore.init?.wechat_profile?.avatar || teamStore.init?.profile?.avatar?.url || null"
     />
     <q-avatar v-else :size="avatarSizeRef.toString()">
       <q-img
@@ -50,10 +51,11 @@
                     :user_id="mm_user.id"
                     :size="48"
                     :status="mmUser.status"
+                    :image="teamStore.init?.wechat_profile?.avatar || teamStore.init?.profile?.avatar?.url || null"
                   />
                 </q-item-section>
                 <q-item-section class="font-bold-600 font-medium q-pl-sm"
-                  >@ {{ mm_user.nickname || mm_user.username }}</q-item-section
+                  >@ {{ teamStore.init?.username }}</q-item-section
                 >
                 <q-tooltip
                   class="z-max"
@@ -296,7 +298,7 @@ const props = defineProps({
 
 const avatarSizeRef = toRef(props, "avatarSize");
 
-const avatar = computed(() => teamStore.init?.profile?.avatar?.url);
+const avatar = computed(() => teamStore.init?.wechat_profile?.avatar || teamStore.init?.profile?.avatar?.url);
 const userChannelId = computed(() => teamStore.init?.user_channel?.id);
 
 const router = useRouter();

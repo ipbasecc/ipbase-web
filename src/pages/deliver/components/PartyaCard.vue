@@ -21,7 +21,7 @@
         </section>
     </div>
     </q-img>
-    <q-card-section class="cursor-pointer" >
+    <q-card-section>
         <q-item v-if="deal.party_a?.profile" class="q-pa-none">
             <q-item-section side>
                 <UserAvatar

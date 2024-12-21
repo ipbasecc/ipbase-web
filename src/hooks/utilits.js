@@ -623,3 +623,21 @@ export const isValidMobile = (mobile) => {
 export const generateRandomNumber = (max) => {
     return Math.floor(Math.random() * max);
 }
+
+/**
+ * 判断输入的日期是否至少早一天
+ * @param {String} inputDateStr 输入的日期 ISO 8601 字符串
+ * @returns {Boolean} 如果日期至少早一天，则返回true，否则返回false
+ */
+export function isDateAtLeastOneDayBeforeToday(inputDateStr) {
+  // 将输入的日期字符串转换为日期对象
+  const inputDate = new Date(inputDateStr);
+  
+  // 获取当前日期
+  const today = new Date();
+  // 将当前日期的时间部分设置为0，以便比较日期部分
+  today.setHours(0, 0, 0, 0);
+  
+  // 减去一天，比较是否至少早一天
+  return inputDate < today - 1; // 减去1天，因为我们需要至少早一天
+}

@@ -1,7 +1,7 @@
 <template>
     <q-card bordered ref="chatBox" class="chat-box column">
-        <q-bar dark class="bg-primary text-white">
-            <div class="col text-center text-weight-bold">
+        <q-bar dark class="transparent text-white border-bottom">
+            <div class="col text-weight-bold">
                 {{ target_user?.username }}
             </div>
             <q-btn dense flat round icon="lens" size="8.5px" color="red" v-close-popup />
@@ -32,7 +32,7 @@
 </script>
 <style scoped>
     .chat-box {
-        width: 700px;
+        min-width: 59vw;
         height: 800px;
     }
 </style>

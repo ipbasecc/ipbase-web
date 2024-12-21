@@ -15,7 +15,7 @@
                     >
                         <q-item-section top side>
                             <q-avatar>
-                                <q-img :src="item.sender?.profile?.avatar?.url" />
+                                <q-img :src="item.sender?.profile?.avatar?.url" :ratio="1" class="bg-image-fill" />
                             </q-avatar>
                         </q-item-section>
                         <q-item-section>

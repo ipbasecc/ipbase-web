@@ -40,7 +40,10 @@
       <div class="row items-end">
         <span class="font-bold-600" style="font-size: 3rem; line-height: 1;">提现金额: {{ withdraw_amount }}</span>
         <span class="q-pr-md font-large">￥</span>
-        <span class="font-small op-5">（支付平台费用：{{ payment_service_fee }}%, 提现费用：{{ withdraw_service_fee }}%, 平台佣金：{{ 100 - interest }}% ）</span>
+        <div class="column">
+          <span class="font-small op-5">成交时间在1天以上，才能提现！</span>
+          <span class="font-small op-5">（支付平台费用：{{ payment_service_fee }}%, 提现费用：{{ withdraw_service_fee }}%, 平台佣金：{{ 100 - interest }}% ）</span>
+        </div>
       </div>
       <div class="q-mt-md">
         <q-btn color="primary" label="申请提现" :disable="withdraw_amount <= 0" @click="scurity_check = true" />

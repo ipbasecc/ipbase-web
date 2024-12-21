@@ -9,10 +9,9 @@
           ref="tiptapRef"
           for="chat"
           class="message_sender"
-          :contentChanged="isContentChanged"
+          :contentChanged="true"
           @ModEnter="sendMsg(msg)"
           @tiptapUpdate="tiptapUpdate"
-          @contentChanged="contentChanged"
           @keyup.ctrl.enter="sendMsg(msg)"
         >
           <template v-slot:more_btn>
@@ -136,11 +135,6 @@ const tiptapUpdate = async (val) => {
   msg.value = val;
 };
 
-const isContentChanged = ref(false);
-const contentChanged = async (val) => {
-  isContentChanged.value = val;
-};
-
 const tiptapRef = ref();
 
 const emit = defineEmits(["MsgSend"]);
@@ -157,7 +151,6 @@ const sendMsg = async () => {
     tiptapRef.value.clear();
     emit("MsgSend");
     loading.value = false;
-    isContentChanged.value = false;
     files.value = void 0;
     file_ids.value = void 0;
   }

@@ -154,7 +154,7 @@ const props = defineProps({
     default: null,
   },
 });
-const { strapi_member, mm_member } = toRefs(props);
+const { strapi_member, mm_member, image } = toRefs(props);
 const user_idRef = toRef(props, "user_id");
 const disable_cardRef = toRef(props, "disable_card");
 const self_user_id = ref(localStorage.getItem("mmUserId"));
@@ -175,8 +175,8 @@ const disable_addFriend = computed(() =>{
 
 const avatar = ref();
 watchEffect(() => {
-  if(props.image){
-    avatar.value = props.image
+  if(image.value){
+    avatar.value = image.value
   }else if (user_idRef.value === self_user_id.value) {
     avatar.value = mmUser.current_user_avatar;
   }

@@ -29,9 +29,15 @@
             <div class="row items-end">
                 <span class="font-bold-600" style="font-size: 3rem; line-height: 1;">提现金额: {{ withdraw_amount }}</span>
                 <span class="q-pr-md font-large">￥</span>
-                <span class="font-small op-5">（支付平台费用：{{ payment_service_fee }}%, 提现费用：{{ withdraw_service_fee }}%,
-                    平台佣金：{{
-                    deal_service_fee }}% ）</span>
+                <div class="column">
+                    <span class="font-small op-5">成交时间在1天以上，才能提现！</span>
+                    <span class="font-small op-5">
+                        支付平台费用：{{ payment_service_fee }}%,
+                        提现费用：{{ withdraw_service_fee }}%,
+                        平台佣金：{{ deal_service_fee }}% ,
+                        扣税：{{ tax_amount }}
+                    </span>
+                </div>
             </div>
             <div class="q-mt-md">
                 <q-btn color="primary" label="申请提现" :disable="withdraw_amount <= 0" @click="scurity_check = true" />
@@ -140,22 +146,26 @@
 
     const selected = ref([]);
     const withdraw_amount = ref(0);
+    const tax_amount = ref(0);
     const clacWhitdrawAmount = async () => {
         const priceArray = selected.value.map(i => i.amount);
-        const totalPrice = priceArray.reduce((a, b) => a + b, 0);
+        let totalPrice = priceArray.reduce((a, b) => a + b, 0);
+        totalPrice = totalPrice * 100
         const deal_service_fee_amount = totalPrice * deal_service_fee / 100;
         const withdraw_service_fee_amount = totalPrice * withdraw_service_fee / 100;
         const payment_service_fee_amount = totalPrice * payment_service_fee / 100;
-        console.log('totalPrice', totalPrice);
+        console.log('totalPrice', totalPrice, deal_service_fee_amount, withdraw_service_fee_amount, payment_service_fee_amount);
 
-        const total = Math.round(totalPrice - deal_service_fee_amount - withdraw_service_fee_amount - payment_service_fee_amount);
-
+        const total = Math.round(totalPrice - deal_service_fee_amount - withdraw_service_fee_amount - payment_service_fee_amount) / 100;
+        console.log('total', total);
         const res = await tax({
             amount: total
         });
         if (res > 0) {
+            tax_amount.value = res;
             withdraw_amount.value = total - res;
         } else {
+            tax_amount.value = 0;
             withdraw_amount.value = total;
         }
     };

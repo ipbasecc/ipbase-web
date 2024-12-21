@@ -253,6 +253,7 @@ const handleDrop = (e) => {
 // 在组件挂载时，绑定事件监听器到div元素上
 onMounted(async () => {
   await nextTick();
+  if(!dropZone.value) return
   // 获取div元素的引用
   dropZone.value = document.querySelector(`.drop-zone_${dom_id}`);
   // 绑定事件监听器到div元素上

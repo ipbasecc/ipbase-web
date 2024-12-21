@@ -15,7 +15,7 @@ export default defineStore('notify', {
     }),
     actions: {
         async addMessage(message) {
-            this.messages.push(message);
+            this.messages.unshift(message);
             try {
                 // 直接存储整个 state
                 await storage.setItem('notify-store', {

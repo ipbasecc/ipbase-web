@@ -11,6 +11,7 @@
 <script setup>
 import {ref, onMounted, computed} from 'vue'
 import {findSales} from 'src/api/strapi/project.js'
+import { isDateAtLeastOneDayBeforeToday } from 'src/hooks/utilits.js'
 
 import SaleTable from 'src/components/business/SaleTable.vue'
 import SaleCards from 'src/components/business/SaleCards.vue'
@@ -41,7 +42,7 @@ const pageInfo = computed(() => {
 const filteredSales = ref();
 const filterSales = (filter) => {
     if(filter === 'can_withdraw') {
-        filteredSales.value = sales.value.filter(sale => !sale.order_transfer)
+        filteredSales.value = sales.value.filter(sale => !sale.order_transfer && isDateAtLeastOneDayBeforeToday(sale.createdAt))
     } else {
         filteredSales.value = sales.value
     }

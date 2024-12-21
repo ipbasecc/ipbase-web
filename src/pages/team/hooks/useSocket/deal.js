@@ -11,4 +11,16 @@ export default function (socket, processEvent) {
             ...data
         });
     });
+    socket.on("deal:update:party_b_requirements", (data) => {
+        processEvent({
+            event: "deal:update:party_b_requirements",
+            ...data
+        });
+    });
+    socket.on("deal:update:party_a_requirements", (data) => {
+        processEvent({
+            event: "deal:update:party_a_requirements",
+            ...data
+        });
+    });
   }

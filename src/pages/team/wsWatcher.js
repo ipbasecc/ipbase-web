@@ -66,6 +66,17 @@ export default function useWatcher() {
         }
       }
     }
+    if(val.value.event === 'deal:update:party_b_requirements' || val.value.event === 'deal:update:party_a_requirements'){
+      // console.log('deal:update:party_b_requirements', notify);
+      const newMessage = {
+        ...notify,
+        read: false,
+        target: `/deliver/deal/${notify.deal_id}`
+      };
+      console.log('newMessage', newMessage);
+      await notifyStore.addMessage(newMessage);
+    }
+
     if(val.value.event === 'project:new_join_request'){
       const data = val.value?.data;
       const {project_id} = data;

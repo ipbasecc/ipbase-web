@@ -1,17 +1,15 @@
 <template>
+    <q-scroll-area class="absolute-full">
     <div class="row justify-center">
         <div v-if="deal || (editMode && update_params.data)" class="row col-12 q-pa-sm">
-            <div class="">
-                <q-btn flat dense round icon="mdi-chevron-left" @click="router.back()" />
+            <div class="q-mt-sm">
+                <q-btn flat dense round icon="mdi-chevron-left" @click="router.push('/deliver')" />
             </div>
 
             <div class="column no-wrap gap-sm q-ml-md">
                 <div class="text-h4 row items-center">
                     <span v-if="!editMode" class="q-space">{{ deal.name }}</span>
                     <q-input v-else-if="is_party_a" v-model="update_params.data.name" class="q-space" type="text" label="任务名称" />
-                    <q-btn v-if="hasEditAuth && !editMode" round icon="mdi-pencil"
-                        @click="toggleEditMode" />
-                    <q-btn v-if="editMode" label="更新合约" color="primary" @click="updateDealFn" />
                 </div>
                 <div v-if="deal.party_a" class="row gap-md items-center">
                     <q-avatar v-if="deal.party_a?.profile?.avatar?.url" size="32px">
@@ -22,6 +20,14 @@
                 </div>
             </div>
             <q-space />
+            <div v-if="!cant_update">
+                <q-btn v-if="hasEditAuth && !editMode" icon="mdi-pencil" label="修改合约"
+                    @click="toggleEditMode" />
+                <q-btn v-if="editMode" icon="mdi-check" label="确认更新" color="primary" @click="updateDealFn" />
+            </div>
+            <div v-if="is_party_a || is_party_b" class="text-caption op-5">
+                合作已完成，不能再修改
+            </div>
         </div>
         <div v-if="deal || (editMode && update_params.data)" class="column no-wrap gap-sm q-pa-md article"
         style="width: 760px;">
@@ -70,17 +76,17 @@
             <div v-if="deal.tags?.length > 0" class="row items-center"
                 :class="{ 'q-pa-sm radius-sm border': editMode }">
                 <span>能力要求：</span>
-                <q-chip v-for="tag in tags" :key="tag" square color="primary" :label="tag"
+                <q-chip v-for="tag in tags" :key="tag" square color="primary" :label="tag" class="text-white"
                     :removable="editMode && is_party_a" @remove="removeTag(tag)" />
                 <q-input v-if="editMode && is_party_a" v-model="tag" type="text" borderless dense @keyup.enter="addTag" @keyup.esc="tag = ''" />
             </div>
             <div v-if="!deal.order || deal.order?.jeepay_order?.state !== '2'" class="row justify-start q-mt-lg">
                 <PayButton v-if="deal.party_a?.id === teamStore.init?.id"
-                    class="full-width" btnColor="negative" buyLabel="预存合同金"
+                    class="full-width" btnColor="negative" buyLabel="预存酬金"
                     subject="deal" :commodity="deal"
                     @buyData="buyData"
                 />
-                <q-chip v-else color="deep-orange" label="尚未预存合同金" />
+                <q-chip v-else color="deep-orange" label="尚未预存酬金" />
             </div>
             <q-img
                 v-if="deal.cover?.url"
@@ -89,6 +95,10 @@
                 spinner-color="primary"
                 spinner-size="82px"
                 class="full-width radius-xs overflow-hidden q-mt-lg"
+                @click="$hevueImgPreview({
+                    url: deal.cover.url,
+                    clickMaskCLose: true
+                })"
             />
             <div class="text-h4">需求摘要</div>
             <div class="text-subtitle2">
@@ -172,29 +182,34 @@
                         </q-tabs>
                         <q-tab-panels v-model="deliver_tab" keep-alive class="transparent">
                             <q-tab-panel v-if="deliver_tab === 'deliver_link'" name="deliver_link" class="q-pa-none">
-                                <q-input v-if="is_party_b" v-model="deliver_link" type="textarea" outlined />
-                                <div v-else class="flex flex-center radius-sm border-dotted border-xs border-op-sm op-5" style="height: 8rem;">
-                                    {{ deal.deliver_link ? deal.deliver_link : '暂无交付链接' }}
+                                <div v-if="deal.deliver_link" class="flex flex-center radius-sm border-dotted border-xs border-op-sm op-5" style="height: 8rem;">
+                                    {{ deal.deliver_link }}
                                 </div>
+                                <template v-if="is_party_b">
+                                    <q-input v-model="deliver_link" type="textarea" outlined />
+                                    <q-btn color="primary" icon="check" label="交付" :disable="!deliver_link" @click="deliverByLink" class="q-mt-sm" />
+                                </template>
                             </q-tab-panel>
                             <q-tab-panel v-if="deliver_tab === 'deliver_file'" name="deliver_file" class="q-pa-none">
+                                <template v-if="deal.deliver_files?.length > 0">
+                                    <q-list v-for="file in deal.deliver_files" bordered class="radius-xs">
+                                        <q-item :key="file.id" clickable v-ripple>
+                                            <q-item-section>
+                                                <q-item-label>{{ file.name }}</q-item-label>
+                                            </q-item-section>
+                                            <q-item-section side>
+                                                <q-btn color="primary" flat dense padding="xs md" :label="`下载`"
+                                                @click="downloadDeliverFile(file)" />
+                                            </q-item-section>
+                                        </q-item>
+                                    </q-list>
+                                </template>
                                 <DrapUpload v-if="is_party_b" :isOSS="true" class="radius-md border-dashed border-xs border-op-sm bg-image-fill q-mb-sm"
                                     :allowedFormats="['application/rar','application/zip','application/x-tar']"
                                     @uploaded="setDeliverFile" style="min-height: 8rem;"
                                     :caption="$t('drop_or_pick_deliver_file')" :maxFileSize="1000 * 1024 * 1024"
                                 />
-                                <q-list v-if="deal.deliver_files?.length > 0" bordered class="radius-xs">
-                                    <q-item v-for="file in deal.deliver_files" :key="file.id" clickable v-ripple>
-                                        <q-item-section>
-                                            <q-item-label>{{ file.name }}</q-item-label>
-                                        </q-item-section>
-                                        <q-item-section side>
-                                            <q-btn color="primary" flat dense padding="xs md" :label="`下载`"
-                                            @click="downloadDeliverFile(file)" />
-                                        </q-item-section>
-                                    </q-item>
-                                </q-list>
-                                <div v-else class="flex flex-center radius-sm border-dotted border-xs border-op-sm op-5" style="height: 8rem;">暂无交付文件</div>
+                                <div v-else-if="is_party_a" class="flex flex-center radius-sm border-dotted border-xs border-op-sm op-5" style="height: 8rem;">暂无交付文件</div>
                             </q-tab-panel>
                         </q-tab-panels>
                         <template v-if="(deal.deliver_files?.length > 0 || deal.deliver_link) && deal.party_a?.id === teamStore.init?.id">
@@ -209,7 +224,23 @@
             <q-responsive :ratio="3/4" class="full-width">
                 <PartybCard :party="deal.party_a">
                     <q-card-section class="column flex-center q-pa-sm border-top">
-                        <q-btn v-if="deal.status === 'deposited'" color="primary" label="开启对接申请" class="full-width" @click="startMatch" />
+                        <template v-if="!deal.order">
+                            <div class="radius-xs border q-pa-sm full-width flex flex-center blur-sm text-positive">
+                                待预存酬金
+                                <q-tooltip class="text-medium">
+                                    为保证合作顺利进行，请尽快预存酬金
+                                </q-tooltip>
+                            </div>
+                            <div v-if="is_party_a" class="full-width text-caption op-5 q-mt-xs">
+                                请尽快预存酬金，以便开启对接
+                            </div>
+                        </template>
+                        <template v-else-if="deal.status === 'deposited'">
+                            <div v-if="is_party_b" class="radius-xs border q-pa-sm full-width flex flex-center blur-sm text-positive">
+                                待对方开启对接
+                            </div>
+                            <q-btn v-if="is_party_a" color="primary" label="开启对接申请" class="full-width" @click="startMatch" />
+                        </template>
                         <q-btn v-else-if="(deal.status === 'pending_matching' || deal.status === 'matching') && !is_party_a || is_party_b" color="positive"
                             unelevated icon="mdi-forum" label="联系 TA" class="full-width" @click="openFloatChat()">
                             <q-badge v-if="unread_count > 0 && deal.party_a?.id !== teamStore.init?.id" color="red" floating :label="unread_count" />
@@ -228,7 +259,8 @@
                     </q-card-section>
                 </PartybCard>
             </q-responsive>
-                <q-list v-if="deal.delay?.length > 0 && (is_party_a || is_party_b)" bordered class="radius-xs">
+            <template v-if="is_party_a || is_party_b">
+                <q-list v-if="deal.delay?.length > 0" bordered class="radius-xs">
                     <q-item v-for="i in deal.delay" v-ripple clickable>
                         <q-item-section side top>
                             {{ i.from === 'party_a' ? '甲方' : '乙方' }}
@@ -272,6 +304,7 @@
                         </template>
                     </q-input>
                 </template>
+            </template>
         </div>
         <q-dialog v-model="showFloatChat" persistent>
             <FloatChat
@@ -302,10 +335,11 @@
             </q-card>
         </q-dialog>
     </div>
+    </q-scroll-area>
 </template>
 
 <script setup>
-    import { onMounted, nextTick, ref, computed, watch } from 'vue';
+    import { onMounted, nextTick, ref, computed, watch, watchEffect } from 'vue';
     import { findDeal, updateDeal } from 'src/api/strapi';
     import { createDirect, getChannelUnreads } from 'src/api/mattermost';
     import { teamStore, mm_wsStore } from 'src/hooks/global/useStore';
@@ -340,6 +374,9 @@
         }
         if(tabs.value.includes('deliver')){
             tab.value = 'deliver';
+        }
+        if(deal.value?.deliver_link){
+            deliver_tab.value = 'deliver_link';
         }
         tags.value = data.tags;
     }
@@ -507,6 +544,11 @@
     const startMatch = async () => {
         await updateDeal(deal_id, { data: { status: 'pending_matching' } });
     }
+    watchEffect(() => {
+        if(deal.value?.status === 'deposited' && deal.value?.order?.jeepay_order?.state === '2'){
+            startMatch();
+        }
+    })
     const setPartyB = async (party_b) => {
         await updateDeal(deal_id, { data: { party_b: party_b.id } });
     }
@@ -559,6 +601,9 @@
     }
 
     const deliver_link = ref('');
+    const deliverByLink = async () => {
+        await updateDeal(deal_id, { data: { deliver_link: deliver_link.value } });
+    }
     const deliver_files = ref([]);
     const setDeliverFile = async (file) => {
         deliver_files.value = deal.value?.deliver_files?.map(i => i.id) || [];
@@ -583,6 +628,7 @@
         await updateDeal(deal_id, { data: { status: 'completed' } });
         completed_tip.value = false;
     }
+    const cant_update = computed(() => ['completed', 'withdrawn'].includes(deal.value?.status));
 
     watch(
     mm_wsStore,
@@ -613,7 +659,7 @@
                 await findDealFn();
                 await checkUnreadCount();
             }
-        } else {
+        } else if(!showFloatChat.value){
             unread_count.value++;
         }
       }
@@ -627,5 +673,29 @@ watch(income, async () => {
     if(event === 'deal:updated' && deal_id === deal.value?.id){
         await findDealFn();
     }
+})
+
+const matchingNotify = () => {
+    if(deal.value?.status === 'matching' && is_party_a.value){
+        $q.notify({
+            message: '您已同意与您合作，请尽督促对方快阅读合作协议，双方均同意协议内容后，正式进入执行阶段',
+            color: 'primary',
+            icon: 'mdi-check-circle',
+            position: 'top',
+            timeout: 2000,
+        });
+    }
+    if(is_party_b.value && deal.value?.status === 'matching'){
+        $q.notify({
+            message: '对方已同意与您合作，请尽快阅读合作协议，补充你的协议内容，双方均同意协议内容后，正式进入执行阶段',
+            color: 'primary',
+            icon: 'mdi-check-circle',
+            position: 'top',
+            timeout: 2000,
+        });
+    }
+}
+watchEffect(() => {
+    matchingNotify();
 })
 </script>

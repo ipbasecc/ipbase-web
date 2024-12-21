@@ -1,13 +1,16 @@
 <template>
     <q-dialog v-model="showAgreement" persistent full-height class="q-electron-drag--exception">
-      <q-card v-if="user_agreement" bordered class="column no-wrap article z-max" style="min-width: 61vw; max-height: 90vh; max-width: 1440px;">
+      <q-card v-if="user_agreement" bordered class="column no-wrap article z-max"
+        :class="$q.dark.mode ? 'bg-darker' : 'bg-white'"
+        style="min-width: 61vw; max-height: 90vh; max-width: 1440px;">
         <q-toolbar class="transparent border-bottom">
           <q-toolbar-title>
             服务协议
           </q-toolbar-title>
         </q-toolbar>
         <q-card-section class="q-space">
-          <q-scroll-area class="fit border q-pa-md radius-xs bg-darker" style="box-shadow: inset 0 0 5px black;">
+          <q-scroll-area class="fit border q-pa-md radius-xs" :class="$q.dark.mode ? 'bg-grey-10' : 'bg-grey-2'"
+          :style="`box-shadow: inset 0 0 5px ${$q.dark.mode ? 'black' : '#999'};`">
             <div class="column no-wrap">
               <div class="text-h4 q-pb-none">
               请仔细阅读以下内容：
