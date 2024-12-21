@@ -62,6 +62,7 @@
     </q-card>
   </q-dialog>
   <DialogNotify />
+  <AgreementCard v-model="showAgreement" @agreeAgreement="agreeAgreement" :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-1'" />
 </template>
 
 <script setup>
@@ -89,13 +90,25 @@
   import { isTokenExpired } from 'src/hooks/utilits.js'
   import MeetPage from 'src/pages/team/meet/MeetPage.vue'
   import DialogNotify from 'src/components/VIewComponents/DialogNotify.vue'
+  import AgreementCard from '../components/VIewComponents/AgreementCard.vue'
+  import { updateUser } from 'src/api/strapi.js'
 
   getUserData();
   useSocket();
 
   const $q = useQuasar();
   const appListWidth = ref(64);
-
+  const showAgreement = ref(false);
+  const agreeAgreement = async () => {
+    showAgreement.value = false;
+    const _params = {
+      data: {
+        agreeAgreementAt: new Date().getTime()
+      }
+    }
+    const {data} = await updateUser(teamStore.init?.id, _params);
+    teamStore.init.agreeAgreementAt = data.agreeAgreementAt;
+  }
   watchEffect(() => {
     if (!$q.screen.gt.xs) {
       uiStore.appDrawer = false;
@@ -122,6 +135,10 @@
         await loginAndInit();
         await restoreDefaultTeam();
         dealStore.verified = teamStore.init.by_certification?.verified || false
+      }
+
+      if(!teamStore.init.agreeAgreementAt) {
+        showAgreement.value = true;
       }
 
       await checkNotification();

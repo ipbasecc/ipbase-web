@@ -1,6 +1,8 @@
 <template>
-    <q-btn round flat icon="notifications">
-        <q-menu class="radius-sm">
+    <q-btn dense round flat icon="notifications">
+        <q-menu anchor="top end" self="top left" :offset="[10, 0]"
+            max-width="22rem" max-height="41vh"
+            class="radius-sm">
             <q-list bordered dense class="q-pa-xs radius-sm">
                 <template v-if="messages.length > 0">
                     <q-item v-for="item in messages" :key="item.id" class="radius-xs"

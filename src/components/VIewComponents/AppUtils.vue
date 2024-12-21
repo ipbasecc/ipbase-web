@@ -1,5 +1,5 @@
 <template>
-  <div class="app-utils column no-wrap gap-sm">
+  <div class="app-utils column no-wrap gap-sm full-width items-center">
     <NotifyContainer />
     <q-btn flat dense round icon="info">
       <q-menu anchor="bottom right" self="bottom left" class="transparent">
