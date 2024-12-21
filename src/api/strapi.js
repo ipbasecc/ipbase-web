@@ -498,3 +498,55 @@ export async function deleteSelfCertification(user_id) {
     return error;
   }
 }
+
+// 作品
+export async function findWorks(params) {
+  try {
+    const res = await api.get(`/works`, { params: params });
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+export async function findWork(work_id) {
+  try {
+    const res = await api.get(`/works/${work_id}`);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+export async function addWork(params) {
+  try {
+    const res = await api.post(`/works`, params);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+export async function deleteWork(work_id) {
+  try {
+    const res = await api.delete(`/works/${work_id}`);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+export async function updateWork(work_id, params) {
+  try {
+    const res = await api.put(`/works/${work_id}`, params);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}

@@ -11,8 +11,13 @@
                                     {{ certification.verified ? $t('verified') : $t('unverified') }}
                                 </q-tooltip>
                             </q-icon>
+                            <q-icon :name="hideInfo ? 'mdi-eye-off' : 'mdi-eye'"
+                                :color="hideInfo ? 'grey-6' : 'positive'"
+                                class="cursor-pointer"
+                                @click="hideInfo = !hideInfo"
+                            />
                             <q-space />
-                            <q-btn v-if="hasCertification" dense padding="xs md" color="primary" :label="editMode ? $t('cancel') : $t('edit')" @click="editMode = !editMode" />
+                            <q-btn v-if="hasCertification" dense padding="xs md" color="primary" flat :label="editMode ? $t('cancel') : $t('edit')" @click="editMode = !editMode" />
                         </q-item-label>
                         <q-item-label v-if="!hasCertification || editMode" caption class="text-orange">以下信息用于认证您的真实身份，以便您可以正常使用平台功能，请保证信息的真实有效</q-item-label>
                     </q-item-section>
@@ -20,7 +25,7 @@
                 <q-item>
                     <template v-if="hasCertification && !editMode">
                         <q-item-section>
-                            <span><span class="font-bold-600 q-mr-md">真实姓名: </span>{{certification.real_name}}</span>
+                            <span><span class="font-bold-600 q-mr-md">真实姓名: </span>{{replaceForHide(certification.real_name)}}</span>
                         </q-item-section>
                     </template>
                     <q-item-section v-else>
@@ -40,7 +45,7 @@
                 <q-item>
                     <template v-if="hasCertification && !editMode">
                         <q-item-section>
-                            <span><span class="font-bold-600 q-mr-md">身份证号码: </span>{{certification.id_card_number}}</span>
+                            <span><span class="font-bold-600 q-mr-md">身份证号码: </span>{{replaceForHide(certification.id_card_number)}}</span>
                         </q-item-section>
                     </template>
                     <q-item-section v-else>
@@ -60,7 +65,7 @@
                 <q-item>
                     <template v-if="hasCertification && !editMode">
                         <q-item-section>
-                            <span><span class="font-bold-600 q-mr-md">电话号码: </span>{{certification.phone}}</span>
+                            <span><span class="font-bold-600 q-mr-md">电话号码: </span>{{replaceForHide(certification.phone)}}</span>
                         </q-item-section>
                     </template>
                     <q-item-section v-else>
@@ -80,7 +85,7 @@
                 <q-item>
                     <template v-if="hasCertification && !editMode">
                         <q-item-section>
-                            <span><span class="font-bold-600 q-mr-md">微信账号: </span>{{certification.wechat}}</span>
+                            <span><span class="font-bold-600 q-mr-md">微信账号: </span>{{replaceForHide(certification.wechat)}}</span>
                         </q-item-section>
                     </template>
                     <q-item-section v-else>
@@ -100,7 +105,7 @@
                 <q-item>
                     <template v-if="hasCertification && !editMode">
                         <q-item-section>
-                            <span><span class="font-bold-600 q-mr-md">QQ号码: </span>{{certification.qq}}</span>
+                            <span><span class="font-bold-600 q-mr-md">QQ号码: </span>{{replaceForHide(certification.qq)}}</span>
                         </q-item-section>
                     </template>
                     <q-item-section v-else>
@@ -117,7 +122,7 @@
                 <q-item>
                     <template v-if="hasCertification && !editMode">
                         <q-item-section>
-                            <span><span class="font-bold-600 q-mr-md">支付宝账号: </span>{{certification.alipay}}</span>
+                            <span><span class="font-bold-600 q-mr-md">支付宝账号: </span>{{replaceForHide(certification.alipay)}}</span>
                         </q-item-section>
                     </template>
                     <q-item-section v-else>
@@ -126,7 +131,7 @@
                             placeholder="请输入支付宝账号"
                         >
                             <template v-slot:prepend>
-                                <AliPay :width="22" :height="22" color="#f0f0f0" />
+                                <AliPay :width="22" :height="22" :color="$q.dark.mode ? '#f0f0f0' : '#666'" />
                             </template>
                         </q-input>
                     </q-item-section>
@@ -135,8 +140,8 @@
                     <q-item-section>
                         <div class="column no-wrap gap-md">
                             <q-img
-                                v-if="idCardFront"
-                                :src="idCardFront"
+                                v-if="idCardFront_preview"
+                                :src="idCardFront_preview"
                                 :ratio="16/9"
                                 height="160px"
                                 class="bg-image-fill"
@@ -157,8 +162,8 @@
                                 :caption="$t('drop_or_pick_id_card')" :maxFileSize="10 * 1024 * 1024"
                             />
                             <q-img
-                                v-if="idCardBack"
-                                :src="idCardBack"
+                                v-if="idCardBack_preview"
+                                :src="idCardBack_preview"
                                 :ratio="16/9"
                                 height="160px"
                                 class="bg-image-fill"
@@ -217,10 +222,19 @@ const params = ref({
     },
 });
 
+const hideInfo = ref(true)
+const replaceForHide = (str) => {
+    if(hideInfo.value) {
+        return '•••'
+    }
+    return str
+}
 const editMode = ref(false)
 const hasCertification = ref(false)
 const idCardFront = ref()
+const idCardFront_preview = ref()
 const idCardBack = ref()
+const idCardBack_preview = ref()
 const findSelfCertificationFn = async () => {
     const {data} = await findSelfCertification(teamStore.init?.id)
     // console.log(data)
@@ -233,6 +247,8 @@ const findSelfCertificationFn = async () => {
         hasCertification.value = true
         idCardFront.value = data.id_card_images[0]?.url
         idCardBack.value = data.id_card_images[1]?.url
+        idCardFront_preview.value = data.id_card_images[0]?.url + process.env.VITE_ICON_RESIZE
+        idCardBack_preview.value = data.id_card_images[1]?.url + process.env.VITE_ICON_RESIZE
     }
     if(data.code === 404) {
         hasCertification.value = false

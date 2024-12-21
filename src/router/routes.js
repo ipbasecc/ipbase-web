@@ -516,6 +516,45 @@ const routes = [
           title: "易乎品牌",
         },
       },
+      {
+        path: "/studio",
+        component: () => import("src/pages/studio/StudioPage.vue"),
+        name: "studio",
+        props: true,
+        redirect: "/studio/works",
+        children: [
+          {
+            path: "/studio/works",
+            component: () => import("src/pages/studio/UserWorks.vue"),
+            name: "self_works",
+            props: true,
+          },
+          {
+            path: "/studio/:user_id/works",
+            component: () => import("src/pages/studio/UserWorks.vue"),
+            name: "studio_works",
+            props: true,
+          },
+          {
+            path: "/studio/works/:work_id",
+            component: () => import("src/pages/studio/WorkDetial.vue"),
+            name: "studio_work_detail",
+            props: true,
+          },
+          {
+            path: "/studio/add-work",
+            component: () => import("src/pages/studio/components/AddWork.vue"),
+            name: "studio_add_work",
+            props: true,
+          },
+          {
+            path: "/studio/cv",
+            component: () => import("src/pages/studio/UserCv.vue"),
+            name: "studio_cv",
+            props: true,
+          }
+        ]
+      },
     ],
   },
 

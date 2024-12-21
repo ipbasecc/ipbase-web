@@ -13,7 +13,7 @@
                 />
             </q-avatar>
         </q-card-section>
-        <q-card-section class="column flex-center">
+        <q-card-section class="column flex-center cursor-pointer" @click="goToStudio">
             <div class="text-h6">{{ _party.username }}</div>
             <div class="text-subtitle2">{{ _party.profile?.title }}</div>
         </q-card-section>
@@ -22,7 +22,12 @@
 </template>
 <script setup>
 import { computed } from 'vue'
-import { dealStore, teamStore } from 'src/hooks/global/useStore';
+import { useRouter } from 'vue-router'
+import { teamStore } from 'src/hooks/global/useStore';
 const { party } = defineProps(['party'])
 const _party = computed(() => teamStore.init?.id === party?.id ? teamStore.init : party)
+const router = useRouter()
+const goToStudio = () => {
+    router.push(`/studio/${party.id}/works`)
+}
 </script>

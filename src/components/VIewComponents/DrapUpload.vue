@@ -1,8 +1,9 @@
 <template>
-  <div class="fit flex flex-center"
+  <div class="fit flex flex-center cursor-pointer"
     :class="`${
       showUpdateArea ? 'border radius-sm bg-selected' : ''
     } drop-zone_${dom_id}`"
+    :ref="`dropZone_${dom_id}`"
     @click="openFilePicker"
   >
     <div class="column gap-sm items-center" :class="tipClass">
@@ -76,9 +77,10 @@ const props = defineProps({
 const emit = defineEmits(["uploaded"]);
 const { multiple, isAvatar, isOSS, isMattermost, allowedFormats, maxFileSize } = toRefs(props);
 
-const dropZone = ref(null);
 const dom_id = uid(); // 如果一个页面中引用了两次本组件，那么会有一个失效，因此这里给dom加上uid
 const fileInputRef = ref(null);
+
+const dropZone = ref(null);
 
 // 定义响应式数据
 const files = ref([]);
@@ -253,7 +255,6 @@ const handleDrop = (e) => {
 // 在组件挂载时，绑定事件监听器到div元素上
 onMounted(async () => {
   await nextTick();
-  if(!dropZone.value) return
   // 获取div元素的引用
   dropZone.value = document.querySelector(`.drop-zone_${dom_id}`);
   // 绑定事件监听器到div元素上

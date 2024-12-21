@@ -934,6 +934,8 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   drop_or_pick_id_card_back: 'Drag or Click to Select ID Card Back',
   drop_or_pick_resource: 'Drag or Click to Select Resource',
   drop_or_pick_deliver_file: 'Drag or Click to Select Deliver File',
+  drop_or_pick_work_cover: 'Drag or Click to Select Work Cover',
+  drop_or_pick_work_media: 'Drag or Click to Select Work Media',
   support_type: 'Support Type',
   max_file_size: 'Max File Size',
   drop_or_pick_logo: 'Drag or Click to Select Logo',
@@ -953,6 +955,9 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   paied: 'Already Purchased',
   pulled_card_tip: 'After being pulled, the content will be invisible, but it will not affect the access of the buyer. The pulled content will no longer consume project storage space!',
   cant_published_no_media_tip: 'No content included, cannot publish',
+
+  works: 'Works',
+  cv: 'CV',
 
   logo_section: 'Logo',
   name_section: 'Name',

@@ -22,25 +22,25 @@
     </div>
     </q-img>
     <q-card-section>
-        <q-item v-if="deal.party_a?.profile" class="q-pa-none">
-            <q-item-section side>
-                <UserAvatar
-                    :image="deal.party_a?.profile?.avatar?.url"
-                    :user_id="deal.party_a?.mm_profile?.id"
-                    :size="26"
-                    :disable_cardRef="true"
-                    :mm_member="deal.party_a?.mm_profile"
-                />
-            </q-item-section>
-            <q-item-section>
-                <q-item-label>{{ deal.party_a?.profile?.title }}</q-item-label>
-            </q-item-section>
-        </q-item>
         <div class="text-h6 cursor-pointer" @click="toDeal">{{ deal.name }}</div>
         <div class="row items-baseline">
             <span class="bg-orange radius-xs border q-px-xs q-mr-xs" style="transform: translateY(-4px);">￥</span>
             <span class="text-h4">{{ deal.amount / 100 }}</span>
         </div>
+        <q-item v-if="deal.party_a?.profile" class="q-pa-none cursor-pointer">
+            <q-item-section side>
+                <UserAvatar
+                    :image="deal.party_a?.profile?.avatar?.url"
+                    :user_id="deal.party_a?.mm_profile?.id"
+                    :size="26"
+                    :disable_card="true"
+                    :mm_member="deal.party_a?.mm_profile"
+                />
+            </q-item-section>
+            <q-item-section @click="goToStudio">
+                <q-item-label>{{ deal.party_a?.profile?.title }}</q-item-label>
+            </q-item-section>
+        </q-item>
     </q-card-section>
 </q-card>
 </template>
@@ -53,5 +53,9 @@ const router = useRouter()
 const {deal} = defineProps(['deal'])
 const toDeal = () => {
     router.push(`/deliver/deal/${deal.id}`)
+}
+const goToStudio = () => {
+    console.log('deal', deal)
+    router.push(`/studio/${deal.party_a?.id}/works`)
 }
 </script>

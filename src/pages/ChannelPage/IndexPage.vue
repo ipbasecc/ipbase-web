@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-  import { onMounted, provide, ref, toRef, watch } from 'vue';
+  import { onMounted, provide, ref, toRef, watch, onBeforeUnmount } from 'vue';
   import ChannelHeader from 'src/pages/ChannelPage/Components/ChannelHeader.vue';
   import CarouselContainer from 'src/components/VIewComponents/CarouselContainer.vue'
   import { findChannelMatedataByID } from "src/apollo/api/api.js";

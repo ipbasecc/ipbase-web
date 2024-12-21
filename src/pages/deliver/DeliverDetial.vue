@@ -253,7 +253,7 @@
                                     暂无人员资讯该任务
                                 </q-tooltip>
                         </q-btn>
-                        <div v-else class="radius-xs border q-pa-sm full-width flex flex-center blur-sm text-positive">
+                        <div v-else class="radius-xs border q-pa-sm full-width flex flex-center blur-sm text-positive" @click="openFloatChat()">
                             合作已完成
                         </div>
                     </q-card-section>

@@ -6,7 +6,7 @@
             @click="i.handler(i)"
         >
             <q-item-section side>
-                <q-icon name="mdi-chart-areaspline" />
+                <q-icon :name="i.icon" color="white" />
             </q-item-section>
             <q-item-section>{{ $t(i.name) }}</q-item-section>
         </q-item>
@@ -31,7 +31,7 @@ const menu = [
     },
     {
         name: 'deal_page',
-        icon: 'mdi-chart-areaspline',
+        icon: 'handshake',
         route: '/business/deal',
         handler: (i) => {
             actived_item_name.value = i.name
@@ -40,7 +40,7 @@ const menu = [
     },
     {
         name: 'business_account_info',
-        icon: 'mdi-account-box',
+        icon: 'mdi-account-card-details',
         route: '/business/info',
         handler: (i) => {
             actived_item_name.value = i.name
@@ -49,7 +49,7 @@ const menu = [
     },
     {
         name: 'business_certificate_info',
-        icon: 'mdi-account-box',
+        icon: 'mdi-certificate',
         route: '/business/certificate',
         handler: (i) => {
             actived_item_name.value = i.name

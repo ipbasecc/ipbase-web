@@ -12,6 +12,7 @@ import useOss from "src/stores/oss.js";
 import useDiscoverStore from "src/stores/discover.js";
 import useNotifyStore from "src/stores/notify.js";
 import useChatStore from "src/stores/chat.js";
+import useStudioStore from "src/stores/studio.js";
 
 export const uiStore = useUIStore();
 export const mm_wsStore = useMmws();
@@ -27,3 +28,4 @@ export const ossStore = useOss();
 export const discoverStore = useDiscoverStore();
 export const notifyStore = useNotifyStore();
 export const chatStore = useChatStore();
+export const studioStore = useStudioStore();

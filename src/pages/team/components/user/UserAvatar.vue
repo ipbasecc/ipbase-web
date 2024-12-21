@@ -35,10 +35,10 @@
               />
             </q-avatar>
           </div>
-          <span class="font-larger font-bold-600"
-            >@{{ fetched_user.nickname || fetched_user.username }}</span
-          >
-          <span class="font-larger font-bold-600">{{
+          <span class="font-larger font-bold-600 cursor-pointer" @click="goToStudio">
+            @{{ fetched_user.username }}
+          </span>
+          <span class="font-larger font-bold-600 cursor-pointer" @click="goToStudio">{{
             fetched_user.email
           }}</span>
         </q-card-section>
@@ -337,6 +337,9 @@ const sendFriendReq = async (contact_id) => {
     addFriendLoading.value = false;
     addFriendDlg.value = false;
   }
+}
+const goToStudio = () => {
+  router.push(`/studio/${user_idRef.value}/works`)
 }
 
 watch(

@@ -45,7 +45,7 @@
               class="q-pa-xs radius-sm"
               :class="$q.dark.mode ? 'text-grey-1' : 'bg-white text-grey-10'"
             >
-              <q-item clickable class="radius-xs q-pa-lg" @click="toTeamHome()">
+              <q-item clickable class="radius-xs q-pa-lg" @click="toStudioHome()">
                 <q-item-section avatar class="q-pa-xs">
                   <UserAvatar
                     :user_id="mm_user.id"
@@ -368,10 +368,9 @@ const setStatus = async (val) => {
   }
 };
 
-const toTeamHome = () => {
-  localforage.setItem("last_module", "teams").then(() => {
-    router.push("/teams");
-  });
+const toStudioHome = () => {
+  uiStore.app = 'studio'
+  router.push(`/studio`)
 };
 
 const toBusinessPage = () => {

@@ -106,6 +106,7 @@
           <BussinessMenu v-if="uiStore.app === 'business'" />
           <DiscoverNavigator v-if="uiStore.app === 'discover'" />
           <DeliverNavigator v-if="uiStore.app === 'deliver'" />
+          <StudioNavigation v-if="uiStore.app === 'studio'" />
         </q-drawer>
         <RightPannel />
       </template>
@@ -175,6 +176,7 @@ import NotebookList from './notebook/NotebookList.vue'
 import BussinessMenu from '../business/BussinessMenu.vue'
 import DiscoverNavigator from './discover/DiscoverNavigator.vue'
 import DeliverNavigator from '../deliver/DeliverNavigator.vue'
+import StudioNavigation from '../studio/StudioNavigation.vue'
 
 // 团队状态是否存在 blocked 或 unconfirmed
 const userStatus_byTeam = computed(() => teamStore.team?.status);

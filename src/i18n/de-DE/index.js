@@ -934,6 +934,8 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   drop_or_pick_id_card_back: 'Ziehen oder Klicken zum Auswählen der ID-Karten-Rückseite',
   drop_or_pick_resource: 'Ziehen oder Klicken zum Auswählen der Ressource',
   drop_or_pick_deliver_file: 'Ziehen oder Klicken zum Auswählen der Lieferdatei',
+  drop_or_pick_work_cover: 'Ziehen oder Klicken zum Auswählen des Arbeitscovers',
+  drop_or_pick_work_media: 'Ziehen oder Klicken zum Auswählen des Arbeitsmedien',
   support_type: 'Unterstützter Typ',
   max_file_size: 'Maximale Dateigröße',
   drop_or_pick_logo: 'Ziehen oder Klicken zum Auswählen des Logos',
@@ -953,6 +955,9 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   paied: 'Erworben',
   pulled_card_tip: 'Nach der Deaktivierung wird der Inhalt nicht mehr sichtbar, beeinträchtigt jedoch nicht den Zugriff für Käufer, deaktivierte Inhalte verbrauchen auch nicht mehr Speicherplatz des Projekts！',
   cant_published_no_media_tip: 'Kein Inhalt enthalten, kann nicht veröffentlicht werden',
+
+  works: 'Arbeiten',
+  cv: 'Lebenslauf',
 
   logo_section: 'Logo',
   name_section: 'Name',

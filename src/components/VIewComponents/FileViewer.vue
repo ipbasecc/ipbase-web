@@ -30,6 +30,7 @@
             :option="{
               ...videoOption,
               url: fileRef.url,
+              poster: coverRef,
               fullscreen: false,
               fullscreenWeb: false,
             }"

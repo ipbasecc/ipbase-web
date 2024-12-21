@@ -933,6 +933,8 @@ export default {
   drop_or_pick_id_card_back: '拖拽或点击选择身份证背面',
   drop_or_pick_resource: '拖拽或点击选择资源',
   drop_or_pick_deliver_file: '拖拽或点击选择交付文件',
+  drop_or_pick_work_cover: '拖拽或点击选择作品封面',
+  drop_or_pick_work_media: '拖拽或点击选择作品媒体',
   support_type: '支持类型',
   max_file_size: '最大文件大小',
   drop_or_pick_logo: '拖拽或点击选择Logo',
@@ -952,6 +954,9 @@ export default {
   paied: '已购',
   pulled_card_tip: '下架后内容将不可见，不影响以购买者访问，下架内容不再消耗项目存储空间！',
   cant_published_no_media_tip: '没有包含任何内容，不能发布',
+
+  works: '作品',
+  cv: '简历',
 
   logo_section: '标志',
   name_section: '名称',
