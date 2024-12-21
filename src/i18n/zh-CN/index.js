@@ -151,6 +151,8 @@ export default {
   status_away: '离开',
   status_dnd: '勿扰',
   status_offline: '离线',
+  clear_all: '清除全部',
+  read_all: '全部已读',
 
   app_team_purpose: '管理你的团队、频道、项目',
   affairs: '事务',

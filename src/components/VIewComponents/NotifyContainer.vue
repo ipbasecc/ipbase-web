@@ -1,9 +1,14 @@
 <template>
     <q-btn dense round flat icon="notifications">
         <q-menu anchor="top end" self="top left" :offset="[10, 0]"
-            max-width="22rem" max-height="41vh"
+            max-height="41vh"
             class="radius-sm">
-            <q-list bordered dense class="q-pa-xs radius-sm">
+            <q-list bordered dense class="q-pa-xs radius-sm" style="width: 16rem;">
+                <q-bar v-if="messages.length > 0" dark class="transparent border-bottom">
+                    <q-space />
+                    <span class="cursor-pointer text-caption" @click="readAll()">{{ $t('read_all') }}</span>
+                    <span class="cursor-pointer text-caption q-ml-sm" @click="clearAll()">{{ $t('clear_all') }}</span>
+                </q-bar>
                 <template v-if="messages.length > 0">
                     <q-item v-for="item in messages" :key="item.id" class="radius-xs"
                         clickable v-ripple v-close-popup @click="toTarget(item)"
@@ -48,6 +53,12 @@ const toTarget = async (item) => {
     await notifyStore.readMessage(item.id);
     uiStore.app = 'chats'
     router.push(item.target);
+}
+const clearAll = async () => {
+    await notifyStore.clearAll();
+}
+const readAll = async () => {
+    await notifyStore.readAll();
 }
 
 onBeforeMount(async () => {

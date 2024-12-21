@@ -151,6 +151,8 @@ export default {
   status_away: 'Abwesend',
   status_dnd: 'Bitte nicht stören',
   status_offline: 'Offline',
+  clear_all: 'Alle löschen',
+  read_all: 'Alle lesen',
 
   app_team_purpose: 'Verwalte dein Team, Kanäle, Projekte',
   affairs: 'Angelegenheiten',

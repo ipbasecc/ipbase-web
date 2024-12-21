@@ -40,6 +40,15 @@ export default defineStore('notify', {
             await storage.setItem('notify-store', {
                 messages: JSON.parse(JSON.stringify(this.messages))
             });
+        },
+        async readAll() {
+            this.messages.forEach(item => item.read = true);
+            await storage.setItem('notify-store', {
+                messages: JSON.parse(JSON.stringify(this.messages))
+            });
+        },
+        async clearAll() {
+            this.messages = [];
         }
     }
 })
