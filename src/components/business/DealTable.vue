@@ -6,7 +6,7 @@
             </q-tabs>
         </q-toolbar>
         <q-table flat bordered :rows="rows" :columns="columns" row-key="name"
-            :selection="orderToggler === 'can_withdraw' ? 'multiple' : 'none'" v-model:selected="selected"
+            selection="single" v-model:selected="selected"
             :pagination="initialPagination">
             <template v-slot:body-cell-cover="props">
                 <q-td :props="props">
