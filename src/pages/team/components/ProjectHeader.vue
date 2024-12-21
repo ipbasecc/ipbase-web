@@ -18,12 +18,12 @@
         <StartMeet v-if="$q.screen.gt.xs" :project="teamStore.project" />
         <q-btn v-if="teamStore.project?.id && teamStore.navigation !== 'chat'"
           flat dense round icon="mdi-forum"
-          :color="teamStore.rightDrawer === 'chat_pannel' ? 'positive' : ''"
+          :color="teamStore.rightDrawer === 'chat_pannel' && teamStore.rightDrawerOpen ? 'positive' : ''"
           @click="toggleRightpannel('chat_pannel')"
         />
         <q-btn v-if="useAuths('approve_join_request',['project'])"
           flat dense round icon="notifications"
-          :color="show_join_alert ? 'orange' : teamStore.rightDrawer === 'join_request' ? 'positive' : ''"
+          :color="show_join_alert ? 'orange' : teamStore.rightDrawer === 'join_request' && teamStore.rightDrawerOpen ? 'positive' : ''"
           @click="toggleRightpannel('join_request')"
         />
         <q-btn v-if="teamStore.project?.id"
