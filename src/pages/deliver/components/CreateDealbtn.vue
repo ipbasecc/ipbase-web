@@ -23,7 +23,7 @@ const router = useRouter();
 const openCertificationPage = ref(false);
 const createDeal = () => {
     const isCertified = teamStore.init.by_certification?.verified;
-    if(isCertified) {
+    if(!isCertified) {
         openCertificationPage.value = true;
         return;
     }
