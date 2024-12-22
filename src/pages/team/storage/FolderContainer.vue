@@ -223,7 +223,7 @@ import { downloadFile } from "src/hooks/utilits.js";
 import { useQuasar } from "quasar";
 
 import { onClickOutside } from "@vueuse/core";
-import { userStore, teamStore, uiStore } from "src/hooks/global/useStore.js";
+import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 
 const emit = defineEmits([
   "enterFolder",
@@ -235,7 +235,7 @@ const emit = defineEmits([
 ]);
 const $q = useQuasar();
 
-const me = userStore.me;
+const me = teamStore?.init;
 const props = defineProps({
   sub_files: {
     type: Array,
@@ -419,7 +419,7 @@ const createStorageFn = async (folder, storage_id) => {
   } else if (belonged.value === "card") {
     params.value.data.assign_card = teamStore.card.id;
   } else if (belonged.value === "user") {
-    params.value.data.assign_user = userStore.userId;
+    params.value.data.assign_user = teamStore?.init?.id;
   } else if (belonged.value === "storage") {
     params.value.data.assign_storage = storage_id;
   }

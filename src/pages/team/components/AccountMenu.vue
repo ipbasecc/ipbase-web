@@ -1,7 +1,6 @@
 <template>
   <div
     v-if="
-      userStore?.logged &&
       $route.name !== 'login' &&
       $route.name !== 'register' &&
       teamStore.init
@@ -167,7 +166,7 @@
   </div>
   <template
     v-if="
-      !userStore?.logged && $route.name !== 'login' && $route.name !== 'register'
+      !teamStore?.init && $route.name !== 'login' && $route.name !== 'register'
     "
   >
     <q-btn
@@ -187,7 +186,7 @@
       @click="$router.push('/register')"
     />
   </template>
-  <q-btn v-if="!userStore?.logged && vertical" round outline icon="person">
+  <q-btn v-if="!teamStore?.init && vertical" round outline icon="person">
     <q-menu
       :anchor="menu_anchor"
       :self="menu_self"
@@ -249,7 +248,6 @@ import localforage from "localforage";
 import TeamList from "./TeamList.vue";
 import {
   mmUser,
-  userStore,
   channelStore,
   teamStore,
   uiStore,
@@ -321,7 +319,6 @@ getUserStatusFn();
 // 注销动作开始
 const confirmOut = ref(false);
 const logout = async () => {
-  userStore.$reset(); //重置store
   channelStore.$reset();
   teamStore.$reset_project();
   teamStore.$reset();

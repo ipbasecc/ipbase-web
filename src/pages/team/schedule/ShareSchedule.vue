@@ -178,7 +178,7 @@
         color="primary"
         icon="check"
         :label="$t('confirm')"
-        :disable="!share_code.code || !userStore.userId"
+        :disable="!share_code.code || !teamStore?.init?.id"
         @click="shareSchedule(share_item.id, share_code)"
       />
     </q-card-section>
@@ -191,7 +191,7 @@ import { copyToClipboard, useQuasar } from "quasar";
 import QrcodeVue from "qrcode.vue";
 import { computed, onMounted, ref, toRefs, watch } from "vue";
 import { randomKey } from "src/hooks/utilits.js";
-import { userStore, teamStore } from "src/hooks/global/useStore.js";
+import { teamStore } from "src/hooks/global/useStore.js";
 import { i18n } from 'src/boot/i18n.js';
 
 const $t = i18n.global.t;
@@ -208,7 +208,7 @@ const emit = defineEmits(["shareUpdated"]);
 const $q = useQuasar();
 const user_shareCode = computed(() =>
   share_item.value?.share_codes?.find(
-    (i) => i.creator?.id === Number(userStore.userId)
+    (i) => i.creator?.id === teamStore?.init?.id
   )
 );
 
@@ -218,7 +218,7 @@ const share_code = ref({
   up_time: user_shareCode.value ? user_shareCode.value.up_time : "",
 });
 const genShareUrl = (code) => {
-  share_url.value = `${import.meta.env.VITE_APP_URI}schedule/share/${share_item.value?.id}?share_code=${code}&share_by=${userStore.userId}`;
+  share_url.value = `${import.meta.env.VITE_APP_URI}schedule/share/${share_item.value?.id}?share_code=${code}&share_by=${teamStore?.init?.id}`;
 };
 const share_url = ref();
 const shareSchedule = async (schedule_id, share_code) => {

@@ -70,7 +70,7 @@
             square
             color="deep-orange"
             class="q-px-sm"
-            :label="userStore.me.username"
+            :label="teamStore?.init?.username"
           />, {{$t('invite_you_to_team')}}:
           <q-chip
             dense
@@ -94,7 +94,7 @@ import { genInvite } from "src/api/strapi/project.js";
 import QrcodeVue from "qrcode.vue";
 import { copyToClipboard, useQuasar } from "quasar";
 
-import { teamStore, userStore } from "src/hooks/global/useStore.js";
+import { teamStore } from "src/hooks/global/useStore.js";
 import { i18n } from 'src/boot/i18n.js';
 
 const $t = i18n.global.t;

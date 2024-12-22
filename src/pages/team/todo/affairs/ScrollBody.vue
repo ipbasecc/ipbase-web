@@ -18,8 +18,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import {teamStore, uiStore, userStore} from 'src/hooks/global/useStore';
+import { uiStore } from 'src/hooks/global/useStore';
 const dragscrollstart = () => {
   uiStore.dragging = true;
 };

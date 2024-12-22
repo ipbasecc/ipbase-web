@@ -6,8 +6,8 @@
 </template>
 
 <script setup>
-import {computed, ref, toRefs, watch, watchEffect, onBeforeUnmount} from "vue";
-import {mm_wsStore, teamStore, userStore} from "src/hooks/global/useStore.js";
+import { toRefs, watchEffect, onBeforeUnmount} from "vue";
+import { teamStore } from "src/hooks/global/useStore.js";
 import DocumentTiptap from "./DocumentTiptap.vue";
 import {useQuasar} from 'quasar'
 
@@ -40,7 +40,7 @@ watchEffect(async () => {
   } else if (by_info.value.by === "card") {
     by_info.value.card_id = teamStore.card?.id;
   } else {
-    by_info.value.user_id = userStore.userId;
+    by_info.value.user_id = teamStore.init?.id;
   }
 });
 const close = () => {

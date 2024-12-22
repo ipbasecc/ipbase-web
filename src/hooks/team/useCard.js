@@ -11,7 +11,6 @@ import { computed } from "vue";
 import { Notify } from "quasar";
 import localforage from "localforage";
 import {
-  userStore,
   teamStore,
   mm_wsStore
 } from "src/hooks/global/useStore.js";
@@ -173,12 +172,12 @@ export async function unfollowCard(card) {
   let card_executor = card.card_members?.find(
     (i) => i.id === roleID_of_executor
   )?.by_user.id;
-  if (card_executor === userStore.userId) {
+  if (card_executor === teamStore?.init?.id) {
     Notify.create("您是卡片负责人，不能取消对卡片的关注");
     return;
   }
   updateParmars.data = {
-    remove_follow_user_id: userStore.userId,
+    remove_follow_user_id: teamStore?.init?.id,
   };
   let res = await updateCardFn(card.id);
   if (res) {
@@ -189,7 +188,7 @@ export async function unfollowCard(card) {
 export async function followCard(card, _user) {
   console.log("触发followCard", _user);
   updateParmars.data = {
-    new_follow_user_id: _user?.id || userStore.userId,
+    new_follow_user_id: _user?.id || teamStore?.init?.id,
   };
   let res = await updateCardFn(card.id);
   if (res) {
@@ -202,7 +201,7 @@ export async function attachExecutor(card, member) {
   updateParmars.executor = member?.id || NaN;
   let res = await updateCardFn(card.id);
   if (res) {
-    if (!card.followed_bies?.map((i) => i.id).includes(Number(userStore.userId))) {
+    if (!card.followed_bies?.map((i) => i.id).includes(teamStore?.init?.id)) {
       const _user = member?.by_user;
       await followCard(card, _user);
     }
@@ -212,14 +211,14 @@ export async function attachExecutor(card, member) {
 
 export async function todoItemUpdate(card, group_id, todo) {
   let chat_Msg = {
-    body: `${userStore.me?.username}更新了卡片 - ${useCardname(
+    body: `${teamStore?.init?.username}更新了卡片 - ${useCardname(
       card
     )} 的待办事项： ${todo.content}`,
     props: {
       strapi: {
         data: {
           is: "todo",
-          by_user: userStore.userId,
+          by_user: teamStore?.init?.id,
           card_id: card.id,
           group_id: group_id,
           todo_id: todo.id,
@@ -233,14 +232,14 @@ export async function todoItemUpdate(card, group_id, todo) {
 }
 export async function todoCreated(card, group_id, todo) {
   let chat_Msg = {
-    body: `${userStore.me?.username}在卡片 - ${useCardname(
+    body: `${teamStore?.init?.username}在卡片 - ${useCardname(
       card
     )} 新建了待办事项： ${todo.content}`,
     props: {
       strapi: {
         data: {
           is: "todo",
-          by_user: userStore.userId,
+          by_user: teamStore?.init?.id,
           card_id: card.id,
           group_id: group_id,
           action: "card_todo_created",
@@ -254,14 +253,14 @@ export async function todoCreated(card, group_id, todo) {
 
 export async function todoDeleted(card, group_id, todo_id) {
   let chat_Msg = {
-    body: `${userStore.me?.username}删除了卡片 - ${useCardname(
+    body: `${teamStore?.init?.username}删除了卡片 - ${useCardname(
       card
     )} 的待办事项： ${todo_id}`,
     props: {
       strapi: {
         data: {
           is: "todo",
-          by_user: userStore.userId,
+          by_user: teamStore?.init?.id,
           card_id: card.id,
           group_id: group_id,
           todo_id: todo_id,

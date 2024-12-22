@@ -59,8 +59,7 @@
 <script setup>
 import { ref, toRef, watchEffect } from "vue";
 import { updateProject, updateCard } from "src/api/strapi/project.js";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
-import { userStore, teamStore } from "src/hooks/global/useStore.js";
+import { teamStore } from "src/hooks/global/useStore.js";
 const props = defineProps({
   wasAttached_to: {
     type: String,

@@ -16,6 +16,7 @@ const process = (res) => {
       teamStore.mm_team = res.default_team?.mm_team;
     }
     uiStore.$syncMmUnreads();
+    userStore.me = res
     userStore.todogroups = res.todogroups;
     teamStore.need_refecth_projects = false;
     JSON.stringify(res);

@@ -1,14 +1,14 @@
 import { reactive } from "vue";
 import { findCard, updateCard, deleteCard } from "src/api/strapi/project.js";
-import useUserStore from "src/stores/user.js";
 import { useCardname } from "src/hooks/project/useCardname.js";
 import { send_MattersMsg } from "src/hooks/utilits/useSendmsg.js";
-import useProjectStore from "src/stores/project.js";
 import { computed } from "vue";
 import { Notify } from "quasar";
 import localforage from "localforage";
-const projectStore = useProjectStore();
-const userStore = useUserStore();
+import {
+  teamStore,
+  projectStore
+} from "src/hooks/global/useStore.js";
 
 const project = computed(() => projectStore?.project);
 
@@ -95,12 +95,12 @@ export async function updateCardName(card, name) {
   let res = await updateCardFn(card.id);
   if (res) {
     let chat_Msg = {
-      body: `${userStore.me?.username}修改了卡片 - ${useCardname(card)} 的名称`,
+      body: `${teamStore?.init?.username}修改了卡片 - ${useCardname(card)} 的名称`,
       props: {
         strapi: {
           data: {
             is: "card",
-            by_user: userStore.userId,
+            by_user: teamStore?.init?.id,
             card_id: card.id,
             action: "update_card_name",
             card_name: updateParmars.data.name,
@@ -118,12 +118,12 @@ export async function setCardType(card, val) {
   if (res) {
     delete updateParmars.data.type;
     let chat_Msg = {
-      body: `${userStore.me?.username}修改了卡片 - ${useCardname(card)} 的类型`,
+      body: `${teamStore?.init?.username}修改了卡片 - ${useCardname(card)} 的类型`,
       props: {
         strapi: {
           data: {
             is: "card",
-            by_user: userStore.userId,
+            by_user: teamStore?.init?.id,
             card_id: card.id,
             action: "update_card_type",
             card_type: val,
@@ -140,14 +140,14 @@ export async function setCardColor(card, color) {
   let res = await updateCardFn(card.id);
   if (res?.data) {
     let chat_Msg = {
-      body: `${userStore.me?.username}修改了卡片 - ${useCardname(
+      body: `${teamStore?.init?.username}修改了卡片 - ${useCardname(
         card
       )} 的颜色标记`,
       props: {
         strapi: {
           data: {
             is: "card",
-            by_user: userStore.userId,
+            by_user: teamStore?.init?.id,
             card_id: card.id,
             action: "update_card_color",
             card_color: color,
@@ -166,17 +166,17 @@ export async function unfollowCard(card) {
   let card_executor = card.card_members?.find(
     (i) => i.id === roleID_of_executor
   )?.by_user.id;
-  if (card_executor === userStore.userId) {
+  if (card_executor === teamStore?.init?.id) {
     Notify.create("您是卡片负责人，不能取消对卡片的关注");
     return;
   }
   updateParmars.data = {
-    remove_follow_user_id: userStore.userId,
+    remove_follow_user_id: teamStore?.init?.id,
   };
   let res = await updateCardFn(card.id);
   if (res) {
     delete updateParmars.data.remove_follow_user_id;
-    let message = `${userStore.me?.username}取消了卡片 - ${useCardname(
+    let message = `${teamStore?.init?.username}取消了卡片 - ${useCardname(
       card
     )} 的关注`;
     let chat_Msg = {
@@ -187,7 +187,7 @@ export async function unfollowCard(card) {
             is: "card",
             action: "remove_card_followed",
             card_id: card.id,
-            remove_followed: userStore.userId,
+            remove_followed: teamStore?.init?.id,
           },
         },
       },
@@ -199,13 +199,13 @@ export async function unfollowCard(card) {
 export async function followCard(card, _user) {
   console.log("触发followCard", _user);
   updateParmars.data = {
-    new_follow_user_id: _user?.id || userStore.userId,
+    new_follow_user_id: _user?.id || teamStore?.init?.id,
   };
   let res = await updateCardFn(card.id);
   if (res) {
     delete updateParmars.data.new_follow_user_id;
     let message = `${
-      _user ? _user.username : userStore.me?.username
+      _user ? _user.username : teamStore?.init?.username
     }关注了卡片 - ${useCardname(card)}`;
     let chat_Msg = {
       body: message,
@@ -215,7 +215,7 @@ export async function followCard(card, _user) {
             is: "card",
             action: "new_card_followed",
             card_id: card.id,
-            new_followed: _user?.id || userStore.userId,
+            new_followed: _user?.id || teamStore?.init?.id,
           },
         },
       },
@@ -230,11 +230,11 @@ export async function attachExecutor(card, member) {
   if (res) {
     let message;
     if (member === null) {
-      message = `${userStore.me?.username}移除了卡片 - ${useCardname(
+      message = `${teamStore?.init?.username}移除了卡片 - ${useCardname(
         card
       )} 的负责人`;
     } else {
-      message = `${userStore.me?.username}指定了卡片 - ${useCardname(
+      message = `${teamStore?.init?.username}指定了卡片 - ${useCardname(
         card
       )} 的负责人为：${member.username}`;
     }
@@ -246,7 +246,7 @@ export async function attachExecutor(card, member) {
         strapi: {
           data: {
             is: "card",
-            by_user: userStore.userId,
+            by_user: teamStore?.init?.id,
             card_id: card.id,
             action: "update_card_executor",
             executor: member?.id || NaN,
@@ -257,7 +257,7 @@ export async function attachExecutor(card, member) {
     await send_chat_Msg(chat_Msg);
 
     if (
-      !card.followed_bies?.map((i) => i.id).includes(Number(userStore.userId))
+      !card.followed_bies?.map((i) => i.id).includes(Number(teamStore?.init?.id))
     ) {
       const _user = member?.by_user;
       console.log("触发follow", _user);
@@ -279,14 +279,14 @@ export async function todogroupSort(card, val) {
   let res = await todoUpdate(card, val);
   if (res) {
     let chat_Msg = {
-      body: `${userStore.me?.username}修改了卡片 - ${useCardname(
+      body: `${teamStore?.init?.username}修改了卡片 - ${useCardname(
         card
       )} 的待办事项的分组排序`,
       props: {
         strapi: {
           data: {
             is: "card",
-            by_user: userStore.userId,
+            by_user: teamStore?.init?.id,
             card_id: card.id,
             action: "card_todogroup_order",
             order: res.todogroups.map((i) => i.id),
@@ -302,14 +302,14 @@ export async function todogroupUpdate(card, groups, group) {
   let res = await todoUpdate(card, groups);
   if (res) {
     let chat_Msg = {
-      body: `${userStore.me?.username}修改了卡片 - ${useCardname(
+      body: `${teamStore?.init?.username}修改了卡片 - ${useCardname(
         card
       )} 的待办事项的分组名称修改为: ${group.name}`,
       props: {
         strapi: {
           data: {
             is: "card",
-            by_user: userStore.userId,
+            by_user: teamStore?.init?.id,
             card_id: card.id,
             action: "card_todogroup_update",
             body: group,
@@ -323,14 +323,14 @@ export async function todogroupUpdate(card, groups, group) {
 
 export async function createTodogroup(card, group) {
   let chat_Msg = {
-    body: `${userStore.me?.username}在卡片 - ${useCardname(
+    body: `${teamStore?.init?.username}在卡片 - ${useCardname(
       card
     )} 内新建了待办事项分组 - ${group.name}`,
     props: {
       strapi: {
         data: {
           is: "card",
-          by_user: userStore.userId,
+          by_user: teamStore?.init?.id,
           card_id: card.id,
           action: "card_todogroup_created",
           body: group,
@@ -346,14 +346,14 @@ export async function deleteTodogroup(card, groups, group) {
   let res = await todoUpdate(card, todogroups);
   if (res) {
     let chat_Msg = {
-      body: `${userStore.me?.username}删除了卡片 - ${useCardname(
+      body: `${teamStore?.init?.username}删除了卡片 - ${useCardname(
         card
       )} 的待办事项分组 - ${group.name}`,
       props: {
         strapi: {
           data: {
             is: "card",
-            by_user: userStore.userId,
+            by_user: teamStore?.init?.id,
             card_id: card.id,
             action: "card_todogroup_deleted",
             id: group.id,
@@ -367,14 +367,14 @@ export async function deleteTodogroup(card, groups, group) {
 export async function todoSort(card, group, sort) {
   let all_todos = card.todogroups.map((g) => g.todos).flat(2);
   let chat_Msg = {
-    body: `${userStore.me?.username}对卡片 - ${useCardname(
+    body: `${teamStore?.init?.username}对卡片 - ${useCardname(
       card
     )} 的待办事项进行了排序`,
     props: {
       strapi: {
         data: {
           is: "todogroup",
-          by_user: userStore.userId,
+          by_user: teamStore?.init?.id,
           card_id: card.id,
           group_id: group.id,
           action: "card_todo_sort",
@@ -389,14 +389,14 @@ export async function todoSort(card, group, sort) {
 }
 export async function todoitemUpdate(card, group_id, todo) {
   let chat_Msg = {
-    body: `${userStore.me?.username}更新了卡片 - ${useCardname(
+    body: `${teamStore?.init?.username}更新了卡片 - ${useCardname(
       card
     )} 的待办事项： ${todo.name}`,
     props: {
       strapi: {
         data: {
           is: "todo",
-          by_user: userStore.userId,
+          by_user: teamStore?.init?.id,
           card_id: card.id,
           group_id: group_id,
           todo_id: todo.id,
@@ -410,14 +410,14 @@ export async function todoitemUpdate(card, group_id, todo) {
 }
 export async function todoCreated(card, group_id, todo) {
   let chat_Msg = {
-    body: `${userStore.me?.username}在卡片 - ${useCardname(
+    body: `${teamStore?.init?.username}在卡片 - ${useCardname(
       card
     )} 新建了待办事项： ${todo.content}`,
     props: {
       strapi: {
         data: {
           is: "todo",
-          by_user: userStore.userId,
+          by_user: teamStore?.init?.id,
           card_id: card.id,
           group_id: group_id,
           action: "card_todo_created",
@@ -431,14 +431,14 @@ export async function todoCreated(card, group_id, todo) {
 
 export async function todoDeleted(card, group_id, todo_id) {
   let chat_Msg = {
-    body: `${userStore.me?.username}删除了卡片 - ${useCardname(
+    body: `${teamStore?.init?.username}删除了卡片 - ${useCardname(
       card
     )} 的待办事项： ${todo_id}`,
     props: {
       strapi: {
         data: {
           is: "todo",
-          by_user: userStore.userId,
+          by_user: teamStore?.init?.id,
           card_id: card.id,
           group_id: group_id,
           todo_id: todo_id,
@@ -458,12 +458,12 @@ export async function setScore(card, val) {
     delete updateParmars.data.score;
     card.score = val;
     let chat_Msg = {
-      body: `${userStore.me?.username}修改了卡片 - ${useCardname(card)} 的分值`,
+      body: `${teamStore?.init?.username}修改了卡片 - ${useCardname(card)} 的分值`,
       props: {
         strapi: {
           data: {
             is: "card",
-            by_user: userStore.userId,
+            by_user: teamStore?.init?.id,
             card_id: card.id,
             action: "update_card_score",
             card_score: val,
@@ -480,14 +480,14 @@ export async function setStatus(card, val) {
   let res = await updateCardFn(card.id);
   if (res) {
     let chat_Msg = {
-      body: `${userStore.me?.username}将卡片 - ${useCardname(
+      body: `${teamStore?.init?.username}将卡片 - ${useCardname(
         card
       )} 状态修改为：${val}`,
       props: {
         strapi: {
           data: {
             is: "card",
-            by_user: userStore.userId,
+            by_user: teamStore?.init?.id,
             card_id: card.id,
             action: "update_card_status",
             card_status: val,
@@ -505,12 +505,12 @@ export async function updateJsonContent(card, val) {
   let res = await updateCard(card.id, updateParmars);
   if (res) {
     let chat_Msg = {
-      body: `${userStore.me?.username}修改了卡片 - ${useCardname(card)} 的内容`,
+      body: `${teamStore?.init?.username}修改了卡片 - ${useCardname(card)} 的内容`,
       props: {
         strapi: {
           data: {
             is: "card",
-            by_user: userStore.userId,
+            by_user: teamStore?.init?.id,
             card_id: card.id,
             action: "update_card_jsonContent",
             jsonContent: res.data.jsonContent,
@@ -535,12 +535,12 @@ export async function removeCard(card, belong_card) {
 
   if (res) {
     let chat_Msg = {
-      body: `${userStore.me?.username}删除了卡片 - ${useCardname(card)}`,
+      body: `${teamStore?.init?.username}删除了卡片 - ${useCardname(card)}`,
       props: {
         strapi: {
           data: {
             is: "card",
-            by_user: userStore.userId,
+            by_user: teamStore?.init?.id,
             action: "delete",
             body: res.data,
           },

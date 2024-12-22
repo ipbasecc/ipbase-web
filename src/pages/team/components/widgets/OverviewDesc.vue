@@ -40,11 +40,7 @@
 <script setup>
 import { ref, toRef, computed } from "vue";
 import { updateProject, updateCard } from "src/api/strapi/project.js";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
-import {
-  userStore,
-  teamStore,
-} from "src/hooks/global/useStore.js";
+import { teamStore } from "src/hooks/global/useStore.js";
 import { i18n } from 'src/boot/i18n.js';
 
 const $t = i18n.global.t;

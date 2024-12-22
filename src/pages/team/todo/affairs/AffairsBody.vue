@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { ref, toRefs, nextTick } from 'vue'
+import { ref, nextTick } from 'vue'
 import {teamStore, uiStore, userStore} from 'src/hooks/global/useStore';
 import {VueDraggable} from 'vue-draggable-plus'
 import {updateUserTodogroups} from "src/api/strapi.js";

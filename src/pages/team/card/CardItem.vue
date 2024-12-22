@@ -400,7 +400,7 @@
   import { colorMarks, cardTypes, preferences, shareProps } from "src/pages/team/hooks/useSettingTemplate.js";
   import ThreadBtn from "../components/widgets/ThreadBtn.vue";
   import ReName from "../components/widgets/icons/ReName.vue";
-  import { teamStore, uiStore, userStore } from "src/hooks/global/useStore.js";
+  import { teamStore, uiStore } from "src/hooks/global/useStore.js";
   import ClassPage from "./ClassPage.vue";
   import FileViewer from "src/components/VIewComponents/FileViewer.vue";
   import CreateShare from "pages/team/components/CreateShare.vue";
@@ -501,7 +501,7 @@
     if (isSale.value) {
       return cardRef.value?.creator?.id === teamStore.init?.id
     }
-    return _isCreator(userStore.userId, cardMembers.value, cardRef.value?.member_roles)
+    return _isCreator(teamStore.init?.id, cardMembers.value, cardRef.value?.member_roles)
   })
   const show_unpublished_chip = computed(() => {
     /**
@@ -531,7 +531,7 @@
   const is_followed = computed(() =>
     cardRef.value?.followed_bies
       ?.map((i) => i.id)
-      .includes(Number(userStore.userId))
+      .includes(Number(teamStore.init?.id))
   );
   const color_marker = computed(() => {
     const _card_colorMarker = cardRef.value?.color_marker;

@@ -57,7 +57,7 @@
 </template>
 
 <script setup>
-import { teamStore, uiStore, userStore } from 'src/hooks/global/useStore';
+import { teamStore, uiStore } from 'src/hooks/global/useStore';
 import { ref } from 'vue'
 import { createTodogroup } from "src/api/strapi/project.js";
 

@@ -1,4 +1,4 @@
-import { userStore, teamStore } from "src/hooks/global/useStore.js";
+import { teamStore } from "src/hooks/global/useStore.js";
 import { computed } from "vue";
 
 const teamMembers = computed(() => teamStore.team?.members || []);
@@ -55,7 +55,7 @@ export function useAuths(field, collections, members, roles, from) {
   if (!roles?.length === 0 || !roles?.length === 0) return false;
   // 优化：将成员角色的筛选提前到只有当用户ID匹配时才进行
   // 这样可以减少不必要的计算
-  const userId = Number(userStore.userId);
+  const userId = teamStore?.init?.id;
   const filteredMembers = members.filter(member => member.by_user?.id === userId);
   // console.log('projectMembers', projectMembers.value);
   

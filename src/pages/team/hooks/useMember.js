@@ -1,7 +1,7 @@
-import { userStore } from "src/hooks/global/useStore.js";
+import { teamStore } from "src/hooks/global/useStore.js";
 export function findRoles(members, member_roles) {
-    if(!members || !member_roles) return [];
-    const user_id = userStore.me?.id;
+    if(!members || !member_roles || teamStore?.init) return [];
+    const user_id = teamStore?.init?.id;
     // console.log('members',members, 'user_id', user_id);
     const _members = members.filter(member => member.by_user?.id === Number(user_id));
     // console.log('_members',_members);

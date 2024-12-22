@@ -503,11 +503,7 @@ import {
 import { colorMarks, preferences } from "src/pages/team/hooks/useSettingTemplate.js";
 import ThreadBtn from "../components/widgets/ThreadBtn.vue";
 import ReName from "../components/widgets/icons/ReName.vue";
-import {
-  userStore,
-  teamStore,
-  uiStore,
-} from "src/hooks/global/useStore.js";
+import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 import FileViewer from "src/components/VIewComponents/FileViewer.vue";
 import useProject from 'src/hooks/project/useProject.js'
 import useSocket from "src/pages/team/card/hooks/useSocket.js";
@@ -576,7 +572,7 @@ for (const key in preferences) {
 }
 const { _isCreator } = useMember();
 const isCreator = computed(() => {
-  return _isCreator(userStore.userId, cardRef.value?.card_members, cardRef.value?.member_roles)
+  return _isCreator(teamStore.init?.id, cardRef.value?.card_members, cardRef.value?.member_roles)
 })
 const isInCard = ref(false);
 const canEnter = computed(() => {
@@ -611,7 +607,7 @@ const { todo_process, todo_processColor } = clac_todoData(cardRef.value);
 const is_followed = computed(() =>
   cardRef.value?.followed_bies
     ?.map((i) => i.id)
-    .includes(Number(userStore.userId))
+    .includes(teamStore.init?.id)
 );
 const color_marker = computed(() => {
   const _card_colorMarker = cardRef.value?.color_marker;

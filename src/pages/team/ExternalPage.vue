@@ -94,11 +94,7 @@ import {
 } from "src/hooks/project/useProcess.js";
 import { getOneProject, getCards, findCard } from "src/api/strapi/project.js";
 
-import {
-  teamStore,
-  userStore,
-  uiStore,
-} from "src/hooks/global/useStore.js";
+import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 
 import CardPage from "./card/CardPage.vue";
 import CardItem from "./card/CardItem.vue";
@@ -163,7 +159,7 @@ const getCardsFn = async () => {
 const loadMore = async () => {
   if(!cards_hasMore.value) return
   cards_page.value++;
-  await getCardsFn(userStore.userId);
+  await getCardsFn(teamStore.init?.id);
 };
 
 const project = ref();

@@ -147,7 +147,7 @@ import {
   updateProject,
   getDocument
 } from "src/api/strapi/project.js";
-import {userStore, mm_wsStore, teamStore, uiStore} from 'src/hooks/global/useStore.js';
+import { teamStore, uiStore} from 'src/hooks/global/useStore.js';
 
 import { i18n } from 'src/boot/i18n.js';
 

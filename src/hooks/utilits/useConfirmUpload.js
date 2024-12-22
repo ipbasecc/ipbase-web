@@ -4,17 +4,8 @@ import localforage from "localforage";
 import { createUploadFile } from "src/apollo/api/api.js";
 import { ref, computed } from "vue";
 import Bottleneck from "bottleneck";
-import useUserStore from "src/stores/user.js";
-import useProjectStore from "src/stores/project.js";
-import useTeamStore from "src/stores/team.js";
-import useOss from "src/stores/oss.js";
 import { Notify } from 'quasar'
-import { uiStore } from "../global/useStore";
-
-const ossStore = useOss();
-const userStore = useUserStore();
-const projectStore = useProjectStore();
-const teamStore = useTeamStore();
+import { uiStore, teamStore, projectStore, ossStore } from "../global/useStore";
 
 const project_id = computed(
   () =>
@@ -26,10 +17,10 @@ const project_id = computed(
 
 const path_prefix = computed(() => {
   let path;
-  if (userStore.userId && project_id.value) {
-    path = `${userStore.userId}/${project_id.value}`;
-  } else if (userStore.userId && !project_id.value) {
-    path = `${userStore.userId}`;
+  if (teamStore?.init?.id && project_id.value) {
+    path = `${teamStore?.init?.id}/${project_id.value}`;
+  } else if (teamStore?.init?.id && !project_id.value) {
+    path = `${teamStore?.init?.id}`;
   } else {
     path = "";
   }

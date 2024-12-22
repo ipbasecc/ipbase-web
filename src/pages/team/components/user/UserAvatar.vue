@@ -42,7 +42,7 @@
             fetched_user.email
           }}</span>
         </q-card-section>
-        <q-card-section v-if="strapi_member?.by_user?.id !== userStore.me?.id" class="border-top q-pa-sm">
+        <q-card-section v-if="strapi_member?.by_user?.id !== teamStore.init?.id" class="border-top q-pa-sm">
           <q-btn
             v-if="is_friend"
             color="primary"
@@ -112,7 +112,7 @@ import localforage from "localforage";
 import {useRouter} from "vue-router";
 
 import {useFetchAvatar} from "src/pages/Chat/hooks/useFetchAvatar.js";
-import {mm_wsStore, mmstore, mmUser, teamStore, uiStore, userStore} from "src/hooks/global/useStore.js";
+import {mm_wsStore, mmstore, mmUser, teamStore, uiStore } from "src/hooks/global/useStore.js";
 import {addFriend} from 'src/api/strapi.js'
 import {findStrapiUser_by_mmID_inTeam, useCheckBlocked} from 'src/pages/team/chat/hooks/useMm.js'
 import {__dict} from "src/hooks/dict.js";
@@ -170,7 +170,7 @@ const disable_addFriend = computed(() =>{
   return !strapi_member.value
     || !strapi_member.value?.by_user?.contact
     || strapi_member.value.by_user?.contact?.accept_friend === false
-    || strapi_member.value?.by_user?.id === userStore.me?.id
+    || strapi_member.value?.by_user?.id === teamStore.init?.id
 });
 
 const avatar = ref();

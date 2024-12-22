@@ -292,10 +292,10 @@
 import { ref, toRefs, watch, computed, nextTick, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { fetch_MmMe } from "src/hooks/global/useFetchme.js";
-import {  createStorage,  updateStorage,  deleteStorage,  updateProject,} from "src/api/strapi/project.js";
+import { createStorage,  updateStorage,  deleteStorage,  updateProject,} from "src/api/strapi/project.js";
 import { VueDraggable } from 'vue-draggable-plus'
 import AzureIcon from "../components/widgets/icons/AzureIcon.vue";
-import {userStore, teamStore, uiStore} from 'src/hooks/global/useStore.js';
+import { teamStore, uiStore} from 'src/hooks/global/useStore.js';
 
 import { i18n } from 'src/boot/i18n.js';
 const $t = i18n.global.t;
@@ -422,7 +422,11 @@ const createFn = async (azureInfo) => {
     azureCreatingRef.value.hide();
     create_parmas.value.data.name = "";
     if (by_info.value?.by === "user") {
-      userStore.storages.push(res.data);
+      if(teamStore?.init?.storages?.length > 0){
+        teamStore.init.storages.push(res.data);
+      } else {
+        teamStore.init.storages = [res.data];
+      }
     }
     loading.value = false;
   }
@@ -445,7 +449,7 @@ const deleteFn = async (i) => {
   }
   await deleteStorage(i.id);
   if (belonged.value === "user") {
-    userStore.storages = userStore.storages.filter((j) => j.id !== i.id);
+    teamStore.init.storages = teamStore.init.storages.filter((j) => j.id !== i.id);
   }
 };
 const changeName = (i) => {
@@ -461,10 +465,9 @@ const updateFn = async (i) => {
     loading.value = false;
     create_parmas.value.data.name = "";
     if (belonged.value === "user") {
-      userStore.storages.push(res.data);
-      let index = userStore.storages.findIndex((j) => j.id === i.id);
+      let index = teamStore.init.storages.findIndex((j) => j.id === i.id);
       if (index !== -1) {
-        userStore.storages[index] = res.data;
+        teamStore.init.storages[index] = res.data;
       }
     }
   }

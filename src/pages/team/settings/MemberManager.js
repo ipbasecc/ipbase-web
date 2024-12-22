@@ -1,11 +1,9 @@
-import { computed, ref, watchEffect, watch } from "vue";
+import { ref } from "vue";
 import {
   removeUser as removeProjectUser,
   setRole,
   updateCardRole,
 } from "src/api/strapi/project.js";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
-import { useCardname } from "src/hooks/project/useCardname.js";
 
 import {
   setTeamRole,
@@ -14,7 +12,6 @@ import {
   removeChannelUser,
 } from "src/api/strapi/team.js";
 import { updateCard } from "src/api/strapi/project.js";
-import { userStore, teamStore } from "src/hooks/global/useStore.js";
 
 export async function setTeamRoleFn(team_id, member_id, new_roles_IDs) {
   let params = {

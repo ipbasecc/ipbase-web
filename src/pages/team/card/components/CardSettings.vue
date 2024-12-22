@@ -59,8 +59,7 @@
 import { ref, toRefs, computed, watch, onMounted } from "vue";
 import roleSettings from "src/pages/team/settings/roleSettings.vue";
 import { updateCard } from "src/api/strapi/project.js";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
-import { userStore, teamStore, mm_wsStore } from "src/hooks/global/useStore.js";
+import { teamStore } from "src/hooks/global/useStore.js";
 const userId = computed(() => teamStore.init?.id);
 
 const props = defineProps({
@@ -114,7 +113,7 @@ const isPrivate_items = [
   { val: "private", label: "private" },
 ];
 const isCreator = computed(
-  () => teamStore.card?.creator?.id === userStore.userId
+  () => teamStore.card?.creator?.id === teamStore.init?.id
 );
 const updateCardFn = async () => {
   // console.log(isPrivate.value);

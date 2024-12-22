@@ -200,7 +200,7 @@
         color="primary"
         icon="check"
         :label="$t('confirm')"
-        :disable="!share_code.code || !userStore.userId || !isChanged"
+        :disable="!share_code.code || !teamStore.init?.id || !isChanged"
         @click="createShare(share_code)"
       />
     </q-card-section>
@@ -212,7 +212,7 @@ import { copyToClipboard, useQuasar } from "quasar";
 import QrcodeVue from "qrcode.vue";
 import {computed, onMounted, ref, toRefs, watch, watchEffect} from 'vue';
 import { randomKey } from "src/hooks/utilits.js";
-import { userStore } from "src/hooks/global/useStore.js";
+import { teamStore } from "src/hooks/global/useStore.js";
 import { i18n } from 'src/boot/i18n.js';
 
 const $t = i18n.global.t;
@@ -243,7 +243,7 @@ const emit = defineEmits(["createShare", "closeShare"]);
 const $q = useQuasar();
 const user_shareCode = computed(() =>
   share_item.value?.share_codes?.find(
-    (i) => i.creator?.id === Number(userStore.userId)
+    (i) => i.creator?.id === teamStore.init?.id
   )
 );
 
@@ -264,7 +264,7 @@ const isChanged = computed(() => share_code.value?.code !== user_shareCode.value
   || modulesChanged.value
 )
 const genShareUrl = (code) => {
-  share_url.value = `${import.meta.env.VITE_APP_URI}/${is.value}/share/${share_item.value?.id}?share_code=${code}&share_by=${userStore.userId}`;
+  share_url.value = `${import.meta.env.VITE_APP_URI}/${is.value}/share/${share_item.value?.id}?share_code=${code}&share_by=${teamStore.init?.id}`;
 };
 const share_url = ref();
 

@@ -129,7 +129,7 @@ import {
   putKanbanCache,
 } from "src/hooks/project/useProcess.js";
 import LoadingBlock from "../../../components/VIewComponents/LoadingBlock.vue";
-import { userStore,  teamStore, uiStore } from "src/hooks/global/useStore.js";
+import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 import ReelContainer from "./ReelContainer.vue";
 import SegmentPage from "../card/SegmentPage.vue";
 import { i18n } from 'src/boot/i18n.js';
@@ -196,7 +196,7 @@ provide("authBase", authBase.value);
 
 const kanban = ref();
 const loading = ref(false);
-const isCreator = computed(() => kanban.value.creator?.id === userStore.userId);
+const isCreator = computed(() => kanban.value.creator?.id === teamStore?.init?.id);
 // Segment模式时会筛选columns，这里在初始化时先保存一个原始数据，以便用来还原
 const _kanbanSource = ref();
 

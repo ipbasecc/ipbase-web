@@ -13,6 +13,7 @@ import useDiscoverStore from "src/stores/discover.js";
 import useNotifyStore from "src/stores/notify.js";
 import useChatStore from "src/stores/chat.js";
 import useStudioStore from "src/stores/studio.js";
+import useProjectStore from "src/stores/project.js";
 
 export const uiStore = useUIStore();
 export const mm_wsStore = useMmws();
@@ -20,7 +21,7 @@ export const workStore = useWorkStore();
 export const teamStore = useTeamStore();
 export const userStore = useUserStore();
 export const channelStore = useChannelStore();
-
+export const projectStore = useProjectStore();
 export const mmstore = useMmstore();
 export const mmUser = mmUserStore();
 export const dealStore = useDealStore();

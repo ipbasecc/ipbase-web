@@ -128,7 +128,6 @@ import { createStorage } from "src/api/strapi/project.js";
 import { useFetchStorage } from "src/hooks/project/useFetchStorage.js";
 import FileViewer from "../../../components/VIewComponents/FileViewer.vue";
 import {
-  userStore,
   teamStore,
   uiStore,
 } from "src/hooks/global/useStore.js";
@@ -266,7 +265,7 @@ const createStorageFn = async () => {
   } else if (belonged.value === "card") {
     params.value.data.assign_card = teamStore.card.id;
   } else if (belonged.value === "user") {
-    params.value.data.assign_user = userStore.userId;
+    params.value.data.assign_user = teamStore?.init?.id;
   } else if (belonged.value === "storage") {
     params.value.data.assign_storage = storage_idRef.value;
   }

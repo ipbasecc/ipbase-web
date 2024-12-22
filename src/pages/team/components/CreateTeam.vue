@@ -55,7 +55,7 @@
 <script setup>
 import { ref } from "vue";
 import { createStrapiTeam } from "src/pages/team/hooks/useTeam.js";
-import { userStore, teamStore } from "src/hooks/global/useStore.js";
+import { teamStore } from "src/hooks/global/useStore.js";
 
 const props = defineProps({
   hideHeader: {
@@ -95,7 +95,7 @@ const cannelCreate = () => {
 const create = async () => {
   const now = new Date();
   let timestamp = now.getTime();
-  create_params.value.name = `u${userStore?.userId}at${timestamp}`;
+  create_params.value.name = `u${teamStore.init?.id}at${timestamp}`;
 
   const res = await createStrapiTeam(create_params.value);
   if (res?.data) {

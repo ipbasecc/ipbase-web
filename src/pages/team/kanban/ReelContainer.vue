@@ -186,7 +186,6 @@ import { confirmUpload } from "src/hooks/utilits/useConfirmUpload.js";
 import { filterCardsByString } from "src/hooks/utilits.js";
 
 import {
-  userStore,
   teamStore,
   uiStore,
 } from "src/hooks/global/useStore.js";
@@ -227,7 +226,7 @@ const columnRef = toRef(props, "column");
 const scrollAreaRef = ref(null);
 const isCreator = computed(
   () =>
-    columnRef.value.creator?.id === userStore.userId || props.isCreator_kanban
+    columnRef.value.creator?.id === teamStore?.init?.id || props.isCreator_kanban
 );
 const kanban_idRef = toRef(props, "kanban_id");
 
@@ -438,7 +437,7 @@ const dropCreateCard = async (file) => {
 
 const onDrop = async (e) => {
   try {
-    const files = await confirmUpload(e, userStore.me);
+    const files = await confirmUpload(e, teamStore?.init);
     if (files) {
       for (const file of files) {
         await createCardQueue.schedule(async () => {

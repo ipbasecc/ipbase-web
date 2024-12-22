@@ -64,7 +64,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { teamStore, userStore } from "src/hooks/global/useStore";
+import { teamStore } from "src/hooks/global/useStore";
 import { updateUser } from 'src/api/strapi.js'
 import TeamProcess from './TeamProcess.vue'
 import ChannelProcess from './ChannelProcess.vue'

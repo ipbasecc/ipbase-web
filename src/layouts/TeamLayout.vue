@@ -78,9 +78,7 @@
   import AppUtils from "src/components/VIewComponents/AppUtils.vue";
   import { clearLocalDB } from "pages/team/hooks/useUser";
   import InitializationUser from 'src/pages/team/settings/initialization/InitializationUser.vue'
-  import { teamStore, uiStore, userStore, dealStore, mm_wsStore, chatStore } from "src/hooks/global/useStore";
-
-  import { getUserData } from "src/hooks/global/useGetMyMatedata.js";
+  import { teamStore, uiStore, dealStore, mm_wsStore, chatStore } from "src/hooks/global/useStore";
   import { serverInfo } from 'src/boot/server.js'
   import localforage from "localforage";
   import { toggleTeam } from "src/pages/team/hooks/useTeam.js";
@@ -93,7 +91,6 @@
   import AgreementCard from '../components/VIewComponents/AgreementCard.vue'
   import { updateUser } from 'src/api/strapi.js'
 
-  getUserData();
   useSocket();
 
   const $q = useQuasar();
@@ -229,7 +226,6 @@
   const connect_refused = computed(() => uiStore.serverResfused);
   const serverRefusedHandler = () => {
     localStorage.clear();
-    userStore.logged = false
     uiStore.axiosStautsCode = void 0;
     router.push('/login')
   }

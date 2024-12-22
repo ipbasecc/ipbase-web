@@ -174,7 +174,7 @@ import MemberManager from "src/pages/team/settings/MemberManager.vue";
 import TeamSettings from "src/pages/team/components/teamSettings.vue";
 import { leaveTeam, removeTeam } from "src/api/strapi/team.js";
 import { useQuasar } from "quasar";
-import { teamStore, uiStore, userStore } from "src/hooks/global/useStore.js";
+import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 import { useRouter } from "vue-router";
 import AboutTeam from '../AboutTeam.vue'
 import SetNotification from './SetNotification.vue'
@@ -240,7 +240,7 @@ const removeAuth = computed(() => {
   const _members = teamStore.team?.members;
   return (
     _members?.length === 1 &&
-    _members[0].by_user.id === Number(userStore.userId)
+    _members[0].by_user.id === teamStore.init?.id
   );
 });
 

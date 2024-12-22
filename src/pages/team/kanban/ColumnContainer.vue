@@ -293,7 +293,6 @@
   import { board_type } from "src/pages/team/kanban/BoradsList.js";
 
   import {
-    userStore,
     teamStore,
     uiStore,
   } from "src/hooks/global/useStore.js";
@@ -480,7 +479,7 @@
   const columnRef = toRef(props, "column");
   const isCreator = computed(
     () =>
-      columnRef.value.creator?.id === userStore.userId || props.isCreator_kanban
+      columnRef.value.creator?.id === teamStore?.init?.id || props.isCreator_kanban
   );
   const kanban_idRef = toRef(props, "kanban_id");
   const view_modelRef = toRef(props, "view_model");

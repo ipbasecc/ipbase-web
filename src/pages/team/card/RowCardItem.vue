@@ -428,7 +428,7 @@ import {
 } from "src/hooks/team/useCard.js";
 import { isEqual } from "lodash-es";
 import { colorMarks, cardTypes, preferences } from "src/pages/team/hooks/useSettingTemplate.js";
-import { userStore, teamStore } from "src/hooks/global/useStore.js";
+import { teamStore } from "src/hooks/global/useStore.js";
 import FileViewer from "components/VIewComponents/FileViewer.vue";
 import useSocket from "src/pages/team/card/hooks/useSocket.js";
 import useMember from "src/hooks/team/useMember.js";
@@ -486,7 +486,7 @@ const todoDlg = ref(false);
 
 const { _isCreator } = useMember();
 const isCreator = computed(() => {
-  return _isCreator(userStore.userId, cardRef.value?.card_members, cardRef.value?.member_roles)
+  return _isCreator(teamStore.init?.id, cardRef.value?.card_members, cardRef.value?.member_roles)
 })
 
 const isInCard = ref(false);
@@ -520,7 +520,7 @@ const { todo_process } = clac_todoData(cardRef.value);
 const is_followed = computed(() =>
   cardRef.value?.followed_bies
     ?.map((i) => i.id)
-    .includes(Number(userStore.userId))
+    .includes(teamStore.init?.id)
 );
 const color_marker = computed(() => {
   const _card_colorMarker = cardRef.value?.color_marker;

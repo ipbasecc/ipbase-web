@@ -1,9 +1,8 @@
 import { computed, ref, watchEffect } from "vue";
 import localforage from "localforage";
 import { groupCreate, kanbanCreate } from "src/api/strapi/project.js";
-import { send_MattersMsg } from "src/pages/team/hooks/useSendmsg.js";
 
-import { teamStore, userStore } from "src/hooks/global/useStore.js";
+import { teamStore } from "src/hooks/global/useStore.js";
 import { i18n } from 'src/boot/i18n.js';
 
 const $t = i18n.global.t;
