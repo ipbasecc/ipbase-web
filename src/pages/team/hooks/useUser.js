@@ -49,3 +49,8 @@ export async function clearLocalDB(val)  {
 
   return true;
 }
+
+export const clacAvatar = (user) => {
+  console.log('clacAvatar', user)
+  return user.wechat_profile?.avatar || user.profile?.avatar?.url
+}

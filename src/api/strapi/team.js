@@ -341,3 +341,18 @@ export async function removeChannel(channel_id) {
     return error;
   }
 }
+export async function findChildren(params) {
+  try {
+    let res
+    if(!params){
+      res = await api.get(`/find-children`);
+    }else{
+      res = await api.get(`/find-children`, { params: params });
+    }
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}

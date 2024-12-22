@@ -1,14 +1,14 @@
 <template>
-    <q-card bordered class="q-pb-md" style="width: 760px; height: 500px;">
+    <q-card bordered style="min-width: 760px; min-height: 500px; width: 41vw; height: 59vh;">
       <q-card-section horizontal class="fit q-pa-none">
-        <q-card-section class="col-4 border-right q-pa-xs">
-            <q-list v-if="talkers.length > 0" dense>
+        <q-card-section class="col-3 border-right q-pa-xs">
+            <q-list v-if="talkers.length > 0" dense class="column gap-xs">
                 <q-item v-for="talker in talkers" :key="talker.id" clickable v-ripple class="radius-xs"
                 :class="talker.d_channel_id === d_channel_id ? 'bg-primary text-white' : ''"
                 @click="openChat(talker)">
-                    <q-item-section avatar>
-                        <q-avatar>
-                            <img v-if="talker.profile?.avatar?.url" :src="talker.profile.avatar.url" />
+                    <q-item-section side>
+                        <q-avatar size="32px">
+                            <img v-if="clacAvatar(talker)" :src="clacAvatar(talker)" />
                             <q-icon v-else name="account_circle" />
                         </q-avatar>
                     </q-item-section>
@@ -24,19 +24,15 @@
         </q-card-section>
 
         <q-card-section class="q-space column no-wrap q-pa-none">
-            <q-bar dark class="transparent">
-                <q-btn v-if="!deal.party_b" dense flat color="primary" label="暂定合作，并要求其补充合约中乙方部分" padding="xs sm" @click="set_party_b" />
-                <q-space />
-                <q-btn dense flat round icon="mdi-close" size="8.5px" color="red" v-close-popup />
-            </q-bar>
-            <div class="q-space relative-position" @mouseenter="syncUnreadCount">
-                <ChatContainter
-                    v-if="d_channel_id"
-                    :mm_channel_id="d_channel_id"
-                    :pannel_mode="true"
-                    :hide_float_bar="true"
-                    @MsgSended="MsgSended"
-                />
+            <div :key="d_channel_id" v-if="d_channel_id" class="q-space relative-position" @mouseenter="syncUnreadCount">
+                <FloatChat :channel_id="d_channel_id" :target_user="talker" :is_popup="false">
+                    <template #toolbar_right>
+                        <q-btn v-if="!deal.party_b" dense flat color="primary"
+                            label="暂定合作，并要求其补充合约中乙方部分"
+                            padding="xs sm" @click="set_party_b"
+                        />
+                    </template>
+                </FloatChat>
             </div>
         </q-card-section>
       </q-card-section>
@@ -44,19 +40,13 @@
 </template>
 <script setup>
 import { computed, ref, nextTick, onMounted } from 'vue';
-// import { useQuasar } from 'quasar';
-// import { createDirect } from 'src/api/mattermost';
-// import { teamStore } from 'src/hooks/global/useStore';
-import ChatContainter from 'src/pages/team/chat/ChatContainter.vue'
+import { clacAvatar } from 'src/pages/team/hooks/useUser.js'
+import FloatChat from 'src/pages/team/chat/FloatChat.vue'
 
 const { deal, unread_count_map } = defineProps(['deal', 'unread_count_map']);
 const emit = defineEmits(['openChat', 'set_party_b']);
 const talkers = computed(() => deal?.talked_users || []);
 const unread_map = computed(() => unread_count_map);
-// const $q = useQuasar();
-const MsgSended = () => {
-    console.log('MsgSended')
-}
 
 const d_channel_id = ref(null);
 const talker = ref(null);

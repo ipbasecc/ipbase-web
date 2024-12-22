@@ -1,6 +1,6 @@
 <template>
     <q-scroll-area class="absolute-full">
-    <div class="row justify-center">
+    <div class="column">
         <div v-if="deal || (editMode && update_params.data)" class="row col-12 q-pa-sm">
             <div class="q-mt-sm">
                 <q-btn flat dense round icon="mdi-chevron-left" @click="router.push('/deliver')" />
@@ -20,291 +20,325 @@
                 </div>
             </div>
             <q-space />
-            <div v-if="!cant_update">
-                <q-btn v-if="hasEditAuth && !editMode" icon="mdi-pencil" label="修改合约"
-                    @click="toggleEditMode" />
-                <q-btn v-if="editMode" icon="mdi-check" label="确认更新" color="primary" @click="updateDealFn" />
-            </div>
-            <div v-if="is_party_a || is_party_b" class="text-caption op-5">
-                合作已完成，不能再修改
-            </div>
-        </div>
-        <div v-if="deal || (editMode && update_params.data)" class="column no-wrap gap-sm q-pa-md article"
-        style="width: 760px;">
-            <div class="row">
-                <q-card bordered class="full-width row no-wrap justify-around gap-lg items-center q-pa-md">
-                    <div v-if="deal.status" class="column flex-center gap-md">
-                        <span class="text-h4">状态</span>
-                        <span class="text-h5 radius-sm font-bold-600 border bg-orange text-white q-px-sm q-py-xs">
-                            {{ $t(`deal_status_${deal.status}`) }}
-                        </span>
-                    </div>
-                    <q-separator spaced inset vertical />
-                    <div class="column flex-center gap-md">
-                        <span class="text-h4">更新日期</span>
-                        <span class="text-h5 q-px-sm q-py-xs">{{ date.formatDate(deal.updatedAt || deal.publishedAt,
-                            'YYYY-MM-DD') }}</span>
-                    </div>
-                    <q-separator spaced inset vertical />
-                    <div v-if="deal.deadline" class="column flex-center gap-md">
-                        <span class="text-h4">截止日期</span>
-                        <span class="text-h5 q-px-sm q-py-xs">
-                            {{ date.formatDate(deal.deadline, 'YYYY-MM-DD') }}
-                            <q-popup-proxy v-if="editMode && is_party_a" transition-show="scale" transition-hide="scale">
-                                <q-date v-model="update_params.data.deadline" today-btn mask="YYYY-MM-DD" minimal
-                                    bordered v-close-popup />
-                            </q-popup-proxy>
-                        </span>
-                    </div>
-                    <q-separator spaced inset vertical />
-                    <div v-if="deal.amount" class="column flex-center gap-md">
-                        <div class="relative-position">
-                            <span class="text-h4">
-                                酬金
-                            </span>
-                            <q-badge v-if="is_paied" floating color="positive" label="已预存" class="shadow-12" />
-                        </div>
-                        <span class="text-h5 q-px-sm q-py-xs">
-                            ￥：{{ deal.amount / 100 }}
-                            <q-popup-proxy v-if="editMode && is_party_a" transition-show="scale" transition-hide="scale">
-                                <q-input v-model="update_params.data.amount" type="number" label="酬金" />
-                            </q-popup-proxy>
-                        </span>
-                    </div>
-                </q-card>
-            </div>
-            <div v-if="deal.tags?.length > 0" class="row items-center"
-                :class="{ 'q-pa-sm radius-sm border': editMode }">
-                <span>能力要求：</span>
-                <q-chip v-for="tag in tags" :key="tag" square color="primary" :label="tag" class="text-white"
-                    :removable="editMode && is_party_a" @remove="removeTag(tag)" />
-                <q-input v-if="editMode && is_party_a" v-model="tag" type="text" borderless dense @keyup.enter="addTag" @keyup.esc="tag = ''" />
-            </div>
-            <div v-if="!deal.order || deal.order?.jeepay_order?.state !== '2'" class="row justify-start q-mt-lg">
-                <PayButton v-if="deal.party_a?.id === teamStore.init?.id"
-                    class="full-width" btnColor="negative" buyLabel="预存酬金"
-                    subject="deal" :commodity="deal"
-                    @buyData="buyData"
-                />
-                <q-chip v-else color="deep-orange" label="尚未预存酬金" />
-            </div>
-            <q-img
-                v-if="deal.cover?.url"
-                :src="deal.cover.url"
-                :ratio="16/9"
-                spinner-color="primary"
-                spinner-size="82px"
-                class="full-width radius-xs overflow-hidden q-mt-lg"
-                @click="$hevueImgPreview({
-                    url: deal.cover.url,
-                    clickMaskCLose: true
-                })"
-            />
-            <div class="text-h4">需求摘要</div>
-            <div class="text-subtitle2">
-                <span v-if="!editMode">{{ deal.description }}</span>
-                <q-input v-else-if="is_party_a" v-model="update_params.data.description" type="textarea" label="需求摘要" />
-            </div>
-            <q-banner v-if="deal.party_b && (is_party_a || is_party_b)" rounded class="border">
-                <span v-if="is_party_a">
-                    <template v-if="deal.party_b_accept && !deal.party_a_accept">
-                        乙方已同意合约内容，请尽快审阅协议内容
-                    </template>
-                    <template v-if="!deal.party_b_accept && !deal.party_a_accept">
-                        已与 {{ deal.party_b?.username }} 达成合作意向，请督促其阅读合约并尽快补充合约中乙方部分
-                    </template>
-                    <template v-if="!deal.party_b_accept && deal.party_a_accept">
-                        你已同意合约内容，请等待乙方审阅协议内容
-                    </template>
-                </span>
-                <span v-if="is_party_b">
-                    <template v-if="deal.party_a_accept && !deal.party_b_accept">
-                        甲方已同意合约内容，请尽快审阅协议内容
-                    </template>
-                    <template v-if="!deal.party_a_accept && !deal.party_b_accept">
-                        已与 {{ deal.party_a?.username }} 达成合作意向，请尽快阅读合约并补充合约中乙方部分
-                    </template>
-                    <template v-if="deal.party_b_accept && !deal.party_a_accept">
-                        你已同意合约内容，请等待甲方审阅协议内容
-                    </template>
-                </span>
-                <template v-if="(is_party_a && !deal.party_a_accept) || (is_party_b && !deal.party_b_accept)" v-slot:action>
-                    <q-btn color="deep-orange" flat label="同意合约内容" @click="agreeDeal" />
-                </template>
-                <span v-if="deal.party_a_accept && deal.party_b_accept">
-                    已进入“执行”阶段，请与对方保持沟通
-                </span>
-            </q-banner>
-            <q-tabs v-model="tab" align="left" no-caps dense class="q-mt-lg">
-                <q-tab v-for="i in tabs" :key="i" :name="i" :label="$t(`deal_${i}`)" />
-            </q-tabs>
-            <q-tab-panels v-model="tab" keep-alive class="transparent">
-                <q-tab-panel v-for="i in tabs" :key="i" :name="i" class="q-pa-none">
-                    <TipTap v-if="i === 'jsonContent'" :jsonContent="deal.jsonContent" :editable="editMode && is_party_a"
-                        :contentChanged="editMode" :need="'json'" :square="true" :show_toolbar="editMode"
-                        :show_bubbleMenu="editMode" styleClass="q-px-md q-py-sm" class="q-space" :autofocus="false"
-                        @tiptapUpdate="updateJsonContent" />
-                    <ul v-if="i === 'todogroups' && deal.todogroups?.length > 0">
-                        <li v-for="group in deal.todogroups" :key="group.id">
-                            {{ group.name }}
-                            <ol v-if="group.todos.length > 0">
-                                <li v-for="todo in group.todos" :key="todo.id">
-                                    <span v-if="!editMode">{{ todo.content }}</span>
-                                    <q-input v-else-if="is_party_a" v-model="todo.content" type="text" label="任务内容" />
-                                </li>
-                                <q-btn v-if="editMode && is_party_a" dense round icon="mdi-plus" @click="addTodo(group.id)" />
-                            </ol>
-                        </li>
-                    </ul>
-                    <TipTap v-if="i === 'party_a_requirements'" :jsonContent="deal.party_a_requirements" :need="'json'"
-                        :square="true" :editable="editMode && is_party_a"
-                        :contentChanged="editMode"
-                        :show_toolbar="editMode"
-                        :show_bubbleMenu="editMode"
-                        styleClass="q-px-md q-py-sm" class="q-space" :autofocus="false"
-                        @tiptapUpdate="updatePartyARequirements" />
-                    <TipTap v-if="i === 'party_b_requirements'" :jsonContent="deal.party_b_requirements" :need="'json'"
-                        :square="true" :editable="editMode && is_party_b"
-                        :contentChanged="editMode"
-                        :show_toolbar="editMode"
-                        :show_bubbleMenu="editMode"
-                        styleClass="q-px-md q-py-sm" class="q-space" :autofocus="false"
-                        @tiptapUpdate="updatePartyBRequirements" />
-                    <div v-if="i === 'deliver'" class="column gap-sm">
-                        <q-tabs
-                            v-model="deliver_tab"
-                            align="left"
-                            no-caps
-                            dense
-                        >
-                            <q-tab name="deliver_link" label="链接交付" />
-                            <q-tab name="deliver_file" label="文件交付" />
-                        </q-tabs>
-                        <q-tab-panels v-model="deliver_tab" keep-alive class="transparent">
-                            <q-tab-panel v-if="deliver_tab === 'deliver_link'" name="deliver_link" class="q-pa-none">
-                                <div v-if="deal.deliver_link" class="flex flex-center radius-sm border-dotted border-xs border-op-sm op-5" style="height: 8rem;">
-                                    {{ deal.deliver_link }}
-                                </div>
-                                <template v-if="is_party_b">
-                                    <q-input v-model="deliver_link" type="textarea" outlined />
-                                    <q-btn color="primary" icon="check" label="交付" :disable="!deliver_link" @click="deliverByLink" class="q-mt-sm" />
-                                </template>
-                            </q-tab-panel>
-                            <q-tab-panel v-if="deliver_tab === 'deliver_file'" name="deliver_file" class="q-pa-none">
-                                <template v-if="deal.deliver_files?.length > 0">
-                                    <q-list v-for="file in deal.deliver_files" bordered class="radius-xs">
-                                        <q-item :key="file.id" clickable v-ripple>
-                                            <q-item-section>
-                                                <q-item-label>{{ file.name }}</q-item-label>
-                                            </q-item-section>
-                                            <q-item-section side>
-                                                <q-btn color="primary" flat dense padding="xs md" :label="`下载`"
-                                                @click="downloadDeliverFile(file)" />
-                                            </q-item-section>
-                                        </q-item>
-                                    </q-list>
-                                </template>
-                                <DrapUpload v-if="is_party_b" :isOSS="true" class="radius-md border-dashed border-xs border-op-sm bg-image-fill q-mb-sm"
-                                    :allowedFormats="['application/rar','application/zip','application/x-tar']"
-                                    @uploaded="setDeliverFile" style="min-height: 8rem;"
-                                    :caption="$t('drop_or_pick_deliver_file')" :maxFileSize="1000 * 1024 * 1024"
-                                />
-                                <div v-else-if="is_party_a" class="flex flex-center radius-sm border-dotted border-xs border-op-sm op-5" style="height: 8rem;">暂无交付文件</div>
-                            </q-tab-panel>
-                        </q-tab-panels>
-                        <template v-if="(deal.deliver_files?.length > 0 || deal.deliver_link) && deal.party_a?.id === teamStore.init?.id">
-                            <q-btn v-if="deal.status === 'progressing' || deal.status === 'reviewing'" color="primary" label="确认验收" @click="completeDeliver" />
-                            <div v-if="deal.status === 'completed'" class="q-pa-md radius-xs border text-center">已验收</div>
-                        </template>
-                    </div>
-                </q-tab-panel>
-            </q-tab-panels>
-        </div>
-        <div v-if="deal" class="column gap-sm q-px-sm q-py-md" style="flex: 0 0 260px;">
-            <q-responsive :ratio="3/4" class="full-width">
-                <PartybCard :party="deal.party_a">
-                    <q-card-section class="column flex-center q-pa-sm border-top">
-                        <template v-if="!deal.order">
-                            <div class="radius-xs border q-pa-sm full-width flex flex-center blur-sm text-positive">
-                                待预存酬金
-                                <q-tooltip class="text-medium">
-                                    为保证合作顺利进行，请尽快预存酬金
-                                </q-tooltip>
-                            </div>
-                            <div v-if="is_party_a" class="full-width text-caption op-5 q-mt-xs">
-                                请尽快预存酬金，以便开启对接
-                            </div>
-                        </template>
-                        <template v-else-if="deal.status === 'deposited'">
-                            <div v-if="is_party_b" class="radius-xs border q-pa-sm full-width flex flex-center blur-sm text-positive">
-                                待对方开启对接
-                            </div>
-                            <q-btn v-if="is_party_a" color="primary" label="开启对接申请" class="full-width" @click="startMatch" />
-                        </template>
-                        <q-btn v-else-if="(deal.status === 'pending_matching' || deal.status === 'matching') && !is_party_a || is_party_b" color="positive"
-                            unelevated icon="mdi-forum" label="联系 TA" class="full-width" @click="openFloatChat()">
-                            <q-badge v-if="unread_count > 0 && deal.party_a?.id !== teamStore.init?.id" color="red" floating :label="unread_count" />
-                        </q-btn>
-                        <q-btn v-else-if="is_party_a" color="primary" icon="mdi-message-alert"
-                        :disable="!deal.talked_users ||deal.talked_users?.length === 0"
-                        :label="`${talkHistory ? '关闭' : '查看'}对接历史`" class="full-width" @click="talkHistory = !talkHistory">
-                            <q-badge v-if="unread_count > 0" color="red" floating :label="unread_count" />
-                                <q-tooltip v-if="!deal.talked_users || deal.talked_users?.length === 0">
-                                    暂无人员资讯该任务
-                                </q-tooltip>
-                        </q-btn>
-                        <div v-else class="radius-xs border q-pa-sm full-width flex flex-center blur-sm text-positive" @click="openFloatChat()">
-                            合作已完成
-                        </div>
-                    </q-card-section>
-                </PartybCard>
-            </q-responsive>
-            <template v-if="is_party_a || is_party_b">
-                <q-list v-if="deal.delay?.length > 0" bordered class="radius-xs">
-                    <q-item v-for="i in deal.delay" v-ripple clickable>
-                        <q-item-section side top>
-                            {{ i.from === 'party_a' ? '甲方' : '乙方' }}
-                        </q-item-section>
-                        <q-item-section>
-                            <q-item-label caption lines="2">{{ i.reason }}</q-item-label>
-                            <q-item-label>{{ i.date }}</q-item-label>
-                        </q-item-section>
-                        <q-item-section side top>
-                            <q-icon v-if="i.accepted" name="check" />
-                            <q-btn v-else color="primary" dense size="sm" padding="xs sm" label="同意"
-                            :disable="disable_delay(i)" @click="acceptDelay(i.id)">
-                                <q-tooltip v-if="disable_delay(i)">
-                                    你要求的延期，需要对方同意！
-                                </q-tooltip>
-                            </q-btn>
-                        </q-item-section>
-                    </q-item>
-                </q-list>
-                <template v-if="deal.status === 'progressing' || deal.status === 'reviewing'">
-                    <q-btn v-if="!delay_show" color="primary" label="要求延期" class="full-width" @click="toggleDelay" />
-                    <q-input v-else v-model="delay_reason" type="text" label="延期理由" outlined autogrow @keydown.esc="toggleDelay">
-                        <template v-slot:append>
-                            <q-btn dense flat round size="sm" icon="mdi-calendar" :disable="!delay_reason">
-                                <q-popup-proxy transition-show="scale" transition-hide="scale">
-                                    <q-date
-                                        v-model="delay_date"
-                                        today-btn
-                                        mask="YYYY-MM-DD"
-                                        minimal
-                                        bordered
-                                        v-close-popup
-                                        :options="getDelayDateOptions"
-                                        @update:model-value="setDelay"
-                                    />
-                                </q-popup-proxy>
-                                <q-tooltip v-if="!delay_reason">
-                                    请输入延期理由
-                                </q-tooltip>
-                            </q-btn>
-                        </template>
-                    </q-input>
-                </template>
+            
+            <template v-if="hasEditAuth">
+                <div v-if="!was_completed && !was_processing">
+                    <q-btn v-if="!editMode" label="修改合约"
+                        @click="toggleEditMode" />
+                    <q-btn v-if="editMode" flat label="取消" color="primary" @click="editMode = false" />
+                    <q-btn v-if="editMode" label="确认更新" color="primary" class="q-ml-sm" @click="updateDealFn" />
+                </div>
+                <div v-else-if="was_completed" class="text-caption op-5">
+                    合作已完成，不能再修改
+                </div>
+                <div v-else-if="was_processing" class="text-caption op-5">
+                    合约已签署，正在执行中，不能再修改
+                </div>
             </template>
+        </div>
+        <div class="row no-wrap justify-center">
+            <div v-if="deal || (editMode && update_params.data)" class="column no-wrap gap-xs q-pa-md article"
+            style="width: 760px;">
+                <div class="row">
+                    <q-card bordered class="full-width row no-wrap justify-around gap-lg items-center q-pa-md">
+                        <div v-if="deal.status" class="column flex-center gap-md">
+                            <span class="text-h4">状态</span>
+                            <span class="text-h5 radius-sm font-bold-600 border bg-orange text-white q-px-sm q-py-xs">
+                                {{ $t(`deal_status_${deal.status}`) }}
+                            </span>
+                        </div>
+                        <q-separator spaced inset vertical />
+                        <div class="column flex-center gap-md">
+                            <span class="text-h4">更新日期</span>
+                            <span class="text-h5 q-px-sm q-py-xs">{{ date.formatDate(deal.updatedAt || deal.publishedAt,
+                                'YYYY-MM-DD') }}</span>
+                        </div>
+                        <q-separator spaced inset vertical />
+                        <div v-if="deal.deadline" class="column flex-center gap-md">
+                            <span class="text-h4">截止日期</span>
+                            <span class="text-h5 q-px-sm q-py-xs">
+                                {{ date.formatDate(deal.deadline, 'YYYY-MM-DD') }}
+                                <q-popup-proxy v-if="editMode && is_party_a" transition-show="scale" transition-hide="scale">
+                                    <q-date v-model="update_params.data.deadline" today-btn mask="YYYY-MM-DD" minimal
+                                        bordered v-close-popup />
+                                </q-popup-proxy>
+                            </span>
+                        </div>
+                        <q-separator spaced inset vertical />
+                        <div v-if="deal.amount" class="column flex-center gap-md">
+                            <div class="relative-position">
+                                <span class="text-h4">
+                                    酬金
+                                </span>
+                                <q-badge v-if="is_paied" floating color="positive" label="已预存" class="shadow-12" />
+                            </div>
+                            <span class="text-h5 q-px-sm q-py-xs">
+                                ￥：{{ deal.amount / 100 }}
+                                <q-popup-proxy v-if="editMode && is_party_a" transition-show="scale" transition-hide="scale">
+                                    <q-input v-model="update_params.data.amount" type="number" label="酬金" />
+                                </q-popup-proxy>
+                            </span>
+                        </div>
+                    </q-card>
+                </div>
+                <div v-if="deal.tags?.length > 0" class="row items-center"
+                    :class="{ 'q-pa-sm radius-sm border': editMode }">
+                    <span>能力要求：</span>
+                    <q-chip v-for="tag in tags" :key="tag" square color="primary" :label="tag" class="text-white"
+                        :removable="editMode && is_party_a" @remove="removeTag(tag)" />
+                    <q-input v-if="editMode && is_party_a" v-model="tag" type="text" borderless dense @keyup.enter="addTag" @keyup.esc="tag = ''" />
+                </div>
+                <div v-if="!deal.order || deal.order?.jeepay_order?.state !== '2'" class="row justify-start q-mt-lg">
+                    <PayButton v-if="deal.party_a?.id === teamStore.init?.id"
+                        class="full-width" btnColor="negative" buyLabel="预存酬金"
+                        subject="deal" :commodity="deal"
+                        @buyData="buyData"
+                    />
+                    <q-chip v-else color="deep-orange" label="尚未预存酬金" />
+                </div>
+                <q-img
+                    v-if="deal.cover?.url"
+                    :src="deal.cover.url"
+                    :ratio="16/9"
+                    spinner-color="primary"
+                    spinner-size="82px"
+                    class="full-width radius-xs overflow-hidden q-mt-lg"
+                    @click="$hevueImgPreview({
+                        url: deal.cover.url,
+                        clickMaskCLose: true
+                    })"
+                />
+                <div class="text-h4">需求摘要</div>
+                <div class="text-subtitle2">
+                    <span v-if="!editMode">{{ deal.description }}</span>
+                    <q-input v-else-if="is_party_a" v-model="update_params.data.description" type="textarea" label="需求摘要" />
+                </div>
+                <q-banner v-if="deal.party_b && (is_party_a || is_party_b)" rounded class="border">
+                    <span v-if="is_party_a">
+                        <template v-if="deal.party_b_accept && !deal.party_a_accept">
+                            乙方已同意合约内容，请尽快审阅协议内容
+                        </template>
+                        <template v-if="!deal.party_b_accept && !deal.party_a_accept">
+                            已与 {{ deal.party_b?.username }} 达成合作意向，请督促其阅读合约并尽快补充合约中乙方部分
+                        </template>
+                        <template v-if="!deal.party_b_accept && deal.party_a_accept">
+                            你已同意合约内容，请等待乙方审阅协议内容
+                        </template>
+                    </span>
+                    <span v-if="is_party_b">
+                        <template v-if="deal.party_a_accept && !deal.party_b_accept">
+                            甲方已同意合约内容，请尽快审阅协议内容
+                        </template>
+                        <template v-if="!deal.party_a_accept && !deal.party_b_accept">
+                            已与 {{ deal.party_a?.username }} 达成合作意向，请尽快阅读合约并补充合约中乙方部分
+                        </template>
+                        <template v-if="deal.party_b_accept && !deal.party_a_accept">
+                            你已同意合约内容，请等待甲方审阅协议内容
+                        </template>
+                    </span>
+                    <template v-if="(is_party_a && !deal.party_a_accept) || (is_party_b && !deal.party_b_accept)" v-slot:action>
+                        <q-btn color="deep-orange" flat label="同意合约内容" @click="agreeDeal" />
+                    </template>
+                    <span v-if="deal.party_a_accept && deal.party_b_accept">
+                        已进入“执行”阶段，请与对方保持沟通
+                    </span>
+                </q-banner>
+                <q-tabs v-model="tab" align="left" no-caps dense class="q-mt-lg">
+                    <q-tab v-for="i in tabs" :key="i" :name="i" :label="$t(`deal_${i}`)" />
+                </q-tabs>
+                <q-tab-panels v-model="tab" keep-alive class="transparent">
+                    <q-tab-panel v-for="i in tabs" :key="i" :name="i" class="q-pa-none">
+                        <TipTap v-if="i === 'jsonContent'" :jsonContent="deal.jsonContent" :editable="editMode && is_party_a"
+                            :contentChanged="editMode" :need="'json'" :square="true" :show_toolbar="editMode"
+                            :show_bubbleMenu="editMode" styleClass="q-px-md q-py-sm" class="q-space" :autofocus="false"
+                            @tiptapUpdate="updateJsonContent" />
+                        <ul v-if="i === 'todogroups' && deal.todogroups?.length > 0">
+                            <li v-for="group in deal.todogroups" :key="group.id">
+                                {{ group.name }}
+                                <ol v-if="group.todos.length > 0">
+                                    <li v-for="todo in group.todos" :key="todo.id">
+                                        <span v-if="!editMode">{{ todo.content }}</span>
+                                        <q-input v-else-if="is_party_a" v-model="todo.content" type="text" label="任务内容" />
+                                    </li>
+                                    <q-btn v-if="editMode && is_party_a" dense round icon="mdi-plus" @click="addTodo(group.id)" />
+                                </ol>
+                            </li>
+                        </ul>
+                        <TipTap v-if="i === 'party_a_requirements'" :jsonContent="deal.party_a_requirements" :need="'json'"
+                            :square="true" :editable="editMode && is_party_a"
+                            :contentChanged="editMode"
+                            :show_toolbar="editMode"
+                            :show_bubbleMenu="editMode"
+                            styleClass="q-px-md q-py-sm" class="q-space" :autofocus="false"
+                            @tiptapUpdate="updatePartyARequirements" />
+                        <TipTap v-if="i === 'party_b_requirements'" :jsonContent="deal.party_b_requirements" :need="'json'"
+                            :square="true" :editable="editMode && is_party_b"
+                            :contentChanged="editMode"
+                            :show_toolbar="editMode"
+                            :show_bubbleMenu="editMode"
+                            styleClass="q-px-md q-py-sm" class="q-space" :autofocus="false"
+                            @tiptapUpdate="updatePartyBRequirements" />
+                        <div v-if="i === 'deliver'" class="column gap-sm">
+                            <q-tabs
+                                v-model="deliver_tab"
+                                align="left"
+                                no-caps
+                                dense
+                            >
+                                <q-tab name="deliver_link" label="链接交付" />
+                                <q-tab name="deliver_file" label="文件交付" />
+                            </q-tabs>
+                            <q-tab-panels v-model="deliver_tab" keep-alive class="transparent">
+                                <q-tab-panel v-if="deliver_tab === 'deliver_link'" name="deliver_link" class="q-pa-none">
+                                    <div v-if="deal.deliver_link" class="flex flex-center radius-sm border-dotted border-xs border-op-sm op-5" style="height: 8rem;">
+                                        {{ deal.deliver_link }}
+                                    </div>
+                                    <template v-if="is_party_b">
+                                        <q-input v-model="deliver_link" type="textarea" outlined />
+                                        <q-btn color="primary" icon="check" label="交付" :disable="!deliver_link" @click="deliverByLink" class="q-mt-sm" />
+                                    </template>
+                                    <div v-if="!deal.deliver_link" class="flex flex-center radius-sm border-dotted border-xs border-op-sm op-5"
+                                    style="height: 8rem;">
+                                        暂无交付链接
+                                    </div>
+                                </q-tab-panel>
+                                <q-tab-panel v-if="deliver_tab === 'deliver_file'" name="deliver_file" class="q-pa-none">
+                                    <template v-if="deal.deliver_files?.length > 0">
+                                        <q-list bordered class="column gap-sm radius-sm q-pa-xs">
+                                            <q-item v-for="file in deal.deliver_files" :key="file.id" class="radius-xs" clickable v-ripple>
+                                                <q-item-section>
+                                                    <q-item-label>{{ file.name }}</q-item-label>
+                                                </q-item-section>
+                                                <q-item-section side>
+                                                    <q-btn color="primary" flat dense padding="xs md" :label="`下载`"
+                                                    @click="downloadDeliverFile(file)" />
+                                                </q-item-section>
+                                            </q-item>
+                                        </q-list>
+                                    </template>
+                                    <DrapUpload v-if="is_party_b" :isOSS="true" class="radius-md border-dashed border-xs border-op-sm bg-image-fill q-mb-sm"
+                                        :allowedFormats="['application/rar','application/zip','application/x-tar']"
+                                        @uploaded="setDeliverFile" style="min-height: 8rem;"
+                                        :caption="$t('drop_or_pick_deliver_file')" :maxFileSize="1000 * 1024 * 1024"
+                                    />
+                                    <div v-else-if="!deal.deliver_files || deal.deliver_files?.length === 0" class="flex flex-center radius-sm border-dotted border-xs border-op-sm op-5"
+                                    style="height: 8rem;">
+                                        暂无交付文件
+                                    </div>
+                                </q-tab-panel>
+                            </q-tab-panels>
+                            <template v-if="(deal.deliver_files?.length > 0 || deal.deliver_link) && deal.party_a?.id === teamStore.init?.id">
+                                <q-btn v-if="deal.status === 'progressing' || deal.status === 'reviewing'" flat color="primary" label="确认验收" @click="completeDeliver" />
+                                <div v-if="deal.status === 'completed'" class="q-pa-md radius-xs border text-center">已验收</div>
+                            </template>
+                        </div>
+                    </q-tab-panel>
+                </q-tab-panels>
+            </div>
+            <div v-if="deal" class="column gap-md q-px-xs q-py-md" style="flex: 0 0 260px;">
+                <q-btn v-if="is_party_a" color="primary" dense icon="mdi-developer-board" :label="deal.collaborate_card ? '修改关联协作任务' : '关联协作任务'" @click="openSetCollaborateCard = true" />
+                <q-chip v-if="!is_party_a && deal.collaborate_card" square outline color="deep-orange" icon="mdi-developer-board" label="已关联协作任务" />
+                <q-responsive :ratio="3/4" class="full-width">
+                    <PartybCard :party="deal.party_a">
+                        <q-card-section class="column flex-center q-pa-sm border-top">
+                            <template v-if="need_pay">
+                                <div class="radius-xs border q-pa-sm full-width flex flex-center blur-sm text-positive">
+                                    待预存酬金
+                                    <q-tooltip class="text-medium">
+                                        为保证合作顺利进行，请尽快预存酬金
+                                    </q-tooltip>
+                                </div>
+                                <div v-if="is_party_a" class="full-width text-caption op-5 q-mt-xs">
+                                    请尽快预存酬金，以便开启对接
+                                </div>
+                            </template>
+                            <template v-else-if="need_satrt">
+                                <div v-if="is_party_b" class="radius-xs border q-pa-sm full-width flex flex-center blur-sm text-positive">
+                                    待对方开启对接
+                                </div>
+                                <q-btn v-if="is_party_a" color="primary" label="开启对接申请" class="full-width" @click="startMatch" />
+                            </template>
+                            <q-btn v-else-if="everyone_can_chat || party_b_can_chat" color="positive"
+                                unelevated icon="mdi-forum" label="联系 TA" class="full-width" @click="openFloatChat()">
+                                <q-badge v-if="unread_count > 0 && deal.party_a?.id !== teamStore.init?.id" color="red" floating :label="unread_count" />
+                            </q-btn>
+                            <q-btn v-else-if="is_party_a" color="primary" icon="mdi-message-alert"
+                            :disable="!deal.talked_users ||deal.talked_users?.length === 0"
+                            :label="`${talkHistory ? '关闭' : '查看'}对接历史`" class="full-width" @click="talkHistory = !talkHistory">
+                                <q-badge v-if="unread_count > 0" color="red" floating :label="unread_count" />
+                                    <q-tooltip v-if="!deal.talked_users || deal.talked_users?.length === 0">
+                                        暂无人员资讯该任务
+                                    </q-tooltip>
+                            </q-btn>
+                            <div v-if="was_processing && !is_party_a && !is_party_b" class="radius-xs border q-pa-sm full-width flex flex-center blur-sm text-positive">
+                                合约已签署，正在执行中
+                            </div>
+                            <div v-if="was_completed" class="radius-xs border q-pa-sm full-width flex flex-center blur-sm text-positive">
+                                合作已结束
+                            </div>
+                        </q-card-section>
+                        <div class="absolute-top-right">
+                            <q-chip square outline color="positive" label="甲方" />
+                        </div>
+                    </PartybCard>
+                </q-responsive>
+                <q-responsive v-if="deal.party_b" :ratio="3/4" class="full-width">
+                    <PartybCard :party="deal.party_b">
+                        <q-card-section class="column flex-center q-pa-sm border-top">
+                            <TalkBtn :worker="deal.party_b" />
+                        </q-card-section>
+                        <div class="absolute-top-right">
+                            <q-chip square outline color="positive" label="乙方" />
+                        </div>
+                    </PartybCard>
+                </q-responsive>
+                <template v-if="is_party_a || is_party_b">
+                    <q-list v-if="deal.delay?.length > 0" bordered class="radius-xs">
+                        <q-item v-for="i in deal.delay" v-ripple clickable>
+                            <q-item-section side top>
+                                {{ i.from === 'party_a' ? '甲方' : '乙方' }}
+                            </q-item-section>
+                            <q-item-section>
+                                <q-item-label caption lines="2">{{ i.reason }}</q-item-label>
+                                <q-item-label>{{ i.date }}</q-item-label>
+                            </q-item-section>
+                            <q-item-section side top>
+                                <q-icon v-if="i.accepted" name="check" />
+                                <q-btn v-else color="primary" dense size="sm" padding="xs sm" label="同意"
+                                :disable="disable_delay(i)" @click="acceptDelay(i.id)">
+                                    <q-tooltip v-if="disable_delay(i)">
+                                        你要求的延期，需要对方同意！
+                                    </q-tooltip>
+                                </q-btn>
+                            </q-item-section>
+                        </q-item>
+                    </q-list>
+                    <template v-if="deal.status === 'progressing' || deal.status === 'reviewing'">
+                        <q-btn v-if="!delay_show" color="primary" flat label="要求延期" class="full-width" @click="toggleDelay" />
+                        <q-input v-else v-model="delay_reason" type="text" label="延期理由" outlined autogrow @keydown.esc="toggleDelay">
+                            <template v-slot:append>
+                                <q-btn dense flat round size="sm" icon="mdi-calendar" :disable="!delay_reason">
+                                    <q-popup-proxy transition-show="scale" transition-hide="scale">
+                                        <q-date
+                                            v-model="delay_date"
+                                            today-btn
+                                            mask="YYYY-MM-DD"
+                                            minimal
+                                            bordered
+                                            v-close-popup
+                                            :options="getDelayDateOptions"
+                                            @update:model-value="setDelay"
+                                        />
+                                    </q-popup-proxy>
+                                    <q-tooltip v-if="!delay_reason">
+                                        请输入延期理由
+                                    </q-tooltip>
+                                </q-btn>
+                            </template>
+                        </q-input>
+                    </template>
+                </template>
+            </div>
         </div>
         <q-dialog v-model="showFloatChat" persistent>
             <FloatChat
@@ -335,6 +369,18 @@
             </q-card>
         </q-dialog>
     </div>
+    <q-dialog v-model="openSetCollaborateCard" persistent>
+        <TaskSelector v-if="is_party_a" @select="setCollaborateCard">
+            <template #header>
+                <q-toolbar class="transparent border-bottom">
+                    <q-toolbar-title>
+                        选择协作任务
+                    </q-toolbar-title>
+                    <q-btn flat round dense size="sm" icon="close" @click="openSetCollaborateCard = false" />
+                </q-toolbar>                
+            </template>
+        </TaskSelector>
+    </q-dialog>
     </q-scroll-area>
 </template>
 
@@ -352,6 +398,8 @@
     import DrapUpload from 'src/components/VIewComponents/DrapUpload.vue'
     import FileSaver from 'file-saver';
     import PartybCard from './components/PartybCard.vue'
+    import TalkBtn from './components/TalkBtn.vue'
+    import TaskSelector from '../team/components/TaskSelector.vue'
 
     const $q = useQuasar();
     const router = useRouter();
@@ -383,6 +431,18 @@
     const is_party_b = computed(() => deal.value?.party_b?.id === teamStore.init?.id);
     const is_party_a = computed(() => deal.value?.party_a?.id === teamStore.init?.id);
     const is_paied = computed(() => deal.value?.order?.jeepay_order?.state === '2');
+
+    const need_pay = computed(() => !deal.value?.order || deal.value.order.jeepay_order?.state !== '2');
+    const need_satrt = computed(() => deal.value?.status === 'deposited');
+    const everyone_can_chat = computed(() => !is_party_a.value && (deal.value?.status === 'pending_matching' || deal.value?.status === 'matching'));
+    const party_b_can_chat = computed(() => is_party_b.value &&
+        (deal.value?.status === 'progressing'
+        || deal.value?.status === 'reviewing'
+        || deal.value?.status === 'completed')
+    );
+    const was_processing = computed(() => ['progressing', 'reviewing'].includes(deal.value?.status));
+    const was_completed = computed(() => ['completed', 'withdrawn'].includes(deal.value?.status));
+
     const showFloatChat = ref(false);
     const talkHistory = ref(false);
     const floatChatChannelId = ref(null);
@@ -541,6 +601,11 @@
         editMode.value = false;
         syncUpdateParams();
     }
+    const openSetCollaborateCard = ref(false);
+    const setCollaborateCard = async (card) => {
+        await updateDeal(deal_id, { data: { collaborate_card: card.id } });
+        openSetCollaborateCard.value = false;
+    }
     const startMatch = async () => {
         await updateDeal(deal_id, { data: { status: 'pending_matching' } });
     }
@@ -628,7 +693,6 @@
         await updateDeal(deal_id, { data: { status: 'completed' } });
         completed_tip.value = false;
     }
-    const cant_update = computed(() => ['completed', 'withdrawn'].includes(deal.value?.status));
 
     watch(
     mm_wsStore,

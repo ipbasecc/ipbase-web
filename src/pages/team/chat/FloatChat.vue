@@ -1,10 +1,11 @@
 <template>
-    <q-card bordered ref="chatBox" class="chat-box column">
+    <q-card :bordered="is_popup" ref="chatBox" class="column" :class="is_popup ? 'chat-box' : 'fit'">
         <q-toolbar dark class="transparent border-bottom">
             <q-tabs v-model="tab" dense stretch>
                 <q-tab v-for="tab in tabs" :key="tab" :name="tab" :label="$t(tab)" />
             </q-tabs>
             <q-space />
+            <slot name="toolbar_right" />
             <q-btn dense size="sm" flat round icon="mdi-close" v-close-popup />
         </q-toolbar>
         <q-tab-panels v-model="tab" class="q-pa-none q-space">
@@ -26,9 +27,9 @@
     import { ref, useTemplateRef } from 'vue';
     import { useRouter } from 'vue-router'
     import ChatContainter from './ChatContainter.vue'
-import UserWorks from 'src/pages/studio/UserWorks.vue'
+    import UserWorks from 'src/pages/studio/UserWorks.vue'
     const router = useRouter()
-    const { channel_id, target_user } = defineProps(['channel_id', 'target_user']);
+    const { channel_id, target_user, is_popup = true } = defineProps(['channel_id', 'target_user', 'is_popup']);
     const emit = defineEmits(['MsgSended'])
 
     const isOpen = ref(false);

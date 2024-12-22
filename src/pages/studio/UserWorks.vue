@@ -15,7 +15,8 @@
                 <template v-else>
                     <div class="text-center op-5 column flex-center gap-lg">
                         <q-icon name="mdi-image" size="xl" />
-                        <q-btn flat icon="mdi-plus" label="暂无作品, 点击添加" @click="addWork" />
+                        <q-btn v-if="user_id === teamStore.init?.id" flat icon="mdi-plus" label="暂无作品, 点击添加" @click="addWork" />
+                        <span v-else>暂无作品</span>
                     </div>
                 </template>
             </div>
