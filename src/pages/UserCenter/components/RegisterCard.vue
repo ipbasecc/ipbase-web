@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-  import { ref, computed, onMounted, onUnmounted } from 'vue';
+  import { ref, computed } from 'vue';
   import PasswordInput from './PasswordInput.vue';
   import { uiStore } from 'src/hooks/global/useStore';
 import AgreementCard from 'src/components/VIewComponents/AgreementCard.vue'

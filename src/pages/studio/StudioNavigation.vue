@@ -18,10 +18,11 @@
     </q-list>
 </template>
 <script setup>
-    import { ref } from 'vue';
+    import { ref, onMounted } from 'vue';
     import {uiStore, studioStore} from "src/hooks/global/useStore.js";
-    import { useRouter } from 'vue-router';
+    import { useRouter, useRoute } from 'vue-router';
 
+    const route = useRoute();
     const router = useRouter();
     const menuItems = ref([
         {
@@ -41,4 +42,7 @@
         studioStore.nav = val.val;
         router.push(val.to);
     }
+    onMounted(() => {
+        studioStore.nav = route.path.split('/')[2];
+    })
 </script>

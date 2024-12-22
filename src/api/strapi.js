@@ -550,3 +550,46 @@ export async function updateWork(work_id, params) {
     return error;
   }
 }
+
+// 用户简历
+export async function findUserCv(cv_user_id) {
+  try {
+    const res = await api.get(`findUserCv/${cv_user_id}`);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+
+export async function createCv(params) {
+  try {
+    const res = await api.post(`/cvs`, params);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+export async function updateCv(cv_id, params) {
+  try {
+    const res = await api.put(`/cvs/${cv_id}`, params);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+export async function deleteCv(cv_id) {
+  try {
+    const res = await api.delete(`/cvs/${cv_id}`);
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}

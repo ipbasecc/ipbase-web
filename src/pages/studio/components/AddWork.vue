@@ -1,6 +1,7 @@
 <template>
     <div class="absolute-full column no-wrap">
         <q-toolbar class="transparent border-bottom">
+            <q-btn flat round icon="mdi-chevron-left" @click="router.push('/studio/works')" />
             <q-toolbar-title>
                 添加作品
             </q-toolbar-title>
