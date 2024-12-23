@@ -6,7 +6,7 @@
         <q-card-section class="row flex-center q-space">
             <q-avatar size="100px">
                 <q-img
-                    :src="_party.profile?.avatar?.url"
+                    :src="_party.wechat_profile?.avatar || _party.profile?.avatar?.url"
                     :ratio="1"
                     spinner-color="primary"
                     spinner-size="82px"

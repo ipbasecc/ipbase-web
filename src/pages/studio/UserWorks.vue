@@ -1,8 +1,9 @@
 <template>
     <div class="column no-wrap absolute-full">
         <q-toolbar v-if="is_page" class="transparent">
+            <q-btn flat round dense icon="mdi-chevron-left" @click="router.back()" />
             <q-space />
-            <q-btn flat round dense icon="mdi-plus" @click="addWork" />
+            <q-btn v-if="isOwner" flat round dense icon="mdi-plus" @click="addWork" />
         </q-toolbar>
         <q-scroll-area class="q-space">
             <div class="column no-wrap q-pa-md" :class="works.length > 0 ? 'items-center' : 'absolute-full flex-center'">
@@ -25,7 +26,7 @@
 </template>
 <script setup>
 import { findWorks } from "src/api/strapi.js";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from 'vue-router'
 import WorkCard from './components/WorkCard.vue'
 import { teamStore } from "src/hooks/global/useStore";
@@ -44,6 +45,9 @@ const findWorksFn = async () => {
         count.value = data.count
     }
 }
+const isOwner = computed(() => {
+    return user_id === teamStore.init?.id
+})
 onMounted(() => {
     findWorksFn()
 })

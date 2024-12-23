@@ -146,94 +146,90 @@
                 <q-tabs v-model="tab" align="left" no-caps dense class="q-mt-lg">
                     <q-tab v-for="i in tabs" :key="i" :name="i" :label="$t(`deal_${i}`)" />
                 </q-tabs>
-                <q-tab-panels v-model="tab" keep-alive class="transparent">
-                    <q-tab-panel v-for="i in tabs" :key="i" :name="i" class="q-pa-none">
-                        <TipTap v-if="i === 'jsonContent'" :jsonContent="deal.jsonContent" :editable="editMode && is_party_a"
-                            :contentChanged="editMode" :need="'json'" :square="true" :show_toolbar="editMode"
-                            :show_bubbleMenu="editMode" styleClass="q-px-md q-py-sm" class="q-space" :autofocus="false"
-                            @tiptapUpdate="updateJsonContent" />
-                        <ul v-if="i === 'todogroups' && deal.todogroups?.length > 0">
-                            <li v-for="group in deal.todogroups" :key="group.id">
-                                {{ group.name }}
-                                <ol v-if="group.todos.length > 0">
-                                    <li v-for="todo in group.todos" :key="todo.id">
-                                        <span v-if="!editMode">{{ todo.content }}</span>
-                                        <q-input v-else-if="is_party_a" v-model="todo.content" type="text" label="任务内容" />
-                                    </li>
-                                    <q-btn v-if="editMode && is_party_a" dense round icon="mdi-plus" @click="addTodo(group.id)" />
-                                </ol>
+                <TipTap v-if="tab === 'jsonContent'" :jsonContent="deal.jsonContent" :editable="editMode && is_party_a"
+                    :contentChanged="editMode" :need="'json'" :square="true" :show_toolbar="editMode"
+                    :show_bubbleMenu="editMode" styleClass="q-px-md q-py-sm" class="q-space" :autofocus="false"
+                    @tiptapUpdate="updateJsonContent" />
+                <ul v-if="tab === 'todogroups' && deal.todogroups?.length > 0">
+                    <li v-for="group in deal.todogroups" :key="group.id">
+                        {{ group.name }}
+                        <ol v-if="group.todos.length > 0">
+                            <li v-for="todo in group.todos" :key="todo.id">
+                                <span v-if="!editMode">{{ todo.content }}</span>
+                                <q-input v-else-if="is_party_a" v-model="todo.content" type="text" label="任务内容" />
                             </li>
-                        </ul>
-                        <TipTap v-if="i === 'party_a_requirements'" :jsonContent="deal.party_a_requirements" :need="'json'"
-                            :square="true" :editable="editMode && is_party_a"
-                            :contentChanged="editMode"
-                            :show_toolbar="editMode"
-                            :show_bubbleMenu="editMode"
-                            styleClass="q-px-md q-py-sm" class="q-space" :autofocus="false"
-                            @tiptapUpdate="updatePartyARequirements" />
-                        <TipTap v-if="i === 'party_b_requirements'" :jsonContent="deal.party_b_requirements" :need="'json'"
-                            :square="true" :editable="editMode && is_party_b"
-                            :contentChanged="editMode"
-                            :show_toolbar="editMode"
-                            :show_bubbleMenu="editMode"
-                            styleClass="q-px-md q-py-sm" class="q-space" :autofocus="false"
-                            @tiptapUpdate="updatePartyBRequirements" />
-                        <div v-if="i === 'deliver'" class="column gap-sm">
-                            <q-tabs
-                                v-model="deliver_tab"
-                                align="left"
-                                no-caps
-                                dense
-                            >
-                                <q-tab name="deliver_link" label="链接交付" />
-                                <q-tab name="deliver_file" label="文件交付" />
-                            </q-tabs>
-                            <q-tab-panels v-model="deliver_tab" keep-alive class="transparent">
-                                <q-tab-panel v-if="deliver_tab === 'deliver_link'" name="deliver_link" class="q-pa-none">
-                                    <div v-if="deal.deliver_link" class="flex flex-center radius-sm border-dotted border-xs border-op-sm op-5" style="height: 8rem;">
-                                        {{ deal.deliver_link }}
-                                    </div>
-                                    <template v-if="is_party_b">
-                                        <q-input v-model="deliver_link" type="textarea" outlined />
-                                        <q-btn color="primary" icon="check" label="交付" :disable="!deliver_link" @click="deliverByLink" class="q-mt-sm" />
-                                    </template>
-                                    <div v-if="!deal.deliver_link" class="flex flex-center radius-sm border-dotted border-xs border-op-sm op-5"
-                                    style="height: 8rem;">
-                                        暂无交付链接
-                                    </div>
-                                </q-tab-panel>
-                                <q-tab-panel v-if="deliver_tab === 'deliver_file'" name="deliver_file" class="q-pa-none">
-                                    <template v-if="deal.deliver_files?.length > 0">
-                                        <q-list bordered class="column gap-sm radius-sm q-pa-xs">
-                                            <q-item v-for="file in deal.deliver_files" :key="file.id" class="radius-xs" clickable v-ripple>
-                                                <q-item-section>
-                                                    <q-item-label>{{ file.name }}</q-item-label>
-                                                </q-item-section>
-                                                <q-item-section side>
-                                                    <q-btn color="primary" flat dense padding="xs md" :label="`下载`"
-                                                    @click="downloadDeliverFile(file)" />
-                                                </q-item-section>
-                                            </q-item>
-                                        </q-list>
-                                    </template>
-                                    <DrapUpload v-if="is_party_b" :isOSS="true" class="radius-md border-dashed border-xs border-op-sm bg-image-fill q-mb-sm"
-                                        :allowedFormats="['application/rar','application/zip','application/x-tar']"
-                                        @uploaded="setDeliverFile" style="min-height: 8rem;"
-                                        :caption="$t('drop_or_pick_deliver_file')" :maxFileSize="1000 * 1024 * 1024"
-                                    />
-                                    <div v-else-if="!deal.deliver_files || deal.deliver_files?.length === 0" class="flex flex-center radius-sm border-dotted border-xs border-op-sm op-5"
-                                    style="height: 8rem;">
-                                        暂无交付文件
-                                    </div>
-                                </q-tab-panel>
-                            </q-tab-panels>
-                            <template v-if="(deal.deliver_files?.length > 0 || deal.deliver_link) && deal.party_a?.id === teamStore.init?.id">
-                                <q-btn v-if="deal.status === 'progressing' || deal.status === 'reviewing'" flat color="primary" label="确认验收" @click="completeDeliver" />
-                                <div v-if="deal.status === 'completed'" class="q-pa-md radius-xs border text-center">已验收</div>
+                            <q-btn v-if="editMode && is_party_a" dense round icon="mdi-plus" @click="addTodo(group.id)" />
+                        </ol>
+                    </li>
+                </ul>
+                <TipTap v-if="tab === 'party_a_requirements'" :jsonContent="deal.party_a_requirements" :need="'json'"
+                    :square="true" :editable="editMode && is_party_a"
+                    :contentChanged="editMode"
+                    :show_toolbar="editMode"
+                    :show_bubbleMenu="editMode"
+                    styleClass="q-px-md q-py-sm" class="q-space" :autofocus="false"
+                    @tiptapUpdate="updatePartyARequirements" />
+                <TipTap v-if="tab === 'party_b_requirements'" :jsonContent="deal.party_b_requirements" :need="'json'"
+                    :square="true" :editable="editMode && is_party_b"
+                    :contentChanged="editMode"
+                    :show_toolbar="editMode"
+                    :show_bubbleMenu="editMode"
+                    styleClass="q-px-md q-py-sm" class="q-space" :autofocus="false"
+                    @tiptapUpdate="updatePartyBRequirements" />
+                <div v-if="tab === 'deliver'" class="column gap-sm">
+                    <q-tabs
+                        v-model="deliver_tab"
+                        align="left"
+                        no-caps
+                        dense
+                    >
+                        <q-tab name="deliver_link" label="链接交付" />
+                        <q-tab name="deliver_file" label="文件交付" />
+                    </q-tabs>
+                    <q-tab-panels v-model="deliver_tab" keep-alive class="transparent">
+                        <q-tab-panel v-if="deliver_tab === 'deliver_link'" name="deliver_link" class="q-pa-none">
+                            <div v-if="deal.deliver_link" class="flex flex-center radius-sm border-dotted border-xs border-op-sm op-5" style="height: 8rem;">
+                                {{ deal.deliver_link }}
+                            </div>
+                            <template v-if="is_party_b">
+                                <q-input v-model="deliver_link" type="textarea" outlined />
+                                <q-btn color="primary" icon="check" label="交付" :disable="!deliver_link" @click="deliverByLink" class="q-mt-sm" />
                             </template>
-                        </div>
-                    </q-tab-panel>
-                </q-tab-panels>
+                            <div v-if="!deal.deliver_link" class="flex flex-center radius-sm border-dotted border-xs border-op-sm op-5"
+                            style="height: 8rem;">
+                                暂无交付链接
+                            </div>
+                        </q-tab-panel>
+                        <q-tab-panel v-if="deliver_tab === 'deliver_file'" name="deliver_file" class="q-pa-none">
+                            <template v-if="deal.deliver_files?.length > 0">
+                                <q-list bordered class="column gap-sm radius-sm q-pa-xs">
+                                    <q-item v-for="file in deal.deliver_files" :key="file.id" class="radius-xs" clickable v-ripple>
+                                        <q-item-section>
+                                            <q-item-label>{{ file.name }}</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section side>
+                                            <q-btn color="primary" flat dense padding="xs md" :label="`下载`"
+                                            @click="downloadDeliverFile(file)" />
+                                        </q-item-section>
+                                    </q-item>
+                                </q-list>
+                            </template>
+                            <DrapUpload v-if="is_party_b" :isOSS="true" class="radius-md border-dashed border-xs border-op-sm bg-image-fill q-mb-sm"
+                                :allowedFormats="['application/rar','application/zip','application/x-tar']"
+                                @uploaded="setDeliverFile" style="min-height: 8rem;"
+                                :caption="$t('drop_or_pick_deliver_file')" :maxFileSize="1000 * 1024 * 1024"
+                            />
+                            <div v-else-if="!deal.deliver_files || deal.deliver_files?.length === 0" class="flex flex-center radius-sm border-dotted border-xs border-op-sm op-5"
+                            style="height: 8rem;">
+                                暂无交付文件
+                            </div>
+                        </q-tab-panel>
+                    </q-tab-panels>
+                    <template v-if="(deal.deliver_files?.length > 0 || deal.deliver_link) && deal.party_a?.id === teamStore.init?.id">
+                        <q-btn v-if="deal.status === 'progressing' || deal.status === 'reviewing'" flat color="primary" label="确认验收" @click="completeDeliver" />
+                        <div v-if="deal.status === 'completed'" class="q-pa-md radius-xs border text-center">已验收</div>
+                    </template>
+                </div>
             </div>
             <div v-if="deal" class="column gap-md q-px-xs q-py-md" style="flex: 0 0 260px;">
                 <q-btn v-if="is_party_a" color="primary" dense icon="mdi-developer-board" :label="deal.collaborate_card ? '修改关联协作任务' : '关联协作任务'" @click="openSetCollaborateCard = true" />
