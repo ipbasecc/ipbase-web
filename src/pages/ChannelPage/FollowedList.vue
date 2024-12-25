@@ -8,6 +8,7 @@
     >
       <q-item-section side>
         <UserAvatar
+          :image="i.wechat_profile?.avatar || i.mm_profile?.avatar?.url"
           :user_id="i.mm_profile?.id"
           :size="36"
           :disable_card="true"

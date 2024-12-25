@@ -80,6 +80,7 @@
                     :style="`transform: translateX(-${index * 7}px);`"
                     :user_id="i.id"
                     :size="18"
+                    :image="i.wechat_profile?.avatar || i.profile?.avatar?.url"
                     indicator_size="9px"
                   />
                   <span class="q-pl-sm hover-highlight transition unselected">{{ thread.reply_count }} {{ $t('items_talk_message') }}</span>

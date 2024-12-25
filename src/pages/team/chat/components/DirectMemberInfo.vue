@@ -32,6 +32,7 @@
         </q-toolbar>
         <div class="q-space row items-center gap-lg q-pa-xl">
             <UserAvatar
+                :image="directMember?.wechat_profile?.avatar || directMember?.profile?.avatar?.url"
                 :user_id="directMember?.mm_profile?.id"
                 :size="128"
                 :strapi_member="directMember?.mm_profile"

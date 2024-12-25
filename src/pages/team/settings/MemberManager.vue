@@ -35,85 +35,93 @@
       </div>
       <div class="q-space relative-position">
         <q-scroll-area v-if="members?.filter(i => i.members?.length > 0)?.length > 0" class="absolute-full">
-          <template v-for="g in members" :key="g.group">
-            <template v-if="g.members?.length > 0">
-              <q-item-label header>{{ translate(g.group) }}</q-item-label>
-              <q-item v-for="i in g.members" :key="i.id">
-                <q-item-section top avatar>
-                  <UserAvatar
-                    v-if="i.by_user?.mm_profile?.id"
-                    :user_id="i.by_user?.mm_profile?.id"
-                    :strapi_member="i"
-                    :size="34"
-                    :indicator_size="'10px'"
-                  />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ i.by_user?.username }}</q-item-label>
-                </q-item-section>
-                <q-item-section
-                  v-if="
-                    useAuths('manageMember', [authBase.collection], auth?.members, auth?.roles) && !protectedRoles.includes(g.group)
-                  "
-                  side
-                >
-                  <q-btn flat dense round size="sm" icon="mdi-dots-vertical">
-                    <q-menu
-                      class="radius-sm"
-                      @show="set_new_roles_IDs(i)"
-                      @hide="set_new_roles_IDs(i)"
-                    >
-                      <q-list
-                        v-if="new_roles_IDs && member_roles_forChange"
-                        bordered
-                        dense
-                        class="radius-sm q-pa-xs column no-wrap gap-xs"
-                        style="min-width: 220px"
+          <q-infinite-scroll @load="onLoad" :offset="250" :disable="!hasMore">
+            <template v-for="g in members" :key="g.group">
+              <template v-if="g.members?.length > 0">
+                <q-item-label header>{{ translate(g.group) }}</q-item-label>
+                <q-item v-for="i in g.members" :key="i.id">
+                  <q-item-section top avatar>
+                    <UserAvatar
+                      v-if="i.by_user?.mm_profile?.id"
+                      :image="i.by_user?.wechat_profile?.avatar"
+                      :user_id="i.by_user?.mm_profile?.id"
+                      :strapi_member="i"
+                      :size="34"
+                      :indicator_size="'10px'"
+                    />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>{{ i.by_user?.username }}</q-item-label>
+                  </q-item-section>
+                  <q-item-section
+                    v-if="
+                      useAuths('manageMember', [authBase.collection], auth?.members, auth?.roles) && !protectedRoles.includes(g.group)
+                    "
+                    side
+                  >
+                    <q-btn flat dense round size="sm" icon="mdi-dots-vertical">
+                      <q-menu
+                        class="radius-sm"
+                        @show="set_new_roles_IDs(i)"
+                        @hide="set_new_roles_IDs(i)"
                       >
-                        <q-item
-                          v-for="role in member_roles_forChange"
-                          :key="role.id"
-                          clickable
-                          class="radius-xs text-no-wrap"
-                          @click="setRoleFn(i, role)"
+                        <q-list
+                          v-if="new_roles_IDs && member_roles_forChange"
+                          bordered
+                          dense
+                          class="radius-sm q-pa-xs column no-wrap gap-xs"
+                          style="min-width: 220px"
                         >
-                          <q-item-section
-                            v-if="new_roles_IDs?.includes(role.id)"
-                            side
-                          >
-                            <q-icon
-                              name="mdi-checkbox-marked-circle"
-                              size="xs"
-                              color="green"
-                              :class="
-                                new_roles_IDs?.includes(role.id)
-                                  ? 'op-none'
-                                  : 'op-0'
-                              "
-                            />
-                          </q-item-section>
-                          <q-item-section>
-                            {{ translate(role.subject) }}</q-item-section
-                          >
-                        </q-item>
-                        <template v-if="byInfo?.by !== 'channel' || (teamStore.mm_channel?.type !== 'O' && g.group !== 'admin')">
-                          <q-separator class="op-3 q-my-xs" />
                           <q-item
+                            v-for="role in member_roles_forChange"
+                            :key="role.id"
                             clickable
-                            v-close-popup
                             class="radius-xs text-no-wrap"
-                            @click="removeUserFn(i)"
+                            @click="setRoleFn(i, role)"
                           >
-                            <q-item-section>{{ $t('remove_member') }}</q-item-section>
+                            <q-item-section
+                              v-if="new_roles_IDs?.includes(role.id)"
+                              side
+                            >
+                              <q-icon
+                                name="mdi-checkbox-marked-circle"
+                                size="xs"
+                                color="green"
+                                :class="
+                                  new_roles_IDs?.includes(role.id)
+                                    ? 'op-none'
+                                    : 'op-0'
+                                "
+                              />
+                            </q-item-section>
+                            <q-item-section>
+                              {{ translate(role.subject) }}</q-item-section
+                            >
                           </q-item>
-                        </template>
-                      </q-list>
-                    </q-menu>
-                  </q-btn>
-                </q-item-section>
-              </q-item>
+                          <template v-if="byInfo?.by !== 'channel' || (teamStore.mm_channel?.type !== 'O' && g.group !== 'admin')">
+                            <q-separator class="op-3 q-my-xs" />
+                            <q-item
+                              clickable
+                              v-close-popup
+                              class="radius-xs text-no-wrap"
+                              @click="removeUserFn(i)"
+                            >
+                              <q-item-section>{{ $t('remove_member') }}</q-item-section>
+                            </q-item>
+                          </template>
+                        </q-list>
+                      </q-menu>
+                    </q-btn>
+                  </q-item-section>
+                </q-item>
+              </template>
             </template>
-          </template>
+            <template v-slot:loading>
+              <div class="row justify-center q-my-md">
+                <q-spinner-dots color="primary" size="40px" />
+              </div>
+            </template>
+          </q-infinite-scroll>
         </q-scroll-area>
         <slot v-else name="tip"></slot>
       </div>
@@ -132,6 +140,7 @@
                 <q-item-section top avatar>
                   <UserAvatar
                     v-if="i.by_user?.mm_profile?.id"
+                    :image="i.by_user?.wechat_profile?.avatar || i.by_user?.profile?.avatar?.url"
                     :user_id="i.by_user?.mm_profile?.id"
                     :strapi_member="i"
                     :size="34"
@@ -260,24 +269,35 @@ const authBase = computed(() => {
 });
 
 const limit = 20;
-const offset = ref(1);
+const offset = ref(0);
 const totalCount = ref();
 const hasMore = ref(false);
+async function onLoad(index,done){
+  await findMore();
+  done();
+}
+const getMembers = async () => {
+  const { data } = await getTeamMembers(byInfo.value.team_id, offset.value, limit);
+  if(data?.members){
+    if(Array.isArray(teamStore.team?.members)){
+      teamStore.team.members.push(...data.members)
+    } else {
+      teamStore.team.members = data
+    }
+  }
+  totalCount.value = data.totalCount;
+  hasMore.value = data.hasMore
+}
+const findMore = async () => {
+  console.log('findMore')
+  offset.value = teamStore.team?.members?.length;
+  await getMembers();
+}
 onBeforeMount(async() => {
   // todo 待完善分页查询
   if(byInfo.value.team_id){    
     teamStore.team.members = []
-    const team_id = byInfo.value.team_id
-    const { data } = await getTeamMembers(team_id, offset.value, limit);
-    if(data?.members){      
-      if(Array.isArray(teamStore.team?.members)){
-        teamStore.team.members.push(...data.members)
-      } else {
-        teamStore.team.members = data
-      }
-    }
-    totalCount.value = data.totalCount;
-    hasMore.value = data.hasMore
+    await getMembers();
   }
 })
 

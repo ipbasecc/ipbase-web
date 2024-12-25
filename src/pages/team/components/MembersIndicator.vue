@@ -11,6 +11,7 @@
     >
       <UserAvatar
         v-if="item.by_user?.mm_profile"
+        :image="item.by_user?.wechat_profile?.avatar"
         :user_id="item.by_user.mm_profile.id"
         :size="24"
         :disable_card="true"

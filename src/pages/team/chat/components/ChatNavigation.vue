@@ -11,6 +11,7 @@
                 <q-item v-for="i in friend_requests_unProcessed" :key="i.id" v-ripple="false" :style="i.status ? 'order: 99999' : ''">
                     <q-item-section avatar>
                         <UserAvatar
+                            :image="i.sender?.wechat_profile?.avatar || i.sender?.profile?.avatar?.url"
                             :user_id="i.sender?.mm_profile?.id"
                             :size="avatar_size"
                             :strapi_member="i.sender?.mm_profile"
@@ -63,6 +64,7 @@
                   >
                       <q-item-section avatar>
                           <UserAvatar
+                              :image="i.wechat_profile?.avatar || i.profile?.avatar?.url"
                               :user_id="i?.mm_profile?.id"
                               :size="avatar_size"
                               :strapi_member="i?.mm_profile"
@@ -91,6 +93,7 @@
                 >
                     <q-item-section avatar>
                         <UserAvatar
+                            :image="i.wechat_profile?.avatar || i.profile?.avatar?.url"
                             :user_id="i?.mm_profile?.id"
                             :size="avatar_size"
                             :strapi_member="i?.mm_profile"

@@ -37,6 +37,7 @@
       >
         <q-item-section avatar>
           <UserAvatar
+            :image="i.wechat_profile?.avatar"
             :user_id="i.mm_profile?.id"
             :size="32"
             :disable_card="true"

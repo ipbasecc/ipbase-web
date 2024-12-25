@@ -9,21 +9,13 @@
     class="cursor-pointer"
   >
     <UserAvatar
-      v-if="mmUser.user?.id"
+      :image="avatar"
       :user_id="mmUser.user?.id"
       :size="avatarSizeRef"
       :status="mmUser.status"
       :disable_card="true"
       :indicator_size="'10px'"
     />
-    <q-avatar v-else :size="avatarSizeRef.toString()">
-      <q-img
-        :src="avatar"
-        :ratio="1"
-        spinner-color="primary"
-        :spinner-size="`${avatarSizeRef - 12}px`"
-      />
-    </q-avatar>
     <q-menu
       :anchor="menu_anchor"
       :self="menu_self"
@@ -240,7 +232,7 @@ const props = defineProps({
 });
 
 const avatarSizeRef = toRef(props, "avatarSize");
-const avatar = computed(() => teamStore.init?.profile?.avatar?.url);
+const avatar = computed(() => teamStore.init?.wechat_profile?.avatar || teamStore.init?.profile?.avatar?.url);
 const router = useRouter();
 const channelStore = useChannelStore();
 const mmUser = mmUserStore();

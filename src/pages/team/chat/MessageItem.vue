@@ -30,6 +30,7 @@
           </q-avatar>
         </template>
         <UserAvatar v-else
+          :image="strapi_member?.by_user?.wechat_profile?.avatar"
           :user_id="msg.user_id"
           :size="avatar_size"
           :status="member_status"
