@@ -27,7 +27,7 @@
       @click="setServer()" /> -->
     <RouterLink class="q-pr-xs q-mt-sm text-primary text-right" :to="`/register`">{{ $t('no_account') }}</RouterLink>
     <RouterLink class="q-pr-xs text-primary text-right" :to="`/forgot-password`">{{ $t('forgot_password') }}</RouterLink>
-    <span class="q-pr-xs text-primary cursor-pointer text-right" @click="clearCache()">{{ $t('clear_cache') }}</span>
+    <span v-if="!$q.platform.is.electron" class="q-pr-xs text-primary cursor-pointer text-right" @click="clearCache()">{{ $t('clear_cache') }}</span>
   </q-form>
 </template>
 

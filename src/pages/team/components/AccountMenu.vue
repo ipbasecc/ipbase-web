@@ -116,6 +116,7 @@
                 <q-item-section>{{ $t('user_settings')}}</q-item-section>
               </q-item>
               <q-item
+                v-if="!$q.platform.is.electron"
                 clickable
                 v-close-popup
                 class="radius-xs"
