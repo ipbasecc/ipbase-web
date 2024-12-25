@@ -259,12 +259,13 @@
                                 <q-badge v-if="unread_count > 0 && deal.party_a?.id !== teamStore.init?.id" color="red" floating :label="unread_count" />
                             </q-btn>
                             <q-btn v-else-if="is_party_a" color="primary" icon="mdi-message-alert"
-                            :disable="!deal.talked_users ||deal.talked_users?.length === 0"
-                            :label="`${talkHistory ? '关闭' : '查看'}对接历史`" class="full-width" @click="talkHistory = !talkHistory">
+                                :disable="!deal.talked_users ||deal.talked_users?.length === 0"
+                                :label="`${talkHistory ? '关闭' : '查看'}对接历史`" class="full-width" @click="talkHistory = !talkHistory"
+                            >
                                 <q-badge v-if="unread_count > 0" color="red" floating :label="unread_count" />
-                                    <q-tooltip v-if="!deal.talked_users || deal.talked_users?.length === 0">
-                                        暂无人员资讯该任务
-                                    </q-tooltip>
+                                <q-tooltip v-if="!deal.talked_users || deal.talked_users?.length === 0">
+                                    暂无人员资讯该任务
+                                </q-tooltip>
                             </q-btn>
                             <div v-if="was_processing && !is_party_a && !is_party_b" class="radius-xs border q-pa-sm full-width flex flex-center blur-sm text-positive">
                                 合约已签署，正在执行中
@@ -281,7 +282,7 @@
                 <q-responsive v-if="deal.party_b" :ratio="3/4" class="full-width">
                     <PartybCard :party="deal.party_b">
                         <q-card-section class="column flex-center q-pa-sm border-top">
-                            <TalkBtn :worker="deal.party_b" />
+                            <TalkBtn :worker="deal.party_b" :deal="deal" />
                         </q-card-section>
                         <div class="absolute-top-right">
                             <q-chip square outline color="positive" label="乙方" />
@@ -341,7 +342,6 @@
                 v-if="floatChatChannelId"
                 :channel_id="floatChatChannelId"
                 :target_user="deal.party_a"
-                @MsgSended="MsgSended"
             />
         </q-dialog>
         <div v-if="deal?.party_a?.id === teamStore.init?.id && deal?.talked_users?.length > 0" class="absolute-bottom-right q-pa-md">
@@ -490,17 +490,6 @@
             await checkUnreadCount();
         }
     },{immediate: true})
-    const MsgSended = async () => {
-        const talked_users_ids = deal.value?.talked_users?.map(i => i.id) || [];
-        if(!talked_users_ids.includes(teamStore.init?.id)){
-            const add_talked_user_params = {
-                data: {
-                    new_talked_user: teamStore.init?.id,
-                }
-            }
-            await updateDeal(deal_id, add_talked_user_params);
-        }
-    }
     const openChat = async (d_channel_id) => {
         unread_count.value = unread_count.value - unread_count_map.value[d_channel_id];
         unread_count_map.value[d_channel_id] = 0;
@@ -736,16 +725,21 @@ watch(income, async () => {
 })
 
 const matchingNotify = () => {
-    if(deal.value?.status === 'matching' && is_party_a.value){
+    if(deal.value?.status !== 'matching') return;
+    console.log('deal', deal.value)
+    // 甲方
+    // 甲方同意，乙方未同意
+    if(is_party_a.value && deal.value?.party_a_accept && !deal.value?.party_b_accept){
         $q.notify({
-            message: '您已同意与您合作，请尽督促对方快阅读合作协议，双方均同意协议内容后，正式进入执行阶段',
+            message: '您已同意与对方合作，请尽督促对方快阅读合作协议，双方均同意协议内容后，正式进入执行阶段',
             color: 'primary',
             icon: 'mdi-check-circle',
             position: 'top',
             timeout: 2000,
         });
     }
-    if(is_party_b.value && deal.value?.status === 'matching'){
+    // 乙方同意，甲方未同意
+    if(is_party_a.value && !deal.value?.party_a_accept && deal.value?.party_b_accept){
         $q.notify({
             message: '对方已同意与您合作，请尽快阅读合作协议，补充你的协议内容，双方均同意协议内容后，正式进入执行阶段',
             color: 'primary',
@@ -754,8 +748,32 @@ const matchingNotify = () => {
             timeout: 2000,
         });
     }
+    // 乙方
+    // 甲方同意，乙方未同意
+    if(is_party_b.value && deal.value?.party_a_accept && !deal.value?.party_b_accept){
+        $q.notify({
+            message: '对方已同意与您合作，请尽快阅读合作协议，补充你的协议内容，双方均同意协议内容后，正式进入执行阶段',
+            color: 'primary',
+            icon: 'mdi-check-circle',
+            position: 'top',
+            timeout: 2000,
+        });
+    }
+    // 甲方未同意，乙方同意
+    if(is_party_b.value && !deal.value?.party_a_accept && deal.value?.party_b_accept){
+        $q.notify({
+            message: '您已同意与对方合作，请尽督促对方快阅读合作协议，双方均同意协议内容后，正式进入执行阶段',
+            color: 'primary',
+            icon: 'mdi-check-circle',
+            position: 'top',
+            timeout: 2000,
+        });
+    }
 }
-watchEffect(() => {
-    matchingNotify();
-})
+const isMatching = computed(() => deal.value?.status === 'matching');
+watch(isMatching, () => {
+    if(isMatching.value){
+        matchingNotify();
+    }
+},{immediate: true})
 </script>

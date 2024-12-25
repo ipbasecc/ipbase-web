@@ -20,20 +20,21 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { teamStore, dealStore, uiStore, mm_wsStore } from 'src/hooks/global/useStore'
-import { updateCertificate } from 'src/api/strapi'
+import { updateCertificate, updateDeal } from 'src/api/strapi'
 import { createDirect, getChannelUnreads } from 'src/api/mattermost';
 import FloatChat from 'src/pages/team/chat/FloatChat.vue'
 import localforage from 'localforage'
 import { useRouter } from 'vue-router'
 const router = useRouter()
-const {worker} = defineProps(['worker'])
+const {worker, deal} = defineProps(['worker', 'deal'])
 
-const self_certification_id = computed(() => teamStore.init?.certification?.id)
+const self_certification_id = computed(() => teamStore.init?.certification?.id);
+const is_verified = computed(() => teamStore.init?.by_certification?.verified)
 
 const showFloatChat = ref(false)
 const floatChatChannelId = ref(null)
 const handler = async () => {
-    if(dealStore.verified) {
+    if(is_verified.value) {
         await openFloatChat();
     } else {
         uiStore.app = 'business'
@@ -56,8 +57,15 @@ const createDirectFn = async () => {
     floatChatChannelId.value = data.id;
 }
 const MsgSended = async () => {
-    if(!worker?.talked_users) return
-    if(!dealStore.talkers.includes(worker.id)){
+    const all_talkers = deal.value?.talked_users?.map(item => item.id) || []
+    if(!all_talkers.includes(worker.id)){
+        const add_talked_user_params = {
+            data: {
+                new_talked_user: worker.id,
+            }
+        }
+        await updateDeal(deal.value.id, add_talked_user_params);
+        
         dealStore.talkers.push(worker.id)
         await localforage.setItem('talkers', dealStore.talkers)
         const add_talker_params = {
