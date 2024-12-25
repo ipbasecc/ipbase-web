@@ -90,6 +90,7 @@
   import DialogNotify from 'src/components/VIewComponents/DialogNotify.vue'
   import AgreementCard from '../components/VIewComponents/AgreementCard.vue'
   import { updateUser } from 'src/api/strapi.js'
+  import { clearCache } from 'src/hooks/utilits';
 
   useSocket();
 
@@ -224,12 +225,14 @@
   });
 
   const connect_refused = computed(() => uiStore.serverResfused);
-  const serverRefusedHandler = () => {
+  const serverRefusedHandler = async () => {
     localStorage.clear();
     uiStore.axiosStautsCode = void 0;
+    await clearCache();
     router.push('/login')
   }
-  const pageRefresh = () => {
+  const pageRefresh = async () => {
+    await clearCache();
     window.location.reload();
   };
   const pullDownRefresh = (done) => {

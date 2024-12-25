@@ -116,6 +116,17 @@
                 <q-item-section>{{ $t('user_settings')}}</q-item-section>
               </q-item>
               <q-item
+                clickable
+                v-close-popup
+                class="radius-xs"
+                @click="clearCacheFn"
+              >
+                <q-item-section side>
+                  <q-icon name="mdi-refresh" />
+                </q-item-section>
+                <q-item-section>{{ $t('clear_cache') }}</q-item-section>
+              </q-item>
+              <q-item
                 v-if="!confirmOut"
                 clickable
                 v-close-popup
@@ -254,6 +265,7 @@ import {
 } from "src/hooks/global/useStore.js";
 import {clearLocalDB} from "pages/team/hooks/useUser";
 import { useI18n } from 'vue-i18n'
+import { clearCache } from 'src/hooks/utilits';
 
 const { t } = useI18n()
 
@@ -315,6 +327,9 @@ const getUserStatusFn = async () => {
   }
 };
 getUserStatusFn();
+const clearCacheFn = async () => {
+  await clearCache();
+}
 
 // 注销动作开始
 const confirmOut = ref(false);

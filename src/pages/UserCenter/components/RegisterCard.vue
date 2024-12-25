@@ -54,7 +54,7 @@
   import { ref, computed } from 'vue';
   import PasswordInput from './PasswordInput.vue';
   import { uiStore } from 'src/hooks/global/useStore';
-import AgreementCard from 'src/components/VIewComponents/AgreementCard.vue'
+  import AgreementCard from 'src/components/VIewComponents/AgreementCard.vue'
 
   const props = defineProps({
     loading: {
