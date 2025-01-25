@@ -1,5 +1,5 @@
 <template>
-  <div class="column gap-md">
+  <div class="column no-wrap gap-md">
     <template v-for="mode in preferences.filter(i => i.name !== 'enable_settings')" :key="mode.name">
       <q-list>
         <template v-if="mode.settings?.length > 0">

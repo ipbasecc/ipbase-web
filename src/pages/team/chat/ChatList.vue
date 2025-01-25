@@ -1,6 +1,6 @@
 <template>
   <q-list dense class="full-width q-pa-xs">
-    <q-item v-if="teamMode === 'toMany'"
+    <q-item
       clickable
       v-ripple
       @click="gotoChannel(project_mm_channel)"

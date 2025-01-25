@@ -1,3 +1,4 @@
+<!-- 需要国际化 -->
 <template>
   <q-scroll-area>
     <q-list class="column gap-xs">
@@ -305,7 +306,7 @@
           <q-space />
           <q-btn flat round dense size="sm" icon="close" v-close-popup />
         </q-toolbar>
-        <q-card-section class="q-space q-py-none scroll-y">
+        <q-card-section v-if="buy_project.jsonContent" class="q-space q-py-none scroll-y">
           <TipTap
             :jsonContent="buy_project.jsonContent"
             :editable="false"
@@ -313,6 +314,9 @@
             :square="true"
             styleClass="fit"
           />
+        </q-card-section>
+        <q-card-section v-else class="q-space q-py-none flex flex-center">
+          当前服务没有注明明确的服务内容或条款，购买前请务必确认清楚！
         </q-card-section>
         <q-card-section class="row no-wrap gap-lg">
           <span class="flex flex-center font-large font-bold-600 text-negative">￥：{{ buy_project.price / 100 || $t('price_free') }}</span>

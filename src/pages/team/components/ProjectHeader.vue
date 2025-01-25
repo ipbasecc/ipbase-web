@@ -5,8 +5,8 @@
       :class="$q.dark.mode ? 'bg-dark text-grey-1' : 'bg-grey-1 text-grey-10'"
       style="height: 40px"
     >
-      <q-btn v-if="$q.screen.gt.xs" flat icon="menu" padding="xs" @click="toggleleftDrawer()" />
-      <q-btn v-else flat icon="mdi-chevron-left" padding="xs" @click="backHome()" />
+      <q-btn v-if="$q.screen.gt.xs && teamMode === 'toMany'" flat icon="menu" padding="xs" @click="toggleleftDrawer()" />
+      <q-btn v-if="!$q.screen.gt.xs" flat icon="mdi-chevron-left" padding="xs" @click="backHome()" />
       <template v-if="teamStore.project">
         <q-btn v-if="teamStore.project?.meeting" flat dense round color="red" icon="radio_button_checked" @click="toggleMeet()" />
         <ProjectNavigation />
@@ -58,6 +58,7 @@ import { useRouter } from "vue-router";
 import StartMeet from 'src/components/meet/StartMeet.vue'
 
 const emit = defineEmits(["toggleRightpannel", "toggleleftDrawer"]);
+const teamMode = computed(() => teamStore.team?.config?.mode || 'toMany');
 const toggleleftDrawer = () => {
   uiStore.projectLeftDrawer = !uiStore.projectLeftDrawer
 };
