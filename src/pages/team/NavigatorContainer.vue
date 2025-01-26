@@ -134,7 +134,7 @@
             class="absolute-full flex flex-center"
             :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-3'"
           >
-            <WelcomePage v-if="enable_project" />
+            <WelcomePage v-if="enable_project && uiStore.isStaff" />
             <BgBrand v-else />
           </div>
         </q-page>

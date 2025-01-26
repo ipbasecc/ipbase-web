@@ -16,7 +16,7 @@
                 />
                 <NewsList v-else />
             </q-scroll-area>
-            <q-btn v-if="!teamStore.edit_news" @click="toggleAddnews()"
+            <q-btn v-if="!teamStore.edit_news && uiStore.isStaff" @click="toggleAddnews()"
                 :icon="!createNews ? 'mdi-plus' : 'mdi-close'" flat class="border"
                 :label="!createNews ? $t('add_team_news') : $t('cancel')"
             />

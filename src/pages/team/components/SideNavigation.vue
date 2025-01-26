@@ -5,7 +5,7 @@
       <template v-if="$q.screen.gt.xs">
         <q-list :dense="$q.screen.gt.sm" class="q-px-sm column gap-xs">
           <!-- 讨论主题-->
-          <q-item v-if="enable_threads"
+          <q-item v-if="enable_threads && uiStore.isStaff"
             :class="`${
               teamStore?.mm_channel?.id === 'threads'
                 ? 'border active-listitem'
@@ -27,7 +27,7 @@
             ></div>
           </q-item>
           <!-- 事务沙盘-->
-          <q-item v-if="enable_dashboard"
+          <q-item v-if="enable_dashboard && uiStore.isStaff"
             :class="`${
               teamStore?.mm_channel?.id === 'teams' || route.name === 'teams'
                 ? 'border active-listitem'
@@ -337,7 +337,7 @@
 </template>
 
 <script setup>
-import {computed, ref, watch, watchEffect, nextTick} from 'vue';
+import {computed, ref, watch, watchEffect, nextTick, onMounted} from 'vue';
 import {useRoute, useRouter} from "vue-router";
 import {fetch_userPreferences, getTeamMembers,} from "src/hooks/mattermost/useMattermost.js";
 import {getChannelByID, updateChannel} from 'src/api/strapi/team.js'
@@ -606,6 +606,11 @@ const enterSubApp = (val) => {
     emptyProject();
   }
 };
+onMounted(() => {
+  if(!uiStore.isStaff){
+    enterSubApp('news')
+  }
+})
 const openCreateProject = ref(false);
 const createProject = () => {
   openCreateProject.value = true;

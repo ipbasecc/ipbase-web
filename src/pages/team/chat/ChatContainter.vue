@@ -69,14 +69,13 @@
                                  :disable="!hasMore"
                                  :offset="700"
                                  class="column no-wrap justify-end article messages_list"
-                                 :style="scrollContainer ? `min-height: ${scrollContainer.height}px` : ''"
+                                 :class="uiStore.isStaff ? '' : 'q-pb-lg'"
               >
                 <template v-slot:loading>
                   <div class="row justify-center q-my-md">
                     <q-spinner color="primary" name="dots" size="40px" />
                   </div>
                 </template>
-                <ChannelHeader :class="hasMore ? 'op-0' : 'op-none'" />
                 <template v-for="(i, index) in messages" :key="i.id">
                   <KeepAlive>
                     <MessageItem
@@ -99,7 +98,7 @@
           <div v-if="teamStore.mm_channel?.wasblocked || teamStore.mm_channel?.isblocked" class="full-width q-pa-xl border flex flex-center">
             {{ `${teamStore.mm_channel?.wasblocked ? '您已被对方屏蔽' : '您已屏蔽对方'}，不能发送消息` }}
           </div>
-          <SendmsgBox v-else :channel_id="mm_channel_id" />
+          <SendmsgBox v-else-if="uiStore.isStaff" :channel_id="mm_channel_id" />
         </div>
       </template>
       <template v-if="uiStore.chat_pannel" v-slot:separator>
@@ -205,7 +204,7 @@
           <div v-if="teamStore.mm_channel?.wasblocked || teamStore.mm_channel?.isblocked" class="full-width q-pa-xl border flex flex-center">
             {{ `${teamStore.mm_channel?.wasblocked ? '您已被对方屏蔽' : '您已屏蔽对方'}，不能发送消息` }}
           </div>
-          <SendmsgBox v-else :channel_id="mm_channel_id" />
+          <SendmsgBox v-else-if="uiStore.isStaff" :channel_id="mm_channel_id" />
         </template>
       </div>
     </template>
@@ -215,7 +214,7 @@
 import {computed, nextTick, onBeforeMount, onMounted, onUnmounted, ref, useTemplateRef, watch} from "vue";
 import {getChannelByID as getMmChannelByID, getPostsOfChannel} from "src/api/mattermost.js";
 import {generateUrlParams} from 'src/hooks/utilits.js'
-import MessageItem from "pages/team/chat/MessageItem.vue";
+import MessageItem from "pages/team/chat/InfoItem.vue";
 import {mm_wsStore, mmUser, teamStore, uiStore, chatStore} from "src/hooks/global/useStore";
 import SendmsgBox from "./SendmsgBox.vue";
 // import {getChannelByID} from "src/api/strapi/team";
