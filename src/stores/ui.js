@@ -85,7 +85,7 @@ export default defineStore("ui", {
       "warning",
       "clear",
     ],
-    app: void 0,
+    app: 'teams',
     axiosStauts: void 0,
     axiosStautsCode: void 0,
     axiosError: void 0,

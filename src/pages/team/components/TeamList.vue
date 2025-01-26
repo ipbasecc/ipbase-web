@@ -1,52 +1,34 @@
 <template>
-  <ServerList v-if="uiStore.setServer" :bordered="bordered" @setCompleted="setCompleted" />
-  <q-card
-    v-else
-    :bordered="bordered"
-    v-bind="$attrs"
-    flat
-    class="column no-wrap scroll-y q-pa-xs radius-sm"
-    :class="`${assignStyle ? assignStyle : $q.dark.mode ? '' : 'bg-white text-grey-10'} ${
-      spaced ? 'fit' : ''
-    }`"
-    style="min-width: 12rem; max-height: 26rem"
-  >
-    <q-list
-      dense
-      class="q-space column no-wrap scroll-y radius-sm"
-      :class="teams?.length > 0 ? 'q-pa-xs' : ''"
-    >
-      <template v-if="teams?.length === 0">
-        <div class="q-space q-pa-sm">
+    <template v-if="teams?.length === 0">
+      <div class="q-space q-pa-sm">
+        <q-btn
+          color="primary"
+          icon="add"
+          :label="$t('create_team')"
+          class="full-width"
+          @click="createTeam()"
+        />
+      </div>
+    </template>
+    <template v-else>
+      <q-responsive
+        v-for="(i, index) in teams"
+        :key="i.id"
+        v-bind="$attrs"
+        :ratio="1"
+        class="full-width"
+      >
+        <div class="fit radius-sm q-pa-sm" :class="teamStore.team?.id === i.id ? 'border-primary border-solid' : ''">
           <q-btn
-            color="primary"
-            icon="add"
-            :label="$t('create_team')"
-            class="full-width"
-            @click="createTeam()"
-          />
-        </div>
-      </template>
-      <template v-else>
-        <q-item
-          v-for="(i, index) in teams"
-          :key="i.id"
-          clickable
-          v-ripple
-          v-close-popup="!i.status"
-          class="radius-xs q-mb-xs"
-          :class="`${
-            teamStore.team?.id === i.id ? 'bg-primary text-white' : ''
-          } ${disabled(i) ? 'op-5' : ''}`"
-          @click="toggleTeamFn(i)"
-          @mouseenter="getTeam(i)"
-        >
-          <q-item-section side>
+            class="fit"
+            :class="`${disabled(i) ? 'op-5' : ''}`"
+            padding="none" flat
+            @click="toggleTeamFn(i)"
+          >
             <q-avatar
               v-if="i.team_logo?.url"
               square
-              class="radius-xs"
-              size="sm"
+              class="radius-xs fit"
             >
               <q-img
                 :src="$resize(i.team_logo?.url, [64, 64])"
@@ -58,29 +40,16 @@
             <q-avatar
               v-else
               square
-              class="radius-xs"
+              class="radius-xs fit"
               size="sm"
               text-color="white"
               :style="`background-color: ${colorByAt(index * i.id, true)};`"
               >{{ i.display_name.charAt(0) }}</q-avatar
             >
-          </q-item-section>
-          <q-item-section>
-            <span class="text-limit">{{ i.display_name }}</span>
-            <q-tooltip>
-              {{ i.display_name }}
-            </q-tooltip>
-          </q-item-section>
-        </q-item>
-      </template>
-    </q-list>
-    <q-space v-if="spaced" />
-    <q-separator v-if="separator && teams?.length > 0" spaced class="op-3" />
-    <div class="row no-wrap gap-xs items-center">
-      <q-btn dense flat icon="group_add" :label="$t('create_team')" class="q-space" @click="createTeam()" />
-      <q-btn dense flat icon="mdi-server-network" @click="setServer()" />
-    </div>
-  </q-card>
+          </q-btn>
+        </div>
+      </q-responsive>
+    </template>
 </template>
 
 <script setup>
@@ -136,6 +105,7 @@ const disabled = (team) => {
   return isDisabled.includes(team.status);
 };
 const toggleTeamFn = async (team) => {
+  uiStore.app = 'teams'
   if (team.status === "unconfirmed") {
     $q.notify($t('no_verifild_cant_access'));
   } else if (team.status === "blocked") {
@@ -148,12 +118,6 @@ const toggleTeamFn = async (team) => {
     }
   }
 };
-const setServer = () => {
-  uiStore.setServer = true
-}
-const setCompleted = () => {
-  uiStore.setServer = false
-}
 const getTeam = async (team) => {
   const status_needFetch = ["unconfirmed", "blocked"];
   if (!status_needFetch.includes(team?.status)) return;

@@ -1,124 +1,13 @@
 <template>
     <q-header class="z-max">
       <q-bar
-        class="border-bottom"
+        class="border-bottom unselected"
         :class="`${
           $q.dark.mode ? 'bg-darker text-white' : 'bg-primary-dark text-grey-1'
         } ${$q.platform.is.electron ? 'q-electron-drag q-pr-none' : ''}`"
         style="height: 2.5rem"
       >
-        <div v-if="uiStore.app === 'deliver'"
-          class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
-        >
-          <CreateDealbtn />
-        </div>
-        <div v-if="uiStore.app === 'teams'"
-          class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
-        >
-          <q-icon :name="teamStore?.project ? 'developer_board' : 'forum'" />
-          <span class="font-small unselected">{{
-            teamStore?.project ? "Projects" : "Channels"
-          }}</span>
-          <q-menu v-model="uiStore.showToggleTeam" class="radius-sm">
-            <TeamList
-              :bordered="true"
-              :separator="true"
-              :spaced="true"
-              @createTeam="createTeam"
-            />
-          </q-menu>
-        </div>
-
-        <div v-if="uiStore.app === 'affairs'"
-             class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
-             @click="$router.push('/affairs')"
-        >
-          <q-icon name="mdi-check-all" />
-          <span class="font-small unselected">事务</span>
-        </div>
-        <div v-if="uiStore.app === 'chats'"
-             class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
-             @click="$router.push('/chats')"
-        >
-          <q-icon name="mark_chat_read" />
-          <span class="font-small unselected">沟通</span>
-        </div>
-        <div v-if="uiStore.app === 'brand'"
-             class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
-             @click="$router.push('/brand')"
-        >
-          <q-icon name="mdi-creation" />
-          <span class="font-small unselected">圈子</span>
-        </div>
-        <div v-if="uiStore.app === 'discover'"
-             class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
-             @click="goDiscover()"
-        >
-          <q-icon name="mdi-check-all" />
-          <span class="font-small unselected">{{ $t('discover') }}</span>
-        </div>
-        <q-space />
-        <template v-if="$q.screen.gt.xs">
-          <q-btn
-            v-if="
-              teamStore.project &&
-              isExternal &&
-              uiStore.app === 'teams'
-            "
-            :flat="!uiStore.isFocusMode"
-            :color="uiStore.isFocusMode ? 'primary' : ''"
-            dense
-            icon="mdi-target"
-            @click="toggleFocusMode()"
-          >
-            <q-tooltip
-              :class="
-                $q.dark.mode
-                  ? 'bg-black text-white border'
-                  : 'bg-grey-1 text-grey-10 border'
-              "
-            >
-              {{ $t('focus_model') }}
-            </q-tooltip>
-          </q-btn>
-          <q-btn
-            v-if="uiStore.app !== 'affairs'"
-            flat
-            dense
-            :color="
-              uiStore.projectRightDrawer &&
-              uiStore.projectRightDrawerContent === 'person_todos'
-                ? 'green'
-                : ''
-            "
-            icon="mdi-checkbox-marked-circle-outline"
-            @click="toggleRightDrawer('person_todos')"
-          />
-          <q-btn @click="toggleRightDrawer('flaggeds')"
-            icon="bookmarks" flat dense
-            :color="uiStore.projectRightDrawer &&
-              uiStore.projectRightDrawerContent === 'flaggeds'
-                ? 'green': ''
-            "
-          />
-          <q-btn @click="toggleTransfer()"
-            flat dense :class="ossStore.showList ? 'toggle-active' : ''"
-          >
-            <FileTransfer :color="ossStore.showList ? '#21BA45' : '#fff'" />
-          </q-btn>
-          <q-btn @click="toggleRightDrawer('talkers')"
-            icon="mdi-forum" flat dense
-            :color="uiStore.projectRightDrawer &&
-              uiStore.projectRightDrawerContent === 'talkers'
-                ? 'green': ''
-            "
-          >
-            <q-tooltip>
-              <span class="text-no-wrap">{{ $t('deliver_talkers_panel') }}</span>
-            </q-tooltip>
-          </q-btn>
-        </template>
-        <AccountMenu v-else />
+        <span class="font-small font-bold-600">Bamboo!</span>
         <!-- <q-btn icon="check" dense @click="$q.dark.toggle()" /> -->
         <template  v-if="isElectron">
           <q-separator spaced inset vertical />
@@ -140,6 +29,10 @@
             />
           </section>
         </template>
+        <q-space />
+        <AccountMenu
+          :avatarSize="28" show="slide-down" hide="slide-up"
+        />
       </q-bar>
       <TeamNotification v-if="uiStore.showTeamNotification && teamStore.team?.notification" />
     </q-header>

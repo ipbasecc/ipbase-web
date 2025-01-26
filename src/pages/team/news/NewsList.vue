@@ -84,7 +84,7 @@ const hasMore = ref(true);
 const loading = ref(false);
 const news_id = computed(() => route.params.news_id);
 const fetchNews = async () => {
-  if(loading.value) return;
+  if(loading.value || !team_id.value) return;
     loading.value = true;
     const {data} = await getTeamDocuments(team_id.value, page.value, PER_PAGE)
     if(data){

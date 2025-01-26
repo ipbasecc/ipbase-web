@@ -1,48 +1,34 @@
 <template>
-  <template v-if="teamStore.init">
-    <div v-if="!teamStore.init.initialization" class="absolute-full radius-xs overflow-hidden"
-      :style="$q.screen.gt.md ? 'padding: 10vh 10vw' : 'padding: 0'">
-      <InitializationUser class="fit" @Initialized="Initialized" />
-    </div>
-    <template v-else>
-      <q-layout v-if="!needLogin" view="hHh LpR lFr" class="absolute-full border-negative radius-xs overflow-hidden">
-        <q-header v-if="uiStore.showAppNotification" class="transparent">
-          <AppNotification />
-        </q-header>
-        <q-drawer v-if="$q.screen.gt.xs" side="left" v-model="uiStore.appDrawer" :breakpoint="640" :width="appListWidth"
-          :class="`${$q.dark.mode ? 'bg-darker' : 'bg-primary-darker text-grey-1'
-            } ${$q.screen.gt.md ? 'q-pa-sm' : 'q-pa-xs'}`" class="border-right">
-          <div class="fit column no-wrap gap-md items-center q-py-md">
-            <AppList />
-            <q-space class="full-width" :class="$q.platform.is.electron ? 'q-electron-drag' : ''" />
-            <AppUtils />
-            <AccountMenu menu_anchor="bottom end" menu_self="bottom left" :menu_offset="[10, 0]"
-              :avatarSize="$q.screen.gt.md ? 36 : 28" show="slide-up" hide="slide-down" :vertical="true"
-              :revers="true" />
-          </div>
-        </q-drawer>
-        <q-page-container>
-          <q-page :class="$q.screen.gt.sm ? '' : 'font-large'">
-            <RouterView />
-          </q-page>
-        </q-page-container>
-        <q-footer v-if="!$q.screen.gt.xs && !uiStore.hide_footer" class="transparent border-top q-pb-lg">
-          <AppList />
-        </q-footer>
-      </q-layout>
-      <div v-else class="absolute-full column flex-center">
-        <q-card bordered class="focus-form" style="min-width: 16rem">
-          <q-card-section class="font-xx-large font-bold-600 flex flex-center q-py-mg">
-            {{ $t('please_login') }}
-          </q-card-section>
-          <q-card-section class="q-pa-sm border-top">
-            <q-btn color="primary" icon="login" :label="$t('login_now')" class="full-width" @click="toLogin()" />
-          </q-card-section>
-        </q-card>
+  <q-layout v-if="!needLogin" v-bind="$attrs" view="hHh LpR lFr" class="absolute-full border-negative radius-xs overflow-hidden">
+    <q-header v-if="uiStore.showAppNotification" class="transparent">
+      <AppNotification />
+    </q-header>
+    <NavigatorHeader v-else-if="$q.screen.gt.xs || !uiStore.hide_top" />
+    <q-drawer v-if="$q.screen.gt.xs" side="left" v-model="uiStore.appDrawer" :breakpoint="640" :width="appListWidth"
+      :class="`${$q.dark.mode ? 'bg-darker' : 'bg-primary-darker text-grey-1'
+        } ${$q.screen.gt.md ? 'q-pa-sm' : 'q-pa-xs'}`" class="border-right">
+      <div class="fit column no-wrap gap-md items-center q-py-md">
+        <TeamList />
+        <q-space class="full-width" :class="$q.platform.is.electron ? 'q-electron-drag' : ''" />
+        <AppUtils />
       </div>
-      <MeetPage v-if="uiStore.init_meet" v-show="uiStore.show_meet" />
-    </template>
-  </template>
+    </q-drawer>
+    <q-page-container>
+      <q-page v-if="teamStore.team" :class="$q.screen.gt.sm ? '' : 'font-large'">
+        <RouterView />
+      </q-page>
+    </q-page-container>
+  </q-layout>
+  <div v-else class="absolute-full column flex-center">
+    <q-card bordered class="focus-form" style="min-width: 16rem">
+      <q-card-section class="font-xx-large font-bold-600 flex flex-center q-py-mg">
+        {{ $t('please_login') }}
+      </q-card-section>
+      <q-card-section class="q-pa-sm border-top">
+        <q-btn color="primary" icon="login" :label="$t('login_now')" class="full-width" @click="toLogin()" />
+      </q-card-section>
+    </q-card>
+  </div>
   <q-dialog v-model="connect_refused" persistent v-bind="$attrs">
     <q-card bordered>
       <q-card-section class="row items-center border-bottom">
@@ -69,15 +55,12 @@
   import { watch, computed, onMounted, onUnmounted, ref, watchEffect } from "vue";
   import { loginAndInit } from 'src/hooks/init.js'
   import { useRoute, useRouter } from "vue-router";
-  import AccountMenu from "../pages/team/components/AccountMenu.vue";
-  import AppList from "components/VIewComponents/AppList.vue";
   import shortcut from "src/pages/team/hooks/useShortcut.js";
   import { useQuasar } from "quasar";
   import useWatcher from "src/pages/team/wsWatcher.js";
   import { _ws, closeWs } from "src/pages/team/ws.js";
   import AppUtils from "src/components/VIewComponents/AppUtils.vue";
   import { clearLocalDB } from "pages/team/hooks/useUser";
-  import InitializationUser from 'src/pages/team/settings/initialization/InitializationUser.vue'
   import { teamStore, uiStore, dealStore, mm_wsStore, chatStore } from "src/hooks/global/useStore";
   import { serverInfo } from 'src/boot/server.js'
   import localforage from "localforage";
@@ -91,6 +74,8 @@
   import AgreementCard from '../components/VIewComponents/AgreementCard.vue'
   import { updateUser } from 'src/api/strapi.js'
   import { clearCache } from 'src/hooks/utilits';
+  import TeamList from 'src/pages/team/components/TeamList.vue'
+import NavigatorHeader from 'src/pages/team/components/NavigatorHeader.vue'
 
   useSocket();
 
@@ -235,16 +220,14 @@
     await clearCache();
     window.location.reload();
   };
-  const pullDownRefresh = (done) => {
-    done();
-    pageRefresh();
-  }
 
   const restoreDefaultTeam = async () => {
     try {
-      const lastTeamId = localStorage.getItem('lastTeamId');
-      if (lastTeamId) {
-        await toggleTeam(lastTeamId);
+      const defaultTeam = await localforage.getItem('default_team')
+      
+      if (defaultTeam) {
+        console.log('defaultTeam', defaultTeam.id);
+        await toggleTeam(defaultTeam);
       } else if (teamStore.teams?.length > 0) {
         // 如果没有上次的团队记录，使用第一个可用的团队
         await toggleTeam(teamStore.teams[0].id);

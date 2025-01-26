@@ -5,7 +5,7 @@
       $route.name !== 'register' &&
       teamStore.init
     "
-    class="cursor-pointer q-pa-sm"
+    class="cursor-pointer"
   >
     <UserAvatar
       v-if="mmUser.user?.id"
@@ -35,145 +35,81 @@
       @hide="confirmOut = false"
       class="z-max"
     >
-      <q-card bordered class="radius-sm">
-        <q-card-section horizontal class="no-padding" :class="revers ? 'reverse' : ''">
-          <q-card-section style="flex: 1 1 auto">
-            <q-list
-              dense
-              style="min-width: 14rem"
-              class="q-pa-xs radius-sm"
-              :class="$q.dark.mode ? 'text-grey-1' : 'bg-white text-grey-10'"
-            >
-              <q-item clickable class="radius-xs q-pa-lg" @click="toStudioHome()">
-                <q-item-section avatar class="q-pa-xs">
-                  <UserAvatar
-                    :user_id="mm_user.id"
-                    :size="48"
-                    :status="mmUser.status"
-                    :image="teamStore.init?.wechat_profile?.avatar || teamStore.init?.profile?.avatar?.url || null"
-                  />
-                </q-item-section>
-                <q-item-section class="font-bold-600 font-medium q-pl-sm"
-                  >@ {{ teamStore.init?.username }}</q-item-section
-                >
-                <q-tooltip
-                  class="z-max"
-                  :class="$q.dark.mode ? 'bg-black' : 'bg-white'"
-                  >{{ $t('user_center') }}</q-tooltip
-                >
-              </q-item>
-              <q-separator spaced class="op-3" />
-
-              <template v-if="mmUser.user?.id">
-                <q-item
-                  v-for="i in statuses"
-                  :key="i.status"
-                  clickable
-                  v-close-popup
-                  class="radius-xs"
-                  @click="setStatus(i.status)"
-                >
-                  <q-item-section side>
-                    <q-icon :name="i.icon" size="24" :color="i.color" />
-                  </q-item-section>
-                  <q-item-section>{{ $t(i.name) }}</q-item-section>
-                </q-item>
-              </template>
-              <q-separator spaced class="op-3" />
-              <q-item
-                v-if="false"
-                clickable
-                v-close-popup
-                class="radius-xs"
-                @click="$router.push(ipbase_uri)"
-              >
-                <q-item-section side>
-                  <q-icon name="contacts" />
-                </q-item-section>
-                <q-item-section>{{ $t('my_channel')}}</q-item-section>
-              </q-item>
-              <q-item
-                clickable
-                v-close-popup
-                class="radius-xs"
-                @click="toBusinessPage()"
-              >
-                <q-item-section side>
-                  <q-icon name="mdi-sale" />
-                </q-item-section>
-                <q-item-section>{{ $t('my_business')}}</q-item-section>
-              </q-item>
-              <q-separator spaced class="op-3" />
-              <q-item
-                clickable
-                v-close-popup
-                class="radius-xs"
-                @click="show_settings = true"
-              >
-                <q-item-section side>
-                  <q-icon name="toggle_on" />
-                </q-item-section>
-                <q-item-section>{{ $t('user_settings')}}</q-item-section>
-              </q-item>
-              <q-item
-                v-if="!$q.platform.is.electron"
-                clickable
-                v-close-popup
-                class="radius-xs"
-                @click="clearCacheFn"
-              >
-                <q-item-section side>
-                  <q-icon name="mdi-refresh" />
-                </q-item-section>
-                <q-item-section>{{ $t('clear_cache') }}</q-item-section>
-              </q-item>
-              <q-item
-                v-if="!confirmOut"
-                clickable
-                v-close-popup
-                @click="confirmOut = true"
-                class="radius-xs"
-              >
-                <q-item-section side>
-                  <q-icon
-                    name="mdi-exit-to-app"
-                    :color="confirmOut ? 'white' : ''"
-                  />
-                </q-item-section>
-                <q-item-section>{{ $t('logout')}}</q-item-section>
-              </q-item>
-              <q-item
-                v-else
-                clickable
-                v-close-popup
-                @click="logout"
-                class="radius-xs bg-negative text-white"
-              >
-                <q-item-section side>
-                  <q-icon
-                    name="mdi-exit-to-app"
-                    :color="confirmOut ? 'white' : ''"
-                  />
-                </q-item-section>
-                <q-item-section>{{ $t('logout_confirm')}}</q-item-section>
-              </q-item>
-            </q-list>
-          </q-card-section>
-          <q-card-section
-            v-if="$q.screen.gt.xs"
-            class="q-pa-xs radius-none"
-            :class="revers ? 'border-right' : 'border-left'"
-            style="min-width: 16rem; flex: 0 0 auto"
-          >
-            <TeamList
-              :bordered="false"
-              :spaced="true"
-              :separator="true"
-              @createTeam="createTeam()"
+      <q-list
+        bordered
+        dense
+        style="min-width: 14rem"
+        class="q-pa-xs radius-sm"
+        :class="$q.dark.mode ? 'text-grey-1' : 'bg-white text-grey-10'"
+      >
+        <q-item clickable class="radius-xs q-pa-lg">
+          <q-item-section avatar class="q-pa-xs">
+            <UserAvatar
+              :user_id="mm_user.id"
+              :size="48"
+              :status="mmUser.status"
+              :image="teamStore.init?.wechat_profile?.avatar || teamStore.init?.profile?.avatar?.url || null"
             />
-          </q-card-section>
-        </q-card-section>
-      </q-card>
+          </q-item-section>
+          <q-item-section class="font-bold-600 font-medium q-pl-sm"
+            >@ {{ teamStore.init?.username }}</q-item-section
+          >
+        </q-item>
+        <q-separator spaced class="op-3" />
+        <q-item
+          clickable
+          v-close-popup
+          class="radius-xs"
+          @click="show_settings = true"
+        >
+          <q-item-section side>
+            <q-icon name="toggle_on" />
+          </q-item-section>
+          <q-item-section>{{ $t('user_settings')}}</q-item-section>
+        </q-item>
+        <q-item
+          v-if="!$q.platform.is.electron"
+          clickable
+          v-close-popup
+          class="radius-xs"
+          @click="clearCacheFn"
+        >
+          <q-item-section side>
+            <q-icon name="mdi-refresh" />
+          </q-item-section>
+          <q-item-section>{{ $t('clear_cache') }}</q-item-section>
+        </q-item>
+        <q-item
+          v-if="!confirmOut"
+          clickable
+          v-close-popup
+          @click="confirmOut = true"
+          class="radius-xs"
+        >
+          <q-item-section side>
+            <q-icon
+              name="mdi-exit-to-app"
+              :color="confirmOut ? 'white' : ''"
+            />
+          </q-item-section>
+          <q-item-section>{{ $t('logout')}}</q-item-section>
+        </q-item>
+        <q-item
+          v-else
+          clickable
+          v-close-popup
+          @click="logout"
+          class="radius-xs bg-negative text-white"
+        >
+          <q-item-section side>
+            <q-icon
+              name="mdi-exit-to-app"
+              :color="confirmOut ? 'white' : ''"
+            />
+          </q-item-section>
+          <q-item-section>{{ $t('logout_confirm')}}</q-item-section>
+        </q-item>
+      </q-list>
     </q-menu>
   </div>
   <template

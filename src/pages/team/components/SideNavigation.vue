@@ -223,7 +223,7 @@
       <template v-if="enable_project">
         <q-item-label header class="q-pa-sm non-selectable op-6 q-mt-md"
           :class="$q.screen.gt.xs ? 'text-grey-1' : `text-grey-1${$q.dark.mode ? '' : '0'}`"
-        >{{ $t('collaboration_project') }}</q-item-label>
+        >我的订阅</q-item-label>
         <q-list :dense="$q.screen.gt.sm" class="q-px-sm column gap-xs">
           <template v-if="team.projects?.length > 0">
             <template v-for="project in team.projects" :key="project.id">
