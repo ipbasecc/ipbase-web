@@ -7,7 +7,7 @@
         } ${$q.platform.is.electron ? 'q-electron-drag q-pr-none' : ''}`"
         style="height: 2.5rem"
       >
-        <span class="font-small font-bold-600">Bamboo!</span>
+        <span class="font-small font-bold-600 cursor-pointer" @click="goHome()">Bamboo!</span>
         <!-- <q-btn icon="check" dense @click="$q.dark.toggle()" /> -->
         <template  v-if="isElectron">
           <q-separator spaced inset vertical />
@@ -48,50 +48,15 @@ import {useRouter} from "vue-router";
 
 import AccountMenu from "src/pages/team/components/AccountMenu.vue";
 import WindowToggle from "src/pages/team/components/widgets/icons/WindowToggle.vue";
-import FileTransfer from "pages/team/components/widgets/icons/FileTransfer.vue";
-import TeamList from "src/pages/team/components/TeamList.vue";
 import TeamNotification from './TeamNotification.vue'
-import CreateDealbtn from 'src/pages/deliver/components/CreateDealbtn.vue'
 
 const $q = useQuasar();
 const router = useRouter();
 const emit = defineEmits(['createTeam']);
-const createTeam = () => {
-  emit('createTeam');
+const goHome = () => {
+  uiStore.app = 'teams'
+  router.push('/teams')
 }
-
-const toggleFocusMode = async () => {
-  uiStore.isFocusMode = !uiStore.isFocusMode;
-  await localforage.setItem("isFocusMode", uiStore.isFocusMode);
-  teamStore.project.isExternal = uiStore.isFocusMode;
-  teamStore.isFocusMode = uiStore.isFocusMode;
-
-  if (uiStore.isFocusMode) {
-    uiStore.showMainContentList = false;
-    const _team_id = teamStore.team?.id;
-    console.log("router isFocusMode");
-    await router.push(`/teams/${_team_id}/focus/${teamStore.project?.id}`);
-  } else {
-    if (teamStore.card) {
-      teamStore.card = void 0;
-    }
-    await router.push(`/teams/projects/${teamStore.project?.id}`);
-  }
-};
-
-const toggleRightDrawer = (val) => {
-  if (uiStore.projectRightDrawerContent === void 0) {
-    uiStore.projectRightDrawer = true;
-    uiStore.projectRightDrawerContent = val;
-  } else if (uiStore.projectRightDrawerContent === val) {
-    uiStore.projectRightDrawer = !uiStore.projectRightDrawer;
-    if (!uiStore.projectRightDrawer) {
-      uiStore.projectRightDrawerContent = void 0;
-    }
-  } else {
-    uiStore.projectRightDrawerContent = val;
-  }
-};
 
 const checkNotification = async () => {
   if (!teamStore.team?.notification || teamStore.team?.notification === '') {

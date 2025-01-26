@@ -1,9 +1,6 @@
-import { teamStore } from "src/hooks/global/useStore.js";
-export function findRoles(members, member_roles) {
-    if(!members || !member_roles || teamStore?.init) return [];
-    const user_id = teamStore?.init?.id;
-    // console.log('members',members, 'user_id', user_id);
-    const _members = members.filter(member => member.by_user?.id === Number(user_id));
+export function findRoles(members, member_roles, userId) {
+    if(!members || !member_roles || !userId) return [];
+    const _members = members.filter(member => member.by_user?.id === Number(userId));
     // console.log('_members',_members);
     const _member_roles = _members.map(i => i.member_roles.map(j => j.id))?.flat(3);
     // console.log('_member_roles',_member_roles);

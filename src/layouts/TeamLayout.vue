@@ -14,7 +14,7 @@
       </div>
     </q-drawer>
     <q-page-container>
-      <q-page v-if="teamStore.team" :class="$q.screen.gt.sm ? '' : 'font-large'">
+      <q-page :class="$q.screen.gt.sm ? '' : 'font-large'">
         <RouterView />
       </q-page>
     </q-page-container>
@@ -47,6 +47,9 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
+  <q-dialog v-model="uiStore.createTeam" persistent>
+    <CreateTeam @cannelCreate="uiStore.createTeam = false" />
+  </q-dialog>
   <DialogNotify />
   <AgreementCard v-model="showAgreement" @agreeAgreement="agreeAgreement" :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-1'" />
 </template>
@@ -76,6 +79,7 @@
   import { clearCache } from 'src/hooks/utilits';
   import TeamList from 'src/pages/team/components/TeamList.vue'
 import NavigatorHeader from 'src/pages/team/components/NavigatorHeader.vue'
+import CreateTeam from "src/pages/team/components/CreateTeam.vue";
 
   useSocket();
 
@@ -226,12 +230,13 @@ import NavigatorHeader from 'src/pages/team/components/NavigatorHeader.vue'
       const defaultTeam = await localforage.getItem('default_team')
       
       if (defaultTeam) {
-        console.log('defaultTeam', defaultTeam.id);
         await toggleTeam(defaultTeam);
       } else if (teamStore.teams?.length > 0) {
         // 如果没有上次的团队记录，使用第一个可用的团队
         await toggleTeam(teamStore.teams[0].id);
       }
+      console.log('teamStore.team', teamStore.team);
+      
     } catch (error) {
       console.error('Failed to restore default team:', error);
       // 可以在这里添加错误处理逻辑

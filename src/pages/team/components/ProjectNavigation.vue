@@ -108,6 +108,7 @@ watchEffect(() => {
   );
 
   tabs.value = enabled.value.map((i) => tabs.value.find((j) => j.name === i));
+  tabs.value = uiStore.isStaff ? tabs.value : tabs.value.filter((i) => ['chat', 'classroom'].includes(i.name));
   const unIncludes = tabs.value.filter((i) => !inSettings?.includes(i.name));
   if (unIncludes?.length > 0) {
     tabs.value = [...tabs.value, ...unIncludes];

@@ -199,6 +199,9 @@ export default defineStore("ui", {
     logging: false,
     deal_active_item: 'homepage',
     talker: null,
+    isTeamStaff: false,
+    isStaff: false,
+    isTeamAdmin: false,
   }),
   actions: {
     $syncMmUnreads() {

@@ -222,6 +222,9 @@ const routes = [
         component: () => import("pages/business/BusinessIndex.vue"),
         name: "BusinessIndex",
         redirect: "/business/main",
+        beforeEnter: async (to, from, next) => {
+          next();
+        },
         children: [
           {
             path: "/business/main",

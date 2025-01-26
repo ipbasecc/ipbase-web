@@ -29,15 +29,15 @@ const menu = [
             router.push(i.route)
         }
     },
-    {
-        name: 'deal_page',
-        icon: 'handshake',
-        route: '/business/deal',
-        handler: (i) => {
-            actived_item_name.value = i.name
-            router.push(i.route)
-        }
-    },
+    // {
+    //     name: 'deal_page',
+    //     icon: 'handshake',
+    //     route: '/business/deal',
+    //     handler: (i) => {
+    //         actived_item_name.value = i.name
+    //         router.push(i.route)
+    //     }
+    // },
     {
         name: 'business_account_info',
         icon: 'mdi-account-card-details',

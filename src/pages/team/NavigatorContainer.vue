@@ -77,9 +77,6 @@
                         {{ $t("userStatus_byTeam_unconfirmed") }}
                       </template>
                     </div>
-                    <div class="q-mt-sm">
-                      {{ $t("userStatus_byTeam_tip") }}
-                    </div>
                   </q-card-section>
                 </q-card>
               </div>
@@ -141,9 +138,6 @@
             <BgBrand v-else />
           </div>
         </q-page>
-        <q-dialog v-model="uiStore.createTeam" persistent>
-          <CreateTeam @cannelCreate="uiStore.createTeam = false" />
-        </q-dialog>
       </q-page-container>
     </template>
   </q-layout>
@@ -152,9 +146,6 @@
 <script setup>
 import {computed, reactive, ref, watch} from "vue";
 import {useRoute} from "vue-router";
-
-import CreateTeam from "src/pages/team/components/CreateTeam.vue";
-
 import TeamMenu from "src/pages/team/components/TeamMenu.vue";
 import SideNavigation from "src/pages/team/components/SideNavigation.vue";
 import TeamAddmenu from "src/pages/team/components/TeamAddmenu.vue";
@@ -244,7 +235,17 @@ const handleMouseMove = () => {
     uiStore.navigatorDrawer = false;
   }
 };
-const show_list = computed(() => (uiStore.app === 'affairs' && teamStore.init?.todogroups?.length > 0) || uiStore.app !== 'affairs')
+const show_list = computed(() => {
+  if(uiStore.app === 'affairs' && teamStore.init?.todogroups?.length > 0){
+    return true
+  } else if(uiStore.app === 'teams' && teamStore.team){
+    return true
+  } else if(uiStore.app !== 'affairs' && uiStore.app !== 'teams') {
+    return true
+  } else {
+    return false
+  }
+})
 </script>
 
 <style scoped>

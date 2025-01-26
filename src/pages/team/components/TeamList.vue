@@ -2,9 +2,9 @@
     <template v-if="teams?.length === 0">
       <div class="q-space q-pa-sm">
         <q-btn
-          color="primary"
+          round
+          flat
           icon="add"
-          :label="$t('create_team')"
           class="full-width"
           @click="createTeam()"
         />
@@ -17,6 +17,7 @@
         v-bind="$attrs"
         :ratio="1"
         class="full-width"
+        @mouseenter="getTeam(i)"
       >
         <div class="fit radius-sm q-pa-sm" :class="teamStore.team?.id === i.id ? 'border-primary border-solid' : ''">
           <q-btn

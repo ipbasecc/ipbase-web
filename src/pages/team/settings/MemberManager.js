@@ -3,6 +3,7 @@ import {
   removeUser as removeProjectUser,
   setRole,
   updateCardRole,
+  addUser
 } from "src/api/strapi/project.js";
 
 import {
@@ -12,6 +13,18 @@ import {
   removeChannelUser,
 } from "src/api/strapi/team.js";
 import { updateCard } from "src/api/strapi/project.js";
+
+export const addUserToProject = async (user_id, project_id) => {
+  const params = {
+    data: {
+      newUser_id: user_id
+    }
+  }
+  const {data} = await addUser(project_id, params)
+  if(data){
+    return data
+  }
+}
 
 export async function setTeamRoleFn(team_id, member_id, new_roles_IDs) {
   let params = {

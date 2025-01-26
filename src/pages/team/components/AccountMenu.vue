@@ -60,6 +60,18 @@
           clickable
           v-close-popup
           class="radius-xs"
+          @click="toBusinessPage()"
+        >
+          <q-item-section side>
+            <q-icon name="mdi-sale" />
+          </q-item-section>
+          <q-item-section>{{ $t('my_business')}}</q-item-section>
+        </q-item>
+        <q-separator spaced class="op-3" />
+        <q-item
+          clickable
+          v-close-popup
+          class="radius-xs"
           @click="show_settings = true"
         >
           <q-item-section side>

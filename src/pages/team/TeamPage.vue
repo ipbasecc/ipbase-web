@@ -114,7 +114,7 @@
               </q-tooltip>
             </q-icon>
           </div>
-          <div class="absolute-full">
+          <div v-if="teamStore.team" class="absolute-full">
             <router-view v-show="$q.screen.gt.xs || !uiStore.showMainContentList" />
             <template v-if="!$q.screen.gt.xs && uiStore.showMainContentList">
               <BoradsList v-if="showBoard" />
@@ -177,7 +177,7 @@ const router = useRouter();
 const isExternal = ref();
 const team = computed(() => teamStore.team);
 const teamMode = computed(() => teamStore.team?.config?.mode || 'toMany');
-const user_roles = computed(() => findRoles(team.value?.members, team.value?.member_roles));
+const user_roles = computed(() => teamStore.team && findRoles(teamStore.team?.members, teamStore.team?.member_roles, teamStore.init?.id));
 const gotoProjectChannel = async (project) => {
   if(!project || !project.mm_channel) return;
   await setLastChannel(project.id, project.mm_channel?.id);
@@ -186,7 +186,9 @@ const gotoProjectChannel = async (project) => {
   uiStore.showMainContentList = false;
 };
 watchEffect(async () => {
-  // console.log('user_roles',user_roles.value);
+  uiStore.isTeamAdmin = user_roles.value?.includes('admin')
+  uiStore.isTeamStaff = user_roles.value?.includes('staff')
+  uiStore.isStaff = uiStore.isTeamAdmin || uiStore.isTeamStaff
   isExternal.value = user_roles.value?.includes('external')
   if(teamStore.rightDrawer === 'chat_pannel' && teamStore.navigation === 'chat'){
     teamStore.rightDrawerOpen = false

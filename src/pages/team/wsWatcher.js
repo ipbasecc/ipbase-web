@@ -8,7 +8,7 @@ import { useQuasar } from "quasar";
 import { useDocumentVisibility, useWindowFocus } from '@vueuse/core'
 import { findCard } from "src/api/strapi/project.js";
 import { getOneProject } from "src/api/strapi/project.js";
-
+import { toggleTeam } from "src/pages/team/hooks/useTeam.js";
 
 export default function useWatcher() {
   const router = useRouter();
