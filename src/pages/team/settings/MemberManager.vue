@@ -152,7 +152,7 @@
                 </q-item-section>
                 <q-item-section side>
                   <q-btn dense flat round icon="mdi-plus"
-                  @click="setRoleFn(i,member_roles.find(i => i.subject === 'member'),'add')" />
+                  @click="addUserToProjectFn(i.by_user?.id)" />
                 </q-item-section>
             </q-item>
           </q-list>
@@ -171,7 +171,8 @@ import {
   setCardRoleFn,
   removeMember,
   new_roles_IDs,
-  set_new_roles_IDs
+  set_new_roles_IDs,
+  addUserToProject
 } from "./MemberManager.js";
 
 import { getTeamMembers } from "src/api/strapi/team.js"
@@ -572,6 +573,14 @@ const setRoleFn = async (member, role, prop) => {
     set_new_roles_IDs(_);
   }
 };
+
+const addUserToProjectFn = async (user_id) => {
+  if(!user_id) return
+  if (byInfo.value?.by === "project") {
+    const project_id = teamStore.project?.id;
+    await addUserToProject(user_id, project_id)
+  }
+}
 
 const dict = __dict();
 const translate = (i) => {
