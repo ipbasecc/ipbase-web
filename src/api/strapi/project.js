@@ -161,7 +161,19 @@ export async function acceptInvite(project_id, invite_code) {
     return error;
   }
 }
-// 拒绝用户
+// 从团队中拉人进项目
+export async function addUser(project_id, params) {
+  try {
+    const res = await api.post(`projects/${project_id}/add_user`, params);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    Notify.create(error?.response?.data?.error?.message);
+    return error;
+  }
+}
+// 移除用户
 export async function removeUser(project_id, params) {
   try {
     const res = await api.post(`projects/${project_id}/remove_user`, params);
