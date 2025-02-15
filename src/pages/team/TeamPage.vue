@@ -3,6 +3,7 @@
     <template v-if="teamStore.navigatorDrawer && !$q.screen.gt.xs">
       <SideNavigation v-if="team"
         class="absolute-full"
+        :team
         :class="team.isExternal ? 'q-pt-sm' : ''"
       />
       <TeamList v-else-if="

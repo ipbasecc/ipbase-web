@@ -86,6 +86,7 @@
               </div>
               <SideNavigation v-else-if="enable_project || enable_channel"
                 class="q-space"
+                :team="team"
                 :width="uiStore.navDrawerWidth"
                 :class="isExternal ? 'q-pt-sm' : ''"
               />

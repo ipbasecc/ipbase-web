@@ -337,7 +337,7 @@
 </template>
 
 <script setup>
-import {computed, ref, watch, watchEffect, nextTick} from 'vue';
+import {computed, ref, toRefs, watch, watchEffect, nextTick, onMounted} from 'vue';
 import {useRoute, useRouter} from "vue-router";
 import {fetch_userPreferences, getTeamMembers,} from "src/hooks/mattermost/useMattermost.js";
 import {getChannelByID, updateChannel} from 'src/api/strapi/team.js'
@@ -368,10 +368,15 @@ const props = defineProps({
     type: Number,
     default: NaN,
   },
+  team: {
+    type: Object,
+    default: null
+  }
 });
 const emit = defineEmits(['refreshProject'])
 const $t = i18n.global.t;
 
+const { team } = toRefs(props);
 const $q = useQuasar();
 const router = useRouter();
 const route = useRoute();
@@ -422,7 +427,6 @@ watch(
   { immediate: true, deep: false }
 );
 
-const team = computed(() => teamStore.team);
 const getThumbnail = (project) => {
   const { thumbnail } = useProject(project)  
   return thumbnail
@@ -434,18 +438,15 @@ watchEffect(() => {
   }
 })
 
-const mm_team = computed(() => teamStore?.team?.mm_team);
+const mm_team_id = computed(() => team.value.mm_team?.id);
 const page = ref(0);
 const per_page = ref(60);
 
-watch(mm_team, async(newVal, oldVal) => {
-  if (newVal?.id !== oldVal?.id) {
-
+watch(team, async() => {
+  if (team.value) {
     await fetch_userPreferences(); // todo fixme: 被触发了两次
-    await getTeamMembers(mm_team.value?.id, page.value, per_page.value);
-    
+    await getTeamMembers(mm_team_id.value, page.value, per_page.value);    
     await updateUnreads();
-
   }
 },{immediate:true,deep:false})
 

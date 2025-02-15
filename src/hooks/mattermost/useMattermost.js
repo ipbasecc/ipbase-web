@@ -73,12 +73,19 @@ export async function get_mmuser(user_id) {
 }
 
 // 获取当前用户偏好设置
-const user_preferences = ref();
+let user_preferences = null;
 export async function fetch_userPreferences() {
+  // 手动防抖
+  if(user_preferences){
+    setTimeout(() => {
+      user_preferences = null
+    }, 500);
+    return user_preferences
+  }
   try {
     let res = await getUserPreferences(uid.value);
     if (res) {
-      user_preferences.value = res.data;
+      user_preferences = res.data;
       mmstore.preferences = res.data;
     }
     return res.data;
@@ -106,7 +113,16 @@ export async function getMmChannel(channel_id) {
   }
 }
 
+let getTeamMembersCache = null
 export async function getTeamMembers(team_id, page, per_page) {
+  //手动防抖
+  if(getTeamMembersCache === 'cached') return
+  getTeamMembersCache = 'cached'
+  setTimeout(() => {
+    getTeamMembersCache = null
+  }, 500);
+  // console.log('getTeamMembers');
+  
   let res = await getMembersByTeamID(team_id, page, per_page);
   if (res) {
     let members = res.data;

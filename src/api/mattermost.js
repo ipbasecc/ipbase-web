@@ -85,6 +85,19 @@ export async function logout() {
     return error;
   }
 }
+// 获取用户sidebar数据
+// http://your-mattermost-url.com/api/v4/users/{user_id}/teams/{team_id}/channels/categories
+export async function getMmSidebar(user_id, team_id) {
+  try {
+    const res = await mmapi.get(`users/${user_id}/teams/${team_id}/channels/categories`);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+
 //Create a team
 //https://api.mattermost.com/#tag/teams/operation/CreateTeam
 //https://your-mattermost-url.com/api/v4/teams
