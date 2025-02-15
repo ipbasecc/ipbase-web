@@ -641,3 +641,11 @@ export function isDateAtLeastOneDayBeforeToday(inputDateStr) {
   // 减去一天，比较是否至少早一天
   return inputDate < today - 1; // 减去1天，因为我们需要至少早一天
 }
+
+export function hasIntersection(arr1, arr2) {
+  // Convert first array to a Set for O(1) lookups
+  const set1 = new Set(arr1);
+  
+  // Check if any element in arr2 exists in set1
+  return arr2.some(item => set1.has(item));
+}

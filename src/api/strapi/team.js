@@ -100,6 +100,17 @@ export async function leaveTeam(team_id) {
     return error;
   }
 }
+// 离开团队ws room
+export async function leaveRoom(team_id) {
+  try {
+    const res = await api.post(`teams/${team_id}/leave_room`);
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+}
 // 删除团队
 export async function removeTeam(team_id) {
   try {

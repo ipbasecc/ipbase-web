@@ -8,6 +8,9 @@ import { useQuasar } from "quasar";
 import { useDocumentVisibility, useWindowFocus } from '@vueuse/core'
 import { findCard } from "src/api/strapi/project.js";
 import { getOneProject } from "src/api/strapi/project.js";
+import { leaveRoom } from "src/api/strapi/team.js"
+import { hasIntersection } from "src/hooks/utilits.js"
+import { toggleTeam } from "src/pages/team/hooks/useTeam.js";
 
 
 export default function useWatcher() {
@@ -104,13 +107,22 @@ export default function useWatcher() {
         teamStore.team.members.push(data);
       }
       if(val.value.event === 'team:member_updated'){
-        const noAuth = ['unconfirmed', 'blocked'].includes(teamStore.team?.status);
-        if(noAuth){
-          await toggleTeam(teamStore.team)
-        }
-        const index = teamStore.team.members.findIndex(item => item.id === data.id);
+        const index = teamStore.team?.members?.findIndex(item => item.id === data.id);
         if(index > -1){
           teamStore.team.members.splice(index, 1, data);
+
+          // 如果当前用户被设置为 未审核 或者 被屏蔽，那么离开对应团队的ws room 并切换团队
+          if(data.by_user?.id === teamStore.init?.id){
+            const roles_ids_of_team = teamStore.team.member_roles.map(i => i.id);
+            const unconfirmed_role_ids_of_cur_user = data.member_roles.filter(i => i.subject === 'unconfirmed')?.map(j => j.id);
+            const blocked_role_ids_of_cur_user = data.member_roles.filter(i => i.subject === 'blocked')?.map(j => j.id);
+            
+            const noAuth = hasIntersection(roles_ids_of_team, unconfirmed_role_ids_of_cur_user) || hasIntersection(roles_ids_of_team, blocked_role_ids_of_cur_user);
+            if(noAuth){
+              await leaveRoom(teamStore.team?.id)
+              await toggleTeam(teamStore.team)
+            }
+          }
         }
       }
       if(val.value.event === 'team:member_leaved'){     
