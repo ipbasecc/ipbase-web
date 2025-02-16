@@ -41,6 +41,16 @@
             class="absolute-full column no-wrap"
           >
             <template v-if="team">
+              <q-list v-if="isAdmin && hasNewMembers" class="q-pa-sm" dense>
+                <q-item class="bg-orange radius-xs" clickable ripple @click="openMemberManager">
+                  <q-item-section side>
+                    <q-icon name="info" />
+                  </q-item-section>
+                  <q-item-section>
+                    有新成员加入
+                  </q-item-section>
+                </q-item>
+              </q-list>
               <q-item v-if="!isExternal" class="q-px-sm">
                 <q-item-section>
                   <div class="row no-wrap items-center">
@@ -51,7 +61,7 @@
                       :style="`max-width: ${uiStore.navDrawerWidth - 40}px`"
                     >
                       <span class="text-limit q-pr-sm">{{ team.display_name }}</span>
-                      <TeamMenu v-if="!userStatus_byTeam" :team />
+                      <TeamMenu v-if="!userStatus_byTeam" :team ref="teamMenu" />
                     </q-btn>
                     <q-space />
                     <q-btn v-if="
@@ -152,7 +162,7 @@
 </template>
 
 <script setup>
-import {computed, reactive, ref, watch} from "vue";
+import {computed, reactive, ref, watch, onMounted } from "vue";
 import {useRoute} from "vue-router";
 
 import CreateTeam from "src/pages/team/components/CreateTeam.vue";
@@ -202,6 +212,26 @@ watch(
   },
   { immediate: true, deep: false }
 );
+
+const hasNewMembers = computed(() => {
+  const unconfirmedRole = teamStore.team?.member_roles?.find(i => i.subject === 'unconfirmed');
+  const unconfirmeds = teamStore.team?.members.filter(i => i.member_roles.map(j => j.id)?.includes(unconfirmedRole.id));
+  
+  return unconfirmeds?.length > 0
+})
+const isAdmin = computed(() => {
+  const adminRole = teamStore.team?.member_roles?.find(i => i.subject === 'admin');  
+  const admins = teamStore.team?.members.filter(i => i.member_roles.map(j => j.id)?.includes(adminRole.id));
+  
+  return !!admins.find(i => i.by_user?.id === teamStore.init?.id)
+})
+
+const teamMenu = ref(null)
+const openMemberManager = () => {
+  teamMenu.value.menu.show();
+  teamMenu.value.openMemberManager = true
+}
+
 const haveSubNav = computed(() => {
   return uiStore.can_drag_apps.includes(uiStore.app) && $q.screen.gt.xs;
 });

@@ -263,6 +263,12 @@ const aboutTeam = ref(false);
 const showAboutTeam = () => {
   aboutTeam.value = true;
 }
+
+defineExpose({
+  openMemberManager,
+  menu
+});
+
 </script>
 
 <style lang="scss" scoped></style>
