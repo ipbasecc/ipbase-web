@@ -158,7 +158,11 @@ watch(
           getMsgUser.value = project_users.value.find(i => i.mm_profile?.id === post.user_id && post.user_id !== My_MMID.value && data.channel_type === 'D');
           if(getMsgUser.value) {
             getMsgCount.value++
-            getMsgUser.value.unread += 1;
+            if(DirChannel.value?.id === post.channel_id){
+              getMsgUser.value.unread = 0
+            } else {
+              getMsgUser.value.unread += 1;
+            }
           }
         }
         last_post = post;
