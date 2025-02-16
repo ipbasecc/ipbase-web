@@ -435,12 +435,12 @@ watchEffect(
         members: admin_members.value,
       },
       {
-        group: "member",
-        members: confirmed_members.value,
-      },
-      {
         group: "unconfirmed",
         members: unconfirmed_members.value,
+      },
+      {
+        group: "member",
+        members: confirmed_members.value,
       },
       {
         group: "external",

@@ -121,7 +121,6 @@
               <BoradsList v-if="showBoard" />
               <template v-if="teamStore.navigation === 'chat'">
                 <ChatList />
-                <q-space />
               </template>
               <StorageList v-if="teamStore.navigation === 'storage' && teamStore.project?.storages"
                 :storages="teamStore.project?.storages"

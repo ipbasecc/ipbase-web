@@ -341,7 +341,14 @@ export default configure((ctx) => {
           identity: null, // 跳过签名步骤
         },
         win: {
-          target: "msi",
+          artifactName: '${productName}-${version}.${ext}',
+          target: [
+            {
+              target: 'nsis',
+              arch: ['x64']
+            }
+          ],
+          // target: "msi",
           icon: fileURLToPath(new URL("./src-electron/icons/icon.ico", import.meta.url)),
           requestedExecutionLevel: "requireAdministrator"
         },

@@ -1,60 +1,63 @@
 <template>
-  <q-list dense class="full-width q-pa-xs">
-    <q-item
-      clickable
-      v-ripple
-      @click="gotoChannel(project_mm_channel)"
-      class="radius-xs overflow-hidden q-mb-xs"
-      :class="mm_channel_id === project_mm_channel?.id ? 'border active-sublistitem' : ''"
-    >
-      <q-item-section avatar>
-        <q-avatar square :size="`32`" class="radius-xs">
-          <q-img
-            :src="projectCover"
-            :ratio="1"
-            spinner-color="primary"
-            spinner-size="22px"
-          />
-        </q-avatar>
-      </q-item-section>
-      <q-item-section>{{ $t('all_members_group') }}</q-item-section>
-      <q-item-section v-if="channel_unread(project_mm_channel?.name) > 0" side>
-        <q-chip :label="channel_unread(project_mm_channel?.name)" />
-      </q-item-section>
-      <div v-if="mm_channel_id === project_mm_channel?.id"
-        class="absolute-left bg-primary"
-        style="width: 3px"
-      ></div>
-    </q-item>
-    <template v-if="project_users">
-      <q-item v-for="i in project_users"
-        :key="i.id"
+  <q-scroll-area class="fit q-pa-xs">
+    <q-list dense class="column">
+      <q-item
         clickable
         v-ripple
-        @click="showDirectChat(i)"
+        @click="gotoChannel(project_mm_channel)"
         class="radius-xs overflow-hidden q-mb-xs"
-        :class="directTargetID === i.mm_profile?.id ? 'border active-sublistitem' : ''"
+        :class="mm_channel_id === project_mm_channel?.id ? 'border active-sublistitem' : ''"
       >
         <q-item-section avatar>
-          <UserAvatar
-            :image="i.wechat_profile?.avatar"
-            :user_id="i.mm_profile?.id"
-            :size="32"
-            :disable_card="true"
-          />
+          <q-avatar square :size="`32`" class="radius-xs">
+            <q-img
+              :src="projectCover"
+              :ratio="1"
+              spinner-color="primary"
+              spinner-size="22px"
+            />
+          </q-avatar>
         </q-item-section>
-        <q-item-section>{{ i.username }}</q-item-section>
-        <q-item-section v-if="channel_unread(`${i.mm_profile?.id}__${My_MMID}`) > 0" side>
-          <q-chip color="negative" dense :label="channel_unread(`${i.mm_profile?.id}__${My_MMID}`)" />
+        <q-item-section>{{ $t('all_members_group') }}</q-item-section>
+        <q-item-section v-if="project_mm_channel?.unread > 0" side>
+          <q-chip :label="project_mm_channel?.unread" />
         </q-item-section>
-        <div
-          v-if="directTargetID === i.mm_profile?.id"
+        <div v-if="mm_channel_id === project_mm_channel?.id"
           class="absolute-left bg-primary"
           style="width: 3px"
         ></div>
       </q-item>
-    </template>
-  </q-list>
+      <template v-if="project_users?.length > 0">
+        <q-item v-for="(i, index) in project_users"
+          :key="i.id"
+          clickable
+          v-ripple
+          @click="showDirectChat(i)"
+          class="radius-xs overflow-hidden q-mb-xs"
+          :class="directTargetID === i.mm_profile?.id ? 'border active-sublistitem' : ''"
+          :style="`order: ${project_users.length + (getMsgUser?.id === i.id ? -getMsgCount : index)};`"
+        >
+          <q-item-section avatar>
+            <UserAvatar
+              :image="i.wechat_profile?.avatar"
+              :user_id="i.mm_profile?.id"
+              :size="32"
+              :disable_card="true"
+            />
+          </q-item-section>
+          <q-item-section>{{ i.username }}</q-item-section>
+          <q-item-section v-if="i.unread > 0" side>
+            <q-chip color="negative" dense :label="i.unread" />
+          </q-item-section>
+          <div
+            v-if="directTargetID === i.mm_profile?.id"
+            class="absolute-left bg-primary"
+            style="width: 3px"
+          ></div>
+        </q-item>
+      </template>
+    </q-list>
+  </q-scroll-area>
 </template>
 
 <script setup>
@@ -96,6 +99,9 @@ const project_users = computed(() => {
     } else {
       users = creator_users;
     }
+    users.forEach(i => {
+      i.unread = 0
+    });
   }
   return users;
 });
@@ -126,6 +132,8 @@ onMounted(() => {
   init_allChannels();
 })
 
+const getMsgCount = ref(0);
+const getMsgUser = ref();
 watch(
     mm_wsStore,
     async () => {
@@ -135,12 +143,13 @@ watch(
       // 判断消息类型
       if (event === 'posted' && !!data.channel_name && post.message) {
         if(!last_post || last_post.id === post.id) return;
-        const channel = channels.value.find(i => i.channel_name === data.channel_name);
-        if(channel) {
-          if(data.channel_name !== teamStore.mm_channel?.name){
-            channel.unread += 1;
-          } else {
-            channel.unread = 0;
+        if(post.channel_id === project_mm_channel.value?.id && teamStore.mm_channel?.id !== post.channel_id){
+          project_mm_channel.value.unread = project_mm_channel.value.unread > 0 ? project_mm_channel.value.unread + 1 : 1
+        } else {
+          getMsgUser.value = project_users.value.find(i => i.mm_profile?.id === post.user_id && post.user_id !== My_MMID.value && data.channel_type === 'D');
+          if(getMsgUser.value) {
+            getMsgCount.value++
+            getMsgUser.value.unread += 1;
           }
         }
         last_post = post;
@@ -150,6 +159,7 @@ watch(
 );
 
 const gotoChannel = async (channel) => {
+  project_mm_channel.value.unread = 0
   await setLastChannel(project.value?.id, channel);
   teamStore.mm_channel = channel;
   await router.push(`/teams/projects/${project.value?.id}/chat/${channel?.id}`);
@@ -191,6 +201,7 @@ const directTargetID = computed(() => {
 });
 const DirChannel = ref();
 const showDirectChat = async (member) => {
+  member.unread = 0;
   let created_channel = await createChannel(
     My_MMID.value,
     member.mm_profile.id
