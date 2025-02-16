@@ -15,7 +15,7 @@
         :style="`min-width: ${pannel_mode ? 32 : avatar_size + (!MsgOnly ? 48 : 0)}px;height: 25px`">
         <q-icon name="mdi-information-outline" />
       </div>
-      <span>{{ msg.message }}</span>
+      <span>{{find_mmMember(msg.props.addedUserId)?.by_user?.username + msg.message.substring(msg.message.indexOf(' ')) }}</span>
     </div>
     <template v-else>
       <template v-if="show_avatar">
@@ -272,6 +272,10 @@ const $q = useQuasar();
 
 const [dragging, { set: setDragging }] = useBoolean(false)
 const dragRef = ref(null)
+
+const find_mmMember = (mm_id) => {
+  return teamStore.team?.members?.find(i => i.by_user?.mm_profile?.id === mm_id)
+}
 
 let auth, is_kanban, is_system_message, is_strapi_message, cant_drag, hide_float_bar;
 onMounted(async () => {
