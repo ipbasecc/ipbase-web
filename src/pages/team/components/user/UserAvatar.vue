@@ -2,7 +2,7 @@
   <q-avatar @click="fetch_user"
             :square="props.square"
             :size="`${size}px`"
-            :class="props.square ? 'radius-sm' : ''"
+            :class="props.square ? 'radius-xs' : ''"
             @mouseenter="fetchStatuse(user_idRef)"
   >
     <img v-if="avatar" :src="avatar" alt="avatar" />
@@ -71,34 +71,9 @@
       :size="indicator_size"
     />
     <q-dialog v-model="addFriendDlg" persistent @hide="addFriendResult = null">
-      <q-card bordered style="min-width: 22rem;">
-        <template v-if="!addFriendResult">
-          <q-card-actions>
-            {{ $t('send_friend_dlog_title') }}
-            <q-space />
-            <q-btn flat round dense size="sm" icon="close" v-close-popup />
-          </q-card-actions>
-          <q-card-section class="column gap-sm q-pa-lg">
-            <q-input v-model="addFriendMsg" type="text" :label="$t('add_friend_msg_label')" />
-            <q-input v-if="strapi_member.contact?.friend_request_question?.question" v-model="addFriendReqAnswer" type="text" :label="$t('add_friend_reqAnswer_label')" />
-          </q-card-section>
-          <q-card-actions align="right">
-            <q-btn dense :label="$t('send_friend_request')" color="primary" icon="mdi-send" v-close-popup
-              @click="sendFriendReq(strapi_member.by_user?.contact?.id)"
-            />
-          </q-card-actions>
-        </template>
-        <div v-else class="absolute-full column flex-center">
-          <q-spinner-orbit
-            v-if="addFriendLoading"
-            color="primary"
-            size="2em"
-          />
-          <div v-if="addFriendResult" class="">
-            {{ $t('send_friend_request_completed') }}
-          </div>
-        </div>
-      </q-card>
+      <AddFriendCard
+        :strapi_member
+      />
     </q-dialog>
   </q-avatar>
 </template>
@@ -117,6 +92,7 @@ import {addFriend} from 'src/api/strapi.js'
 import {findStrapiUser_by_mmID_inTeam, useCheckBlocked} from 'src/pages/team/chat/hooks/useMm.js'
 import {__dict} from "src/hooks/dict.js";
 import { useQuasar } from 'quasar'
+import AddFriendCard from '../../chat/components/AddFriendCard.vue'
 
 const router = useRouter();
 const $q = useQuasar();
@@ -240,6 +216,7 @@ watch(
 
 const fetched_user = ref();
 const fetch_user = async () => {
+  if(disable_cardRef.value) return
   // console.log('请求用户数据');
   let __mm_user_key = `__mm_user__${user_idRef.value}`;
   let user = await localforage.getItem(__mm_user_key);

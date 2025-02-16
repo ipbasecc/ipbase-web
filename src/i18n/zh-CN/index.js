@@ -644,6 +644,8 @@ export default {
   card_settings_color_marker_desc: '卡片右下角会显示颜色指示灯，仅用该功能将不可用',
   project_settings_allow_join_requests_label: '允许申请加入',
   project_settings_allow_join_requests_desc: '允许成员申请加入，禁用后，成员只能通过邀请连接加入',
+  project_settings_allow_direct_chat_label: '允许私信',
+  project_settings_allow_direct_chat_desc: '允许成员之间直接发送私信，禁用后如果成员间需要发送私信，需互为好友',
 
   enable_settings_multiple_boards_label: '工作空间',
   enable_settings_multiple_boards_desc: '允许创建多个工作空间，以便在同一个项目中，启用多个任务管理应用',

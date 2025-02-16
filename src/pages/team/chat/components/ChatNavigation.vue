@@ -3,112 +3,135 @@
     <q-scroll-area v-bind="$attrs" class="absolute-full">
         <q-pull-to-refresh :disable="!$q.screen.gt.sm" @refresh="refresh" :style="`min-height: ${contianerSize?.height}px;`">
             <q-list class="q-pa-xs">
-            <q-expansion-item
-                v-if="friend_requests_unProcessed?.length > 0"
-                group="friends"
-                label="好友申请"
-            >
-                <q-item v-for="i in friend_requests_unProcessed" :key="i.id" v-ripple="false" :style="i.status ? 'order: 99999' : ''">
-                    <q-item-section avatar>
-                        <UserAvatar
-                            :image="i.sender?.wechat_profile?.avatar || i.sender?.profile?.avatar?.url"
-                            :user_id="i.sender?.mm_profile?.id"
-                            :size="avatar_size"
-                            :strapi_member="i.sender?.mm_profile"
-                        />
-                    </q-item-section>
-                    <q-item-section class="text-white">
-                        {{ i.sender.username }}
-                    </q-item-section>
-                    <q-item-section side>
-                        <div class="q-gutter-xs">
-                            <q-btn v-if="!i.status" class="gt-xs" size="12px" color="primary" dense unelevated padding="xs sm" label="同意"
-                                @click="processFriendReqFn(i, 'accept')"
-                            />
-                            <q-btn class="gt-xs" size="12px" flat dense round icon="more_vert">
-                                <q-menu class="radius-sm">
-                                    <q-list bordered style="min-width: 12rem" class="radius-sm q-pa-xs">
-                                        <q-item v-if="i.status !== 'refuse'" clickable v-close-popup class="radius-xs"
-                                            @click="processFriendReqFn(i, 'refuse')"
-                                        >
-                                            <q-item-section>拒绝</q-item-section>
-                                        </q-item>
-                                        <q-item v-if="i.status !== 'blocked' && !blockWared" clickable v-close-popup class="radius-xs"
-                                            @click="blockWared = true"
-                                        >
-                                            <q-item-section>拉黑</q-item-section>
-                                        </q-item>
-                                        <q-item v-if="i.status !== 'blocked' && blockWared" clickable v-close-popup
-                                            class="radius-xs bg-red"
-                                            @click="processFriendReqFn(i, 'blocked')"
-                                        >
-                                            <q-item-section>对方将永远不能添加你为好友 确认？</q-item-section>
-                                        </q-item>
-                                    </q-list>
-                                </q-menu>
-                            </q-btn>
-                        </div>
-                    </q-item-section>
-                </q-item>
-            </q-expansion-item>
-              <q-expansion-item
-                  v-if="contact.contacters?.length > 0"
-                  default-opened
-                  group="friends"
-                  label="好友"
-              >
-                  <q-item v-for="i in contact.contacters" :key="i.id" v-ripple clickable
-                      class="radius-xs"
-                      :class="teamStore?.direct_user?.mm_profile?.id === i?.mm_profile?.id ? 'border active-listitem' : 'border-placeholder'"
-                      @click="createDirectChannel(self_mm_id, i)"
-                  >
-                      <q-item-section avatar>
-                          <UserAvatar
-                              :image="i.wechat_profile?.avatar || i.profile?.avatar?.url"
-                              :user_id="i?.mm_profile?.id"
-                              :size="avatar_size"
-                              :strapi_member="i?.mm_profile"
-                              :square="!$q.screen.gt.sm"
-                              :disable_card="true"
-                          />
-                      </q-item-section>
-                      <q-item-section class="text-white">
-                          {{ i.username }}
-                      </q-item-section>
-                      <q-badge v-if="unread_count(i.id) > 0"
-                        :label="unread_count(i.id)" color="red" rounded floating
-                    />
-                      
-                  </q-item>
-              </q-expansion-item>
-            <q-expansion-item
-                v-if="contact.blockeds?.length > 0"
-                group="friends"
-                label="被屏蔽"
-            >
-                <q-item v-for="i in contact.blockeds" :key="i.id" v-ripple clickable
-                    class="radius-xs"
-                    :class="teamStore?.direct_user?.mm_profile?.id === i?.mm_profile?.id ? 'border active-listitem' : 'border-placeholder'"
-                    @click="createDirectChannel(self_mm_id, i)"
+                <q-expansion-item
+                    v-if="friend_requests_unProcessed?.length > 0"
+                    group="friends"
+                    label="收到的申请"
                 >
-                    <q-item-section avatar>
-                        <UserAvatar
-                            :image="i.wechat_profile?.avatar || i.profile?.avatar?.url"
-                            :user_id="i?.mm_profile?.id"
-                            :size="avatar_size"
-                            :strapi_member="i?.mm_profile"
+                    <q-item v-for="i in friend_requests_unProcessed" :key="i.id" v-ripple="false" :style="i.status ? 'order: 99999' : ''">
+                        <q-item-section avatar>
+                            <UserAvatar
+                                :image="i.sender?.wechat_profile?.avatar || i.sender?.profile?.avatar?.url"
+                                :user_id="i.sender?.mm_profile?.id"
+                                :size="avatar_size"
+                                :strapi_member="i.sender?.mm_profile"
+                            />
+                        </q-item-section>
+                        <q-item-section class="text-white">
+                            {{ i.sender.username }}
+                        </q-item-section>
+                        <q-item-section side>
+                            <div class="q-gutter-xs">
+                                <q-btn v-if="!i.status" class="gt-xs" size="12px" color="primary" dense unelevated padding="xs sm" label="同意"
+                                    @click="processFriendReqFn(i, 'accept')"
+                                />
+                                <q-btn class="gt-xs" size="12px" flat dense round icon="more_vert">
+                                    <q-menu class="radius-sm">
+                                        <q-list bordered style="min-width: 12rem" class="radius-sm q-pa-xs">
+                                            <q-item v-if="i.status !== 'refuse'" clickable v-close-popup class="radius-xs"
+                                                @click="processFriendReqFn(i, 'refuse')"
+                                            >
+                                                <q-item-section>拒绝</q-item-section>
+                                            </q-item>
+                                            <q-item v-if="i.status !== 'blocked' && !blockWared" clickable v-close-popup class="radius-xs"
+                                                @click="blockWared = true"
+                                            >
+                                                <q-item-section>拉黑</q-item-section>
+                                            </q-item>
+                                            <q-item v-if="i.status !== 'blocked' && blockWared" clickable v-close-popup
+                                                class="radius-xs bg-red"
+                                                @click="processFriendReqFn(i, 'blocked')"
+                                            >
+                                                <q-item-section>对方将永远不能添加你为好友 确认？</q-item-section>
+                                            </q-item>
+                                        </q-list>
+                                    </q-menu>
+                                </q-btn>
+                            </div>
+                        </q-item-section>
+                    </q-item>
+                </q-expansion-item>
+                <q-expansion-item
+                    v-if="sended_friend_requests?.filter(i => !i.status)?.length > 0"
+                    group="requests"
+                    label="发出的申请"
+                >
+                    <q-item v-for="i in sended_friend_requests" :key="i.id" v-ripple="false" :style="i.status ? 'order: 99999' : ''">
+                        <q-item-section avatar>
+                            <UserAvatar
+                                :image="i.contact?.owner?.wechat_profile?.avatar || i.contact?.owner?.profile?.avatar?.url"
+                                :user_id="i.contact?.owner?.mm_profile?.id"
+                                :size="avatar_size"
+                                :strapi_member="i.contact?.owner?.mm_profile"
+                                :disable_card="true"
+                            />
+                        </q-item-section>
+                        <q-item-section class="text-white">
+                            {{ i.contact?.owner?.username }}
+                        </q-item-section>
+                        <q-item-section side>
+                            {{ i.status ? '已通过' : '待审核' }}
+                        </q-item-section>
+                    </q-item>
+                </q-expansion-item>
+                <q-expansion-item
+                    v-if="contact.contacters?.length > 0"
+                    default-opened
+                    group="friends"
+                    label="好友"
+                >
+                    <q-item v-for="i in contact.contacters" :key="i.id" v-ripple clickable
+                        class="radius-xs"
+                        :class="teamStore?.direct_user?.mm_profile?.id === i?.mm_profile?.id ? 'border active-listitem' : 'border-placeholder'"
+                        @click="createDirectChannel(self_mm_id, i)"
+                    >
+                        <q-item-section avatar>
+                            <UserAvatar
+                                :image="i.wechat_profile?.avatar || i.profile?.avatar?.url"
+                                :user_id="i?.mm_profile?.id"
+                                :size="avatar_size"
+                                :strapi_member="i?.mm_profile"
+                                :square="!$q.screen.gt.sm"
+                                :disable_card="true"
+                            />
+                        </q-item-section>
+                        <q-item-section class="text-white">
+                            {{ i.username }}
+                        </q-item-section>
+                        <q-badge v-if="unread_count(i.id) > 0"
+                            :label="unread_count(i.id)" color="red" rounded floating
                         />
-                    </q-item-section>
-                    <q-item-section class="text-white">
-                        {{ i.username }}
-                    </q-item-section>
-                    <q-item-section v-if="false" side>
-                        <q-btn class="gt-xs" size="12px" color="primary" dense unelevated padding="xs sm" label="解除屏蔽"
-                            @click="processFriendFn(i.id, 'unblock')"
-                        />
-                    </q-item-section>
-                </q-item>
-            </q-expansion-item>
+                        
+                    </q-item>
+                </q-expansion-item>
+                <q-expansion-item
+                    v-if="contact.blockeds?.length > 0"
+                    group="friends"
+                    label="被屏蔽"
+                >
+                    <q-item v-for="i in contact.blockeds" :key="i.id" v-ripple clickable
+                        class="radius-xs"
+                        :class="teamStore?.direct_user?.mm_profile?.id === i?.mm_profile?.id ? 'border active-listitem' : 'border-placeholder'"
+                        @click="createDirectChannel(self_mm_id, i)"
+                    >
+                        <q-item-section avatar>
+                            <UserAvatar
+                                :image="i.wechat_profile?.avatar || i.profile?.avatar?.url"
+                                :user_id="i?.mm_profile?.id"
+                                :size="avatar_size"
+                                :strapi_member="i?.mm_profile"
+                            />
+                        </q-item-section>
+                        <q-item-section class="text-white">
+                            {{ i.username }}
+                        </q-item-section>
+                        <q-item-section v-if="false" side>
+                            <q-btn class="gt-xs" size="12px" color="primary" dense unelevated padding="xs sm" label="解除屏蔽"
+                                @click="processFriendFn(i.id, 'unblock')"
+                            />
+                        </q-item-section>
+                    </q-item>
+                </q-expansion-item>
             </q-list>
         </q-pull-to-refresh>
     </q-scroll-area>
@@ -132,6 +155,7 @@ const blockWared = ref(false);
 const router = useRouter();
 const contact = computed(() => teamStore.init?.contact);
 const friend_requests_unProcessed = computed(() => contact.value?.friend_requests?.filter(i => !i.status));
+const sended_friend_requests = computed(() => teamStore.init?.friend_requests);
 const avatar_size = ref($q.screen.gt.xs ? 32 : 48);
 
 const contianerSize = ref();

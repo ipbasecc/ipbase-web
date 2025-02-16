@@ -32,7 +32,7 @@
           :key="i.id"
           clickable
           v-ripple
-          @click="showDirectChat(i)"
+          @click="clickUserHandler(i)"
           class="radius-xs overflow-hidden q-mb-xs"
           :class="directTargetID === i.mm_profile?.id ? 'border active-sublistitem' : ''"
           :style="`order: ${project_users.length + (getMsgUser?.id === i.id ? -getMsgCount : index)};`"
@@ -43,6 +43,7 @@
               :user_id="i.mm_profile?.id"
               :size="32"
               :disable_card="true"
+              :square="true"
             />
           </q-item-section>
           <q-item-section>{{ i.username }}</q-item-section>
@@ -57,6 +58,12 @@
         </q-item>
       </template>
     </q-list>
+    <q-dialog v-model="addFriendDlg" persistent>
+      <AddFriendCard
+        :strapi_member="project.project_members?.find(i => i.by_user?.id === addFriendUser?.id)"
+        title="需要添加对方为好友后才能发送私信"
+      />
+    </q-dialog>
   </q-scroll-area>
 </template>
 
@@ -68,6 +75,7 @@ import { createDirect, getChannelByID } from "src/api/mattermost.js";
 import UserAvatar from "src/pages/team/components/user/UserAvatar.vue";
 import { setLastChannel } from "src/pages/team/chat/TeamChat.js";
 import {teamStore, uiStore, mm_wsStore} from 'src/hooks/global/useStore.js';
+import AddFriendCard from './components/AddFriendCard.vue'
 
 const router = useRouter();
 const route = useRoute();
@@ -75,6 +83,7 @@ const mm_channel_id = computed(() => route.params?.mm_channel_id || null);
 const teamMode = computed(() => teamStore.team?.config?.mode || 'toMany')
 
 const project = computed(() => teamStore?.project);
+const allowDirectChat = computed(() => project.value.preferences?.find(i => i.name === 'project_settings')?.settings?.find(j => j.val === 'allow_direct_chat')?.enable)
 const overview = computed(
   () =>
     project.value?.overviews?.find(
@@ -181,6 +190,17 @@ const createChannel = async (a, b) => {
     return res.data;
   }
 };
+
+const addFriendDlg = ref(false);
+const addFriendUser = ref();
+const clickUserHandler = (user) => {
+  if(allowDirectChat.value || teamStore.init?.contact?.contacters?.find(i => i.id === user.id)){
+    showDirectChat(user)
+  } else {
+    addFriendUser.value = user
+    addFriendDlg.value = true
+  }
+}
 const directTargetID = computed(() => {
   if (teamStore.mm_channel?.type !== "D") {
     return null;
@@ -200,11 +220,11 @@ const directTargetID = computed(() => {
   }
 });
 const DirChannel = ref();
-const showDirectChat = async (member) => {
-  member.unread = 0;
+const showDirectChat = async (user) => {
+  user.unread = 0;
   let created_channel = await createChannel(
     My_MMID.value,
-    member.mm_profile.id
+    user.mm_profile.id
   );
   if (created_channel) {
     DirChannel.value = created_channel;
