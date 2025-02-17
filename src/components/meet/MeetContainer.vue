@@ -175,7 +175,9 @@ async function initJitsiMeet(jitsi_token) {
     
     // 更新事件监听
     meet.value.addEventListeners({
-        // 当用户主动离开会议时触发
+        // 当用户点击"离开"按钮时触发
+        hangup: handleHangup,
+        // 当用户被踢出或网络断开等原因离开会议时触发
         videoConferenceLeft: handleConferenceLeft,
         // 当会议准备关闭时触发,用于清理资源
         readyToClose: handleReadyToClose,
@@ -192,23 +194,40 @@ async function initJitsiMeet(jitsi_token) {
     });
 }
 
-// 处理会议结束事件
-const handleConferenceLeft = (data) => {
-    console.log('handleConferenceLeft');
-    
+const distoryMeet = (state) => {
     if (!isReconnecting.value) {  // 只有在非重连状态下才触发 meetEnded
-        emit('meetEnded', data);
+        emit('meetEnded', state);
+        
+        // 执行清理操作
+        if (meet.value) {
+            meet.value.dispose();
+            meet.value = null;
+        }
+    }
+}
+
+// 处理用户主动挂断
+const handleHangup = () => {
+    console.log('User hung up the call');
+    distoryMeet('hangup');
+}
+
+// 处理会议离开事件（非主动挂断）
+const handleConferenceLeft = (data) => {
+    console.log('Conference left:', data);
+    if (data?.error) {
+        // 处理错误导致的离开
+        distoryMeet('error');
+    } else {
+        // 处理其他原因的离开（如被踢出）
+        distoryMeet('left');
     }
 }
 
 // 处理会议关闭事件
 const handleReadyToClose = () => {
-  emit('meetEnded', data);
-  // 执行清理操作
-  if (meet.value) {
-    meet.value.dispose();
-    meet.value = null;
-  }
+    console.log('Meeting is ready to close');
+    distoryMeet('close');
 }
 
 // 可选：处理参与者离开事件
@@ -245,6 +264,7 @@ const handleParticipantKickedOut = (params) => {
 const cleanupMeet = () => {
   if (meet.value) {
     // 移除所有事件监听器
+    meet.value.removeEventListener('hangup', handleHangup);
     meet.value.removeEventListener('videoConferenceLeft', handleConferenceLeft);
     meet.value.removeEventListener('readyToClose', handleReadyToClose);
     meet.value.removeEventListener('participantLeft', handleParticipantLeft);

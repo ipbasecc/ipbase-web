@@ -88,12 +88,17 @@ function createWindow() {
   });
 
   const csp = `
-    default-src 'none';
-    script-src 'self' 'unsafe-inline';
-    style-src 'self' 'unsafe-inline';
-    img-src 'self' data:;
-    connect-src 'self';
-    font-src 'self';
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.jitsi.net https://*.yihu.team;
+    style-src 'self' 'unsafe-inline' https://*.jitsi.net;
+    img-src 'self' data: blob: https://*.jitsi.net;
+    media-src 'self' https://*.jitsi.net;
+    connect-src 'self' wss://*.yihu.team https://*.yihu.team https://*.jitsi.net wss://*.jitsi.net;
+    frame-src 'self' https://*.jitsi.net;
+    worker-src 'self' blob:;
+    child-src 'self' blob:;
+    object-src 'none';
+    font-src 'self' https://*.jitsi.net;
   `;
   /**
    * Initial window options
@@ -130,6 +135,7 @@ function createWindow() {
       webSecurity: true,
       csp: csp,
       // zoomFactor: zoom,
+      enableBlinkFeatures: 'GetDisplayMedia' // 允许屏幕捕获
     },
   });
   enable(mainWindow.webContents);
@@ -231,16 +237,22 @@ app.on("ready", () => {
 
 ipcMain.handle("ScreenCapture", async (_event, options) => {
   try {
-    const sources = await desktopCapturer.getSources(options);
-    return sources.map((item) => ({
-      ...item,
+    // 添加更多的捕获类型和详细选项
+    const sources = await desktopCapturer.getSources({
+      ...options,
+      types: ['window', 'screen'],
+      fetchWindowIcons: true
+    });
+    
+    return sources.map((source) => ({
+      ...source,
       thumbnail: {
-        dataUrl: item.thumbnail.toDataURL(),
-      },
+        dataUrl: source.thumbnail.toDataURL(),
+      }
     }));
   } catch (error) {
     console.error("Failed to get desktop sources:", error);
-    throw error; // Ensure the error is thrown to be caught in the preload script
+    throw error;
   }
 });
 

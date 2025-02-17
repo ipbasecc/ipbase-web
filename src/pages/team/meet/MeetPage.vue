@@ -90,14 +90,16 @@ const toggleMaxed = () => {
         restore();
     }
 }
-const meetEnded = async () => {
-    teamStore.project.meeting = false
-
+const meetEnded = async (state) => {
+    console.log('meetEnded', state);
+    
     uiStore.show_meet = false;
-    uiStore.init_meet = false;
-    uiStore.meet = void 0;
-
-    await endProjectMeet(teamStore.project?.id);
+    if(state === 'close' || state === 'left'){
+        teamStore.project.meeting = false
+        uiStore.meet = void 0;
+        uiStore.init_meet = false;
+        await endProjectMeet(teamStore.project?.id);
+    }
 }
 
 </script>
