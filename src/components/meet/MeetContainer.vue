@@ -154,6 +154,19 @@ async function initJitsiMeet(jitsi_token) {
                 'videoquality',
                 'whiteboard',
             ],
+            desktopSharingFrameRate: {
+                min: 5,
+                max: 60
+            },
+            constraints: {
+                video: {
+                    height: {
+                        ideal: 720,
+                        max: 1080,
+                        min: 240
+                    }
+                }
+            }
         },
         interfaceConfigOverwrite: {
             LANG_DETECTION: true,
@@ -165,12 +178,31 @@ async function initJitsiMeet(jitsi_token) {
     
     meet.value = new JitsiMeetExternalAPI(meetSite, options);
     if($q.platform.is.electron){
-      meet.value.on("_requestDesktopSources", async (request, callback) => {
-        const { options } = request;
-        window.jitsiAPI.getDesktopSources(options)
-            .then(sources => callback({ sources }))
-            .catch((error) => callback({ error }));
-      });
+        meet.value.on("_requestDesktopSources", async (request, callback) => {
+            console.log('_requestDesktopSources request:', request);
+            const { options } = request;
+            try {
+                const rawSources = await window.jitsiAPI.getDesktopSources(options);
+                console.log('Got raw sources:', rawSources);
+
+                // 增加调试日志
+                const sources = rawSources.map(source => {
+                    const sourceType = source.id.startsWith('screen') ? 'screen' : 'window';
+                    return {
+                        id: source.id,
+                        name: source.name,
+                        thumbnail: source.thumbnail,
+                        sourceType // 直接使用 Electron 的源类型
+                    };
+                });
+
+                console.log('Processed sources for Jitsi:', sources);
+                callback({ sources });
+            } catch (error) {
+                console.error('Error:', error);
+                callback({ error });
+            }
+        });
     }
     
     // 更新事件监听
@@ -207,9 +239,17 @@ const distoryMeet = (state) => {
 }
 
 // 处理用户主动挂断
-const handleHangup = () => {
+const handleHangup = async () => {
     console.log('User hung up the call');
-    distoryMeet('hangup');
+    //检查是不是其他成员都已经离开了会议
+    const participants = await meet.value.getParticipantsInfo();
+    const others = participants.filter(p => !p.isLocal);
+
+    if (others.length === 0) {
+        distoryMeet('close'); // 其他人都离开了，触发关闭事件
+    } else {
+        distoryMeet('hangup'); // 否则触发挂断事件
+    }
 }
 
 // 处理会议离开事件（非主动挂断）
@@ -231,9 +271,10 @@ const handleReadyToClose = () => {
 }
 
 // 可选：处理参与者离开事件
-const handleParticipantLeft = (participant) => {
-  // console.log('Participant left:', participant);
+const handleParticipantLeft = async (participant) => {
+    // console.log('Participant left:', participant);
 }
+
 
 // 添加新的事件处理函数
 const handleConnectionEstablished = () => {

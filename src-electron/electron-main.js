@@ -80,6 +80,10 @@ function unregisterGlobalShortcuts() {
   globalShortcut.unregister("CommandOrControl+=");
   globalShortcut.unregister("CommandOrControl+-");
 }
+app.commandLine.appendSwitch(
+  'enable-features', 
+  'WebRTCPipeWireCapturer,SharedArrayBuffer'
+);
 
 function createWindow() {
   let mainWindowState = windowStateKeeper({
@@ -117,6 +121,11 @@ function createWindow() {
     frame: false,
     // transparent: true,
     webPreferences: {
+      webSecurity: false, // 允许跨域访问
+      contextIsolation: true, // 必须与 preload 配合
+      enablePreferredSizeMode: true,
+      plugins: true, // 启用插件支持
+
       sandbox: false,
       webviewTag: true,
       enableHardwareAcceleration: true,
@@ -131,8 +140,6 @@ function createWindow() {
       // Enable node integration for preload script only
       nodeIntegration: true, // 赋予此窗口页面中的 JavaScript 访问 Node.js 环境的能力
       enableRemoteModule: true, // 打开 remote 模块
-      contextIsolation: true, // 是否在独立 JavaScript 环境运行
-      webSecurity: true,
       csp: csp,
       // zoomFactor: zoom,
       enableBlinkFeatures: 'GetDisplayMedia' // 允许屏幕捕获
@@ -153,16 +160,17 @@ function createWindow() {
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
 
-  if (process.env.DEBUGGING) {
-    // if on DEV or Production with debug enabled
-    mainWindow.webContents.openDevTools();
-  } else {
-    // mainWindow.webContents.openDevTools()
-    // we're on production; no access to devtools pls
-    mainWindow.webContents.on("devtools-opened", () => {
-      mainWindow.webContents.closeDevTools();
-    });
-  }
+  // if (process.env.DEBUGGING) {
+  //   // if on DEV or Production with debug enabled
+  //   mainWindow.webContents.openDevTools();
+  // } else {
+  //   // mainWindow.webContents.openDevTools()
+  //   // we're on production; no access to devtools pls
+  //   mainWindow.webContents.on("devtools-opened", () => {
+  //     mainWindow.webContents.closeDevTools();
+  //   });
+  // }
+  mainWindow.webContents.openDevTools();
 
   // 监听窗口关闭事件，以便保存当前缩放因子
   mainWindow.webContents.on("did-finish-load", () => {

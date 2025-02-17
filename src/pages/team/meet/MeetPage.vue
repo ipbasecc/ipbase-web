@@ -94,10 +94,12 @@ const meetEnded = async (state) => {
     console.log('meetEnded', state);
     
     uiStore.show_meet = false;
-    if(state === 'close' || state === 'left'){
+    if(state === 'left'){
         teamStore.project.meeting = false
         uiStore.meet = void 0;
         uiStore.init_meet = false;
+    }
+    if(state === 'close'){
         await endProjectMeet(teamStore.project?.id);
     }
 }
