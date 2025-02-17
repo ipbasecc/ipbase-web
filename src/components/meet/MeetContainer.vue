@@ -40,6 +40,7 @@ const meetSite = import.meta.env.VITE_MEET_SITE
 const meetAuth = ref(void 0)
 
 const isReconnecting = ref(false);  // 添加重连状态标志
+const isModerator = ref(false)
 
 const _params = {
     data: {
@@ -65,6 +66,8 @@ const createMeet = async () => {
         
         // 解析 token 获取过期时间
         const decodedToken = jwtDecode(jitsi_token);
+        console.log('decodedToken', decodedToken);
+        isModerator.value = decodedToken.context?.user?.moderator
         const expiresIn = decodedToken.exp - Math.floor(Date.now() / 1000);
         
         await initJitsiMeet(jitsi_token);
@@ -89,6 +92,7 @@ const startTokenRefresh = (expiresIn) => {
             const { jitsi_token } = await useMeet(_params)
             if (jitsi_token && meet.value) {
                 const decodedToken = jwtDecode(jitsi_token);
+                
                 const newExpiresIn = decodedToken.exp - Math.floor(Date.now() / 1000);
                 
                 meet.value.executeCommand('token', jitsi_token);
@@ -245,11 +249,8 @@ const handleHangup = async () => {
     const participants = await meet.value.getParticipantsInfo();
     const others = participants.filter(p => !p.isLocal);
 
-    if (others.length === 0) {
-        distoryMeet('close'); // 其他人都离开了，触发关闭事件
-    } else {
-        distoryMeet('hangup'); // 否则触发挂断事件
-    }
+    const state = others.length === 0 ? 'close' : 'left' // 其他人都离开了，触发关闭事件
+    distoryMeet(state);
 }
 
 // 处理会议离开事件（非主动挂断）
@@ -259,8 +260,9 @@ const handleConferenceLeft = (data) => {
         // 处理错误导致的离开
         distoryMeet('error');
     } else {
-        // 处理其他原因的离开（如被踢出）
-        distoryMeet('left');
+        // 处理 主持人离开时关闭，其他原因的离开（如被踢出）
+        const state = isModerator.value ? 'close' : 'left'
+        distoryMeet(state);
     }
 }
 

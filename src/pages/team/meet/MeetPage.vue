@@ -100,7 +100,12 @@ const meetEnded = async (state) => {
         uiStore.init_meet = false;
     }
     if(state === 'close'){
+        teamStore.project.meeting = false
+        uiStore.meet = void 0;
+        uiStore.init_meet = false;
         await endProjectMeet(teamStore.project?.id);
+    } else {
+        
     }
 }
 
