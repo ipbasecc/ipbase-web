@@ -25,12 +25,19 @@ const { project } = defineProps({
 })
 
 const startMeet = async () => {
-    const { jitsi_token } = await useMeet(teamStore.project?.id)
+    const roomName = project.mm_channel?.id || `${project.id}_meetRoom_by_${teamStore.init?.id}`
+    const _params = {
+        data: {
+            project_id: teamStore.project?.id,
+            room_name: roomName
+        }
+    }
+    const { jitsi_token } = await useMeet(_params)
     if(project && jitsi_token){
         const { data } = await startProjectMeet(project.id);
         if(data){
             uiStore.meet = {
-                room_name: project.mm_channel?.id || `${project.id}_meetRoom_by_${teamStore.init?.id}`
+                room_name: roomName
             }
             joinMeet();
         }

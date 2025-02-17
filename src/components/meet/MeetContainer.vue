@@ -18,6 +18,7 @@ import { onMounted, useTemplateRef, ref, onBeforeUnmount } from 'vue';
 import useMeet from './useMeet.js';
 import { useQuasar } from 'quasar';
 import { preloadMeetAPI, isMeetAPILoaded } from 'src/utils/meetLoader';
+import jwtDecode from 'jwt-decode';
 
 const $q = useQuasar();
 const { roomName, displayName } = defineProps({
@@ -37,8 +38,18 @@ const meet = ref();
 const meetSite = import.meta.env.VITE_MEET_SITE
 const meetAuth = ref(void 0)
 
+const isReconnecting = ref(false);  // 添加重连状态标志
+
 const createMeet = async () => {
-    const { jitsi_token } = await useMeet(teamStore.project?.id)
+    const _params = {
+        data: {
+            project_id: teamStore.project?.id,
+            room_name: roomName
+        }
+    }
+    console.log('_params', _params);
+    
+    const { jitsi_token } = await useMeet(_params)
     if(!jitsi_token) {
         meetAuth.value = false
         return
@@ -50,16 +61,48 @@ const createMeet = async () => {
         if (!isMeetAPILoaded()) {
             await preloadMeetAPI(meetSite);
         }
-        // API 已加载，直接初始化
+        
+        // 解析 token 获取过期时间
+        const decodedToken = jwtDecode(jitsi_token);
+        const expiresIn = decodedToken.exp - Math.floor(Date.now() / 1000);
+        
         await initJitsiMeet(jitsi_token);
+        startTokenRefresh(expiresIn);
     } catch (error) {
         console.error('Failed to initialize Jitsi Meet:', error);
         errorMsg.value = 'Failed to load Jitsi Meet API';
     }
 }
 
+const startTokenRefresh = (expiresIn) => {
+    // 在 token 过期前30分钟刷新
+    const refreshInterval = (expiresIn - 1800) * 1000; // 转换为毫秒
+    
+    if (refreshInterval <= 0) {
+        console.warn('Token is about to expire or has expired');
+        return;
+    }
+    
+    refreshTimer = setInterval(async () => {
+        try {
+            const { jitsi_token } = await useMeet(teamStore.project?.id, roomName)
+            if (jitsi_token && meet.value) {
+                const decodedToken = jwtDecode(jitsi_token);
+                const newExpiresIn = decodedToken.exp - Math.floor(Date.now() / 1000);
+                
+                meet.value.executeCommand('token', jitsi_token);
+                clearInterval(refreshTimer);
+                startTokenRefresh(newExpiresIn);
+            }
+        } catch (error) {
+            console.error('Failed to refresh token:', error);
+        }
+    }, refreshInterval);
+}
+
 // 移除原有的 script 创建代码，直接定义 initJitsiMeet
 async function initJitsiMeet(jitsi_token) {
+    console.log('jitsi_token', jitsi_token);
     const options = {
         roomName: roomName, // 替换为你的会议室名称
         jwt: jitsi_token,
@@ -131,26 +174,30 @@ async function initJitsiMeet(jitsi_token) {
     
     // 更新事件监听
     meet.value.addEventListeners({
-        // 现有的事件
+        // 当用户主动离开会议时触发
         videoConferenceLeft: handleConferenceLeft,
+        // 当会议准备关闭时触发,用于清理资源
         readyToClose: handleReadyToClose,
+        // 当其他参与者离开会议时触发
         participantLeft: handleParticipantLeft,
-        // 添加连接状态事件
+        // 当与Jitsi服务器建立连接成功时触发
         connectionEstablished: handleConnectionEstablished,
+        // 当与Jitsi服务器连接失败时触发
         connectionFailed: handleConnectionFailed,
-        participantKickedOut: handleParticipantKickedOut
+        // 当用户被管理员踢出会议时触发
+        participantKickedOut: handleParticipantKickedOut,
+        // 当连接中断时触发
+        connectionInterrupted: handleConnectionInterrupted
     });
 }
 
 // 处理会议结束事件
 const handleConferenceLeft = (data) => {
-  teamStore.project.meeting = false
-  uiStore.init_meet = false
-  uiStore.show_meet = false
-  uiStore.meet = void 0
-  // 可以在这里执行一些清理操作
-  // 或者触发父组件的事件
-  emit('meetEnded', data);
+    console.log('handleConferenceLeft');
+    
+    if (!isReconnecting.value) {  // 只有在非重连状态下才触发 meetEnded
+        emit('meetEnded', data);
+    }
 }
 
 // 处理会议关闭事件
@@ -171,12 +218,17 @@ const handleParticipantLeft = (participant) => {
 // 添加新的事件处理函数
 const handleConnectionEstablished = () => {
     console.log('Connection established');
-    // 可以在这里处理重连成功的逻辑
+    isReconnecting.value = false;  // 重置重连状态
 };
 
 const handleConnectionFailed = (error) => {
     console.log('Connection failed:', error);
     // 可以在这里处理连接失败的逻辑
+};
+
+const handleConnectionInterrupted = () => {
+    console.log('Connection interrupted, attempting to reconnect...');
+    isReconnecting.value = true;  // 设置重连状态
 };
 
 const handleParticipantKickedOut = (params) => {
@@ -198,6 +250,7 @@ const cleanupMeet = () => {
     meet.value.removeEventListener('connectionEstablished', handleConnectionEstablished);
     meet.value.removeEventListener('connectionFailed', handleConnectionFailed);
     meet.value.removeEventListener('participantKickedOut', handleParticipantKickedOut);
+    meet.value.removeEventListener('connectionInterrupted', handleConnectionInterrupted);
     
     // 销毁实例
     meet.value.dispose();

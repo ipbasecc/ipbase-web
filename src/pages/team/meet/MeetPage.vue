@@ -91,6 +91,8 @@ const toggleMaxed = () => {
     }
 }
 const meetEnded = async () => {
+    teamStore.project.meeting = false
+
     uiStore.show_meet = false;
     uiStore.init_meet = false;
     uiStore.meet = void 0;
