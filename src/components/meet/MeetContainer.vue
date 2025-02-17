@@ -4,6 +4,7 @@
             <li>meetSite: {{ meetSite }}</li>
             <li>displayName: {{ displayName }}</li>
             <li>roomName: {{ roomName }}</li>
+            <li>errorMsg: {{ errorMsg }}</li>
         </ul>
     </span>
     <div v-else-if="meetAuth === false" class="fit absolute-full flex flex-center">
@@ -18,7 +19,7 @@ import { onMounted, useTemplateRef, ref, onBeforeUnmount } from 'vue';
 import useMeet from './useMeet.js';
 import { useQuasar } from 'quasar';
 import { preloadMeetAPI, isMeetAPILoaded } from 'src/utils/meetLoader';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 
 const $q = useQuasar();
 const { roomName, displayName } = defineProps({
@@ -40,14 +41,14 @@ const meetAuth = ref(void 0)
 
 const isReconnecting = ref(false);  // 添加重连状态标志
 
-const createMeet = async () => {
-    const _params = {
-        data: {
-            project_id: teamStore.project?.id,
-            room_name: roomName
-        }
+const _params = {
+    data: {
+        project_id: teamStore.project?.id,
+        room_name: roomName
     }
-    console.log('_params', _params);
+}
+const createMeet = async () => {
+    // console.log('_params', _params);
     
     const { jitsi_token } = await useMeet(_params)
     if(!jitsi_token) {
@@ -83,9 +84,9 @@ const startTokenRefresh = (expiresIn) => {
         return;
     }
     
-    refreshTimer = setInterval(async () => {
+    let refreshTimer = setInterval(async () => {
         try {
-            const { jitsi_token } = await useMeet(teamStore.project?.id, roomName)
+            const { jitsi_token } = await useMeet(_params)
             if (jitsi_token && meet.value) {
                 const decodedToken = jwtDecode(jitsi_token);
                 const newExpiresIn = decodedToken.exp - Math.floor(Date.now() / 1000);
