@@ -10,13 +10,14 @@
         :header-class="expansionHeaderClass(course)"
         @show="current_chapter = course"
       >
-        <q-list dense>
+        <q-list dense class="q-px-xs column gap-xs q-my-xs">
             <q-item v-for="i in course.cards" :key="i.id"
               clickable v-ripple
-              :class="i.id === teamStore.card?.id ? $q.dark.mode ? 'bg-grey-9' : 'bg-grey-4' : ''"
+              class="radius-xs"
+              :class="i.id === teamStore.card?.id ? 'bg-primary text-white' : 'text-grey'"
               @click="toggleCousrse(i)"
             >
-              <q-item-section>{{ i.name }}</q-item-section>
+              <q-item-section class="q-pl-sm">{{ i.name }}</q-item-section>
               <q-item-section side>
                   <q-icon v-if="i.id === teamStore.card?.id" name="mdi-play-circle" class="transition"
                   :class="i.id === teamStore.card?.id ? '' : 'op-0'" />
@@ -57,9 +58,9 @@ const current_chapter = ref();
 
 const expansionHeaderClass = (course) => {
   if(current_chapter?.value?.id === course.id){
-    return $q.dark.mode ? 'text-grey-3 bg-grey-10' : 'text-grey-8 bg-grey-3'
+    return $q.dark.mode ? 'text-grey-1 bg-grey-9' : 'text-grey-8 bg-grey-3'
   } else {
-    return $q.dark.mode ? 'text-grey-3' : 'text-grey-8'
+    return $q.dark.mode ? 'text-white bg-dark' : 'text-grey-8'
   }
 }
 </script>
