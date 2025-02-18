@@ -185,27 +185,9 @@ async function initJitsiMeet(jitsi_token) {
         meet.value.on("_requestDesktopSources", async (request, callback) => {
             console.log('_requestDesktopSources request:', request);
             const { options } = request;
-            try {
-                const rawSources = await window.jitsiAPI.getDesktopSources(options);
-                console.log('Got raw sources:', rawSources);
-
-                // 增加调试日志
-                const sources = rawSources.map(source => {
-                    const sourceType = source.id.startsWith('screen') ? 'screen' : 'window';
-                    return {
-                        id: source.id,
-                        name: source.name,
-                        thumbnail: source.thumbnail,
-                        sourceType // 直接使用 Electron 的源类型
-                    };
-                });
-
-                console.log('Processed sources for Jitsi:', sources);
-                callback({ sources });
-            } catch (error) {
-                console.error('Error:', error);
-                callback({ error });
-            }
+            window.jitsiAPI.getDesktopSources(options)
+            .then(sources => callback({ sources }))
+            .catch((error) => callback({ error }));
         });
     }
     

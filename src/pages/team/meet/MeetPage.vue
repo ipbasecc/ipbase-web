@@ -94,8 +94,7 @@ const meetEnded = async (state) => {
     console.log('meetEnded', state);
     
     uiStore.show_meet = false;
-    if(state === 'left'){
-        teamStore.project.meeting = false
+    if(state === 'left' || state === 'error'){
         uiStore.meet = void 0;
         uiStore.init_meet = false;
     }
@@ -104,8 +103,6 @@ const meetEnded = async (state) => {
         uiStore.meet = void 0;
         uiStore.init_meet = false;
         await endProjectMeet(teamStore.project?.id);
-    } else {
-        
     }
 }
 

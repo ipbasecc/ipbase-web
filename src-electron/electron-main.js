@@ -82,8 +82,13 @@ function unregisterGlobalShortcuts() {
 }
 app.commandLine.appendSwitch(
   'enable-features', 
-  'WebRTCPipeWireCapturer,SharedArrayBuffer'
+  'WebRTCPipeWireCapturer,SharedArrayBuffer,WebRTCScreenSharing'
 );
+
+// 添加这些配置来解决 Windows 上的屏幕共享问题
+app.commandLine.appendSwitch('enable-usermedia-screen-capturing');
+app.commandLine.appendSwitch('allow-http-screen-capture');
+app.commandLine.appendSwitch('auto-select-desktop-capture-source');
 
 function createWindow() {
   let mainWindowState = windowStateKeeper({
@@ -147,7 +152,8 @@ function createWindow() {
   });
   enable(mainWindow.webContents);
   if (process.env.DEV) {
-    mainWindow.loadURL("http://localhost:9000");
+    mainWindow.loadURL(process.env.APP_URL);
+    // mainWindow.loadURL("http://localhost:9000");
   } else {
     mainWindow.loadFile("index.html");
   }
