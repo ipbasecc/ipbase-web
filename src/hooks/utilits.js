@@ -649,3 +649,15 @@ export function hasIntersection(arr1, arr2) {
   // Check if any element in arr2 exists in set1
   return arr2.some(item => set1.has(item));
 }
+
+export function isRmptyTiptap(_jsonContent) {
+  const emptySource =  {
+    "type": "doc",
+    "content": [
+      {
+        "type": "paragraph"
+      }
+    ]
+  }
+  return JSON.stringify(emptySource) === JSON.stringify(_jsonContent)
+}

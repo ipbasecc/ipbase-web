@@ -318,6 +318,22 @@
       <!-- 重要度、紧急度 左边框颜色标记 -->
       <div class="absolute-left full-height z-fab" :class="`${edgeStyle.highlight ? 'highlight transition' : ''}`"
         :style="`${edgeStyle.style}`"></div>
+      <q-tooltip v-if="cardRef.type === 'classroom' && !isRmptyTiptap(cardRef.jsonContent)"
+        class="transparent no-padding no-margin"
+        anchor="center middle" self="top middle"
+      >
+        <q-card bordered style="width: 320px;">
+          <q-card-section class="q-pb-xs font-large font-bold-600">
+            {{ cardRef.name }}
+          </q-card-section>
+          <q-card-section class="q-pa-xs font-medium">
+            <TipTap :jsonContent="cardRef.jsonContent" :editable="false"
+              :need="'json'" :square="true" :show_toolbar="false" :show_bubbleMenu="false"
+              styleClass="q-px-md q-py-sm"
+            />
+          </q-card-section>
+        </q-card>
+      </q-tooltip>
     </q-card>
     <!-- 对话框中，需要使用esc来取消输入框的聚焦状态，这里关闭组件的esc事件 -->
     <q-dialog ref="card_detial" v-model="show_cardDetial" :full-height="$q.screen.gt.sm" :full-width="$q.screen.gt.sm"
@@ -413,6 +429,7 @@
   import ResourcePage from './ResourcePage.vue'
   import MediaViewer from 'src/components/VIewComponents/MediaViewer.vue'
   import useSocket from "src/pages/team/card/hooks/useSocket.js";
+  import { isRmptyTiptap } from "src/hooks/utilits.js"
 
   const $q = useQuasar();
   const route = useRoute();
