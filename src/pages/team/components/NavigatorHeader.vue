@@ -258,8 +258,8 @@ watch(notification, async () => {
 const isElectron = computed(() => $q.platform.is.electron);
 const isMax = ref(false);
 onMounted(async () => {
+  await nextTick();
   if (isElectron.value) {
-    await nextTick();
     isMax.value = window.windowAPI?.isMaximized();
   }
 });

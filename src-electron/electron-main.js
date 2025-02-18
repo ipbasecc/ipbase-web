@@ -8,6 +8,7 @@ import {
   session,
   globalShortcut,
   desktopCapturer,
+  powerSaveBlocker
 } from "electron";
 import windowStateKeeper from "electron-window-state";
 import path from "path";
@@ -22,6 +23,13 @@ initialize(); // <-- add this
 const platform = process.platform || os.platform();
 
 const currentDir = fileURLToPath(new URL(".", import.meta.url));
+
+const id = powerSaveBlocker.start('prevent-display-sleep');
+if (powerSaveBlocker.isStarted(id)) {
+    console.log('Wake lock active');
+} else {
+    console.error('Wake lock could not be activated');
+}
 
 const SCREEN_SHARE_GET_SOURCES = "ScreenCapture";
 
@@ -80,15 +88,19 @@ function unregisterGlobalShortcuts() {
   globalShortcut.unregister("CommandOrControl+=");
   globalShortcut.unregister("CommandOrControl+-");
 }
+
 app.commandLine.appendSwitch(
-  'enable-features', 
-  'WebRTCPipeWireCapturer,SharedArrayBuffer,WebRTCScreenSharing'
+  'enable-features',
+  'WebRTCPipeWireCapturer',
+  'SharedArrayBuffer',
+  'WebRTCScreenSharing',
+  'DesktopCapture'
 );
 
-// 添加这些配置来解决 Windows 上的屏幕共享问题
 app.commandLine.appendSwitch('enable-usermedia-screen-capturing');
 app.commandLine.appendSwitch('allow-http-screen-capture');
 app.commandLine.appendSwitch('auto-select-desktop-capture-source');
+app.commandLine.appendSwitch('enable-experimental-web-platform-features');
 
 function createWindow() {
   let mainWindowState = windowStateKeeper({
@@ -147,7 +159,15 @@ function createWindow() {
       enableRemoteModule: true, // 打开 remote 模块
       csp: csp,
       // zoomFactor: zoom,
-      enableBlinkFeatures: 'GetDisplayMedia' // 允许屏幕捕获
+      enableBlinkFeatures: 'GetDisplayMedia', // 允许屏幕捕获
+      permissions: [
+        'media',
+        'mediaDevices',
+        'desktopCapturer',
+        'display-capture',
+        'screen',
+        'wake-lock'
+      ]
     },
   });
   enable(mainWindow.webContents);
@@ -173,15 +193,22 @@ function createWindow() {
     // mainWindow.webContents.openDevTools()
     // we're on production; no access to devtools pls
     mainWindow.webContents.on("devtools-opened", () => {
-      mainWindow.webContents.closeDevTools();
+      // mainWindow.webContents.closeDevTools();
     });
   }
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
   // 监听窗口关闭事件，以便保存当前缩放因子
   mainWindow.webContents.on("did-finish-load", () => {
     const currentZoom = mainWindow.webContents.getZoomFactor();
     saveZoomFactor(currentZoom);
+  });
+  mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
+    console.error('Page failed to load:', errorCode, errorDescription);
+  });
+  
+  mainWindow.webContents.on('crashed', (event) => {
+    console.error('Renderer process crashed');
   });
 
   mainWindow.on("closed", () => {
@@ -266,7 +293,12 @@ ipcMain.handle("ScreenCapture", async (_event, options) => {
     }));
   } catch (error) {
     console.error("Failed to get desktop sources:", error);
-    throw error;
+    // 返回更详细的错误信息
+    return {
+      error: true,
+      message: error.message,
+      code: error.code
+    };
   }
 });
 
@@ -278,6 +310,7 @@ app.on("window-all-closed", () => {
     app.quit();
   }
   ipcMain.removeHandler(SCREEN_SHARE_GET_SOURCES);
+  ipcMain.removeHandler("ScreenCapture");
 });
 
 app.on("activate", () => {

@@ -7,7 +7,7 @@
             <li>errorMsg: {{ errorMsg }}</li>
         </ul>
     </span>
-    <div v-else-if="meetAuth === false" class="fit absolute-full flex flex-center">
+    <div v-else-if="meetAuth === false" class="fit absolute-full flex flex-center jitsi">
         {{ $t('meet_no_auth') }}
     </div>
     <div v-else v-bind="$attrs" ref="jitsiContainer" />
@@ -176,6 +176,12 @@ async function initJitsiMeet(jitsi_token) {
             LANG_DETECTION: true,
             // DEFAULT_BACKGROUND: '#474747',// 背景颜色
             DEFAULT_LOCAL_DISPLAY_NAME: 'me',
+            SHOW_JITSI_WATERMARK: false,
+            SHOW_BRAND_WATERMARK: false,
+            SHOW_WATERMARK_FOR_GUESTS: false,
+            SHOW_POWERED_BY: false,
+            SHOW_PROMOTIONAL_CLOSE_PAGE: false,
+            HIDE_INVITE_MORE_HEADER: true
         },
         sandbox: 'allow-scripts allow-same-origin allow-popups allow-forms allow-downloads'
     };
@@ -185,9 +191,30 @@ async function initJitsiMeet(jitsi_token) {
         meet.value.on("_requestDesktopSources", async (request, callback) => {
             console.log('_requestDesktopSources request:', request);
             const { options } = request;
-            window.jitsiAPI.getDesktopSources(options)
-            .then(sources => callback({ sources }))
-            .catch((error) => callback({ error }));
+            try {
+                // 确保 options 包含正确的 types
+                const sourceOptions = {
+                    ...options,
+                    types: options.types || ['window', 'screen']
+                };
+                const sources = await window.jitsiAPI.getDesktopSources(sourceOptions);
+                
+                // 对 Windows 平台的源进行特殊处理
+                const processedSources = sources.map(source => ({
+                    ...source,
+                    id: source.id,
+                    name: source.name || 'Unknown',
+                    thumbnailURL: source.thumbnailURL,
+                    type: source.type,
+                    display_id: source.display_id
+                }));
+                
+                console.log('Available sources:', processedSources);
+                callback({ sources: processedSources });
+            } catch (error) {
+                console.error('Failed to get desktop sources:', error);
+                callback({ error: error.message || 'Failed to get sources' });
+            }
         });
     }
     

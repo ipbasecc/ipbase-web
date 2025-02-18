@@ -90,5 +90,32 @@ contextBridge.exposeInMainWorld('jitsiAPI', {
       console.error('Error obtaining desktop sources:', error);
       throw error; // Re-throw the error if you want to handle it further up
     }
+  },
+  // 添加 Wake Lock API 支持
+  requestWakeLock: async () => {
+    try {
+      if ('wakeLock' in navigator) {
+        return await navigator.wakeLock.request('screen');
+      }
+      return null;
+    } catch (error) {
+      console.warn('Wake Lock API not supported or permission denied:', error);
+      return null;
+    }
   }
 })
+
+// 添加额外的权限 API
+contextBridge.exposeInMainWorld('permissionsAPI', {
+  queryPermission: async (name) => {
+    try {
+      if (name in navigator.permissions) {
+        return await navigator.permissions.query({ name });
+      }
+      return { state: 'not-supported' };
+    } catch (error) {
+      console.warn(`Permission query failed for ${name}:`, error);
+      return { state: 'denied' };
+    }
+  }
+});
