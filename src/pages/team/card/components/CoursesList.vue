@@ -14,13 +14,13 @@
             <q-item v-for="i in course.cards" :key="i.id"
               clickable v-ripple
               class="radius-xs"
-              :class="i.id === teamStore.card?.id ? 'bg-primary text-white' : 'text-grey'"
+              :class="i.id === teamStore.card?.id ? 'bg-primary text-white' : 'text-grey-7'"
               @click="toggleCousrse(i)"
             >
               <q-item-section class="q-pl-sm">{{ i.name }}</q-item-section>
               <q-item-section side>
                   <q-icon v-if="i.id === teamStore.card?.id" name="mdi-play-circle" class="transition"
-                  :class="i.id === teamStore.card?.id ? '' : 'op-0'" />
+                  :class="i.id === teamStore.card?.id ? '' : 'op-0'" color="white" />
                   <PayState v-else :card="i" :dense="true" />
               </q-item-section>
             </q-item>

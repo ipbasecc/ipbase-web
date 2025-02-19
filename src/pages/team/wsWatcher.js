@@ -972,6 +972,7 @@ export default function useWatcher() {
         cleanCache();
       }
     }
+    teamStore.income = null;
   },{ immediate: true, deep: true });
 
   const handleVisibilityChange = (val) => {

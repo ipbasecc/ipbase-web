@@ -7,7 +7,6 @@ import { i18n } from 'src/boot/i18n.js';
 const $t = i18n.global.t;
 
 export async function createProjectFn(_params) {
-  let create_res;
   let params = _params;
   const mm_team_id = _params.by_team?.mm_team?.id;
   if (!mm_team_id) {
@@ -26,10 +25,9 @@ export async function createProjectFn(_params) {
   if (create_mmChannel_res.data) {
     params.by_team = _params.by_team?.id;
     params.mm_channel = create_mmChannel_res.data;
-    let res = await createProject(params);
-    if (res?.data) {
-      create_res = res.data;
-      return create_res;
+    const {data} = await createProject(params);
+    if (data) {
+      return data;
     }
   } else {
     Notify.create($t('create_chat_channel_fiald_try_refresh'));
