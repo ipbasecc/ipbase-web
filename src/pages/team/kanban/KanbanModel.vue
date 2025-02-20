@@ -32,7 +32,7 @@
         />
         <VueDraggable v-else v-model="kanban.columns"
           :animation="300" :delay="1" :fallbackTolerance="5" :forceFallback="true" :fallbackOnBody="true"
-          filter=".undrag" group="column"
+          :disabled="!useAuths('order', ['column'])" filter=".undrag" group="column"
           chosenClass="chosenGroupClass" ghostClass="ghostColumn" fallbackClass="chosenGroupClass"
           :handle="setDragHandle(view_model)"
           class="no-wrap border-placeholder"
