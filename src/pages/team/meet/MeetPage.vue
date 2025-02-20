@@ -8,8 +8,10 @@
         </div>
         <MeetContainer :roomName :displayName class="absolute-full" @meetEnded="meetEnded" />
         <div @mousedown="startResize"
-            class="absolute-bottom-right z-fab cursor-nwse-resize" style="width: 80px; height: 80px; transform: translate(20px, 20px);">
-        </div>
+            class="z-fab cursor-nwse-resize"
+            :class="isResizing ? 'absolute-full' : 'absolute-bottom-right'"
+            :style="isResizing ? '' : `width: 40px; height: 40px; transform: translate(25px, 25px);`"
+        />
     </div>
 </template>
 
@@ -32,11 +34,11 @@ const { x, y, style } = useDraggable(draggableToolbar, {
 })
 
 
-let isResizing = false;
+let isResizing = ref(false);
 let startX, startY, startWidth, startHeight;
 
 const startResize = (event) => {
-    isResizing = true;
+    isResizing.value = true;
     startX = event.clientX;
     startY = event.clientY;
     startWidth = draggableDom.value.offsetWidth;
@@ -52,12 +54,10 @@ const resize = (event) => {
     const newHeight = startHeight + deltaY;
     draggableDom.value.style.width = `${newWidth}px`;
     draggableDom.value.style.height = `${newHeight}px`;
-  if (isResizing) {
-  }
 };
 
 const stopResize = () => {
-  isResizing = false;
+  isResizing.value = false;
   document.removeEventListener('mousemove', resize);
   document.removeEventListener('mouseup', stopResize);
 };

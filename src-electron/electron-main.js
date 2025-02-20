@@ -193,10 +193,10 @@ function createWindow() {
     // mainWindow.webContents.openDevTools()
     // we're on production; no access to devtools pls
     mainWindow.webContents.on("devtools-opened", () => {
-      // mainWindow.webContents.closeDevTools();
+      mainWindow.webContents.closeDevTools();
     });
   }
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   // 监听窗口关闭事件，以便保存当前缩放因子
   mainWindow.webContents.on("did-finish-load", () => {
