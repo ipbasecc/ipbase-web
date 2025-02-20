@@ -243,7 +243,7 @@
 </template>
 
 <script setup>
-import { ref, toRefs, computed, watchEffect, onMounted, reactive, onUnmounted } from "vue";
+import { ref, toRefs, computed, watchEffect, onMounted, reactive, onBeforeMount } from "vue";
 import { findCard } from "src/api/strapi/project.js";
 import OverView from "src/pages/team/components/OverView.vue";
 import KanbanContainer from "./KanbanContainer.vue";
@@ -389,7 +389,10 @@ const classExtends = ref([
   { id: 4, label: "class_storage", name: "class_storage", icon: "storage" },
   { id: 5, label: "class_note", name: "class_note", icon: "mdi-checkbox-marked-outline" }
 ]);
-watchEffect(() => {
+onBeforeMount(() => {
+  if(!teamStore.card?.mm_thread){
+    classExtends.value = classExtends.value?.filter(i => i.name !== 'class_forum')
+  }
   if(uiStore.app === 'notebooks'){
     classExtends.value = classExtends.value.filter(i => i.name !== 'class_note');
   }

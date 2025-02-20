@@ -503,7 +503,7 @@ export function getMimeExtensions(mimeTypes) {
 }
 
 export function mediaType(url) {
-  console.log('url', url);
+  // console.log('url', url);
   
   const urlObj = new URL(url);
   const path = urlObj.pathname;
