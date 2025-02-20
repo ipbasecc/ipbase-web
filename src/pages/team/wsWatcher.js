@@ -360,6 +360,9 @@ export default function useWatcher() {
         } else {
           teamStore.team.projects = [_project];
         }
+        // 防止被多次触发
+        // 不能在最后统一设置，因为有些操作可能需要旧数据
+        teamStore.income = null;
       }
       if(val.value.event === 'project:project_modify'){
         let _project
@@ -972,7 +975,6 @@ export default function useWatcher() {
         cleanCache();
       }
     }
-    teamStore.income = null;
   },{ immediate: true, deep: true });
 
   const handleVisibilityChange = (val) => {

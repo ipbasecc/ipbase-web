@@ -19,9 +19,12 @@
             >
               <q-item-section class="q-pl-sm">{{ i.name }}</q-item-section>
               <q-item-section side>
-                  <q-icon v-if="i.id === teamStore.card?.id" name="mdi-play-circle" class="transition"
+                  <q-icon v-if="checkDetialAuth(i.id)" name="mdi-play-circle" class="transition"
                   :class="i.id === teamStore.card?.id ? '' : 'op-0'" color="white" />
-                  <PayState v-else :card="i" :dense="true" />
+                  <PayState v-else :card="i" :dense="true"
+                    class="q-px-xs"
+                    :class="i.id === teamStore.card?.id ? 'bg-white text-info radius-xs' : ''"
+                  />
               </q-item-section>
             </q-item>
         </q-list>
@@ -62,6 +65,9 @@ const expansionHeaderClass = (course) => {
   } else {
     return $q.dark.mode ? 'text-white bg-dark' : 'text-grey-8'
   }
+}
+const checkDetialAuth = (_id) => {
+  return _id === teamStore.card?.id && teamStore.card?.hasDetialAuth
 }
 </script>
 
