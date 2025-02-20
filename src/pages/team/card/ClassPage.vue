@@ -188,20 +188,30 @@
           </template>
           <div v-else class="absolute-full column flex-center">
             <div class="q-space row no-wrap gap-md flex-center">
-              <q-card v-if="teamStore.card?.message" bordered>
-                <q-card-section>
-                  <div class="text-h6">{{ teamStore.card?.message }}</div>
-                </q-card-section>
-              </q-card>
-              <OrderCard v-else :card="teamStore.card">
-                <template #buyBtn>
-                  <PayButton
-                    class="full-width" btnColor="negative"
-                    subject="card" :commodity="teamStore.card"
-                    @buyData="buyData"
-                  />
-                </template>
-              </OrderCard>
+              <div class="row gap-lg">
+                <q-card v-if="teamStore.card?.message" bordered>
+                  <q-card-section>
+                    <div class="text-h6">{{ teamStore.card?.message }}</div>
+                  </q-card-section>
+                </q-card>
+                <OrderCard v-else :card="teamStore.card">
+                  <template #buyBtn>
+                    <PayButton
+                      class="full-width" btnColor="negative"
+                      subject="card" :commodity="teamStore.card"
+                      @buyData="buyData"
+                    />
+                  </template>
+                </OrderCard>
+                <div v-if="teamStore.card?.jsonContent && !isRmptyTiptap(teamStore.card.jsonContent)">
+                  <q-scroll-area class="full-height q-pa-sm" style="max-height: 28rem; width: 22rem;">
+                    <TipTap :jsonContent="teamStore.card.jsonContent" :editable="false"
+                      :need="'json'" :square="true" :show_toolbar="false" :show_bubbleMenu="false"
+                      styleClass="q-px-md q-py-sm"
+                    />
+                  </q-scroll-area>
+                </div>
+              </div>
             </div>
           </div>
         </q-page>
@@ -251,6 +261,8 @@ import PayButton from 'src/components/order/PayButton.vue'
 import OrderCard from './components/OrderCard.vue'
 import { useQuasar } from "quasar";
 import { loading } from 'src/hooks/team/useCard.js'
+import TipTap from "src/components/Utilits/tiptap/TipTap.vue";
+import { isRmptyTiptap } from "src/hooks/utilits.js"
 
 const $q = useQuasar();
 const props = defineProps({
