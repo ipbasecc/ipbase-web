@@ -12,7 +12,7 @@
       class="row no-wrap items-center unselected q-pb-sm relative-position"
       :class="$q.platform.is.electron ? 'q-electron-drag' : ''"
     >
-      <q-img src="/logo.png"
+      <q-img src="../../../public/logo.png"
         :ratio="1"
         height="30px"
         width="30px"

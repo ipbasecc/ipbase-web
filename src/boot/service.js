@@ -13,10 +13,15 @@ export function $pathService(_path) {
   return res;
 }
 
+export function $public() {
+  return process.env.APP_URL;
+}
+
 export default boot(({ app }) => {
   app.mixin({
     methods: {
       $pathService,
+      $public,
       /**
        * 
        * @param {String} url 

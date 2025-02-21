@@ -34,7 +34,7 @@
     >
       <q-btn flat icon-right="expand_more" no-caps class="q-mx-xs">
         <q-img
-          src="/logo.png"
+          src="../../../public/logo.png"
           :ratio="1"
           height="36px"
           width="36px"
