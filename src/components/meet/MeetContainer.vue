@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { teamStore, uiStore } from 'src/hooks/global/useStore';
+import { teamStore } from 'src/hooks/global/useStore';
 import { onMounted, useTemplateRef, ref, onBeforeUnmount } from 'vue';
 import useMeet from './useMeet.js';
 import { useQuasar } from 'quasar';

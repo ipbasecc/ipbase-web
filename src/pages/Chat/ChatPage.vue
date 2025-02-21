@@ -223,7 +223,7 @@
               <div v-else class="absolute-full column flex-center">
                 <div class="column no-wrap gap-sm items-center op-5">
                   <q-img
-                    src="../../../public/logo.png"
+                    src="/logo.png"
                     :ratio="1"
                     spinner-color="primary"
                     spinner-size="82px"

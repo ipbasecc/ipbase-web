@@ -4,7 +4,7 @@
     style="z-index: -1; line-height: 1.5"
     class="absolute-full column flex-center"
   >
-    <img src="../../../public/icons/icon-128x128.png" alt="LoadingImage" class="rotate" />
+    <img src="/icons/icon-128x128.png" alt="LoadingImage" class="rotate" />
     <div class="row items-center no-wrap gap-md font-xx-large">
       <span>{{ $t('app_loading') }}</span>
       <div class="loading-dots">

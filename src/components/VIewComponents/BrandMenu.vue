@@ -13,7 +13,7 @@
       >
         <q-avatar class="q-pl-sm">
           <q-img
-            src="../../../public/logo.png"
+            src="/logo.png"
             :ratio="1"
             height="36px"
             width="36px"
