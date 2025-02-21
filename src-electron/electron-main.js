@@ -101,6 +101,8 @@ app.commandLine.appendSwitch('enable-usermedia-screen-capturing');
 app.commandLine.appendSwitch('allow-http-screen-capture');
 app.commandLine.appendSwitch('auto-select-desktop-capture-source');
 app.commandLine.appendSwitch('enable-experimental-web-platform-features');
+app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
+app.commandLine.appendSwitch('disable-gpu-vsync');
 
 function createWindow() {
   let mainWindowState = windowStateKeeper({
@@ -289,7 +291,8 @@ ipcMain.handle("ScreenCapture", async (_event, options) => {
       ...source,
       thumbnail: {
         dataUrl: source.thumbnail.toDataURL(),
-      }
+      },
+      type: source.id.startsWith('window') ? 'window' : 'screen'
     }));
   } catch (error) {
     console.error("Failed to get desktop sources:", error);

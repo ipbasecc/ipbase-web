@@ -107,7 +107,7 @@ const startTokenRefresh = (expiresIn) => {
 
 // 移除原有的 script 创建代码，直接定义 initJitsiMeet
 async function initJitsiMeet(jitsi_token) {
-    console.log('jitsi_token', jitsi_token);
+    // console.log('jitsi_token', jitsi_token);
     const options = {
         roomName: roomName, // 替换为你的会议室名称
         jwt: jitsi_token,

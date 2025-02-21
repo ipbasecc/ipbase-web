@@ -320,7 +320,6 @@
         :style="`${edgeStyle.style}`"></div>
       <q-tooltip v-if="cardRef.type === 'classroom' && !isRmptyTiptap(cardRef.jsonContent)"
         class="transparent no-padding no-margin shadow-focus"
-        anchor="bottom middle" self="top middle" :offset="[0, -30]"
       >
         <q-card bordered style="width: 320px;" :class="$q.dark.mode ? 'text-grey-1' : 'text-grey-10'">
           <q-card-section class="q-pb-xs font-large font-bold-600">
