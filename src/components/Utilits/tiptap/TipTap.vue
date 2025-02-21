@@ -1,6 +1,6 @@
 <template>
   <div class="column no-wrap" :class="toolbar_onBottom ? 'reverse' : ''" ref="tiptap">
-    
+
     <template v-if="isEditable">
       <div v-if="show_toolbar && isEditable"
         class="full-width row no-wrap gap-xs items-center justify-start q-py-xs q-px-sm"
@@ -209,6 +209,8 @@ import bash from 'highlight.js/lib/languages/bash'
 import sql from 'highlight.js/lib/languages/sql'
 
 import 'highlight.js/styles/atom-one-dark.css'
+import { startImageUpload } from "./plugins/upload-images";
+import { TextSelection } from 'prosemirror-state'
 
 const lowlight = createLowlight(common)
 
@@ -492,6 +494,7 @@ const addImage = (url) => {
   editor.value?.chain().focus().setImage({ src: url }).run();
   editor.value.commands.createParagraphNear();
 };
+
 const uploadFiles = () => {};
 const { files, open, reset, onChange } = useFileDialog({
   accept: "image/*", // Set to accept only image files
@@ -499,13 +502,13 @@ const { files, open, reset, onChange } = useFileDialog({
 });
 
 const menu = ref();
-const uiConfig = ref({})
+const uiConfig = ref({});
 watchEffect(() => {
   uiConfig.value.withSaveBtn = withSaveBtnRef.value;
   uiConfig.value.withImageBtn = withImageBtn.value;
   uiConfig.value.withAttachBtb = withAttachBtb.value;
   if(editor.value){
-    const { editorMenu } = useTiptap(editor, uiConfig.value, uploadFiles, tiptapBlur, tiptapSave, saving, open);
+    const { editorMenu } = useTiptap(editor, uiConfig.value, uploadFiles, tiptapBlur, tiptapSave, saving);
     menu.value = editorMenu;
   }
 })
@@ -524,26 +527,159 @@ onChange(async (files) => {
   await batchInserImage(files);
 });
 
-async function onDrop(files) {
-  await batchInserImage(files);
+// 添加防抖函数（避免频繁触发）
+const debounce = (fn, delay = 100) => {
+  let timeout
+  return (...args) => {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => fn(...args), delay)
+  }
 }
+
+let insertPos = null
+let isBetweenLines = false // 标记是否在两行之间
+
+// 新增状态追踪
+let lastY = null
+let direction = 'none' // 'up' | 'down' | 'none'
+let currentBlock = null
+let nextBlock = null
+
+// 安全获取文档位置的方法
+const getSafePosition = (view, rawPos) => {
+  const docSize = view.state.doc.content.size
+  // 确保位置在合法范围内
+  return Math.max(0, Math.min(rawPos, docSize - 1))
+}
+
+// 修改后的块边界检测
+const getTrueBlockBoundaries = (view, pos) => {
+  const safePos = getSafePosition(view, pos)
+  const $pos = view.state.doc.resolve(safePos)
+  
+  let depth = $pos.depth
+  while (depth > 0 && !$pos.node(depth).type.isBlock) {
+    depth--
+  }
+
+  const start = $pos.start(depth)
+  const end = Math.min($pos.end(depth), view.state.doc.content.size - 1)
+
+  return {
+    start,
+    end,
+    depth,
+    type: $pos.node(depth).type.name
+  }
+}
+
+// 增强版处理函数
+const handleDragMove = (event) => {
+  if (!editor.value) return
+
+  const view = editor.value.view
+  const coords = { left: event.clientX, top: event.clientY }
+  
+  // 安全获取位置
+  const rawPos = view.posAtCoords(coords)?.pos ?? 0
+
+  // 空文档处理
+  if (view.state.doc.content.size === 0) {
+    insertPos = 0
+    return
+  } else {
+    insertPos = rawPos
+  }
+}
+
+
+const debouncedMouseHandler = debounce(handleDragMove, 100)
+const checkLineEmpty = (editor, pos) => {
+  const { doc } = editor.state
+  const $pos = doc.resolve(pos)
+  
+  // 获取最近的块级父节点
+  let depth = $pos.depth
+  while (depth > 0 && !$pos.node(depth).type.isBlock) {
+    depth--
+  }
+  const parentNode = $pos.node(depth)
+  
+  // 检查节点类型
+  if (parentNode.type.name === 'paragraph') {
+    return parentNode.content.size === 0
+  }
+  
+  // 处理列表项等嵌套结构
+  if (parentNode.type.name === 'list_item') {
+    const firstChild = parentNode.content.firstChild
+    return !firstChild || firstChild.content.size === 0
+  }
+  
+  // 处理其他块级元素
+  return parentNode.content.size === 0
+}
+const onDrop = async (files) => {
+  // 确保 editor 是可用的
+  if (!editor.value || !files) return;
+
+  if (insertPos === null) return
+
+  // 创建新事务
+  const transaction = editor.value.state.tr
+
+  // 当且仅当当前行不为空时插入新行
+  let actualInsertPos = insertPos
+  if (!checkLineEmpty(editor.value, actualInsertPos)) {
+    const newNode = editor.value.schema.nodes.paragraph.create()
+    transaction.insert(insertPos, newNode)
+    // 新行插入后，实际插入位置需要加上新节点的尺寸
+    actualInsertPos += newNode.nodeSize
+  }
+
+  // 设置选区到实际插入位置
+  transaction.setSelection(
+    TextSelection.create(
+      transaction.doc,
+      Math.min(actualInsertPos, transaction.doc.content.size - 1)
+    )
+  )
+
+  // 应用事务
+  editor.value.view.dispatch(transaction)
+
+  // 处理文件上传
+  for (const file of files) {
+    await startImageUpload(
+      file, 
+      editor.value.view,
+      actualInsertPos, // 使用调整后的位置
+      editor.value
+    )
+  }
+  // 重置状态
+  insertPos = null
+  isBetweenLines = false
+};
 const { isOverDropZone } = useDropZone(tiptap, {
   onDrop,
   // specify the types of data to be received.
   dataTypes: ["image/*"],
 });
 
-const setCursorToEnd = () => {
-  editor.value?.commands.focus("end");
-};
 onMounted(() => {
-  // setCursorToEnd();
-});
+  //监听拖拽事件
+  document.addEventListener('dragover', (e) => {
+    e.preventDefault() // 必须阻止默认行为
+    debouncedMouseHandler(e) // 复用相同的处理逻辑
+  })
+})
 
 onUnmounted(() => {
   if(teamStore.active_document){
     teamStore.active_document = null;
   }
+  document.removeEventListener('dragover', handleDragMove)
 })
 
 const autoSetContent = () => {
@@ -693,8 +829,6 @@ watch(
   },
   { immediate: true, deep: true }
 );
-
-
 </script>
 
 <style lang="scss">

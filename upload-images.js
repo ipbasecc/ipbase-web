@@ -3,7 +3,7 @@ import { confirmUpload } from 'src/hooks/utilits/useConfirmUpload.js'
 
 import { userStore } from "src/hooks/global/useStore.js";
 
-export function startImageUpload(file, view, pos, editor) {
+export function startImageUpload(file, view, pos, editor, onImageUploaded) {
   // check if the file is an image
   if (!file.type.includes("image/")) {
     toast.error("File type not supported.");
@@ -14,12 +14,11 @@ export function startImageUpload(file, view, pos, editor) {
     toast.error("File size too big (max 20MB).");
     return;
   }
-  editor.chain().focus().deleteRange({ from: pos - 1, to: pos }).run(); // 删除光标前的字符（即 '/'）
 
-  handleImageUpload(file, editor)
+  handleImageUpload(file, editor, onImageUploaded)
 }
 
-export const handleImageUpload = (file, editor) => {
+export const handleImageUpload = (file, editor, onImageUploaded) => {
   const files = [file]
   const me = userStore.me
   // const res = await confirmUpload(files, me)
@@ -34,6 +33,10 @@ export const handleImageUpload = (file, editor) => {
             editor.commands.createParagraphNear();
             editor.chain().focus().setImage({ src: url }).run();
             editor.commands.createParagraphNear();
+            // Call the callback function to set the cursor position
+            if (onImageUploaded) {
+              onImageUploaded(editor);
+            }
           };
           addImage(url)
         } else if (res.status === 401) {

@@ -1,5 +1,6 @@
 
-export default function useTiptap(editor, uiConfig, uploadFiles, tiptapBlur, tiptapSave, saving, open) {
+import { startImageUpload } from "./plugins/upload-images";
+export default function useTiptap(editor, uiConfig, uploadFiles, tiptapBlur, tiptapSave, saving) {
   const editorMenu = [
     {
       type: "Botton",
@@ -253,7 +254,7 @@ export default function useTiptap(editor, uiConfig, uploadFiles, tiptapBlur, tip
       class: "",
       activeClass: "",
       always_show: uiConfig.withImageBtn,
-      handler: () => open(),
+      handler: () => insertImage(editor.value),
     },
     {
       type: "Botton",
@@ -280,7 +281,21 @@ export default function useTiptap(editor, uiConfig, uploadFiles, tiptapBlur, tip
       handler: () => tiptapSave(),
     },
   ];
+  const insertImage = (editor) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = async () => {
+      if (input.files?.length) {
+        const file = input.files[0];
+        const pos = editor.view.state.selection.from;
+        startImageUpload(file, editor.view, pos, editor);
+      }
+    };
+    input.click();
+  }
   return {
     editorMenu,
+    insertImage
   }
 }

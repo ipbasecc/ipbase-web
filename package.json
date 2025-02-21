@@ -118,6 +118,7 @@
     "pinia": "^2.2.2",
     "pinia-plugin-persistedstate": "^4.2.0",
     "prismjs": "^1.29.0",
+    "prosemirror-state": "^1.4.3",
     "qrcode.vue": "^3.4.1",
     "quasar": "^2.16.11",
     "react": "^18.3.1",

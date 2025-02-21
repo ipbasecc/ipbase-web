@@ -183,6 +183,7 @@ const getSuggestionItems = ({ query }) => {
           searchTerms: ["photo", "picture", "media"],
           icon: Image,
           command: ({ editor, range }) => {
+            editor.chain().focus().deleteRange(range).run();
             const input = document.createElement("input");
             input.type = "file";
             input.accept = "image/*";
@@ -190,7 +191,10 @@ const getSuggestionItems = ({ query }) => {
               if (input.files?.length) {
                 const file = input.files[0];
                 const pos = editor.view.state.selection.from;
-                startImageUpload(file, editor.view, pos, editor);
+                const onImageUploaded = (editor) => {
+                  editor.chain().focus().setTextSelection(pos + 1).run();
+                };
+                startImageUpload(file, editor.view, pos, editor, onImageUploaded);
               }
             };
             input.click();
