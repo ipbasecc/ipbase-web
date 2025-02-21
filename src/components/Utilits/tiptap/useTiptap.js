@@ -1,6 +1,6 @@
 
 import { startImageUpload } from "./plugins/upload-images";
-export default function useTiptap(editor, uiConfig, uploadFiles, tiptapBlur, tiptapSave, saving) {
+export default function useTiptap(editor, uiConfig, uploadFiles, tiptapSave) {
   const editorMenu = [
     {
       type: "Botton",
@@ -298,4 +298,29 @@ export default function useTiptap(editor, uiConfig, uploadFiles, tiptapBlur, tip
     editorMenu,
     insertImage
   }
+}
+export const isEmptyLine = (editor, line) => {
+  const { doc } = editor.state
+  const $pos = doc.resolve(line)
+  
+  // 获取最近的块级父节点
+  let depth = $pos.depth
+  while (depth > 0 && !$pos.node(depth).type.isBlock) {
+    depth--
+  }
+  const parentNode = $pos.node(depth)
+  
+  // 检查节点类型
+  if (parentNode.type.name === 'paragraph') {
+    return parentNode.content.size === 0
+  }
+  
+  // 处理列表项等嵌套结构
+  if (parentNode.type.name === 'list_item') {
+    const firstChild = parentNode.content.firstChild
+    return !firstChild || firstChild.content.size === 0
+  }
+  
+  // 处理其他块级元素
+  return parentNode.content.size === 0
 }

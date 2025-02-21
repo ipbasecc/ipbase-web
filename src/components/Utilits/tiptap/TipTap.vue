@@ -150,6 +150,7 @@ import {
   watchEffect
 } from "vue";
 import useTiptap from './useTiptap.js'
+import { isEmptyLine } from './useTiptap.js'
 import { teamStore } from "src/hooks/global/useStore.js";
 
 import { Editor, EditorContent, BubbleMenu } from "@tiptap/vue-3";
@@ -209,7 +210,7 @@ import bash from 'highlight.js/lib/languages/bash'
 import sql from 'highlight.js/lib/languages/sql'
 
 import 'highlight.js/styles/atom-one-dark.css'
-import { startImageUpload } from "./plugins/upload-images";
+import { startImageUpload, handleImageUpload } from "./plugins/upload-images";
 import { TextSelection } from 'prosemirror-state'
 
 const lowlight = createLowlight(common)
@@ -383,6 +384,51 @@ const init = () => {
       ]
     },
   })
+  // 1. 增强上传占位符扩展
+  const UploadPlaceholder = Extension.create({
+    addCommands() {
+      return {
+        setUploadingPlaceholder: (pos) => ({ state, dispatch }) => {
+          // 创建带有唯一ID的占位符
+          const placeholderId = `upload-${Date.now()}`
+          const placeholder = state.schema.nodes.paragraph.create(
+            { id: placeholderId },
+            state.schema.text('⏳ 上传中...')
+          )
+          
+          const tr = state.tr
+            .insert(pos, placeholder)
+            .setMeta('addToHistory', false)
+            .setMeta('uploadPlaceholder', {
+              from: pos,
+              to: pos + placeholder.nodeSize,
+              id: placeholderId
+            })
+          
+          if (dispatch) dispatch(tr)
+          return true
+        },
+        
+        deleteUploadPlaceholder: (placeholderId) => ({ state, dispatch }) => {
+          console.log('placeholderId', placeholderId);
+          
+          let found = false
+          state.doc.descendants((node, pos) => {
+            if (node.attrs.id === placeholderId) {
+              const tr = state.tr
+                .delete(pos, pos + node.nodeSize)
+                .setMeta('addToHistory', false)
+              
+              if (dispatch) dispatch(tr)
+              found = true
+              return false // 停止遍历
+            }
+          })
+          return found
+        }
+      }
+    }
+  })
 
   editor.value = new Editor({
     content: tiptapContent.value,
@@ -447,13 +493,20 @@ const init = () => {
         },
       }),
       // slash菜单
-      SlashCommand
+      SlashCommand,
+      UploadPlaceholder
     ],
     onCreate({ editor }) {
       tiptapReadyCount.value++;
       if(tiptapReadyCount.value === 1){
         emit("tiptapReady");
       }
+      setupPasteHandler()
+    },
+    onCreated: () => {
+      console.log('onCreated');
+      
+      setupPasteHandler()
     },
     onUpdate: async ({ editor, transaction }) => {
       // 检查是否是斜杠触发的更新
@@ -484,6 +537,79 @@ const init = () => {
   });
 };
 
+
+const getClipboardData = (event) => {
+  console.log('getClipboardData', event);
+  
+  if (event.clipboardData?.items) {
+    return event.clipboardData.items
+  }
+  // 兼容Safari
+  if (window.ClipboardEvent && event.clipboardData) {
+    return event.clipboardData.files
+  }
+  return []
+}
+const setupPasteHandler = () => {
+  console.log('setupPasteHandler');
+  const handlePaste = async (event) => {
+    console.log('handlePaste', event);
+    // if (!editor.value.isFocused) return
+
+    const items = getClipboardData(event)
+    console.log('items', items);
+    
+    if (!items) return
+
+    let hasImage = false
+    const uploadPromises = []
+
+    // 第一遍遍历：同步检测是否存在图片
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        hasImage = true
+        event.preventDefault() // 立即阻止默认行为
+        break // 发现图片即退出循环
+      }
+    }
+
+    if (!hasImage) return // 无图片则退出
+
+    // 第二遍遍历：处理所有图片
+    // 显示上传占位符
+    const pos = editor.value.state.selection.from
+    // const placeholderMeta = editor.value.commands.setUploadingPlaceholder(pos)
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        const blob = item.getAsFile()
+        
+        // 处理Safari兼容性（可能返回null）
+        if (!blob) {
+          console.warn('无法获取剪贴板文件数据')
+          continue
+        }
+
+        const filename = `paste-${Date.now()}.${item.type.split('/')[1] || 'png'}`
+        const file = new File([blob], filename, { type: item.type })
+
+        // 收集上传Promise
+        uploadPromises.push(
+          handleImageUpload(file, editor.value)
+        )
+      }
+    }
+
+    // 等待所有上传完成
+    await Promise.allSettled(uploadPromises)
+    // editor.value.commands.deleteUploadPlaceholder(placeholderMeta.id)
+  }
+
+  document.addEventListener('paste', handlePaste)
+  editor.value.on('destroy', () => {
+    document.removeEventListener('paste', handlePaste)
+  })
+}
+
 const isSlashMenuOpen = computed(() => editor.value?.slashMenuOpen || false)
 const sourceContent = ref();
 const setSourceContent = () => {
@@ -508,7 +634,7 @@ watchEffect(() => {
   uiConfig.value.withImageBtn = withImageBtn.value;
   uiConfig.value.withAttachBtb = withAttachBtb.value;
   if(editor.value){
-    const { editorMenu } = useTiptap(editor, uiConfig.value, uploadFiles, tiptapBlur, tiptapSave, saving);
+    const { editorMenu } = useTiptap(editor, uiConfig.value, uploadFiles, tiptapSave);
     menu.value = editorMenu;
   }
 })
@@ -592,33 +718,8 @@ const handleDragMove = (event) => {
   }
 }
 
-
 const debouncedMouseHandler = debounce(handleDragMove, 100)
-const checkLineEmpty = (editor, pos) => {
-  const { doc } = editor.state
-  const $pos = doc.resolve(pos)
-  
-  // 获取最近的块级父节点
-  let depth = $pos.depth
-  while (depth > 0 && !$pos.node(depth).type.isBlock) {
-    depth--
-  }
-  const parentNode = $pos.node(depth)
-  
-  // 检查节点类型
-  if (parentNode.type.name === 'paragraph') {
-    return parentNode.content.size === 0
-  }
-  
-  // 处理列表项等嵌套结构
-  if (parentNode.type.name === 'list_item') {
-    const firstChild = parentNode.content.firstChild
-    return !firstChild || firstChild.content.size === 0
-  }
-  
-  // 处理其他块级元素
-  return parentNode.content.size === 0
-}
+
 const onDrop = async (files) => {
   // 确保 editor 是可用的
   if (!editor.value || !files) return;
@@ -630,7 +731,7 @@ const onDrop = async (files) => {
 
   // 当且仅当当前行不为空时插入新行
   let actualInsertPos = insertPos
-  if (!checkLineEmpty(editor.value, actualInsertPos)) {
+  if (!isEmptyLine(editor.value, actualInsertPos)) {
     const newNode = editor.value.schema.nodes.paragraph.create()
     transaction.insert(insertPos, newNode)
     // 新行插入后，实际插入位置需要加上新节点的尺寸
@@ -663,12 +764,10 @@ const onDrop = async (files) => {
 };
 const { isOverDropZone } = useDropZone(tiptap, {
   onDrop,
-  // specify the types of data to be received.
   dataTypes: ["image/*"],
 });
 
 onMounted(() => {
-  //监听拖拽事件
   document.addEventListener('dragover', (e) => {
     e.preventDefault() // 必须阻止默认行为
     debouncedMouseHandler(e) // 复用相同的处理逻辑
@@ -679,7 +778,10 @@ onUnmounted(() => {
   if(teamStore.active_document){
     teamStore.active_document = null;
   }
-  document.removeEventListener('dragover', handleDragMove)
+  document.removeEventListener('dragover', (e) => {
+    e.preventDefault() // 必须阻止默认行为
+    debouncedMouseHandler(e) // 复用相同的处理逻辑
+  })
 })
 
 const autoSetContent = () => {

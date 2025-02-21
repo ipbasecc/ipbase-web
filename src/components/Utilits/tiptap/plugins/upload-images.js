@@ -36,6 +36,7 @@ export const handleImageUpload = (file, editor) => {
             editor.commands.createParagraphNear();
           };
           addImage(url)
+          return
         } else if (res.status === 401) {
           resolve(file);
 
