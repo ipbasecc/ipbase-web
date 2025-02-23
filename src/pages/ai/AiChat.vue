@@ -1,77 +1,114 @@
 <template>
-    <div :v-bind="$attrs" class="absolute-full row">
-        <!-- 左侧会话列表 - 在大屏幕显示 -->
-        <div v-if="$q.screen.gt.xs && !pannelMode" class="full-height column" style="flex: 0 0 260px;">
-            <div class="q-pa-md row">
-                <q-item clickable @click="createNewChat" class="radius-sm bg-positive">
-                    <q-item-section side>
-                        <q-icon name="mdi-message-plus" />
-                    </q-item-section>
-                    <q-item-section>
-                        新建对话
-                    </q-item-section>
-                </q-item>
-            </div>
-            <q-scroll-area class="q-space q-pa-md">
-                <chat-session-list
-                    :sessions="chatSessions"
-                    :current-session-id="currentSession?.id"
-                    @select="loadSession"
-                    @delete="deleteSession"
-                />
-            </q-scroll-area>
-        </div>
-
-        <!-- 右侧聊天区域 -->
-        <div class="col column">
-            <!-- 模型选择器和会话列表按钮 -->
-            <div class="q-pa-md row items-center">
-                <q-btn
-                    v-if="!$q.screen.gt.xs"
-                    flat
-                    round
-                    dense
-                    icon="menu"
-                    @click="showDrawer = true"
-                    class="q-mr-sm"
-                />
-                <chat-model-selector
-                    v-model:selectedProvider="apiConfig.provider"
-                    v-model:selectedModel="apiConfig.model"
-                    :apiConfig="apiConfig"
-                    @config="showConfig = true"
-                />
-            </div>
-
-            <!-- 消息列表 -->
-            <div class="chat-container">
-                <q-scroll-area ref="messageContainer" class="col q-pa-md tiptap">
-                    <chat-message v-for="msg in currentSession?.messages" 
-                        :key="msg.id" 
-                        :message="msg"
+    <div :v-bind="$attrs" class="absolute-full column">
+    <q-bar
+      class="border-bottom"
+      :class="`${
+        $q.dark.mode ? 'bg-darker text-white' : 'bg-primary-dark text-grey-1'
+      } ${$q.platform.is.electron ? 'q-electron-drag q-pr-none' : ''}`"
+      style="height: 2.5rem"
+    >
+      <div
+        class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
+      >
+        <AiStar :color="$q.dark.mode ? 'white' : 'black'" width="18" height="18" />
+        AI 对话
+      </div>
+      <q-space />
+      <!-- <q-btn icon="check" dense @click="$q.dark.toggle()" /> -->
+      <template v-if="isElectron">
+        <section class="full-height row no-wrap items-center" style="padding: 2px">
+          <q-btn dense square size="sm" icon="mdi-window-minimize"
+            class="full-height" padding="0 12px"
+            @click="minimize()"
+          />
+          <q-btn dense square size="sm" class="full-height" padding="0 12px" @click="toggleMaximize()">
+            <WindowToggle v-if="isMax" :color="$q.dark.mode ? 'white' : 'black'" />
+            <q-icon v-else name="mdi-window-maximize" />
+          </q-btn>
+          <q-btn dense square size="sm" icon="close"
+            class="full-height" padding="0 12px"
+            @mouseenter="hoverClose = true"
+            :class="hoverClose ? 'bg-negative' : ''"
+            @mouseleave="hoverClose = false"
+            @click="closeApp()"
+          />
+        </section>
+      </template>
+    </q-bar>
+        <div class="row q-space">
+            <!-- 左侧会话列表 - 在大屏幕显示 -->
+            <div v-if="$q.screen.gt.xs && !pannelMode" class="full-height column border-right" style="flex: 0 0 260px;">
+                <div class="q-pa-md row">
+                    <q-item clickable @click="createNewChat" class="radius-sm bg-positive">
+                        <q-item-section side>
+                            <q-icon name="mdi-message-plus" />
+                        </q-item-section>
+                        <q-item-section>
+                            新建对话
+                        </q-item-section>
+                    </q-item>
+                </div>
+                <q-scroll-area class="q-space q-pa-md">
+                    <chat-session-list
+                        :sessions="chatSessions"
+                        :current-session-id="currentSession?.id"
+                        @select="loadSession"
+                        @delete="deleteSession"
                     />
                 </q-scroll-area>
-                <!-- 停止按钮 -->
-                <div v-if="loading" class="stop-button-container z-fab">
-                    <q-btn 
-                        color="grey-7"
-                        flat
-                        round
-                        icon="stop"
-                        class="stop-button shadow-23"
-                        @click="stopGenerating"
-                    >
-                        <q-tooltip>停止生成</q-tooltip>
-                    </q-btn>
-                </div>
             </div>
 
-            <!-- 输入区域 -->
-            <div class="q-pa-md">
-                <chat-input 
-                v-model="inputMessage" 
-                :loading="loading"
-                @send="sendMessage" />
+            <!-- 右侧聊天区域 -->
+            <div class="col column">
+                <!-- 模型选择器和会话列表按钮 -->
+                <div class="q-pa-md row items-center">
+                    <q-btn
+                        v-if="!$q.screen.gt.xs"
+                        flat
+                        round
+                        dense
+                        icon="menu"
+                        @click="showDrawer = true"
+                        class="q-mr-sm"
+                    />
+                    <chat-model-selector
+                        v-model:selectedProvider="apiConfig.provider"
+                        v-model:selectedModel="apiConfig.model"
+                        :apiConfig="apiConfig"
+                        @config="showConfig = true"
+                    />
+                </div>
+
+                <!-- 消息列表 -->
+                <div class="chat-container">
+                    <q-scroll-area ref="messageContainer" class="col q-pa-md tiptap">
+                        <chat-message v-for="msg in currentSession?.messages" 
+                            :key="msg.id" 
+                            :message="msg"
+                        />
+                    </q-scroll-area>
+                    <!-- 停止按钮 -->
+                    <div v-if="loading" class="stop-button-container z-fab">
+                        <q-btn 
+                            color="grey-7"
+                            flat
+                            round
+                            icon="stop"
+                            class="stop-button shadow-23"
+                            @click="stopGenerating"
+                        >
+                            <q-tooltip>停止生成</q-tooltip>
+                        </q-btn>
+                    </div>
+                </div>
+
+                <!-- 输入区域 -->
+                <div class="q-pa-md">
+                    <chat-input 
+                    v-model="inputMessage" 
+                    :loading="loading"
+                    @send="sendMessage" />
+                </div>
             </div>
         </div>
     </div>
@@ -127,6 +164,9 @@ import ChatModelSelector from './components/ChatModelSelector.vue'
 import ChatSessionList from './components/ChatSessionList.vue'
 import { useChat } from './composables/useChat'
 import { defaultProviders } from './config/apiProviders'
+import {useQuasar} from "quasar";
+import AiStar from '../team/components/widgets/icons/AiStar.vue'
+const $q = useQuasar();
 
 const { pannelMode } = defineProps(['pannelMode'])
 
@@ -239,6 +279,34 @@ const selectedModel = computed({
 onMounted(() => {
     loadConfig()
 })
+
+const isElectron = computed(() => $q.platform.is.electron);
+const isMax = ref(false);
+onMounted(async () => {
+  await nextTick();
+  if (isElectron.value) {
+    isMax.value = window.windowAPI?.isMaximized();
+  }
+});
+function minimize() {
+  if (isElectron.value) {
+    window.windowAPI?.minimize();
+  }
+}
+
+function toggleMaximize() {
+  if (isElectron.value) {
+    window.windowAPI?.toggleMaximize(isMax.value);
+    isMax.value = !isMax.value;
+  }
+}
+
+const hoverClose = ref(false);
+function closeApp() {
+  if (isElectron.value) {
+    window.windowAPI?.close();
+  }
+}
 </script>
 
 <style scoped>

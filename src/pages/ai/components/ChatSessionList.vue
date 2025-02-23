@@ -6,7 +6,7 @@
                 @click="$emit('select', session)"
                 v-ripple
                 class="hovered-item radius-xs"
-                :class="currentSessionId === session.id ? $q.dark.mode ? 'bg-grey-10 border' : 'bg-grey-3 border' : ''">
+                :class="currentSessionId === session.id ? $q.dark.mode ? 'bg-grey-10 border' : 'bg-grey-3 border' : 'border-placeholder'">
             <q-item-section>
                 <q-item-label>{{ session.title }}</q-item-label>
                 <q-item-label caption class="op-5">
