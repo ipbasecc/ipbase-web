@@ -165,7 +165,9 @@ export default {
   app_chat_purpose: 'Unterhaltung mit Ihren Freunden.',
   deliver: 'Lieferung',
   app_deliver_purpose: 'Veröffentliche deine Anforderungen, liefere dein Produkt',
-
+  aichat: 'AI-Chat',
+  app_aichat_purpose: 'Unterhaltung mit AI',
+  
   deal_jsonContent: 'Beschreibung',
   deal_todogroups: 'Zu tun',
   deal_party_a_requirements: 'Zusätzliche Anforderungen von Partei A',
@@ -179,6 +181,7 @@ export default {
   deal_my_party_b_list: 'Meine Akzeptanz',
   deal_my_talkers: 'Meine Kommunikation',
   deliver_talkers_panel: 'Lieferung: Kommunikationspanel',
+  aichat_panel: 'AI-Chat',
 
   deal_status_awaiting_deposit: 'Warten auf Einzahlung',
   deal_status_deposited: 'Einzahlung erfolgreich',

@@ -117,6 +117,19 @@
               <span class="text-no-wrap">{{ $t('deliver_talkers_panel') }}</span>
             </q-tooltip>
           </q-btn>
+          <q-btn @click="toggleRightDrawer('aichat')"
+            flat dense
+          >
+            <AiStar
+              :color="uiStore.projectRightDrawer &&
+                uiStore.projectRightDrawerContent === 'aichat'
+                  ? 'green': $q.dark.mode ? 'white' : 'black'
+              "
+            />
+            <q-tooltip>
+              <span class="text-no-wrap">{{ $t('aichat_panel') }}</span>
+            </q-tooltip>
+          </q-btn>
         </template>
         <AccountMenu v-else />
         <!-- <q-btn icon="check" dense @click="$q.dark.toggle()" /> -->
@@ -159,6 +172,7 @@ import FileTransfer from "pages/team/components/widgets/icons/FileTransfer.vue";
 import TeamList from "src/pages/team/components/TeamList.vue";
 import TeamNotification from './TeamNotification.vue'
 import CreateDealbtn from 'src/pages/deliver/components/CreateDealbtn.vue'
+import AiStar from './widgets/icons/AiStar.vue'
 
 const $q = useQuasar();
 const router = useRouter();

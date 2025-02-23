@@ -555,6 +555,12 @@ const routes = [
           }
         ]
       },
+      {
+        path: "/aichat",
+        component: () => import("src/pages/ai/AiChat.vue"),
+        name: "aichat",
+        props: true,
+      },
     ],
   },
 

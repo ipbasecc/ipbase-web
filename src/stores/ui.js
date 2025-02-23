@@ -69,6 +69,14 @@ export default defineStore("ui", {
         to: "brand",
         enable: false
       },
+      {
+        val: "aichat",
+        label: 'aichat',
+        icon: "mdi-message-bulleted",
+        description: 'app_aichat_purpose',
+        to: "aichat",
+        enable: Platform.is.desktop
+      },
     ],
     localeOptions: [
       { val: "zh-CN", label: "中文", flag_key: 'cn' },

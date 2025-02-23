@@ -118,6 +118,7 @@
           <DiscoverNavigator v-if="uiStore.app === 'discover'" />
           <DeliverNavigator v-if="uiStore.app === 'deliver'" />
           <StudioNavigation v-if="uiStore.app === 'studio'" />
+          <slot name="left_drawer" v-if="uiStore.app === 'aichat'" />
         </q-drawer>
         <RightPannel />
       </template>

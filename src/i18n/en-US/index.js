@@ -165,6 +165,8 @@ export default {
   app_chat_purpose: 'conversation with your friends.',
   deliver: 'Deliver',
   app_deliver_purpose: 'Publish your needs, deliver your products',
+  aichat: 'AI chat',
+  app_aichat_purpose: 'conversation with AI',
 
   deal_jsonContent: 'Description',
   deal_todogroups: 'To-do',
@@ -179,6 +181,7 @@ export default {
   deal_my_party_b_list: 'My accept',
   deal_my_talkers: 'My talkers',
   deliver_talkers_panel: 'Deliver: talkers panel',
+  aichat_panel: 'AI chat',
 
   deal_status_awaiting_deposit: 'Awaiting deposit',
   deal_status_deposited: 'Deposited',

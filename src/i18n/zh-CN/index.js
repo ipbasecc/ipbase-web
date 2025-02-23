@@ -165,6 +165,8 @@ export default {
   app_chat_purpose: '与您的好友对话',
   deliver: '交付',
   app_deliver_purpose: '发布你的需求，交付你的产品',
+  aichat: 'AI对话',
+  app_aichat_purpose: '与AI对话',
 
   deal_jsonContent: '说明',
   deal_todogroups: '待办',
@@ -180,6 +182,7 @@ export default {
   deal_my_talkers: '我的沟通',
   to_certification: '去认证',
   deliver_talkers_panel: '交付：沟通面板',
+  aichat_panel: 'AI对话',
 
   deal_status_awaiting_deposit: '待预存',
   deal_status_deposited: '已预存',

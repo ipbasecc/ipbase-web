@@ -31,7 +31,7 @@
       <template v-for="i in enabledApps" :key="i.val">
         <q-avatar
           square
-          :icon="i.icon"
+          :icon="i.val !== 'aichat' ? i.icon : undefined"
           class="radius-sm cursor-pointer transition"
           :class="
             uiStore.app === i.val
@@ -40,6 +40,7 @@
           "
           @click="to(i)"
         >
+          <AiStar v-if="i.val === 'aichat'" :color="$q.dark.mode ? 'white' : 'black'" width="24" height="24" />
           <div v-if="uiStore.app === i.val"
             class="flex absolute-left full-height q-pl-xs q-py-sm"
           >
@@ -92,6 +93,7 @@ import {teamStore, uiStore} from "src/hooks/global/useStore";
 import BrandMenu from "src/components/VIewComponents/BrandMenu.vue";
 import NotifyBlock from "src/components/VIewComponents/NotifyBlock.vue";
 import localforage from "localforage";
+import AiStar from 'src/pages/team/components/widgets/icons/AiStar.vue'
 
 const router = useRouter();
 const route = useRoute();
