@@ -5,7 +5,10 @@
       <InitializationUser class="fit" @Initialized="Initialized" />
     </div>
     <template v-else>
-      <q-layout v-if="!needLogin" view="hHh LpR lFr" class="absolute-full border-negative radius-xs overflow-hidden">
+      <q-layout v-if="!needLogin" view="hHh LpR lFr"
+        class="absolute-full border-negative radius-xs overflow-hidden"
+        :class="$q.dark.mode ? 'bg-darker' : 'bg-primary-darker'"
+      >
         <q-header v-if="uiStore.showAppNotification" class="transparent">
           <AppNotification />
         </q-header>
@@ -21,7 +24,7 @@
               :revers="true" />
           </div>
         </q-drawer>
-        <q-page-container>
+        <q-page-container :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-1'">
           <q-page :class="$q.screen.gt.sm ? '' : 'font-large'">
             <RouterView />
           </q-page>

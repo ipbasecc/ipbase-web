@@ -40,7 +40,7 @@
           "
           @click="to(i)"
         >
-          <AiStar v-if="i.val === 'aichat'" :color="$q.dark.mode ? 'white' : 'black'" width="24" height="24" />
+          <AiStar v-if="i.val === 'aichat'" color="white" :width="24" :height="24" />
           <div v-if="uiStore.app === i.val"
             class="flex absolute-left full-height q-pl-xs q-py-sm"
           >

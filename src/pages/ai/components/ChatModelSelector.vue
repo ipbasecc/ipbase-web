@@ -1,5 +1,5 @@
 <template>
-  <div class="full-width row items-center q-gutter-x-md">
+  <div class="q-space row items-center q-gutter-x-md">
     <!-- API供应商选择 -->
     <div class="cursor-pointer hover-highlight">
       <span>{{ currentProviderName }}</span>

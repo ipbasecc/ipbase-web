@@ -1,47 +1,12 @@
 <template>
-    <div :v-bind="$attrs" class="absolute-full column">
-    <q-bar
-      class="border-bottom"
-      :class="`${
-        $q.dark.mode ? 'bg-darker text-white' : 'bg-primary-dark text-grey-1'
-      } ${$q.platform.is.electron ? 'q-electron-drag q-pr-none' : ''}`"
-      style="height: 2.5rem"
-    >
-      <div
-        class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
-      >
-        <AiStar :color="$q.dark.mode ? 'white' : 'black'" width="18" height="18" />
-        AI 对话
-      </div>
-      <q-space />
-      <!-- <q-btn icon="check" dense @click="$q.dark.toggle()" /> -->
-      <template v-if="isElectron">
-        <section class="full-height row no-wrap items-center" style="padding: 2px">
-          <q-btn dense square size="sm" icon="mdi-window-minimize"
-            class="full-height" padding="0 12px"
-            @click="minimize()"
-          />
-          <q-btn dense square size="sm" class="full-height" padding="0 12px" @click="toggleMaximize()">
-            <WindowToggle v-if="isMax" :color="$q.dark.mode ? 'white' : 'black'" />
-            <q-icon v-else name="mdi-window-maximize" />
-          </q-btn>
-          <q-btn dense square size="sm" icon="close"
-            class="full-height" padding="0 12px"
-            @mouseenter="hoverClose = true"
-            :class="hoverClose ? 'bg-negative' : ''"
-            @mouseleave="hoverClose = false"
-            @click="closeApp()"
-          />
-        </section>
-      </template>
-    </q-bar>
-        <div class="row q-space">
+    <NavigatorContainer v-if="!pannelMode">
+        <template #left_drawer>
             <!-- 左侧会话列表 - 在大屏幕显示 -->
-            <div v-if="$q.screen.gt.xs && !pannelMode" class="full-height column border-right" style="flex: 0 0 260px;">
+            <div class="full-height column">
                 <div class="q-pa-md row">
                     <q-item clickable @click="createNewChat" class="radius-sm bg-positive">
                         <q-item-section side>
-                            <q-icon name="mdi-message-plus" />
+                            <q-icon name="mdi-message-plus" color="white" />
                         </q-item-section>
                         <q-item-section>
                             新建对话
@@ -57,69 +22,18 @@
                     />
                 </q-scroll-area>
             </div>
-
-            <!-- 右侧聊天区域 -->
-            <div class="col column">
-                <!-- 模型选择器和会话列表按钮 -->
-                <div class="q-pa-md row items-center">
-                    <q-btn
-                        v-if="!$q.screen.gt.xs"
-                        flat
-                        round
-                        dense
-                        icon="menu"
-                        @click="showDrawer = true"
-                        class="q-mr-sm"
-                    />
-                    <chat-model-selector
-                        v-model:selectedProvider="apiConfig.provider"
-                        v-model:selectedModel="apiConfig.model"
-                        :apiConfig="apiConfig"
-                        @config="showConfig = true"
-                    />
-                </div>
-
-                <!-- 消息列表 -->
-                <div class="chat-container">
-                    <q-scroll-area ref="messageContainer" class="col q-pa-md tiptap">
-                        <chat-message v-for="msg in currentSession?.messages" 
-                            :key="msg.id" 
-                            :message="msg"
-                        />
-                    </q-scroll-area>
-                    <!-- 停止按钮 -->
-                    <div v-if="loading" class="stop-button-container z-fab">
-                        <q-btn 
-                            color="grey-7"
-                            flat
-                            round
-                            icon="stop"
-                            class="stop-button shadow-23"
-                            @click="stopGenerating"
-                        >
-                            <q-tooltip>停止生成</q-tooltip>
-                        </q-btn>
-                    </div>
-                </div>
-
-                <!-- 输入区域 -->
-                <div class="q-pa-md">
-                    <chat-input 
-                    v-model="inputMessage" 
-                    :loading="loading"
-                    @send="sendMessage" />
-                </div>
-            </div>
-        </div>
-    </div>
+        </template>
+        <ChatBody :pannelMode="pannelMode" @toggle-drawer="showDrawer = true" />
+    </NavigatorContainer>
+    <ChatBody v-else :pannelMode="pannelMode" />
+    <ChatBody v-else v-bind="$attrs" :pannelMode="pannelMode" @toggle-drawer="showDrawer = true" />
 
     <!-- 移动端全屏会话列表 -->
-    <div v-if="(!$q.screen.gt.xs || pannelMode) && showDrawer" class="absolute-full" :class="$q.dark.mode ? 'bg-grey-10' : 'bg-grey-3'">
+    <div v-if="showDrawer" class="absolute-full" :class="$q.dark.mode ? 'bg-grey-10' : 'bg-grey-3'">
         <div class="column full-height">
             <!-- 顶部操作栏 -->
             <div class="row items-center q-pa-md">
                 <q-btn flat round dense icon="close" @click="showDrawer = false" class="q-mr-md" />
-                <div class="text-subtitle1">会话列表</div>
             </div>
             
             <!-- 新建对话按钮 -->
@@ -148,10 +62,10 @@
 
     <!-- 配置弹框 -->
     <q-dialog v-model="showConfig" persistent :maximized="!$q.screen.gt.xs">
-      <api-config 
-        v-model="apiConfig"
-        @save="onConfigSave"
-      />
+        <api-config 
+            v-model="apiConfig"
+            @save="onConfigSave"
+        />
     </q-dialog>
 </template>
 
@@ -162,10 +76,13 @@ import ChatInput from './components/ChatInput.vue'
 import ApiConfig from './components/ApiConfig.vue'
 import ChatModelSelector from './components/ChatModelSelector.vue'
 import ChatSessionList from './components/ChatSessionList.vue'
+import ChatBody from './components/ChatBody.vue'
 import { useChat } from './composables/useChat'
 import { defaultProviders } from './config/apiProviders'
 import {useQuasar} from "quasar";
 import AiStar from '../team/components/widgets/icons/AiStar.vue'
+import WindowToggle from '../team/components/widgets/icons/WindowToggle.vue'
+import NavigatorContainer from '../team/NavigatorContainer.vue'
 const $q = useQuasar();
 
 const { pannelMode } = defineProps(['pannelMode'])

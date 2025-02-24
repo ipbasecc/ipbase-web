@@ -639,6 +639,12 @@ input:-internal-autofill-selected {
 .hovered-item:hover .unhover-none {
   display: block;
 }
+.hovered-primary {
+  background-color: #1976D200;
+}
+.hovered-primary:hover {
+  background-color: #1976D255;
+}
 .hover-highlight:hover {
   opacity: 1;
 }
@@ -857,6 +863,9 @@ input:-internal-autofill-selected {
 }
 .bg-primary-gdt {
   background: linear-gradient(145deg, #0091ff, #004dff 80%);
+}
+.bg-primary-op-5 {
+  background: #1976D255;
 }
 
 .bg-white-right {
@@ -1566,4 +1575,17 @@ body.body--dark .cdx-marker {
 }
 .jitsi .watermark {
   display: none;
+}
+
+.w-800 {
+  width: 800px;
+}
+.w-min-800 {
+  min-width: 800px;
+}
+.h-600 {
+  height: 600px;
+}
+.h-min-600 {
+  min-height: 600px;
 }

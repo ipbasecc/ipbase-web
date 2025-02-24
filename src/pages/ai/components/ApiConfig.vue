@@ -1,5 +1,5 @@
 <template>
-  <q-card flat bordered class="column" style="height: 600px;min-width: 800px">
+  <q-card flat bordered class="column" :class="$q.screen.gt.xs ? 'w-min-800 h-600' : 'fit'">
     <q-card-section class="border-bottom">
       <div class="text-h6">API 供应商配置</div>
     </q-card-section>

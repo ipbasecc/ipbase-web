@@ -1,12 +1,41 @@
 <template>
     <q-header class="z-max">
       <q-bar
-        class="border-bottom"
+        class="border-bottom q-pl-xs"
         :class="`${
           $q.dark.mode ? 'bg-darker text-white' : 'bg-primary-dark text-grey-1'
         } ${$q.platform.is.electron ? 'q-electron-drag q-pr-none' : ''}`"
         style="height: 2.5rem"
       >
+        <q-btn-group class="border-op-sm border-solid border-xs" style="height: 32px;padding: 2px;">
+          <q-btn padding="none" style="width: 6px;" class="radius-none"
+            :color="$q.dark.mode ? 'grey-7' : 'primary'"
+            :class="uiStore.appDrawer ? 'op-4' : 'op-2'"
+            @click="uiStore.appDrawer = !uiStore.appDrawer">
+            <q-tooltip class="no-padding" :class="$q.dark.mode ? 'text-white' : 'text-grey-10'">
+              <q-card bordered class="q-px-sm q-py-xs font-medium">
+                {{ uiStore.appDrawer ? '隐藏主导航' : '显示主导航' }}
+              </q-card>
+            </q-tooltip>
+          </q-btn>
+
+          <div class="bg-gery-8" style="width: 2px;" />
+
+          <q-btn padding="none" style="width: 12px;"
+            :color="$q.dark.mode ? 'grey-7' : 'primary'"
+            :class="uiStore.navigatorDrawer ? 'op-4' : 'op-2'"
+            @click="uiStore.navigatorDrawer = !uiStore.navigatorDrawer">
+            <q-tooltip class="no-padding" :class="$q.dark.mode ? 'text-white' : 'text-grey-10'">
+              <q-card bordered class="q-px-sm q-py-xs font-medium">
+                {{ uiStore.navigatorDrawer ? '隐藏二级导航' : '显示二级导航' }}
+              </q-card>
+            </q-tooltip>
+          </q-btn>
+
+          <div class="bg-gery-9" style="width: 2px;" />
+
+          <q-btn padding="none" style="width: 26px;" :color="$q.dark.mode ? 'grey-7' : 'primary'" class="op-4 radius-none" />
+        </q-btn-group>
         <div v-if="uiStore.app === 'deliver'"
           class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
         >
@@ -56,6 +85,12 @@
         >
           <q-icon name="mdi-check-all" />
           <span class="font-small unselected">{{ $t('discover') }}</span>
+        </div>
+        <div v-if="uiStore.app === 'aichat'"
+          class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
+        >
+          <AiStar color="white" :width="18" :height="18" />
+          AI 对话
         </div>
         <q-space />
         <template v-if="$q.screen.gt.xs">
@@ -117,13 +152,13 @@
               <span class="text-no-wrap">{{ $t('deliver_talkers_panel') }}</span>
             </q-tooltip>
           </q-btn>
-          <q-btn @click="toggleRightDrawer('aichat')"
+          <q-btn v-if="uiStore.app !== 'aichat'" @click="toggleRightDrawer('aichat')"
             flat dense
           >
             <AiStar
               :color="uiStore.projectRightDrawer &&
                 uiStore.projectRightDrawerContent === 'aichat'
-                  ? 'green': $q.dark.mode ? 'white' : 'black'
+                  ? 'green': 'white'
               "
             />
             <q-tooltip>
@@ -159,7 +194,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, onBeforeMount, watch, nextTick } from 'vue'
+import { ref, onMounted, computed, onBeforeMount, watch, nextTick, onUnmounted } from 'vue'
 import {ossStore, teamStore, uiStore, discoverStore} from "src/hooks/global/useStore.js";
 import {isExternal,} from "src/pages/team/hooks/useConfig.js";
 import localforage from "localforage";
@@ -213,6 +248,15 @@ const toggleRightDrawer = (val) => {
     uiStore.projectRightDrawerContent = val;
   }
 };
+watch([uiStore.app, uiStore.projectRightDrawerContent], () => {
+  let rightDrawerState = uiStore.projectRightDrawer;
+  if (uiStore.app === 'aichat' && uiStore.projectRightDrawerContent === 'aichat') {
+    uiStore.projectRightDrawer = false;
+  }
+  onUnmounted(() => {
+    uiStore.projectRightDrawer = rightDrawerState;
+  })
+},{immediate: true})
 
 const checkNotification = async () => {
   if (!teamStore.team?.notification || teamStore.team?.notification === '') {

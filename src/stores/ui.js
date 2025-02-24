@@ -195,7 +195,7 @@ export default defineStore("ui", {
       '#1976D2', '#26A69A', '#9C27B0', '#21BA45', '#C10015', '#31CCEC', '#F2C037'
     ],
     active_note_id: void 0,
-    can_drag_apps: ["teams", "chats", 'affairs', 'brand', 'notebooks'],
+    can_drag_apps: ["teams", "chats", 'affairs', 'brand', 'notebooks', 'aichat'],
     meet: void 0,
     init_meet: false,
     show_meet: false,
