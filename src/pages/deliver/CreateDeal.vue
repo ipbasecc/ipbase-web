@@ -28,7 +28,7 @@
                             <div class="row items-center gap-sm">
                                 <div class="row items-center gap-sm">
                                     <span>交付日期：</span>
-                                    <q-icon name="event" class="cursor-pointer" />
+                                    <q-icon name="event" size="sm" color="orange" class="cursor-pointer" />
                                     {{ params.data.deadline }}
                                     <q-popup-proxy transition-show="scale" transition-hide="scale">
                                         <q-date
@@ -46,13 +46,13 @@
                         </q-item-section>
                     </q-item>
                     <q-item>
-                        <q-item-section class="border radius-xs q-px-sm">
+                        <q-item-section class="border radius-xs q-pa-sm">
                             <q-item-label class="q-pl-xs q-pt-xs">需求标签</q-item-label>
-                            <div class="row items-center">
+                            <div class="row items-center q-pb-sm">
                                 <q-chip v-for="i in params.data.tags" :key="i" square :label="i" removable @remove="removeTag(i)" />
-                                <q-input v-model="tag" type="text" borderless class="q-ml-sm" @keyup.enter="addTag" @keyup.esc="tag = ''">
+                                <q-input v-model="tag" type="text" dense class="q-ml-sm" @keyup.enter="addTag" @keyup.esc="tag = ''">
                                     <template v-slot:append>
-                                        <q-btn round dense size="sm" icon="mdi-plus" @click="addTag" />
+                                        <q-btn round dense size="sm" icon="mdi-plus" :disable="!tag" @click="addTag" />
                                     </template>
                                 </q-input>
                             </div>
@@ -60,7 +60,8 @@
                     </q-item>
                     <q-item>
                         <q-item-section>
-                            <q-input v-model="params.data.description" type="textarea" multiline auto-grow
+                            <q-input v-model="params.data.description" type="textarea" multiline auto-grow borderless
+                            class="border radius-xs q-px-md q-pb-sm q-pt-none"
                                 label="任务描述" />
                         </q-item-section>
                     </q-item>
@@ -69,14 +70,14 @@
                             <q-item-label class="q-mt-md q-py-sm">详细需求说明</q-item-label>
                             <TipTap :jsonContent="params.data.jsonContent" :editable="true" :need="'json'" :contentChanged="true"
                                 :square="true" :show_toolbar="true" :show_bubbleMenu="true" styleClass="q-px-md q-py-sm"
-                                class="q-space" :autofocus="false" @tiptapUpdate="updateJsonContent" />
+                                class="q-space border radius-xs" :autofocus="false" @tiptapUpdate="updateJsonContent" />
                         </q-item-section>
                     </q-item>
                 </q-list>
             </div>
 
             <q-stepper-navigation>
-                <q-btn @click="() => { done1 = true; step = 2 }" color="primary" label="Continue" />
+                <q-btn @click="() => { done1 = true; step = 2 }" color="primary" label="下一步" />
             </q-stepper-navigation>
         </q-step>
 
@@ -104,7 +105,7 @@
             </div>
 
             <q-stepper-navigation>
-                <q-btn @click="() => { done2 = true; step = 3 }" color="primary" label="Continue" />
+                <q-btn @click="() => { done2 = true; step = 3 }" color="primary" label="下一步" />
                 <q-btn flat @click="step = 1" color="primary" label="Back" class="q-ml-sm" />
             </q-stepper-navigation>
         </q-step>
@@ -117,8 +118,8 @@
             </div>
 
             <q-stepper-navigation>
-                <q-btn color="primary" label="Finish" @click="createDealFn" />
-                <q-btn flat @click="step = 2" color="primary" label="Back" class="q-ml-sm" />
+                <q-btn color="primary" label="确认" @click="createDealFn" />
+                <q-btn flat @click="step = 2" color="primary" label="上一步" class="q-ml-sm" />
             </q-stepper-navigation>
         </q-step>
     </q-stepper>
@@ -161,6 +162,7 @@ import DrapUpload from 'src/components/VIewComponents/DrapUpload.vue'
         params.value.data.tags.splice(tag, 1)
     }
     const addTag = () => {
+        if(!tag.value) return
         params.value.data.tags.push(tag.value)
         tag.value = ''
     }

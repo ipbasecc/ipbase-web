@@ -1,13 +1,13 @@
 <template>
     <q-header class="z-max">
       <q-bar
-        class="border-bottom q-pl-xs"
+        class="border-bottom q-pl-sm"
         :class="`${
           $q.dark.mode ? 'bg-darker text-white' : 'bg-primary-dark text-grey-1'
         } ${$q.platform.is.electron ? 'q-electron-drag q-pr-none' : ''}`"
-        style="height: 2.5rem"
+        style="height: 2.7rem"
       >
-        <q-btn-group class="border-op-sm border-solid border-xs" style="height: 32px;padding: 2px;">
+        <q-btn-group class="border-op-sm border-solid border-xs" style="height: 28px;padding: 2px;">
           <q-btn padding="none" style="width: 6px;" class="radius-none"
             :color="$q.dark.mode ? 'grey-7' : 'primary'"
             :class="uiStore.appDrawer ? 'op-4' : 'op-2'"
@@ -39,6 +39,8 @@
         <div v-if="uiStore.app === 'deliver'"
           class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
         >
+          <q-icon name="mdi-cards" />
+          <span class="font-small unselected">合作</span>
           <CreateDealbtn />
         </div>
         <div v-if="uiStore.app === 'teams'"
@@ -62,7 +64,7 @@
              class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
              @click="$router.push('/affairs')"
         >
-          <q-icon name="mdi-check-all" />
+          <q-icon name="mdi-checkbox-marked-circle-outline" />
           <span class="font-small unselected">事务</span>
         </div>
         <div v-if="uiStore.app === 'chats'"
@@ -71,6 +73,12 @@
         >
           <q-icon name="mark_chat_read" />
           <span class="font-small unselected">沟通</span>
+        </div>
+        <div v-if="uiStore.app === 'notebooks'"
+             class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
+        >
+          <q-icon name="mdi-book-open-page-variant" />
+          <span class="font-small unselected">笔记</span>
         </div>
         <div v-if="uiStore.app === 'brand'"
              class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
@@ -83,7 +91,7 @@
              class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
              @click="goDiscover()"
         >
-          <q-icon name="mdi-check-all" />
+          <q-icon name="mdi-compass-outline" />
           <span class="font-small unselected">{{ $t('discover') }}</span>
         </div>
         <div v-if="uiStore.app === 'aichat'"
@@ -94,6 +102,19 @@
         </div>
         <q-space />
         <template v-if="$q.screen.gt.xs">
+          <q-btn v-if="uiStore.app !== 'aichat'" @click="toggleRightDrawer('aichat')"
+            flat round
+          >
+            <AiStar
+              :color="uiStore.projectRightDrawer &&
+                uiStore.projectRightDrawerContent === 'aichat'
+                  ? 'green': 'white'
+              "
+            />
+            <q-tooltip>
+              <span class="text-no-wrap">{{ $t('aichat_panel') }}</span>
+            </q-tooltip>
+          </q-btn>
           <q-btn
             v-if="
               teamStore.project &&
@@ -102,7 +123,7 @@
             "
             :flat="!uiStore.isFocusMode"
             :color="uiStore.isFocusMode ? 'primary' : ''"
-            dense
+            dense round
             icon="mdi-target"
             @click="toggleFocusMode()"
           >
@@ -119,7 +140,7 @@
           <q-btn
             v-if="uiStore.app !== 'affairs'"
             flat
-            dense
+            dense round
             :color="
               uiStore.projectRightDrawer &&
               uiStore.projectRightDrawerContent === 'person_todos'
@@ -130,19 +151,19 @@
             @click="toggleRightDrawer('person_todos')"
           />
           <q-btn @click="toggleRightDrawer('flaggeds')"
-            icon="bookmarks" flat dense
+            icon="bookmarks" flat dense round
             :color="uiStore.projectRightDrawer &&
               uiStore.projectRightDrawerContent === 'flaggeds'
                 ? 'green': ''
             "
           />
           <q-btn @click="toggleTransfer()"
-            flat dense :class="ossStore.showList ? 'toggle-active' : ''"
+            flat dense round :class="ossStore.showList ? 'toggle-active' : ''"
           >
             <FileTransfer :color="ossStore.showList ? '#21BA45' : '#fff'" />
           </q-btn>
           <q-btn @click="toggleRightDrawer('talkers')"
-            icon="mdi-forum" flat dense
+            icon="mdi-forum" flat dense round
             :color="uiStore.projectRightDrawer &&
               uiStore.projectRightDrawerContent === 'talkers'
                 ? 'green': ''
@@ -150,19 +171,6 @@
           >
             <q-tooltip>
               <span class="text-no-wrap">{{ $t('deliver_talkers_panel') }}</span>
-            </q-tooltip>
-          </q-btn>
-          <q-btn v-if="uiStore.app !== 'aichat'" @click="toggleRightDrawer('aichat')"
-            flat dense
-          >
-            <AiStar
-              :color="uiStore.projectRightDrawer &&
-                uiStore.projectRightDrawerContent === 'aichat'
-                  ? 'green': 'white'
-              "
-            />
-            <q-tooltip>
-              <span class="text-no-wrap">{{ $t('aichat_panel') }}</span>
             </q-tooltip>
           </q-btn>
         </template>

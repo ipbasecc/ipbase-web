@@ -37,7 +37,6 @@
           class="border-right"
           :class="$q.dark.mode ? '' : 'bg-primary-9 text-grey-1'"
         >
-          {{ dragSide }}
           <div v-if="uiStore.app === 'teams' || uiStore.app === 'threads'"
             class="absolute-full column no-wrap"
           >

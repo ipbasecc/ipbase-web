@@ -1,5 +1,11 @@
 <template>
-    <q-btn v-bind="$attrs" round dense size="sm" icon="mdi-plus" class="border" @click="createDeal" />
+    <q-btn v-bind="$attrs" round dense size="sm" icon="mdi-plus" class="border" @click="createDeal">
+        <q-tooltip class="no-padding shadow-24">
+            <q-card bordered class="q-px-md q-py-sm font-medium">
+                发布需求
+            </q-card>
+        </q-tooltip>
+    </q-btn>
     <q-dialog v-model="openCertificationPage" persistent>
         <q-card bordered>
             <q-card-section class="row items-center">
