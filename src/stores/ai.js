@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { defaultProviders } from '../pages/ai/config/apiProviders'
+import { uid } from 'quasar'
 
 export const useAIStore = defineStore('ai', {
   state: () => ({
@@ -20,7 +21,10 @@ export const useAIStore = defineStore('ai', {
         }
       ])
     ),
-    showConfig: false
+    showConfig: false,
+    // 聊天会话相关状态
+    chatSessions: [],
+    currentSession: null,
   }),
 
   getters: {
@@ -221,6 +225,82 @@ export const useAIStore = defineStore('ai', {
       }
 
       this.saveConfig()
+    },
+
+    // 初始化聊天会话
+    initChatSessions() {
+      const savedSessions = localStorage.getItem('aiChatSessions')
+      if (savedSessions) {
+        this.chatSessions = JSON.parse(savedSessions)
+        if (this.chatSessions.length > 0) {
+          this.currentSession = this.chatSessions[0]
+        }
+      }
+    },
+
+    // 保存聊天会话到localStorage
+    saveChatSessions() {
+      localStorage.setItem('aiChatSessions', JSON.stringify(this.chatSessions))
+    },
+
+    // 创建新会话
+    createNewChat() {
+      const newSession = {
+        id: uid(),
+        title: '新对话',
+        messages: [],
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      }
+      this.chatSessions.unshift(newSession)
+      this.currentSession = newSession
+      this.saveChatSessions()
+    },
+
+    // 加载会话
+    loadSession(session) {
+      if (!session) return
+      // 确保深层响应性
+      this.currentSession = JSON.parse(JSON.stringify(session))
+      this.saveChatSessions()
+    },
+
+    // 删除会话
+    deleteSession(session) {
+      const index = this.chatSessions.findIndex(s => s.id === session.id)
+      if (index > -1) {
+        this.chatSessions.splice(index, 1)
+        if (this.currentSession?.id === session.id) {
+          this.currentSession = this.chatSessions[0] || null
+        }
+        this.saveChatSessions()
+      }
+    },
+
+    // 更新会话消息
+    updateSessionMessages(sessionId, messages) {
+      const session = this.chatSessions.find(s => s.id === sessionId)
+      if (session) {
+        session.messages = messages
+        session.updatedAt = Date.now()
+        if (this.currentSession?.id === sessionId) {
+          this.currentSession = JSON.parse(JSON.stringify(session))
+        }
+        this.saveChatSessions()
+      }
+    },
+
+    // 添加消息到当前会话
+    addMessageToCurrentSession(message) {
+      if (this.currentSession) {
+        this.currentSession.messages.push(message)
+        this.currentSession.updatedAt = Date.now()
+        const index = this.chatSessions.findIndex(s => s.id === this.currentSession.id)
+        if (index > -1) {
+          this.chatSessions[index] = JSON.parse(JSON.stringify(this.currentSession))
+        }
+        this.saveChatSessions()
+      }
     }
   }
 }) 

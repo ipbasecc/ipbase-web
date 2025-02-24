@@ -5,7 +5,7 @@
       type="text"
       autogrow
       outlined
-      :disable="!loading"
+      :disable="loading"
       placeholder="输入消息..."
       :rows="3"
       @keypress.enter.prevent="onEnter"
@@ -19,7 +19,7 @@
           @click="onSend"
         />
       </template>
-      <div v-if="!loading" class="absolute-full flex flex-center">
+      <div v-if="loading" class="absolute-full flex flex-center">
         <q-spinner color="orange" size="sm" />
       </div>
     </q-input>

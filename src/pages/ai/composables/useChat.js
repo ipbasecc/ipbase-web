@@ -1,64 +1,38 @@
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, computed } from 'vue'
 import { uid } from 'quasar'
 import { useAIStore } from '../../../stores/ai'
 
 export function useChat() {
-    const chatSessions = ref([])
-    const currentSession = ref(null)
     const inputMessage = ref('')
     const loading = ref(false)
     const messageContainer = ref(null)
     let abortController = null
     const aiStore = useAIStore()
 
-    // 从localStorage加载配置
-    const loadConfig = () => {
-        const savedSessions = localStorage.getItem('aiChatSessions')
-        if (savedSessions) {
-            chatSessions.value = JSON.parse(savedSessions)
-            if (chatSessions.value.length > 0) {
-                currentSession.value = chatSessions.value[0]
-            }
-        }
-    }
-
     // 初始化时加载配置
-    loadConfig()
+    aiStore.initChatSessions()
 
-    // 保存配置和会话到localStorage
-    const saveToStorage = () => {
-        localStorage.setItem('aiChatSessions', JSON.stringify(chatSessions.value))
-    }
+    // 计算属性：从store获取会话列表和当前会话
+    const chatSessions = computed(() => aiStore.chatSessions)
+    const currentSession = computed(() => aiStore.currentSession)
 
     // 创建新会话
     const createNewChat = () => {
-        const newSession = {
-            id: uid(),
-            title: '新对话',
-            messages: [],
-            createdAt: Date.now(),
-            updatedAt: Date.now()
-        }
-        chatSessions.value.unshift(newSession)
-        currentSession.value = newSession
-        saveToStorage()
+        aiStore.createNewChat()
     }
 
     // 加载会话
     const loadSession = (session) => {
-        currentSession.value = session
+        aiStore.loadSession(session)
+        // 滚动到底部
+        nextTick(() => {
+            messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize)
+        })
     }
 
     // 删除会话
     const deleteSession = (session) => {
-        const index = chatSessions.value.findIndex(s => s.id === session.id)
-        if (index > -1) {
-            chatSessions.value.splice(index, 1)
-            if (currentSession.value?.id === session.id) {
-                currentSession.value = chatSessions.value[0] || null
-            }
-            saveToStorage()
-        }
+        aiStore.deleteSession(session)
     }
 
     // 停止生成
@@ -85,11 +59,15 @@ export function useChat() {
             timestamp: Date.now()
         }
 
-        currentSession.value.messages.push(userMessage)
-        currentSession.value.updatedAt = Date.now()
+        // 添加用户消息到当前会话
+        aiStore.addMessageToCurrentSession(userMessage)
         
         if (currentSession.value.messages.length === 1) {
-            currentSession.value.title = inputMessage.value.slice(0, 12) + '...'
+            const session = aiStore.chatSessions.find(s => s.id === currentSession.value.id)
+            if (session) {
+                session.title = inputMessage.value.slice(0, 12) + '...'
+                aiStore.saveChatSessions()
+            }
         }
 
         inputMessage.value = ''
@@ -133,7 +111,6 @@ export function useChat() {
                             temperature: 0.7
                         }
                     };
-                    console.log('Ollama request body:', JSON.stringify(requestBody, null, 2));
                     break;
                 case 'anthropic':
                     headers['x-api-key'] = providerConfig.apiKey;
@@ -142,18 +119,34 @@ export function useChat() {
                         messages: currentSession.value.messages.map(msg => ({
                             role: msg.role,
                             content: msg.content
-                        })),
+                        })).slice(-20), // Anthropic模型限制上下文数量
                         stream: true
                     };
                     break;
                 default:
+                    // OpenAI, DeepSeek等
                     headers['Authorization'] = 'Bearer ' + providerConfig.apiKey;
-                    requestBody = {
-                        model: aiStore.currentModel.id,
-                        messages: currentSession.value.messages.map(msg => ({
+                    const contextLimit = 4096; // 默认上下文长度限制
+                    let totalLength = 0;
+                    const messages = [];
+                    
+                    // 从最新的消息开始，累计计算token长度（这里用字符长度简单估算）
+                    for (let i = currentSession.value.messages.length - 1; i >= 0; i--) {
+                        const msg = currentSession.value.messages[i];
+                        const estimatedTokens = (msg.content.length + msg.reasoning_content?.length || 0) / 4;
+                        if (totalLength + estimatedTokens > contextLimit) {
+                            break;
+                        }
+                        totalLength += estimatedTokens;
+                        messages.unshift({
                             role: msg.role,
                             content: msg.content
-                        })),
+                        });
+                    }
+                    
+                    requestBody = {
+                        model: aiStore.currentModel.id,
+                        messages: messages,
                         stream: true
                     };
             }
@@ -184,7 +177,8 @@ export function useChat() {
                 timestamp: Date.now()
             }
 
-            currentSession.value.messages.push(assistantMessage)
+            // 添加AI消息到当前会话
+            aiStore.addMessageToCurrentSession(assistantMessage)
             
             await nextTick()
             messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize)
@@ -267,12 +261,9 @@ export function useChat() {
                                 }
 
                                 // 更新消息
-                                currentSession.value.messages[currentSession.value.messages.length - 1] = { ...assistantMessage }
-                                console.log('Updated assistant message:', {
-                                    content: assistantMessage.content,
-                                    reasoning_content: assistantMessage.reasoning_content,
-                                    thinkMode: assistantMessage.thinkMode
-                                });
+                                const updatedMessages = [...currentSession.value.messages]
+                                updatedMessages[updatedMessages.length - 1] = { ...assistantMessage }
+                                aiStore.updateSessionMessages(currentSession.value.id, updatedMessages)
                                 
                                 await nextTick()
                                 messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize)
@@ -305,7 +296,11 @@ export function useChat() {
                                     assistantMessage.content += content
                                 }
                                 
-                                currentSession.value.messages[currentSession.value.messages.length - 1] = { ...assistantMessage }
+                                // 更新消息
+                                const updatedMessages = [...currentSession.value.messages]
+                                updatedMessages[updatedMessages.length - 1] = { ...assistantMessage }
+                                aiStore.updateSessionMessages(currentSession.value.id, updatedMessages)
+                                
                                 await nextTick()
                                 messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize)
                             }
@@ -324,8 +319,7 @@ export function useChat() {
                 reader.releaseLock()
             }
             
-            currentSession.value.updatedAt = Date.now()
-            saveToStorage()
+            aiStore.saveChatSessions()
         } catch (error) {
             console.error('Error:', error)
             // 这里可以添加错误提示
