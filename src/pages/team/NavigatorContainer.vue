@@ -37,6 +37,7 @@
           class="border-right"
           :class="$q.dark.mode ? '' : 'bg-primary-9 text-grey-1'"
         >
+          {{ dragSide }}
           <div v-if="uiStore.app === 'teams' || uiStore.app === 'threads'"
             class="absolute-full column no-wrap"
           >
@@ -126,9 +127,10 @@
         <q-page>
           <div v-if="haveSubNav"
             class="absolute-left full-height hover-col-resize flex flex-center toggle-container z-max"
-            :class="dragWidth ? 'bg-primary ' : ''"
-            :style="dragWidth ? 'width: 3px' : 'width: 10px'"
-            @mousedown="handleMouseDown"
+            :class="dragWidth && dragSide === 'left' ? 'bg-primary ' : ''"
+            :style="dragWidth && dragSide === 'left' ? 'width: 3px' : 'width: 10px'"
+            @mousedown="handleMouseDown('left')"
+            @dblclick="uiStore.navDrawerWidth = 210"
           >
             <q-icon
               :name="`mdi-chevron-${uiStore.navigatorDrawer ? 'left' : 'right'}`"
@@ -146,6 +148,25 @@
             </q-icon>
           </div>
           <slot />
+          <div v-if="uiStore.projectRightDrawer"
+            class="absolute-right full-height hover-col-resize flex flex-center toggle-container z-max"
+            :class="dragWidth && dragSide === 'right' ? 'bg-primary ' : ''"
+            :style="dragWidth && dragSide === 'right' ? 'width: 3px' : 'width: 10px'"
+            @mousedown="handleMouseDown('right')"
+            @dblclick="uiStore.rightDrawerWidth = 420"
+          >
+            <q-icon
+              name="mdi-chevron-right"
+              color="primary"
+              size="sm"
+              @click="uiStore.projectRightDrawer = false"
+              class="cursor-pointer toggle-btn transition z-max"
+              :style="`transform: translateX(${
+                uiStore.projectRightDrawer ? -16 : 12
+              }px)`"
+            >
+            </q-icon>
+          </div>
           <div v-if="showBrand && $q.screen.gt.xs"
             class="absolute-full flex flex-center"
             :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-3'"
@@ -241,6 +262,7 @@ const toggleNavDrawer = () => {
   uiStore.navigatorDrawer = !uiStore.navigatorDrawer;
 };
 
+const dragSide = ref('left');
 const { x } = useMouse({ touch: false });
 const navDrawerMinWidth = ref(180);
 const navDrawerMaxWidth = ref(340);
@@ -250,31 +272,58 @@ const position = reactive({
   x: NaN,
   y: NaN,
 });
-const handleMouseDown = () => {
+const handleMouseDown = (side) => {
+  uiStore.disable_selected = true;
+  dragSide.value = side;
   position.x = x.value;
   dragWidth.value = true;
-  _ori_width.value = uiStore.navDrawerWidth;
+  if(side === 'left') {
+    _ori_width.value = uiStore.navDrawerWidth;
+    navDrawerMinWidth.value = 180;
+    navDrawerMaxWidth.value = 340;
+  } else {
+    _ori_width.value = uiStore.rightDrawerWidth;
+    navDrawerMinWidth.value = 240;
+    navDrawerMaxWidth.value = 860;
+  }
   uiStore.dragging = true;
 };
 const handleMouseUp = () => {
   dragWidth.value = false;
   uiStore.dragging = false;
+  uiStore.disable_selected = false;
 };
 const handleMouseMove = () => {
   if (!position.x || !dragWidth.value || !_ori_width.value) return;
 
-  const deltaX = x.value - position.x;
+  const deltaX = dragSide.value === 'left' ? x.value - position.x : position.x - x.value  ;
   if (
     _ori_width.value + deltaX >= navDrawerMinWidth.value &&
     _ori_width.value + deltaX <= navDrawerMaxWidth.value
   ) {
-    uiStore.navDrawerWidth = _ori_width.value + deltaX;
+    if (dragSide.value === 'left') {
+      uiStore.navDrawerWidth = _ori_width.value + deltaX;
+    } else {
+      uiStore.rightDrawerWidth = _ori_width.value + deltaX;
+    }
   } else if (_ori_width.value + deltaX > navDrawerMaxWidth.value) {
-    uiStore.navDrawerWidth = navDrawerMaxWidth.value;
+    if (dragSide.value === 'left') {
+      uiStore.navDrawerWidth = navDrawerMaxWidth.value;
+    } else {
+      uiStore.rightDrawerWidth = navDrawerMaxWidth.value;
+    }
   } else if (_ori_width.value + deltaX === navDrawerMaxWidth.value) {
-    uiStore.navDrawerWidth = navDrawerMinWidth.value;
+    if (dragSide.value === 'left') {
+      uiStore.navDrawerWidth = navDrawerMinWidth.value;
+    } else {
+      uiStore.rightDrawerWidth = navDrawerMinWidth.value;
+    }
   } else if (_ori_width.value + deltaX < 50) {
-    uiStore.navigatorDrawer = false;
+    if (dragSide.value === 'left') {
+      uiStore.navigatorDrawer = false;
+    } else {
+      uiStore.projectRightDrawer = false;
+    }
   }
 };
 const show_list = computed(() => (uiStore.app === 'affairs' && teamStore.init?.todogroups?.length > 0) || uiStore.app !== 'affairs')

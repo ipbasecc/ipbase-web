@@ -7,7 +7,7 @@
     <template v-else>
       <q-layout v-if="!needLogin" view="hHh LpR lFr"
         class="absolute-full border-negative radius-xs overflow-hidden"
-        :class="$q.dark.mode ? 'bg-darker' : 'bg-primary-darker'"
+        :class="`${$q.dark.mode ? 'bg-darker' : 'bg-primary-darker'} ${uiStore.disable_selected ? 'unselected' : ''}`"
       >
         <q-header v-if="uiStore.showAppNotification" class="transparent">
           <AppNotification />

@@ -4,7 +4,7 @@
       v-if="uiStore.projectRightDrawer && uiStore.projectRightDrawerContent"
       bordered
       side="right"
-      :width="420"
+      :width="uiStore.rightDrawerWidth"
     >
       <AffairsContainer 
         v-if="

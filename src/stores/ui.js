@@ -126,6 +126,7 @@ export default defineStore("ui", {
     appDrawer: true,
     navigatorDrawer: true,
     navDrawerWidth: 210,
+    rightDrawerWidth: 420,
     threadsDrawer: true,
     segmentDrawer: true,
     projectLeftDrawer: true,
@@ -207,6 +208,7 @@ export default defineStore("ui", {
     logging: false,
     deal_active_item: 'homepage',
     talker: null,
+    disable_selected: false,
   }),
   actions: {
     $syncMmUnreads() {
