@@ -11,12 +11,7 @@
                 @click="$emit('toggle-drawer')"
                 class="q-mr-sm"
             />
-            <chat-model-selector
-                v-model:selectedProvider="apiConfig.provider"
-                v-model:selectedModel="apiConfig.model"
-                :apiConfig="apiConfig"
-                @config="showConfig = true"
-            />
+            <chat-model-selector />
         </div>
 
         <!-- 消息列表 -->
@@ -66,16 +61,14 @@ defineProps({
     }
 })
 
-defineEmits(['toggle-drawer'])
+defineEmits(['toggle-drawer', 'config'])
 
 const $q = useQuasar()
 
 const {
-    apiConfig,
     currentSession,
     inputMessage,
     loading,
-    showConfig,
     messageContainer,
     sendMessage,
     stopGenerating

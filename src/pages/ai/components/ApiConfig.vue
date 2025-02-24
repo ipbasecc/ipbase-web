@@ -44,8 +44,8 @@
         <template v-slot:after>
           <q-scroll-area class="fit">
             <div class="q-pa-md" v-if="selectedProvider">
-              <div class="text-h6 q-mb-md">{{ currentProviderName }}</div>
-              
+              <div class="text-h6 q-mb-md" :class="currentProvider?.tip ? 'no-margin' : ''">{{ currentProviderName }}</div>
+              <div v-if="currentProvider?.tip" class="text-subtitle2 q-mb-lg text-orange">{{ currentProvider?.tip }}</div>
               <q-input
                 v-model="providerConfigs[selectedProvider].endpoint"
                 dense outlined
@@ -71,60 +71,35 @@
               </q-input>
 
               <div class="text-subtitle2 q-mb-sm">可用模型</div>
-              <template v-if="selectedProvider === 'custom'">
-                <div class="row q-gutter-sm">
-                  <q-chip
-                    v-for="model in providerConfigs.custom.models"
-                    :key="model"
-                    removable
-                    @remove="removeCustomModel(model)"
-                  >
-                    {{ model }}
-                  </q-chip>
+              <div class="column q-gutter-y-md">
+                <div class="row items-center border radius-xs q-pa-xs" style="min-height: 42px;">
+                  <q-chip v-for="modelId in providerConfigs[selectedProvider].models"
+                    :key="modelId"
+                    :label="modelId"
+                    removable square clickable
+                    class="border q-ma-xs"
+                    :color="isModelActive(modelId) ? 'primary' : undefined"
+                    :text-color="isModelActive(modelId) ? 'white' : undefined"
+                    @click="toggleModelActive(modelId)"
+                    @remove="removeProviderModel(modelId)"
+                    :disable="isLastActiveModel(selectedProvider, modelId)"
+                  />
+                  <q-input 
+                    v-if="showModelInput"
+                    v-model="customProviderModel" 
+                    type="text"
+                    aria-placeholder="请输入模型名称"
+                    borderless 
+                    dense
+                    autofocus
+                    class="q-px-xs col"
+                    style="min-width: 100px;"
+                    @keyup.enter="handleAddModel"
+                    @blur="handleInputBlur"
+                  />
+                  <span v-else class="cursor-pointer q-pa-sm text-primary" @click="showModelInput = true" >添加模型</span>
                 </div>
-                <q-input
-                  v-model="customModel"
-                  dense outlined
-                  label="添加自定义模型"
-                  class="col q-mt-sm"
-                  @keyup.enter="addCustomModel"
-                >
-                  <template v-slot:after>
-                    <q-btn flat dense icon="add" @click="addCustomModel" />
-                  </template>
-                </q-input>
-              </template>
-              <template v-else>
-                <div class="column q-gutter-y-md">
-                  <div class="row items-center border radius-xs q-pa-xs" style="min-height: 42px;">
-                    <q-chip v-for="modelId in providerConfigs[selectedProvider].models"
-                      :key="modelId"
-                      :label="modelId"
-                      removable square clickable
-                      class="border q-ma-xs"
-                      :color="isModelActive(modelId) ? 'primary' : undefined"
-                      :text-color="isModelActive(modelId) ? 'white' : undefined"
-                      @click="toggleModelActive(modelId)"
-                      @remove="removeProviderModel(modelId)"
-                      :disable="isLastActiveModel(selectedProvider, modelId)"
-                    />
-                    <q-input 
-                      v-if="showModelInput"
-                      v-model="customProviderModel" 
-                      type="text"
-                      aria-placeholder="请输入模型名称"
-                      borderless 
-                      dense
-                      autofocus
-                      class="q-px-xs col"
-                      style="min-width: 100px;"
-                      @keyup.enter="handleAddModel"
-                      @blur="handleInputBlur"
-                    />
-                    <span v-else class="cursor-pointer q-pa-sm text-primary" @click="showModelInput = true" >添加模型</span>
-                  </div>
-                </div>
-              </template>
+              </div>
             </div>
             <div v-else class="text-center q-pa-md text-grey">
               请选择一个供应商进行配置
@@ -181,60 +156,35 @@
               </q-input>
 
               <div class="text-subtitle2 q-mb-sm">可用模型</div>
-              <template v-if="provider.id === 'custom'">
-                <div class="row q-gutter-sm">
-                  <q-chip
-                    v-for="model in providerConfigs.custom.models"
-                    :key="model"
-                    removable
-                    @remove="removeCustomModel(model)"
-                  >
-                    {{ model }}
-                  </q-chip>
+              <div class="column q-gutter-y-md">
+                <div class="row items-center wrap border radius-xs q-px-xs" style="min-height: 42px;">
+                  <q-chip v-for="modelId in providerConfigs[provider.id].models"
+                    :key="modelId"
+                    :label="modelId"
+                    removable square clickable
+                    class="border q-ma-xs"
+                    :color="isModelActive(modelId) ? 'primary' : undefined"
+                    :text-color="isModelActive(modelId) ? 'white' : undefined"
+                    @click="toggleModelActive(modelId)"
+                    @remove="removeProviderModel(modelId)"
+                    :disable="isLastActiveModel(provider.id, modelId)"
+                  />
+                  <q-input 
+                    v-if="showModelInput && selectedProvider === provider.id"
+                    v-model="customProviderModel" 
+                    type="text"
+                    aria-placeholder="请输入模型名称"
+                    borderless 
+                    dense
+                    autofocus
+                    class="q-px-xs col"
+                    style="min-width: 100px;"
+                    @keyup.enter="handleAddModel"
+                    @blur="handleInputBlur"
+                  />
+                  <span v-else class="cursor-pointer q-pa-sm" @click="showModelInput = true; selectedProvider = provider.id" >添加模型</span>
                 </div>
-                <q-input
-                  v-model="customModel"
-                  dense outlined
-                  label="添加自定义模型"
-                  class="col q-mt-sm"
-                  @keyup.enter="addCustomModel"
-                >
-                  <template v-slot:after>
-                    <q-btn flat dense icon="add" @click="addCustomModel" />
-                  </template>
-                </q-input>
-              </template>
-              <template v-else>
-                <div class="column q-gutter-y-md">
-                  <div class="row items-center wrap border radius-xs q-px-xs" style="min-height: 42px;">
-                    <q-chip v-for="modelId in providerConfigs[provider.id].models"
-                      :key="modelId"
-                      :label="modelId"
-                      removable square clickable
-                      class="border q-ma-xs"
-                      :color="isModelActive(modelId) ? 'primary' : undefined"
-                      :text-color="isModelActive(modelId) ? 'white' : undefined"
-                      @click="toggleModelActive(modelId)"
-                      @remove="removeProviderModel(modelId)"
-                      :disable="isLastActiveModel(provider.id, modelId)"
-                    />
-                    <q-input 
-                      v-if="showModelInput && selectedProvider === provider.id"
-                      v-model="customProviderModel" 
-                      type="text"
-                      aria-placeholder="请输入模型名称"
-                      borderless 
-                      dense
-                      autofocus
-                      class="q-px-xs col"
-                      style="min-width: 100px;"
-                      @keyup.enter="handleAddModel"
-                      @blur="handleInputBlur"
-                    />
-                    <span v-else class="cursor-pointer q-pa-sm" @click="showModelInput = true; selectedProvider = provider.id" >添加模型</span>
-                  </div>
-                </div>
-              </template>
+              </div>
             </q-card-section>
           </q-card>
         </q-expansion-item>
@@ -252,6 +202,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { defaultProviders } from '../config/apiProviders'
+import { useAIStore } from '../../../stores/ai'
 
 const props = defineProps({
   modelValue: {
@@ -261,15 +212,13 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue', 'save'])
+const aiStore = useAIStore()
 
 const splitterModel = ref(25) // 左侧宽度比例
 const showApiKey = ref(false)
-const customModel = ref('')
 const customProviderModel = ref('')
 const providers = ref(defaultProviders)
 const selectedProvider = ref(null)
-const showAddModelDialog = ref(false)
-const showDropdown = ref(false)
 const showModelInput = ref(false)
 
 // 初始化供应商配置
@@ -281,21 +230,19 @@ const providerConfigs = ref(
         endpoint: provider.defaultEndpoint || '',
         apiKey: '',
         models: [],
+        activeModels: [],
         active: false
       }
     ])
   )
 )
 
-// 从props初始化配置
+// 从store初始化配置
 const initializeConfigs = () => {
-  // 用props中的值覆盖默认配置
   Object.keys(providerConfigs.value).forEach(providerId => {
-    if (props.modelValue[providerId]) {
-      providerConfigs.value[providerId] = {
-        ...providerConfigs.value[providerId],
-        ...props.modelValue[providerId]
-      }
+    providerConfigs.value[providerId] = {
+      ...providerConfigs.value[providerId],
+      ...aiStore.providers[providerId]
     }
   })
 }
@@ -349,6 +296,7 @@ const watchProviderApiKey = (providerId) => {
             .filter(model => model.default)
             .map(model => model.id)
           config.models = defaultModels
+          config.activeModels = [...defaultModels]
         }
       }
     }
@@ -361,9 +309,9 @@ onMounted(() => {
   providers.value.forEach(provider => {
     watchProviderApiKey(provider.id)
   })
-  // 如果props中有当前选中的provider，则选中它
-  if (props.modelValue.provider) {
-    selectedProvider.value = props.modelValue.provider
+  // 如果store中有当前选中的provider，则选中它
+  if (aiStore.provider) {
+    selectedProvider.value = aiStore.provider
   } else {
     // 否则选中第一个provider
     selectedProvider.value = providers.value[0].id
@@ -390,51 +338,48 @@ const isProviderActive = (provider) => {
   return config.endpoint && config.apiKey && config.models.length > 0
 }
 
-const addCustomModel = () => {
-  if (customModel.value.trim()) {
-    const config = providerConfigs.value.custom
-    if (!config.models.includes(customModel.value)) {
-      config.models.push(customModel.value)
-    }
-    customModel.value = ''
-  }
-}
-
-const removeCustomModel = (model) => {
-  const config = providerConfigs.value.custom
-  const index = config.models.indexOf(model)
-  if (index > -1) {
-    config.models.splice(index, 1)
-  }
-}
-
 const handleSave = () => {
-  // 找到激活的供应商
-  const activeProvider = Object.entries(providerConfigs.value)
-    .find(([id, config]) => config.active && isProviderConfigValid({ id }))
+  // 更新所有供应商的配置
+  Object.entries(providerConfigs.value).forEach(([id, config]) => {
+    aiStore.updateProviderConfig(id, config)
+  })
 
-  if (activeProvider) {
-    const [providerId, config] = activeProvider
-    
-    // 创建新的配置对象，保留原有配置
-    const newConfig = {
-      ...props.modelValue,  // 保留原有配置
-      provider: providerId,  // 更新当前选中的provider
-      [providerId]: {  // 更新特定provider的配置
-        ...props.modelValue[providerId],  // 保留该provider的原有配置
-        ...config  // 更新修改的部分
+  // 获取当前激活的供应商列表
+  const activeProviders = Object.entries(providerConfigs.value)
+    .filter(([id, config]) => config.active && isProviderConfigValid({ id }))
+    .map(([id]) => id)
+
+  if (activeProviders.length === 0) {
+    // 如果没有可用的供应商，清空选择
+    aiStore.setProvider('')
+    aiStore.setModel('')
+  } else {
+    const currentProvider = aiStore.provider
+    const currentModel = aiStore.model
+
+    if (activeProviders.includes(currentProvider)) {
+      // 当前供应商仍然可用
+      const providerConfig = providerConfigs.value[currentProvider]
+      if (!providerConfig.activeModels.includes(currentModel)) {
+        // 当前模型不可用，选择第一个可用模型
+        if (providerConfig.activeModels.length > 0) {
+          aiStore.setModel(providerConfig.activeModels[0])
+        }
+      }
+    } else {
+      // 当前供应商不可用，选择第一个可用供应商
+      const firstProvider = activeProviders[0]
+      aiStore.setProvider(firstProvider)
+      
+      // 选择该供应商的第一个可用模型
+      const firstProviderConfig = providerConfigs.value[firstProvider]
+      if (firstProviderConfig.activeModels.length > 0) {
+        aiStore.setModel(firstProviderConfig.activeModels[0])
       }
     }
-
-    // 更新modelValue
-    emit('update:modelValue', newConfig)
   }
   
-  emit('save')
-}
-
-const isModelSelected = (providerId, modelId) => {
-  return providerConfigs.value[providerId]?.models.includes(modelId)
+  aiStore.showConfig = false
 }
 
 // 检查模型是否激活
@@ -445,47 +390,9 @@ const isModelActive = (modelId) => {
 
 // 切换模型激活状态
 const toggleModelActive = (modelId) => {
+  aiStore.toggleModelActive(selectedProvider.value, modelId)
   const config = providerConfigs.value[selectedProvider.value]
-  if (!config.activeModels) {
-    config.activeModels = []
-  }
-  
-  const index = config.activeModels.indexOf(modelId)
-  if (index === -1) {
-    // 激活模型
-    config.activeModels.push(modelId)
-  } else {
-    // 如果是最后一个激活的模型，不允许取消激活
-    if (config.activeModels.length === 1) {
-      return
-    }
-    // 取消激活
-    config.activeModels.splice(index, 1)
-  }
-}
-
-// 添加并激活模型
-const addAndActivateModel = () => {
-  if (!customProviderModel.value.trim()) return
-
-  const modelId = customProviderModel.value.trim()
-  const config = providerConfigs.value[selectedProvider.value]
-  
-  // 添加到模型列表
-  if (!config.models.includes(modelId)) {
-    config.models.push(modelId)
-  }
-  
-  // 激活新添加的模型
-  if (!config.activeModels) {
-    config.activeModels = []
-  }
-  if (!config.activeModels.includes(modelId)) {
-    config.activeModels.push(modelId)
-  }
-  
-  // 清空输入
-  customProviderModel.value = ''
+  config.activeModels = [...aiStore.providers[selectedProvider.value].activeModels]
 }
 
 // 检查是否是最后一个激活的模型
@@ -500,150 +407,13 @@ const isLastActiveModel = (providerId, modelId) => {
 
 // 移除模型
 const removeProviderModel = (modelId) => {
-  const config = providerConfigs.value[selectedProvider.value]
-  if (isLastActiveModel(selectedProvider.value, modelId)) {
-    return
-  }
-  const index = config.models.indexOf(modelId)
-  if (index > -1) {
-    config.models.splice(index, 1)
-    // 同时从激活列表中移除
-    const activeIndex = config.activeModels?.indexOf(modelId)
-    if (activeIndex > -1) {
-      config.activeModels.splice(activeIndex, 1)
-    }
-  }
-}
-
-// 获取当前供应商的自定义模型
-const customProviderModels = computed(() => {
-  const provider = currentProvider.value
-  if (!provider) return []
+  aiStore.removeModel(selectedProvider.value, modelId)
   
-  const config = providerConfigs.value[provider.id]
-  if (!config) return []
-
-  return config.models
-    .filter(modelId => !provider.models.some(m => m.id === modelId))
-    .map(modelId => ({
-      id: modelId,
-      name: modelId,
-      default: false
-    }))
-})
-
-// 获取当前供应商所有可用的模型（包括预设和自定义）
-const availableModels = computed(() => {
-  const provider = currentProvider.value
-  if (!provider) return []
-  
-  const config = providerConfigs.value[provider.id]
-  if (!config) return []
-
-  if (provider.id === 'ollama') {
-    return config.models.map(model => ({
-      id: model.name,
-      name: model.name,
-      default: true
-    }))
-  }
-
-  // 合并预设模型和自定义模型
-  const presetModels = provider.models || []
-  const customModels = config.models
-    .filter(modelId => !provider.models.some(m => m.id === modelId))
-    .map(modelId => ({
-      id: modelId,
-      name: modelId,
-      default: false
-    }))
-
-  return [...presetModels, ...customModels]
-})
-
-// 移除模型
-const removeModel = (model) => {
+  // 同步本地状态
   const config = providerConfigs.value[selectedProvider.value]
-  if (isLastActiveModel(selectedProvider.value, model)) {
-    return
-  }
-  const index = config.models.indexOf(model)
-  if (index > -1) {
-    config.models.splice(index, 1)
-  }
-}
-
-// 添加供应商自定义模型并关闭弹窗
-const addProviderModelAndClose = () => {
-  if (customProviderModel.value.trim()) {
-    addProviderModel()
-    showAddModelDialog.value = false
-    customProviderModel.value = ''
-  }
-}
-
-// 添加供应商自定义模型
-const addProviderModel = () => {
-  const modelId = customProviderModel.value.trim()
-  if (!modelId) return
-
-  const config = providerConfigs.value[selectedProvider.value]
-  if (!config.models.includes(modelId)) {
-    config.models.push(modelId)
-  }
-}
-
-// 更新选中的模型
-const updateSelectedModels = (models) => {
-  if (!selectedProvider.value) return
-  const config = providerConfigs.value[selectedProvider.value]
-  config.models = models.map(model => model.id)
-}
-
-// 创建新模型
-const createNewModel = (val, done) => {
-  if (val.trim() === '') {
-    done()
-    return
-  }
-
-  const modelId = val.trim()
-  const config = providerConfigs.value[selectedProvider.value]
-  
-  // 检查是否已存在于预设模型中
-  const existingModel = availableModels.value.find(m => m.id === modelId)
-  if (!existingModel) {
-    // 添加到可用模型列表
-    availableModels.value.push({
-      id: modelId,
-      name: modelId,
-      default: false
-    })
-  }
-  
-  // 添加到已选模型列表
-  if (!config.models.includes(modelId)) {
-    config.models.push(modelId)
-  }
-  
-  done()
-}
-
-// 过滤模型列表
-const filterModels = (val, update) => {
-  // 不显示下拉列表，让用户专注于输入
-  update(() => {
-    // 保持原有列表不变
-  })
-}
-
-// 选择模型
-const selectModel = (model) => {
-  const config = providerConfigs.value[selectedProvider.value]
-  if (!config.models.includes(model.id)) {
-    config.models.push(model.id)
-  }
-  showDropdown.value = false
+  const storeConfig = aiStore.providers[selectedProvider.value]
+  config.models = [...storeConfig.models]
+  config.activeModels = [...storeConfig.activeModels]
 }
 
 const handleAddModel = () => {
@@ -712,14 +482,3 @@ const fetchOllamaModels = async (endpoint) => {
   }
 }
 </script>
-
-<style scoped>
-.q-splitter {
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius: 4px;
-}
-
-.radius-default {
-  border-radius: 4px;
-}
-</style> 

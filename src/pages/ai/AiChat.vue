@@ -23,10 +23,9 @@
                 </q-scroll-area>
             </div>
         </template>
-        <ChatBody :pannelMode="pannelMode" @toggle-drawer="showDrawer = true" />
+        <ChatBody :pannelMode="pannelMode" @toggle-drawer="showDrawer = true" @config="showConfig = true" />
     </NavigatorContainer>
-    <ChatBody v-else :pannelMode="pannelMode" />
-    <ChatBody v-else v-bind="$attrs" :pannelMode="pannelMode" @toggle-drawer="showDrawer = true" />
+    <ChatBody v-else v-bind="$attrs" :pannelMode="pannelMode" @toggle-drawer="showDrawer = true" @config="showConfig = true" />
 
     <!-- 移动端全屏会话列表 -->
     <div v-if="showDrawer" class="absolute-full" :class="$q.dark.mode ? 'bg-grey-10' : 'bg-grey-3'">
@@ -61,34 +60,29 @@
     </div>
 
     <!-- 配置弹框 -->
-    <q-dialog v-model="showConfig" persistent :maximized="!$q.screen.gt.xs">
-        <api-config 
-            v-model="apiConfig"
-            @save="onConfigSave"
-        />
+    <q-dialog v-model="aiStore.showConfig" persistent :maximized="!$q.screen.gt.xs">
+        <api-config />
     </q-dialog>
 </template>
 
 <script setup>
 import { computed, onMounted, watch, nextTick, ref } from 'vue'
-import ChatMessage from './components/ChatMessage.vue'
-import ChatInput from './components/ChatInput.vue'
 import ApiConfig from './components/ApiConfig.vue'
-import ChatModelSelector from './components/ChatModelSelector.vue'
 import ChatSessionList from './components/ChatSessionList.vue'
 import ChatBody from './components/ChatBody.vue'
 import { useChat } from './composables/useChat'
-import { defaultProviders } from './config/apiProviders'
-import {useQuasar} from "quasar";
-import AiStar from '../team/components/widgets/icons/AiStar.vue'
-import WindowToggle from '../team/components/widgets/icons/WindowToggle.vue'
+import { useAIStore } from '../../stores/ai'
+import { useQuasar } from 'quasar'
 import NavigatorContainer from '../team/NavigatorContainer.vue'
-const $q = useQuasar();
+
+const $q = useQuasar()
+const aiStore = useAIStore()
 
 const { pannelMode } = defineProps(['pannelMode'])
 
 // 移动端抽屉显示状态
 const showDrawer = ref(false)
+const showConfig = ref(false)
 
 // 移动端选择会话的处理函数
 const onMobileSessionSelect = (session) => {
@@ -101,15 +95,11 @@ const {
     currentSession,
     inputMessage,
     loading,
-    showConfig,
     messageContainer,
-    apiConfig,
     createNewChat,
     loadSession,
     deleteSession,
     sendMessage,
-    onConfigSave,
-    loadConfig,
     stopGenerating
 } = useChat()
 
@@ -147,82 +137,39 @@ watch(
     }
 )
 
-// 获取可用的供应商列表
-const availableProviders = computed(() => {
-    return defaultProviders.filter(provider => {
-        const config = apiConfig.value[provider.id]
-        return config && config.active
-    })
-})
-
-// 当前选中的供应商
-const selectedProvider = computed({
-    get: () => {
-        return defaultProviders.find(p => p.id === apiConfig.value.provider)
-    },
-    set: (provider) => {
-        if (provider) {
-            const config = apiConfig.value[provider.id]
-            apiConfig.value = {
-                ...apiConfig.value,
-                provider: provider.id,
-                endpoint: config.endpoint,
-                apiKey: config.apiKey,
-                model: config.models[0]
-            }
-        }
-    }
-})
-
-// 当前供应商可用的模型列表
-const availableModels = computed(() => {
-    if (!selectedProvider.value) return []
-    const config = apiConfig.value[selectedProvider.value.id]
-    return defaultProviders
-        .find(p => p.id === selectedProvider.value.id)
-        ?.models.filter(m => config.models.includes(m.id)) || []
-})
-
-// 当前选中的模型
-const selectedModel = computed({
-    get: () => apiConfig.value.model,
-    set: (modelId) => {
-        if (modelId) {
-            apiConfig.value.model = modelId
-        }
-    }
-})
-
 onMounted(() => {
-    loadConfig()
+    // 初始化AI配置
+    aiStore.initConfig()
 })
 
-const isElectron = computed(() => $q.platform.is.electron);
-const isMax = ref(false);
+const isElectron = computed(() => $q.platform.is.electron)
+const isMax = ref(false)
+
 onMounted(async () => {
-  await nextTick();
-  if (isElectron.value) {
-    isMax.value = window.windowAPI?.isMaximized();
-  }
-});
+    await nextTick()
+    if (isElectron.value) {
+        isMax.value = window.windowAPI?.isMaximized()
+    }
+})
+
 function minimize() {
-  if (isElectron.value) {
-    window.windowAPI?.minimize();
-  }
+    if (isElectron.value) {
+        window.windowAPI?.minimize()
+    }
 }
 
 function toggleMaximize() {
-  if (isElectron.value) {
-    window.windowAPI?.toggleMaximize(isMax.value);
-    isMax.value = !isMax.value;
-  }
+    if (isElectron.value) {
+        window.windowAPI?.toggleMaximize(isMax.value)
+        isMax.value = !isMax.value
+    }
 }
 
-const hoverClose = ref(false);
+const hoverClose = ref(false)
 function closeApp() {
-  if (isElectron.value) {
-    window.windowAPI?.close();
-  }
+    if (isElectron.value) {
+        window.windowAPI?.close()
+    }
 }
 </script>
 

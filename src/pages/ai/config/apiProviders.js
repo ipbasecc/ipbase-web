@@ -33,12 +33,13 @@ export const defaultProviders = [
         id: 'ollama',
         name: 'Ollama',
         defaultEndpoint: 'http://localhost:11434',
-        models: []  // 模型列表将通过API动态获取
+        models: [],  // 模型列表将通过API动态获取
+        tip: '调用本地Ollama服务需要配置CROS，允许服务端跨域请求'
     },
-    {
-        id: 'custom',
-        name: '自定义',
-        defaultEndpoint: '',
-        models: []
-    }
+    // {
+    //     id: 'custom',
+    //     name: '自定义',
+    //     defaultEndpoint: '',
+    //     models: []
+    // }
 ] 
