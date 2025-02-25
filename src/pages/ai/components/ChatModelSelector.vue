@@ -10,7 +10,7 @@
     </q-icon>
     <!-- API供应商选择 -->
     <div class="row items-center gap-xs no-wrap cursor-pointer hover-highlight" @click="providerHandler">
-      <q-avatar v-if="currentProvider.logo" size="26px" class="q-mr-xs">
+      <q-avatar v-if="currentProvider?.logo" size="26px" class="q-mr-xs">
         <q-img
           :src="currentProvider.logo"
           :ratio="1"
