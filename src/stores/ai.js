@@ -281,11 +281,33 @@ export const useAIStore = defineStore('ai', {
     updateSessionMessages(sessionId, messages) {
       const session = this.chatSessions.find(s => s.id === sessionId)
       if (session) {
+        // 保存当前标题
+        const currentTitle = session.title
+        
         session.messages = messages
         session.updatedAt = Date.now()
+        
+        // 确保标题不变
+        session.title = currentTitle
+        
         if (this.currentSession?.id === sessionId) {
           this.currentSession = JSON.parse(JSON.stringify(session))
         }
+        this.saveChatSessions()
+      }
+    },
+
+    // 更新会话标题
+    updateSessionTitle(sessionId, newTitle) {
+      const session = this.chatSessions.find(s => s.id === sessionId)
+      if (session) {
+        session.title = newTitle
+        session.updatedAt = Date.now()
+        
+        if (this.currentSession?.id === sessionId) {
+          this.currentSession.title = newTitle
+        }
+        
         this.saveChatSessions()
       }
     },

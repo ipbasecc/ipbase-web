@@ -26,6 +26,7 @@
     "@blocksuite/store": "^0.14.0",
     "@coleqiu/vue-drag-select": "^2.0.5",
     "@electron/remote": "^2.1.2",
+    "@lobehub/icons": "^1.76.0",
     "@quasar/app-vite": "2.0.0-beta.21",
     "@quasar/extras": "^1.16.12",
     "@syncfusion/ej2-base": "^26.2.10",

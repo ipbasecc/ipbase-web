@@ -62,10 +62,13 @@ export function useChat() {
         // 添加用户消息到当前会话
         aiStore.addMessageToCurrentSession(userMessage)
         
+        // 如果是第一条消息，使用前10个字符作为会话标题
         if (currentSession.value.messages.length === 1) {
             const session = aiStore.chatSessions.find(s => s.id === currentSession.value.id)
             if (session) {
-                session.title = inputMessage.value.slice(0, 12) + '...'
+                // 提取用户输入的前10个字符作为会话标题
+                currentSession.value.title = inputMessage.value.slice(0, 10)
+                session.title = currentSession.value.title
                 aiStore.saveChatSessions()
             }
         }
