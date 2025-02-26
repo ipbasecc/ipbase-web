@@ -57,12 +57,9 @@ import { updateProject } from "src/api/strapi/project.js";
 import { teamStore } from "src/hooks/global/useStore.js";
 
 const preferences = ref([]);
-const card_settings = ref([]);
-const project_settings = ref([]);
-const kanban_settings = ref([]);
 watchEffect(() => {
   preferences.value = teamStore.project?.preferences;
-  const project_settings = preferences.value?.find(i => i.name === 'project_settings')?.settings;
+  let project_settings = preferences.value?.find(i => i.name === 'project_settings')?.settings;
   if(!project_settings?.find(i => i.val === 'chat_mode')) {
     project_settings.push({
       val: 'chat_mode',
@@ -85,14 +82,16 @@ watchEffect(() => {
       description: 'project_settings_chat_mode_desc'
     })
   }
-  card_settings.value = teamStore.project?.preferences?.card_settings;
-  project_settings.value = teamStore.project?.preferences?.project_settings;
-  kanban_settings.value = teamStore.project?.preferences?.kanban_settings;
+  if(teamStore.team?.config?.mode === 'toMany') {
+    preferences.value.find(i => i.name === 'project_settings').settings = project_settings.filter(i => i.val !== 'chat_mode')
+    console.log('project_settings', project_settings);
+  }
 })
 
 const loading = ref(false);
 const updatePreferences = async () => {
-  preferences.value.card_settings = card_settings.value;
+  if(loading.value) return;
+  loading.value = true;
   let params = {
     data: {
       preferences: preferences.value,
@@ -106,6 +105,8 @@ const updatePreferences = async () => {
     }
   } catch (error) {
     console.log(error);
+  } finally {
+    loading.value = false;
   }
 };
 

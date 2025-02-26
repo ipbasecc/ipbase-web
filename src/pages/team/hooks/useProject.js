@@ -24,6 +24,9 @@ export default function useProject () {
         return memberRoles.filter(role => userMemberRoles.includes(role))?.length > 0;
     }
     const isChatMode = () => {
+        if(teamStore.team?.config?.mode === 'toMany') {
+            return true
+        };
         return teamStore.project?.preferences?.find(i => i.name === 'project_settings')?.settings?.find(i => i.val === 'chat_mode')?.selected === 'chat'
     }
     return {
