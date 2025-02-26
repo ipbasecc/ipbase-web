@@ -17,10 +17,13 @@
         <!-- 消息列表 -->
         <div class="chat-container">
             <q-scroll-area ref="messageContainer" class="col q-pa-md tiptap" @scroll="saveScrollPosition">
-                <chat-message v-for="msg in currentSession?.messages" 
-                    :key="msg.id" 
-                    :message="msg"
-                />
+                <q-list class="column items-center">
+                    <chat-message v-for="msg in currentSession?.messages" 
+                        :key="msg.id" 
+                        :message="msg"
+                        style="width: 100%; max-width: 960px;"
+                    />
+                </q-list>
             </q-scroll-area>
             <!-- 停止按钮 -->
             <div v-if="loading" class="stop-button-container z-fab">
@@ -38,11 +41,12 @@
         </div>
 
         <!-- 输入区域 -->
-        <div class="q-pa-md">
+        <div class="q-pa-md column items-center">
             <chat-input 
-            v-model="inputMessage" 
-            :loading="loading"
-            @send="sendMessage" />
+                v-model="inputMessage" 
+                :loading="loading"
+                style="width: 100%; max-width: 960px;"
+                @send="sendMessage" />
         </div>
     </div>
 </template>

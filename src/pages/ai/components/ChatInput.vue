@@ -1,29 +1,37 @@
 <template>
-  <div class="chat-input">
-    <q-input
-      v-model="localMessage"
-      type="text"
-      autogrow
-      outlined
-      :disable="loading"
-      placeholder="输入消息..."
-      :rows="3"
-      @keypress.enter.prevent="onEnter"
-      hide-bottom-space
-    >
-      <template v-slot:append>
-        <q-btn
-          flat dense class="border" padding="xs md"
-          icon="send"
-          :disable="!localMessage.trim()"
-          @click="onSend"
-        />
-      </template>
-      <div v-if="loading" class="absolute-full flex flex-center">
-        <q-spinner color="orange" size="sm" />
-      </div>
-    </q-input>
-  </div>
+  <q-item>
+    <q-item-section avatar />
+    <q-item-section>
+      <q-input
+        v-model="localMessage"
+        type="text"
+        autogrow
+        outlined
+        :disable="loading"
+        placeholder="输入消息..."
+        :rows="3"
+        input-class="q-px-sm"
+        @keypress.enter.prevent="onEnter"
+        hide-bottom-space
+      >
+        <template v-slot:append>
+          <q-btn
+            :flat="!localMessage.trim()"
+            icon="send"
+            class="border"
+            :class="{
+              'text-primary': localMessage.trim()
+            }"
+            :disable="!localMessage.trim()"
+            @click="onSend"
+          />
+        </template>
+        <div v-if="loading" class="absolute-full flex flex-center">
+          <q-spinner color="orange" size="sm" />
+        </div>
+      </q-input>
+    </q-item-section>
+  </q-item>
 </template>
 
 <script>
@@ -77,9 +85,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.chat-input {
-  width: 100%;
-}
-</style> 

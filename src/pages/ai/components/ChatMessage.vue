@@ -17,7 +17,7 @@
     <q-item-section>
       <q-item-label caption lines="1">{{ new Date(message.timestamp).toLocaleString() }}</q-item-label>
       <q-item-label>
-        <div v-if="!isUser && !message.content && !message.reasoning_content" class="waiting-indicator q-mt-sm">
+        <div v-if="!isUser && message.content?.length < 1 && message.reasoning_content?.length < 3" class="waiting-indicator q-mt-sm">
           <q-spinner-dots color="primary" size="1em" class="q-mr-sm" />
           正在思考...
         </div>
