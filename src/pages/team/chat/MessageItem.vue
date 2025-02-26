@@ -6,7 +6,7 @@
       ${is_sameUser ? '' : 'q-mt-sm'}
       ${msg.type.includes('system_') ? '' : 'hovered-item'}
       ${curThreadId === msg.id ? 'active' : ''}
-      ${!msg?.root_id && !msg.type.includes('system_') && msg.props?.strapi?.event !== 'class_publish' ? 'mm_message' : msg.props?.strapi ? 'unselected' : ''}
+      ${!msg?.root_id && !msg.type.includes('system_') && msg.props?.strapi?.event !== 'class_publish' && isChatMode ? 'mm_message' : msg.props?.strapi ? 'unselected' : ''}
     `"
   >
     <div v-if="msg.type.includes('system_')" class="row no-wrap gap-md items-center text-grey-6">
@@ -64,7 +64,7 @@
           v-html="html"
           class="message_body"
           :class="`
-            ${!msg?.root_id && msg.props?.strapi?.event !== 'class_publish' ? 'cursor-pointer' : ''}
+            ${!msg?.root_id && msg.props?.strapi?.event !== 'class_publish' && isChatMode ? 'cursor-pointer' : ''}
             ${msg.props.strapi ? 'text-grey-6' : ''}
           `"
           @click="enterThread(msg)"
@@ -95,7 +95,7 @@
           </template>
         </div>
         <!-- float action btns-->
-        <div v-if="!hide_float_bar && (wiget_show || menu_expend) && !dragging"
+        <div v-if="!hide_float_bar && (wiget_show || menu_expend) && !dragging && isChatMode"
           class="absolute transition blur-sm mm_message_wiget radius-sm border overflow-hidden"
           style="right: 10%; bottom: 0"
         >
@@ -259,9 +259,13 @@ const props = defineProps({
   pannel_mode: {
     type: Boolean,
     default: false,
-  }
+  },
+  isChatMode: {
+    type: Boolean,
+    default: true,
+  } 
 });
-const { msg, prev, container, curThreadId, pannel_mode, MsgOnly } = toRefs(props);
+const { msg, prev, container, curThreadId, pannel_mode, MsgOnly, isChatMode } = toRefs(props);
 const emit = defineEmits([
   "togglePowerpannel",
   "enterThread",
@@ -467,6 +471,7 @@ const followThreadFn = async (i) => {
 };
 
 const enterThread = (msg) => {
+  if(!isChatMode.value) return;
   const isImageClick = event?.target?.tagName?.toLowerCase() === 'img';
   const imgSrc = event?.target?.getAttribute('src');
   

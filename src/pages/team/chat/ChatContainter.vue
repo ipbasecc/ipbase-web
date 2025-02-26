@@ -84,6 +84,7 @@
                         :prev="messages[index - 1]"
                         :index="index"
                         :inThread="false"
+                        :isChatMode="project_id && isChatMode()"
                         :MsgOnly="MsgOnly || !$q.screen.gt.xs"
                         container="channel"
                         @togglePowerpannel="togglePowerpannel"
