@@ -1,17 +1,29 @@
 <template>
-  <div v-if="enable_settings?.length > 0" class="row">
-    <VueDraggable v-model="enable_settings" :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true"
+    <VueDraggable v-if="enable_settings?.length > 0" v-model="enable_settings" :animation="300" :delay="50" :fallbackTolerance="5" :forceFallback="true"
       :fallbackOnBody="true" handle=".dragBar" filter=".undrag" group="enable_settings" chosenClass="chosenGroupClass"
       ghostClass="ghostColumn" fallbackClass="chosenGroupClass" @sort="onSort()"
       ref="draggableRef" class="row">
       <div v-for="i in enable_settings" :key="i.val" class="col-6 q-pa-sm items-stretch"
         :class="$q.screen.gt.xs ? 'col-6' : 'col-12'">
         <q-card bordered class="full-height">
-          <q-card-section class="row no-wrap items-center">
-            <q-icon :name="i.icon" size="lg" color="positive" :class="i.name === 'multiple_boards' ? 'undrag' : 'dragBar'" />
+          <q-card-section class="row no-wrap items-center gap-xs">
+            <q-icon :name="i.icon" size="lg" :class="i.name === 'multiple_boards' ? 'undrag' : 'dragBar'" />
             <div class="font-bold-800 font-x-large q-ml-md">{{ $t(i.label) }}</div>
             <q-space />
-            <q-toggle v-model="i.enable" color="primary" :disable="loading || calc_lock(i)" @update:model-value="updatePreferences()" />
+            <q-toggle v-model="i.member_enable" dense left-label
+              checked-icon="check"
+              unchecked-icon="clear"
+              label="成员可见"
+              :color="i.member_enable ? 'primary' : 'negative'"
+              :disable="loading" @update:model-value="updatePreferences()"
+            />
+            <q-toggle v-model="i.staff_enable" dense left-label
+              checked-icon="check"
+              unchecked-icon="clear"
+              label="运营人员可见"
+              :color="i.staff_enable ? 'primary' : 'negative'"
+              :disable="loading" @update:model-value="updatePreferences()"
+            />
           </q-card-section>
           <q-card-section class="q-pt-none">
             {{ $t(i.description) }}
@@ -19,7 +31,6 @@
         </q-card>
       </div>
     </VueDraggable>
-  </div>
 </template>
 
 <script setup>
@@ -36,16 +47,6 @@
     enable_settings.value = preferences.value.find(i => i.name === 'enable_settings')?.settings;
   })
 
-  const calc_lock = (i) => {
-    if (i.name === "multiple_boards") {
-      // 如果存在多个工作区，那么禁止关闭多工作区功能
-      const boards_byType = (_type) => {
-        return teamStore.project?.boards.filter((i) => i.type === _type)
-      }
-      // console.log('boards_byType_kanban', boards_byType('kanban'));
-      return boards_byType('kanban')?.length > 1;
-    }
-  };
 
   const loading = ref(false);
   const updatePreferences = async () => {

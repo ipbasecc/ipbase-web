@@ -28,7 +28,9 @@
                 @tiptapUpdate="tiptapUpdate"
               />
             </div>
-            <q-btn v-if="update_params.data.jsonContent" color="primary" icon="check" label="保存" @click="update_jsonContent()" />
+            <div v-if="update_params.data.jsonContent && update_params.data.type === 'service'"  class="row">
+              <q-btn color="primary" label="保存" @click="update_jsonContent()" />
+            </div>
           </div>
         </q-item-section>
       </q-item>
@@ -47,7 +49,14 @@
           <q-icon color="primary" name="archive" />
         </q-item-section>
         <q-item-section class="q-pr-lg">
-          <q-input v-model="project_service_sub_price" outlined type="number" label="订阅价格" style="width: 250px" />
+          <div class="column gap-sm">
+            <q-input v-model="project_service_sub_price" outlined type="number" label="订阅价格" style="width: 250px" />
+            <div class="row">
+              <q-btn v-if="update_params.data.type === 'service' && +project_service_sub_price !== teamStore.project?.price / 100"
+                color="primary" label="保存" @click="update()"
+              />
+            </div>
+          </div>
         </q-item-section>
       </q-item>
       <q-item
@@ -74,11 +83,6 @@
           <q-icon color="primary" name="close" />
         </q-item-section>
         <q-item-section class="q-pr-lg">{{ $t('delete_project') }}</q-item-section>
-      </q-item>
-      <q-item v-if="+project_service_sub_price !== teamStore.project?.price / 100">
-        <q-item-section>
-          <q-btn color="primary" label="保存" @click="update()" />
-        </q-item-section>
       </q-item>
     </q-list>
   </div>

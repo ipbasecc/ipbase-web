@@ -1,5 +1,5 @@
 <template>
-  <div class="fit column q-space">
+  <div class="absolute-full column q-space">
     <template v-if="authBase && __members && member_roles">
       <div v-if="can_invite" class="q-pa-md">
         <q-chip v-if="teamStore.$teamMembersExceeded && show_member_exceeded_tip"
@@ -72,9 +72,12 @@
                           class="radius-sm q-pa-xs column no-wrap gap-xs"
                           style="min-width: 220px"
                         >
+                        <template
+                          v-for="role in member_roles_forChange.filter(i => i.subject !== 'creator' && i.subject !== 'owner')"
+                          :key="role.id"
+                        >
+                          <q-separator v-if="role.subject === 'staff'" class="op-3 q-my-xs" />
                           <q-item
-                            v-for="role in member_roles_forChange"
-                            :key="role.id"
                             clickable
                             class="radius-xs text-no-wrap"
                             @click="setRoleFn(i, role)"
@@ -98,6 +101,7 @@
                               {{ translate(role.subject) }}</q-item-section
                             >
                           </q-item>
+                        </template>
                           <template v-if="byInfo?.by !== 'channel' || (teamStore.mm_channel?.type !== 'O' && g.group !== 'admin')">
                             <q-separator class="op-3 q-my-xs" />
                             <q-item
@@ -306,7 +310,7 @@ const addFromTeam = ref(false);
 const toggleAddFromeTeam = () => {
   addFromTeam.value = !addFromTeam.value;
 };
-const sliceNumber = computed(() => teamStore.$level_detail?.team_members_limit === -1 ? teamStore.$level_detail.team_members_limit.length : teamStore.$level_detail.team_members_limit)
+const sliceNumber = computed(() => teamStore.$level_detail?.team_members_limit === -1 ? void 0 : teamStore.$level_detail.team_members_limit)
 const project_members = computed(() => teamStore.project?.project_members?.slice(0, sliceNumber.value));
 const card_members = computed(() => teamStore.card?.card_members);
 const team_members_not_in_card = computed(() => team_members.value.filter(i => !card_members.value.map(j => j.id).includes(i.id)));

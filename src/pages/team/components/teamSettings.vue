@@ -1,17 +1,19 @@
 <template>
-  <q-card bordered style="min-width: 46rem;">
+  <q-card bordered style="min-width: 54rem;">
     <q-card-section class="row no-wrap items-center q-pa-sm border-bottom">
       <span>{{ $t('team_settings') }}</span>
       <q-space />
       <q-btn flat dense size="sm" round icon="close" v-close-popup />
     </q-card-section>
-    <q-card-section>
+    <q-card-section class="no-padding">
       <div class="row no-wrap">
-        <q-list dense class="column gap-xs">
+        <q-list dense class="column gap-xs q-pa-md border-right">
           <q-item v-for="i in settingsSections" :key="i.name"
             clickable v-ripple
             class="radius-xs"
-            @click="scrollTo(i.name)">
+            @click="scrollTo(i.name)"
+            style="min-width: 8rem;"
+          >
             <q-item-section>{{ $t(i.name) }}</q-item-section>
           </q-item>
         </q-list>
@@ -49,7 +51,7 @@
             />
             <div ref="mode_section" class="row no-wrap items-center gap-xl q-mb-xl">
               <template v-for="i in modes" :key="i.value">
-                <q-card bordered class="q-space">
+                <q-card bordered class="col">
                   <q-card-section>
                     <q-radio v-model="mode" :val="i.value" :label="$t(i.label)" @update:model-value="syncParams()" />
                   </q-card-section>

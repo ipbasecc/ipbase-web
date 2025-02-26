@@ -24,7 +24,7 @@
       class="absolute-full"
       @mousemove="handleMouseMove" @mouseup="handleMouseUp">
       <ProjectHeader v-if="teamStore?.project && !uiStore.activeReel && !uiStore.isFocusMode" />
-      <template v-if="teamStore.navigation !== 'chat' || teamMode === 'toMany'">
+      <template v-if="teamStore.navigation && (teamStore.navigation !== 'chat' || teamMode === 'toMany')">
         <q-drawer
           v-if="
             $q.screen.gt.xs

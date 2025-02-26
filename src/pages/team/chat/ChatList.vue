@@ -172,7 +172,10 @@ watch(
 );
 
 const gotoChannel = async (channel) => {
-  project_mm_channel.value.unread = 0
+  project_mm_channel.value = {
+    ...project_mm_channel.value,
+    unread: 0
+  }
   await setLastChannel(project.value?.id, channel);
   teamStore.mm_channel = channel;
   await router.push(`/teams/projects/${project.value?.id}/chat/${channel?.id}`);

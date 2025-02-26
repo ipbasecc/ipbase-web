@@ -8,7 +8,7 @@
             v-for="i in mode.settings"
             :key="i.val"
             tag="label"
-            v-ripple
+            :v-ripple="!i.selected"
             class="radius-sm"
           >
             <q-item-section>
@@ -20,11 +20,29 @@
               }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
-              <q-toggle v-model="i.enable" color="green" :disable="calc_lock(i)" @update:model-value="updatePreferences()">
+              <q-toggle v-if="!i.selected" v-model="i.enable" color="green" :disable="calc_lock(i)" @update:model-value="updatePreferences()">
                 <q-tooltip v-if="calc_lock(i) && i.locked_tip">
                   {{ $t(i.locked_tip) }}
                 </q-tooltip>
               </q-toggle>
+              <q-select v-else v-model="i.selected" :options="i.options" emit-value map-options color="green" outlined
+                popup-content-class="border q-pa-xs radius-sm" style="min-width: 16rem;"
+                @update:model-value="updatePreferences()">
+                <template v-slot:selected>
+                  {{ $t(i.options.find(o => o.value === i.selected)?.label) }}
+                </template>
+                <template v-slot:option="scope">
+                  <q-item v-bind="scope.itemProps" style="max-width: 15rem;" class="radius-xs">
+                    <q-item-section avatar>
+                      <q-icon :name="scope.opt.icon" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>{{ $t(scope.opt.label) }}</q-item-label>
+                      <q-item-label caption lines="2" class="op-5">{{ $t(scope.opt.description) }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
             </q-item-section>
           </q-item>
         </template>
@@ -44,6 +62,29 @@ const project_settings = ref([]);
 const kanban_settings = ref([]);
 watchEffect(() => {
   preferences.value = teamStore.project?.preferences;
+  const project_settings = preferences.value?.find(i => i.name === 'project_settings')?.settings;
+  if(!project_settings?.find(i => i.val === 'chat_mode')) {
+    project_settings.push({
+      val: 'chat_mode',
+      label: 'project_settings_chat_mode_label',
+      selected: 'chat',
+      options: [
+        {
+          value: 'chat',
+          label: 'project_settings_chat_mode_chat_label',
+          description: 'project_settings_chat_mode_chat_desc',
+          icon: 'mdi-forum'
+        },
+        {
+          value: 'info',
+          label: 'project_settings_chat_mode_info_label',
+          description: 'project_settings_chat_mode_info_desc',
+          icon: 'mdi-newspaper'
+        },
+      ],
+      description: 'project_settings_chat_mode_desc'
+    })
+  }
   card_settings.value = teamStore.project?.preferences?.card_settings;
   project_settings.value = teamStore.project?.preferences?.project_settings;
   kanban_settings.value = teamStore.project?.preferences?.kanban_settings;

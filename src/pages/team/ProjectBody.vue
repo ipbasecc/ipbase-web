@@ -10,7 +10,8 @@ import {
   ref,
   toRefs,
   provide,
-  watch
+  watch,
+  computed
 } from "vue";
 import { useRouter } from "vue-router";
 import BgBrand from "src/components/VIewComponents/BgBrand.vue";
@@ -22,6 +23,8 @@ import {
 } from "src/hooks/project/useProcess.js";
 
 import { teamStore } from "src/hooks/global/useStore.js";
+import useProject from "src/pages/team/hooks/useProject.js";
+const { isTargetRole, isMember, isManager } = useProject();
 
 const props = defineProps({
   project_id: {
@@ -48,6 +51,9 @@ const getProject = async (_id) => {
   if (fetch) {
     project.value = fetch;
     teamStore.project = fetch;
+    teamStore.project.isStaff = computed(() => isTargetRole('staff'));
+    teamStore.project.isMember = computed(() => isMember());
+    teamStore.project.isManager = computed(() => isManager());
     await putProjectCache(fetch);
   } else {
     projectRemoved.value = true;

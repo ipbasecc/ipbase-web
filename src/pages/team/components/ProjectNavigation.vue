@@ -8,8 +8,8 @@
           ${tab === i.name ? '' : 'op-7'}
         `"
       >
-        <q-icon v-if="$q.screen.gt.sm" :name="i.icon" size="1.2rem" />
-        <span class="q-ml-sm">{{ $t(i.label) }}</span>
+        <q-icon v-if="$q.screen.gt.sm" :name="i.name === 'chat' ? $t(isChatMode() ? i.icon : 'mdi-newspaper') : i.icon" size="1.2rem" />
+        <span class="q-ml-sm">{{ i.name === 'chat' ? $t(isChatMode() ? 'chat' : 'quick_post') : $t(i.label) }}</span>
       </q-tab>
     </template>
   </q-tabs>
@@ -22,10 +22,14 @@ import { setProjectNav } from "src/pages/team/components/SideNavigation.js";
 import { watchEffect } from "vue";
 import {teamStore, uiStore} from 'src/hooks/global/useStore.js';
 import { useQuasar } from "quasar";
+import useProject from "src/pages/team/hooks/useProject.js";
 
 const $q = useQuasar();
+const { isTargetRole, isMember, isManager, isChatMode } = useProject();
 
 const project = computed(() => teamStore?.project);
+const isProjectStaff = computed(() => isTargetRole('staff') || isManager());
+const isProjectMember = computed(() => isMember());
 const teamMode = computed(() => teamStore.team?.config?.mode || 'toMany')
 const router = useRouter();
 const route = useRoute();
@@ -42,11 +46,11 @@ const goto = async (i) => {
 };
 const enabled = computed(() =>
   teamStore.project?.preferences.find(i => i.name === 'enable_settings')?.settings
-    ?.filter((i) => i.enable)
+    ?.filter((i) => (isProjectStaff.value && i.staff_enable) || (isProjectMember.value && i.member_enable))
     ?.map((j) => j.name)
 );
 watchEffect(() => {
-  // console.log('teamStore?.project', teamStore?.project)
+  console.log('teamStore?.project', teamStore?.project)
   tabs.value = [
     {
       name: "chat",
@@ -112,6 +116,7 @@ watchEffect(() => {
   if (unIncludes?.length > 0) {
     tabs.value = [...tabs.value, ...unIncludes];
   }
+  console.log('tabs.value', tabs.value);
 });
 
 watch(

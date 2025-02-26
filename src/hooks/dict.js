@@ -7,6 +7,7 @@ function __dict() {
     { key: "reviewer", value: "审核者" },
     { key: "executor", value: "负责人" },
     { key: "member", value: "成员" },
+    { key: "staff", value: "运营" },
     { key: "unconfirmed", value: "待审核" },
     { key: "marster", value: "支持者" },
     { key: "external", value: "外部成员" },

@@ -2,6 +2,7 @@
   <ChatContainter
     v-if="mm_channel_id"
     v-bind="$attrs"
+    :project_id
     :mm_channel_id
     :key="mm_channel_id"
   />
@@ -15,16 +16,16 @@ import { teamStore, mm_wsStore } from "src/hooks/global/useStore.js";
 import ChatContainter from "./ChatContainter.vue";
 
 const props = defineProps({
-  project_id: {
-    type: String,
-    default: null,
-  },
   mm_channel_id: {
     type: String,
     default: null,
   },
+  project_id: {
+    type: String,
+    default: null,
+  }
 });
-const { mm_channel_id } = toRefs(props);
+const { mm_channel_id, project_id } = toRefs(props);
 
 const route = useRoute();
 

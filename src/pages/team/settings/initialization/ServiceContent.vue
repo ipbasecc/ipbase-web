@@ -1,20 +1,32 @@
 <template>
     <div class="column no-wrap overflow-hidden q-space">
+        <q-item>
+            <q-item-section avatar>
+                服务价格：
+            </q-item-section>
+            <q-item-section>
+                <div class="row">
+                    <q-input v-model="price" dense type="number" filled square class="radius-xs overflow-hidden">
+                        <template v-slot:append>
+                            <q-btn flat dense icon="check"
+                                :disable="!price || price * 100 === teamStore.project?.price"
+                                @click="save(teamStore.project?.jsonContent)"
+                            />
+                        </template>
+                    </q-input>
+                </div>
+            </q-item-section>
+        </q-item>
         <TipTap
             :jsonContent="teamStore.project?.jsonContent"
             :editable="useAuths('jsonContent', ['project'])"
             :need="'json'"
             :square="true"
             :withSaveBtn="true"
-            styleClass="q-space scroll-y"
-            class="overflow-hidden q-space"
-            @tiptapSave="tiptapSave"
+            styleClass="q-space scroll-y q-pa-md"
+            class="overflow-hidden q-space q-mt-md border radius-xs"
+            @tiptapSave="save"
         />
-        <q-input v-model="price" type="number" label="服务价格" filled square>
-            <template v-slot:append>
-                <q-btn flat dense icon="check" @click="tiptapSave(teamStore.project?.jsonContent)" />
-            </template>
-        </q-input>
     </div>
 </template>
 
@@ -34,7 +46,7 @@ const params = ref({
 onMounted(() => {
     price.value = teamStore.project?.price / 100 || 0;
 })
-const tiptapSave = async (val) => {
+const save = async (val) => {
     if(!val){
         val = teamStore.project?.jsonContent;
     }

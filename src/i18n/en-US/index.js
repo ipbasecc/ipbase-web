@@ -648,6 +648,15 @@ export default {
   card_settings_color_marker_desc: 'A color indicator light will be displayed at the bottom right corner of the card; this feature will be unusable if it is disabled.',
   project_settings_allow_join_requests_label: 'allow join requests',
   project_settings_allow_join_requests_desc: 'Allow members to apply to join, if disabled, members can only join through the invitation link',
+  project_settings_chat_mode_label: 'chat mode',
+  project_settings_allow_direct_chat_label: 'Allow Direct Chat',
+  project_settings_allow_direct_chat_desc: 'Allow members to send private messages directly to each other. If disabled, members need to be friends to send private messages.', 
+  project_settings_chat_mode_label: 'Chat Mode',
+  project_settings_chat_mode_desc: 'Choose the chat mode, which supports two modes: "Community Discussion" and "Information Service".',
+  project_settings_chat_mode_chat_label: 'Community Discussion',
+  project_settings_chat_mode_info_label: 'Information Service',
+  project_settings_chat_mode_chat_desc: 'Provide information service in the form of discussion, allowing members to send messages.',
+  project_settings_chat_mode_info_desc: 'The information is sent by the operation personnel, and the members can view it, but cannot send messages.',
 
   enable_settings_multiple_boards_label: 'workspace',
   enable_settings_multiple_boards_desc: 'Allow the creation of multiple workspaces to enable the use of multiple task management applications within the same project.',
@@ -678,6 +687,7 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   field_reviewer: 'Reviewer',
   field_executor: 'Executor',
   field_member: 'Member',
+  field_staff: 'Staff',
   field_unconfirmed: 'Unconfirmed',
   field_marster: 'Master', // 注意这里将 'field_marster' 修正为 'field_master'
   field_master: 'Master', // 注意这里将 'field_marster' 修正为 'field_master'
@@ -751,6 +761,8 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   field_modify_ledger: 'Modify Ledger',
   field_approve_ledger: 'Approve Ledger',
   field_marker_todos: 'Mark Todos',
+  field_price: 'Service Price',
+  field_approve_join_request: 'Approve Join Request',
 
   role_name: 'Role Name',
   permission_autoset_tip: 'Permissions are automatically set based on the category field configuration',
@@ -767,6 +779,7 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   Project_schedule: 'Project Schedule',
 
   interact: 'Interact',
+  quick_post: 'Quick Post',
   toManyMode_team: 'Community Service',
   toOneMode_team: 'Private Domain Operation',
   channels_teamFunc: 'Channels',

@@ -14,7 +14,6 @@
           :color="$q.dark.mode ? 'white' : 'black'"
           @click="backList()"
       />
-      <!-- {{ teamStore.channel?.name }} -->
       <q-space />
       <q-btn
           v-if="strapi_channel_id"
@@ -99,7 +98,7 @@
           <div v-if="teamStore.mm_channel?.wasblocked || teamStore.mm_channel?.isblocked" class="full-width q-pa-xl border flex flex-center">
             {{ `${teamStore.mm_channel?.wasblocked ? '您已被对方屏蔽' : '您已屏蔽对方'}，不能发送消息` }}
           </div>
-          <SendmsgBox v-else :channel_id="mm_channel_id" />
+          <SendmsgBox v-else-if="showSendbox" :channel_id="mm_channel_id" />
         </div>
       </template>
       <template v-if="uiStore.chat_pannel" v-slot:separator>
@@ -231,14 +230,17 @@ import {useRouter, useRoute} from "vue-router";
 import { __viewChannel } from "src/hooks/mattermost/useMattermost.js";
 import ChannelHeader from './components/ChannelHeader.vue'
 import ChannelInfo from './components/ChannelInfo.vue'
+import useProject from "pages/team/hooks/useProject";
 
 const router = useRouter();
 const route = useRoute();
 const $t = i18n.global.t;
 const $q = useQuasar();
+const { isChatMode } = useProject();
 
-const { mm_channel_id, pannel_mode, MsgOnly, noReply } = defineProps({
+const { mm_channel_id, project_id, pannel_mode, MsgOnly, noReply } = defineProps({
   mm_channel_id: String,
+  project_id: String,
   pannel_mode: Boolean,
   MsgOnly: Boolean,
   noReply: Boolean,
@@ -253,6 +255,13 @@ const chatInfo = computed(() => ({
   mm_channel_id: mm_channel_id,
   post_id: thread.value?.id,
 }));
+
+const showSendbox = computed(() => {
+  if(project_id){
+    return isChatMode() || teamStore.project?.isStaff || teamStore.project?.isManager
+  }
+  return true
+})
 
 const thread = ref();
 const splitterModel = ref(100);

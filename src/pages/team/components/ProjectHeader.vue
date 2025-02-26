@@ -7,15 +7,16 @@
     >
       <q-btn v-if="$q.screen.gt.xs && teamMode === 'toMany'" flat icon="menu" padding="xs" @click="toggleleftDrawer()" />
       <q-btn v-if="!$q.screen.gt.xs" flat icon="mdi-chevron-left" padding="xs" @click="backHome()" />
+
       <template v-if="teamStore.project">
         <q-btn v-if="teamStore.project?.meeting" flat dense round color="red" icon="radio_button_checked" @click="toggleMeet()" />
         <ProjectNavigation />
         <q-space />
-        <MembersIndicator v-if="teamStore?.project?.id && membersForAvatar && $q.screen.gt.xs"
+        <MembersIndicator v-if="teamStore?.project?.id && membersForAvatar && $q.screen.gt.xs && !hideInToOne"
           :members="membersForAvatar"
           @click="toggleRightpannel('member_manager')"
         />
-        <StartMeet v-if="$q.screen.gt.xs" :project="teamStore.project" />
+        <StartMeet v-if="$q.screen.gt.xs && !hideInToOne" :project="teamStore.project" />
         <q-btn v-if="teamStore.project?.id && teamStore.navigation !== 'chat'"
           flat dense round icon="mdi-forum"
           :color="teamStore.rightDrawer === 'chat_pannel' && teamStore.rightDrawerOpen ? 'positive' : ''"
@@ -26,12 +27,12 @@
           :color="show_join_alert ? 'orange' : teamStore.rightDrawer === 'join_request' && teamStore.rightDrawerOpen ? 'positive' : ''"
           @click="toggleRightpannel('join_request')"
         />
-        <q-btn v-if="teamStore.project?.id"
+        <q-btn v-if="teamStore.project?.id && !hideInToOne"
           flat dense round icon="more_vert"
           @click="uiStore.project_settings = true"
         />
         <q-dialog v-model="uiStore.project_settings"
-          persistent allow-focus-outside position="top"
+          persistent allow-focus-outside no-shake position="top"
           transition-show="slide-down" transition-hide="slide-up"
           :maximized="!$q.screen.gt.xs"
         >
@@ -59,6 +60,10 @@ import StartMeet from 'src/components/meet/StartMeet.vue'
 
 const emit = defineEmits(["toggleRightpannel", "toggleleftDrawer"]);
 const teamMode = computed(() => teamStore.team?.config?.mode || 'toMany');
+const hideInToOne = computed(() => 
+  teamMode.value === "toOne" && !teamStore.project?.isStaff && !teamStore.project?.isManager
+);
+
 const toggleleftDrawer = () => {
   uiStore.projectLeftDrawer = !uiStore.projectLeftDrawer
 };

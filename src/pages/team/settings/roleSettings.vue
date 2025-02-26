@@ -1,5 +1,5 @@
 <template>
-  <div v-if="authBase" class="fit q-space column no-wrap q-pb-lg">
+  <div v-if="authBase" class="absolute-full q-space column no-wrap q-pb-lg">
     <template
       v-if="useAuths('manageRole', [authBase?.collection])"
     >
@@ -45,9 +45,12 @@
             filled
             type="text"
             :placeholder="$t('role_name')"
+            class="radius-xs overflow-hidden"
+            @keydown.esc="createRole_ing = false"
           >
             <template #append>
-              <q-btn flat dense round icon="check" @click="createRole()" />
+              <q-btn v-if="createRole_params.data.subject" flat dense round icon="check" @click="createRole()" />
+              <q-btn v-else flat dense round icon="close" @click="createRole_ing = false" />
             </template>
           </q-input>
           <q-btn
@@ -202,6 +205,8 @@ const processData = () => {
   } else if (teamStore?.project) {
     role.value = teamStore.project?.member_roles;
   }
+  const hideRoles = [ 'blocked', 'unconfirmed', 'external', 'creator', 'owner'];
+  role.value = role.value.filter(i => !hideRoles.includes(i.subject));
 };
 
 const projectRole = computed(() => teamStore.project?.member_roles);
@@ -220,12 +225,8 @@ watchEffect(() => {
     };
   }
 
-  active_role.value = active_role.value
-    ? active_role.value
-    : role.value && role.value[0].subject;
-  active_role_detial.value =
-    active_role.value &&
-    role.value?.find((i) => i.subject === active_role.value);
+  active_role.value = active_role.value || role.value && role.value[0].subject;
+  active_role_detial.value = active_role.value && role.value?.find((i) => i.subject === active_role.value);
 });
 watch([projectRole, cardRole], () => {
   if (projectRole.value || cardRole.value) {
