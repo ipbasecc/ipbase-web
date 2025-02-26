@@ -46,7 +46,7 @@ import { marked } from 'marked'
 import {teamStore} from "src/hooks/global/useStore.js";
 import AiStar from 'src/pages/team/components/widgets/icons/AiStar.vue'
 
-const thing_expanded = ref(true);
+const thing_expanded = ref(false);
 
 const { message } = defineProps(['message'])
 const isUser = computed(() => message.role === 'user')
@@ -75,7 +75,7 @@ watch(() => message.reasoning_content, (newReasoningContent) => {
     thing_expanded.value = true;
   }
 }, { immediate: true })
-console.log('message.reasoning_content', message.reasoning_content);
+// console.log('message.reasoning_content', message.reasoning_content);
 
 </script>
 

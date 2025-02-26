@@ -16,7 +16,7 @@
 
         <!-- 消息列表 -->
         <div class="chat-container">
-            <q-scroll-area ref="messageContainer" class="col q-pa-md tiptap">
+            <q-scroll-area ref="messageContainer" class="col q-pa-md tiptap" @scroll="saveScrollPosition">
                 <chat-message v-for="msg in currentSession?.messages" 
                     :key="msg.id" 
                     :message="msg"
@@ -53,6 +53,7 @@ import ChatMessage from './ChatMessage.vue'
 import ChatInput from './ChatInput.vue'
 import ChatModelSelector from './ChatModelSelector.vue'
 import { useChat } from '../composables/useChat'
+import { onMounted } from 'vue';
 
 defineProps({
     pannelMode: {
@@ -71,8 +72,20 @@ const {
     loading,
     messageContainer,
     sendMessage,
-    stopGenerating
+    stopGenerating,
+    saveScrollPosition,
+    loadSession
 } = useChat()
+
+// Add debugging information to check if loadSession is called
+onMounted(() => {
+    if (currentSession.value) {
+        console.log('Current session on mount:', currentSession.value);
+        loadSession(currentSession.value);
+    } else {
+        console.log('No current session to load.');
+    }
+});
 </script>
 
 <style scoped>

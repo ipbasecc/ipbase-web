@@ -116,7 +116,7 @@
     "marked": "^9.1.6",
     "mkdirp": "^3.0.1",
     "path": "^0.12.7",
-    "pinia": "^2.2.2",
+    "pinia": "^3.0.1",
     "pinia-plugin-persistedstate": "^4.2.0",
     "prismjs": "^1.29.0",
     "prosemirror-state": "^1.4.3",

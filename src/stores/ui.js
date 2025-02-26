@@ -125,7 +125,7 @@ export default defineStore("ui", {
     draggingScroll: false, // 正在拖拽横向滚动
     appDrawer: true,
     navigatorDrawer: true,
-    navDrawerWidth: 210,
+    navDrawerWidth: 260,
     rightDrawerWidth: 420,
     threadsDrawer: true,
     segmentDrawer: true,

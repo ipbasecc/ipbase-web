@@ -1,6 +1,16 @@
-import { ref, nextTick, computed } from 'vue'
+import { ref, nextTick, computed, watch } from 'vue'
 import { uid } from 'quasar'
 import { useAIStore } from '../../../stores/ai'
+import localforage from 'localforage';
+
+// Debounce function to limit how often a function can be called
+function debounce(func, delay) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), delay);
+    };
+}
 
 export function useChat() {
     const inputMessage = ref('')
@@ -8,6 +18,15 @@ export function useChat() {
     const messageContainer = ref(null)
     let abortController = null
     const aiStore = useAIStore()
+
+    // Initialize the debounce function for saving scroll position
+    const saveScrollPosition = debounce(async () => {
+        if (currentSession.value) {
+            const position = messageContainer.value.getScroll().verticalPosition; // Get the current scroll position
+            aiStore.scrollPosition[currentSession.value.id] = position; // Save to Pinia
+            // console.log('saveScrollPosition', aiStore.scrollPosition);
+        }
+    }, 100); // Adjust the delay as needed
 
     // 初始化时加载配置
     aiStore.initChatSessions()
@@ -22,11 +41,16 @@ export function useChat() {
     }
 
     // 加载会话
-    const loadSession = (session) => {
-        aiStore.loadSession(session)
-        // 滚动到底部
+    const loadSession = async (session) => {
+        await aiStore.loadSession(session)
+        // Restore scroll position
         nextTick(() => {
-            messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize)
+            const savedPosition = aiStore.scrollPosition[session.id]; // Get from Pinia
+            if (savedPosition !== undefined) {
+                messageContainer.value.setScrollPosition('vertical', savedPosition, 300);
+            } else {
+                messageContainer.value.setScrollPosition('vertical', messageContainer.value.getScroll().verticalSize);
+            }
         })
     }
 
@@ -342,6 +366,7 @@ export function useChat() {
         loadSession,
         deleteSession,
         sendMessage,
-        stopGenerating
+        stopGenerating,
+        saveScrollPosition // Expose the saveScrollPosition method
     }
 } 

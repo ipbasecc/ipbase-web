@@ -1,6 +1,12 @@
 import { defineStore } from 'pinia'
 import { defaultProviders } from '../pages/ai/config/apiProviders'
 import { uid } from 'quasar'
+import localforage from 'localforage'
+
+// Initialize localforage with a specific database name
+localforage.config({
+  name: 'AIChatDatabase',
+})
 
 export const useAIStore = defineStore('ai', {
   state: () => ({
@@ -25,6 +31,7 @@ export const useAIStore = defineStore('ai', {
     // 聊天会话相关状态
     chatSessions: [],
     currentSession: null,
+    scrollPosition: {} // 用于存储每个会话的滚动位置
   }),
 
   getters: {
@@ -94,8 +101,8 @@ export const useAIStore = defineStore('ai', {
 
   actions: {
     // 初始化配置
-    initConfig() {
-      const savedConfig = localStorage.getItem('aiChatConfig')
+    async initConfig() {
+      const savedConfig = await localforage.getItem('aiChatConfig')
       if (savedConfig) {
         const config = JSON.parse(savedConfig)
         this.provider = config.provider || ''
@@ -116,13 +123,13 @@ export const useAIStore = defineStore('ai', {
     },
 
     // 保存配置
-    saveConfig() {
+    async saveConfig() {
       const config = {
         provider: this.provider,
         model: this.model,
         ...this.providers
       }
-      localStorage.setItem('aiChatConfig', JSON.stringify(config))
+      await localforage.setItem('aiChatConfig', JSON.stringify(config))
     },
 
     // 更新供应商配置
@@ -228,8 +235,8 @@ export const useAIStore = defineStore('ai', {
     },
 
     // 初始化聊天会话
-    initChatSessions() {
-      const savedSessions = localStorage.getItem('aiChatSessions')
+    async initChatSessions() {
+      const savedSessions = await localforage.getItem('aiChatSessions')
       if (savedSessions) {
         this.chatSessions = JSON.parse(savedSessions)
         if (this.chatSessions.length > 0) {
@@ -239,8 +246,8 @@ export const useAIStore = defineStore('ai', {
     },
 
     // 保存聊天会话到localStorage
-    saveChatSessions() {
-      localStorage.setItem('aiChatSessions', JSON.stringify(this.chatSessions))
+    async saveChatSessions() {
+      await localforage.setItem('aiChatSessions', JSON.stringify(this.chatSessions))
     },
 
     // 创建新会话
