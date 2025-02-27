@@ -11,7 +11,7 @@
           />
           <span v-else>{{ UsernameFirstChar || 'U' }}</span>
         </template>
-        <AiStar v-else :width="36" :height="36" :color="$q.dark.mode ? '#EEE' : '#333'" />
+        <q-icon name="auto_awesome" size="32px" />
       </q-avatar>
     </q-item-section>
     <q-item-section>
@@ -56,7 +56,6 @@
 import { computed, ref, watch } from 'vue'
 import { marked } from 'marked'
 import {teamStore} from "src/hooks/global/useStore.js";
-import AiStar from 'src/pages/team/components/widgets/icons/AiStar.vue'
 
 const thing_expanded = ref(false);
 
@@ -73,21 +72,15 @@ const formattedReasoning = computed(() => {
   return marked(message.reasoning_content || '')
 })
 
-// Watch for changes in message content
-// When reasoning content exists and formal content appears, collapse the expansion item
-watch(() => message.content, (newContent) => {
-  if (message.reasoning_content && newContent) {
+watch(() => message, () => {
+  if (message.reasoning_content && !message.content) {
+    thing_expanded.value = true;
+  }
+  if (message.reasoning_content && message.content) {
     thing_expanded.value = false;
   }
 }, { immediate: true })
 
-// When a new message with reasoning content arrives, initially expand it
-watch(() => message.reasoning_content, (newReasoningContent) => {
-  if (newReasoningContent) {
-    thing_expanded.value = true;
-  }
-}, { immediate: true })
-// console.log('message.reasoning_content', message.reasoning_content);
 
 </script>
 

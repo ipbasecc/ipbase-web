@@ -7,7 +7,7 @@
         } ${$q.platform.is.electron ? 'q-electron-drag q-pr-none' : ''}`"
         style="height: 2.7rem"
       >
-        <q-btn-group class="border-op-sm border-solid border-xs" style="height: 28px;padding: 2px;">
+        <q-btn-group v-if="$q.screen.gt.xs" class="border-op-sm border-solid border-xs" style="height: 28px;padding: 2px;">
           <q-btn padding="none" style="width: 6px;" class="radius-none"
             :color="$q.dark.mode ? 'grey-7' : 'primary'"
             :class="uiStore.appDrawer ? 'op-4' : 'op-2'"
@@ -97,20 +97,14 @@
         <div v-if="uiStore.app === 'aichat'"
           class="row no-wrap gap-sm items-center cursor-pointer q-electron-drag--exception"
         >
-          <AiStar color="white" :width="18" :height="18" />
+          <q-icon name="auto_awesome" />
           AI 对话
         </div>
         <q-space />
         <template v-if="$q.screen.gt.xs">
-          <q-btn v-if="uiStore.app !== 'aichat'" @click="toggleRightDrawer('aichat')"
+          <q-btn v-if="uiStore.app !== 'aichat'" icon="auto_awesome" @click="toggleRightDrawer('aichat')"
             flat round
           >
-            <AiStar
-              :color="uiStore.projectRightDrawer &&
-                uiStore.projectRightDrawerContent === 'aichat'
-                  ? 'green': 'white'
-              "
-            />
             <q-tooltip>
               <span class="text-no-wrap">{{ $t('aichat_panel') }}</span>
             </q-tooltip>
@@ -215,7 +209,6 @@ import FileTransfer from "pages/team/components/widgets/icons/FileTransfer.vue";
 import TeamList from "src/pages/team/components/TeamList.vue";
 import TeamNotification from './TeamNotification.vue'
 import CreateDealbtn from 'src/pages/deliver/components/CreateDealbtn.vue'
-import AiStar from './widgets/icons/AiStar.vue'
 
 const $q = useQuasar();
 const router = useRouter();

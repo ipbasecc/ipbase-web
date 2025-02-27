@@ -28,7 +28,7 @@ export function useChat() {
     }, 100); // Adjust the delay as needed
 
     // 初始化时加载配置
-    aiStore.initChatSessions()
+    aiStore.initChatSessions();
 
     // 计算属性：从store获取会话列表和当前会话
     const chatSessions = computed(() => aiStore.chatSessions)

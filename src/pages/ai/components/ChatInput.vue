@@ -1,87 +1,68 @@
 <template>
   <q-item>
     <q-item-section avatar />
-    <q-item-section>
-      <q-input
-        v-model="localMessage"
-        type="text"
-        autogrow
-        outlined
-        :disable="loading"
-        placeholder="输入消息..."
-        :rows="3"
-        input-class="q-px-sm"
-        @keypress.enter.prevent="onEnter"
-        hide-bottom-space
-      >
-        <template v-slot:append>
+    <q-item-section class="border q-pa-sm radius-sm">
+      <div class="column no-wrap gap-xs">
+        <q-input
+          v-model="localMessage"
+          type="text"
+          autogrow
+          dense
+          borderless
+          :disable="loading"
+          placeholder="输入消息..."
+          :rows="3"
+          input-class="q-px-sm"
+          @keypress.enter.prevent="onEnter"
+          hide-bottom-space
+        />
+        <div class="row no-wrap items-center">
+          <q-btn flat dense icon="mdi-plus" class="border" @click="aiStore.createNewChat()" />
+          <q-space />
           <q-btn
-            :flat="!localMessage.trim()"
+            flat
             icon="send"
             class="border"
             :class="{
               'text-primary': localMessage.trim()
             }"
+            :loading="loading"
             :disable="!localMessage.trim()"
             @click="onSend"
           />
-        </template>
-        <div v-if="loading" class="absolute-full flex flex-center">
-          <q-spinner color="orange" size="sm" />
         </div>
-      </q-input>
+      </div>
     </q-item-section>
   </q-item>
 </template>
 
-<script>
+<script setup>
 import { ref, watch } from 'vue'
+import { useAIStore } from 'src/stores/ai'
 
-export default {
-  name: 'ChatInput',
-  
-  props: {
-    modelValue: {
-      type: String,
-      default: ''
-    },
-    loading: {
-      type: Boolean,
-      default: false
-    }
-  },
+const { modelValue, loading } = defineProps(['modelValue','loading'])
+const emit = defineEmits(['update:modelValue', 'send'])
+const aiStore = useAIStore()
+const localMessage = ref(modelValue)
 
-  emits: ['update:modelValue', 'send'],
+watch(() => modelValue, (newVal) => {
+  localMessage.value = newVal
+})
 
-  setup (props, { emit }) {
-    const localMessage = ref(props.modelValue)
-
-    watch(() => props.modelValue, (newVal) => {
-      localMessage.value = newVal
-    })
-
-    const onSend = () => {
-      if (localMessage.value.trim() && !props.loading) {
-        emit('send')
-      }
-    }
-
-    const onEnter = (e) => {
-      if (e.shiftKey) {
-        return
-      }
-      onSend()
-    }
-
-    watch(localMessage, (newVal) => {
-      emit('update:modelValue', newVal)
-    })
-
-    return {
-      localMessage,
-      onSend,
-      onEnter
-    }
+const onSend = () => {
+  if (localMessage.value.trim() && !loading) {
+    emit('send')
   }
 }
+
+const onEnter = (e) => {
+  if (e.shiftKey) {
+    return
+  }
+  onSend()
+}
+
+watch(localMessage, (newVal) => {
+  emit('update:modelValue', newVal)
+})
 </script>

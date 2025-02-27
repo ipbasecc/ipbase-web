@@ -41,7 +41,7 @@
         </div>
 
         <!-- 输入区域 -->
-        <div class="q-pa-md column items-center">
+        <div class="q-px-md q-pb-md column items-center">
             <chat-input 
                 v-model="inputMessage" 
                 :loading="loading"

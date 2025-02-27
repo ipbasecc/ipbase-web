@@ -72,7 +72,7 @@ export default defineStore("ui", {
       {
         val: "aichat",
         label: 'aichat',
-        icon: "mdi-message-bulleted",
+        icon: "auto_awesome",
         description: 'app_aichat_purpose',
         to: "aichat",
         enable: Platform.is.desktop
@@ -210,6 +210,7 @@ export default defineStore("ui", {
     talker: null,
     disable_selected: false,
   }),
+  persist: false,
   actions: {
     $syncMmUnreads() {
       const team = teamStore()?.team; // 获取 team store 实例并访问 team 属性

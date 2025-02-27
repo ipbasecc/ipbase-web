@@ -1,111 +1,20 @@
 <template>
     <q-list class="column gap-xs">
-        <template v-if="groupedSessions.recentSessions.length > 0">
-            <q-item v-for="session in groupedSessions.recentSessions" 
-                    :key="session.id" 
-                    clickable 
-                    @click="emit('select', session)"
-                    v-ripple
-                    class="hovered-item radius-xs"
-                    :class="currentSessionId === session.id ? 'active-listitem border' : 'border-placeholder'">
-                <q-item-section>
-                    <q-item-label lines="1">{{ session.title }}</q-item-label>
-                </q-item-section>
-                <q-item-section side class="hover-show">
-                    <q-btn dense flat round size="sm" icon="more_vert">
-                        <q-menu v-model="menuModels[session.id]" class="no-padding radius-sm shaodw-24" @show="onMenuShow(session)">
-                            <q-list bordered dense class="q-pa-xs radius-sm column gap-xs">
-                                <q-item class="no-padding radius-xs overflow-hidden">
-                                    <q-input v-model="sessionTitle" dense filled square type="text" @keyup.enter="saveSessionTitle(session)">
-                                        <template #append>
-                                            <q-btn dense round flat size="sm" icon="check"
-                                                :disable="!sessionTitle.trim() || sessionTitle === session.title"
-                                                @click="saveSessionTitle(session)" />
-                                        </template>
-                                    </q-input>
-                                </q-item>
-                                <q-item clickable @click="deleteSession(session)" class="radius-xs">
-                                    <q-item-section>
-                                        <q-item-label>删除</q-item-label>
-                                    </q-item-section>
-                                </q-item>
-                            </q-list>
-                        </q-menu>
-                    </q-btn>
-                </q-item-section>
-            </q-item>
-        </template>
-        <template v-if="groupedSessions.weekAgoSessions.length > 0">
-            <q-item-label class="q-mb-xs op-5">7天前</q-item-label>
-            <q-item v-for="session in groupedSessions.weekAgoSessions" 
-                    :key="session.id" 
-                    clickable 
-                    @click="emit('select', session)"
-                    v-ripple
-                    class="hovered-item radius-xs"
-                    :class="currentSessionId === session.id ? 'active-listitem border' : 'border-placeholder'">
-                <q-item-section>
-                    <q-item-label lines="1">{{ session.title }}</q-item-label>
-                </q-item-section>
-                <q-item-section side class="hover-show">
-                    <q-btn dense flat round size="sm" icon="more_vert">
-                        <q-menu v-model="menuModels[session.id]" class="no-padding radius-sm shaodw-24" @show="onMenuShow(session)">
-                            <q-list bordered dense class="q-pa-xs radius-sm column gap-xs">
-                                <q-item class="no-padding radius-xs overflow-hidden">
-                                    <q-input v-model="sessionTitle" dense filled square type="text" @keyup.enter="saveSessionTitle(session)">
-                                        <template #append>
-                                            <q-btn dense round flat size="sm" icon="check"
-                                                :disable="!sessionTitle.trim() || sessionTitle === session.title"
-                                                @click="saveSessionTitle(session)" />
-                                        </template>
-                                    </q-input>
-                                </q-item>
-                                <q-item clickable @click="deleteSession(session)" class="radius-xs">
-                                    <q-item-section>
-                                        <q-item-label>删除</q-item-label>
-                                    </q-item-section>
-                                </q-item>
-                            </q-list>
-                        </q-menu>
-                    </q-btn>
-                </q-item-section>
-            </q-item>
-        </template>
-        <template v-if="groupedSessions.monthAgoSessions.length > 0">
-            <q-item-label class="q-mb-xs op-5">30天前</q-item-label>
-            <q-item v-for="session in groupedSessions.monthAgoSessions" 
-                    :key="session.id" 
-                    clickable 
-                    @click="emit('select', session)"
-                    v-ripple
-                    class="hovered-item radius-xs"
-                    :class="currentSessionId === session.id ? 'active-listitem border' : 'border-placeholder'">
-                <q-item-section>
-                    <q-item-label lines="1">{{ session.title }}</q-item-label>
-                </q-item-section>
-                <q-item-section side class="hover-show">
-                    <q-btn dense flat round size="sm" icon="more_vert">
-                        <q-menu v-model="menuModels[session.id]" class="no-padding radius-sm shaodw-24" @show="onMenuShow(session)">
-                            <q-list bordered dense class="q-pa-xs radius-sm column gap-xs">
-                                <q-item class="no-padding radius-xs overflow-hidden">
-                                    <q-input v-model="sessionTitle" dense filled square type="text" @keyup.enter="saveSessionTitle(session)">
-                                        <template #append>
-                                            <q-btn dense round flat size="sm" icon="check"
-                                                :disable="!sessionTitle.trim() || sessionTitle === session.title"
-                                                @click="saveSessionTitle(session)" />
-                                        </template>
-                                    </q-input>
-                                </q-item>
-                                <q-item clickable @click="deleteSession(session)" class="radius-xs">
-                                    <q-item-section>
-                                        <q-item-label>删除</q-item-label>
-                                    </q-item-section>
-                                </q-item>
-                            </q-list>
-                        </q-menu>
-                    </q-btn>
-                </q-item-section>
-            </q-item>
+        <template v-for="(group, index) in groupedSessions" :key="group.id">
+            <template v-if="group.sessions.length > 0">
+                <q-item-label v-if="index !== 0" class="q-mb-xs op-5">{{ group.title }}</q-item-label>
+                <template v-if="group.sessions.length > 0">
+                    <ChatSessionItem 
+                        v-for="session in group.sessions" 
+                        :key="session.id" 
+                        :session="session" 
+                        :currentSessionId="currentSessionId" 
+                        @select="emit('select', session)"
+                        @save-title="saveSessionTitle"
+                        @delete="deleteSession"
+                    />
+                </template>
+            </template>
         </template>
     </q-list>
 </template>
@@ -113,6 +22,8 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { useAIStore } from '../../../stores/ai'
+import ChatSessionItem from './ChatSessionItem.vue'
+import { uid } from 'quasar'
 
 const { sessions, currentSessionId } = defineProps({
     sessions: {
@@ -128,11 +39,6 @@ const { sessions, currentSessionId } = defineProps({
 const aiStore = useAIStore()
 const sessionTitle = ref('')
 const menuModels = reactive({}) // 使用对象来存储每个会话的菜单状态
-
-// 菜单显示时的处理函数
-const onMenuShow = (session) => {
-    sessionTitle.value = session.title
-}
 
 // 保存会话标题
 const saveSessionTitle = (session) => {
@@ -167,28 +73,39 @@ const deleteSession = (session) => {
 // 分组会话
 const groupedSessions = computed(() => {
     const now = Date.now();
-    const recentSessions = [];
-    const weekAgoSessions = [];
-    const monthAgoSessions = [];
-
+    const recentSessions = {
+        id: uid(),
+        sessions: [],
+        title: '最近'
+    };
+    const weekAgoSessions = {
+        id: uid(),
+        sessions: [],
+        title: '7天前'
+    };
+    const monthAgoSessions = {
+        id: uid(),
+        sessions: [],
+        title: '30天前'
+    }
     sessions.forEach(session => {
         const createdAt = new Date(session.createdAt);
         const diffDays = Math.floor((now - createdAt) / (1000 * 60 * 60 * 24));
 
         if (diffDays <= 7) {
-            recentSessions.push(session);
+            recentSessions.sessions.push(session);
         } else if (diffDays <= 30) {
-            weekAgoSessions.push(session);
+            weekAgoSessions.sessions.push(session);
         } else {
-            monthAgoSessions.push(session);
+            monthAgoSessions.sessions.push(session);
         }
     });
 
-    return {
+    return [
         recentSessions,
         weekAgoSessions,
         monthAgoSessions
-    };
+    ];
 });
 
 

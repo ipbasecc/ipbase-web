@@ -3,19 +3,29 @@
         <template #left_drawer>
             <!-- 左侧会话列表 - 在大屏幕显示 -->
             <div class="full-height column">
-                <div class="row no-wrap items-center gap-xs q-py-sm q-px-xs">
-                    <q-btn flat rounded dense icon="mdi-star" :label="$t('ai_assistant')" no-caps
-                        @click="aiStore.listToggler = 'assistants'" padding="xs md" :class="aiStore.listToggler === 'assistants' ? 'border' : 'border-placeholder'"
-                    />
-                    <q-btn flat rounded dense icon="mdi-message-text-outline" :label="$t('ai_topics')" no-caps
-                        @click="aiStore.listToggler = 'topics'" padding="xs md" :class="aiStore.listToggler === 'topics' ? 'border' : 'border-placeholder'"
-                    />
+                <div class="row no-wrap items-center gap-xs q-pa-sm">
+                    <q-btn flat rounded dense no-caps
+                        @click="aiStore.listToggler = 'assistants'" padding="sm md"
+                        :class="aiStore.listToggler === 'assistants' ? 'border' : 'border-placeholder'"
+                    >
+                        <q-icon name="auto_awesome" />
+                        <span class="q-ml-sm">{{ $t('ai_assistant') }}</span>
+                    </q-btn>
+                    <q-btn flat rounded dense no-caps
+                        @click="aiStore.listToggler = 'topics'" padding="sm md"
+                        :class="aiStore.listToggler === 'topics' ? 'border' : 'border-placeholder'"
+                    >
+                        <q-icon name="chat" />
+                        <span class="q-ml-sm">{{ $t('ai_topics') }}</span>
+                    </q-btn>
                     <q-space />
                     <q-btn flat rounded dense icon="mdi-plus-circle-outline"
+                        :color="$q.dark.mode ? 'grey-5' : 'blue-1'"
                         @click="createNewChat(aiStore.selectedAssistant)"
                     />
                 </div>
-                <q-scroll-area class="q-space q-pa-md">
+                <q-separator spaced inset class="op-5" />
+                <q-scroll-area class="q-space q-px-md q-py-sm">
                     <chat-session-list
                         v-if="aiStore.listToggler === 'topics'"
                         :sessions="sessions"
@@ -70,7 +80,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, watch, nextTick, ref } from 'vue'
+import { computed, onBeforeMount, watch, nextTick, ref } from 'vue'
 import ApiConfig from './components/ApiConfig.vue'
 import ChatSessionList from './components/ChatSessionList.vue'
 import ChatBody from './components/ChatBody.vue'
@@ -79,12 +89,14 @@ import { useAIStore } from '../../stores/ai'
 import { useQuasar } from 'quasar'
 import NavigatorContainer from '../team/NavigatorContainer.vue'
 import AssistantSelector from './components/AssistantSelector.vue'
-
-const $q = useQuasar()
-const aiStore = useAIStore()
-const sessions = computed(() => aiStore.getSessionsForCurrentAssistant())
+import { uiStore } from "src/hooks/global/useStore";
 
 const { pannelMode } = defineProps(['pannelMode'])
+const $q = useQuasar()
+const aiStore = useAIStore()
+const { currentSession, createNewChat, loadSession, deleteSession } = useChat();
+
+const sessions = computed(() => aiStore.getSessionsForCurrentAssistant());
 
 // 移动端抽屉显示状态
 const showDrawer = ref(false)
@@ -94,55 +106,7 @@ const onMobileSessionSelect = (session) => {
     loadSession(session)
     showDrawer.value = false
 }
-
-const {
-    chatSessions,
-    currentSession,
-    inputMessage,
-    loading,
-    messageContainer,
-    createNewChat,
-    loadSession,
-    deleteSession,
-    sendMessage,
-    stopGenerating
-} = useChat()
-
-
-// 滚动到底部的函数
-const scrollToBottom = () => {
-    nextTick(() => {
-        setTimeout(() => {
-            if (messageContainer.value) {
-                const scrollArea = messageContainer.value
-                const scrollSize = scrollArea.getScroll().verticalSize
-                scrollArea.setScrollPosition('vertical', scrollSize)
-            }
-        }, 100) // 给一个小的延时确保内容已渲染
-    })
-}
-
-// 监听消息变化
-watch(
-    () => currentSession.value?.messages,
-    (newMessages) => {
-        if (newMessages?.length > 0) {
-            scrollToBottom()
-        }
-    },
-    { deep: true }
-)
-
-// 监听会话切换
-watch(
-    () => currentSession.value?.id,
-    (newId, oldId) => {
-        if (newId !== oldId && currentSession.value?.messages?.length > 0) {
-            scrollToBottom()
-        }
-    }
-)
+onBeforeMount(() => {
+    uiStore.app = 'aichat'
+})
 </script>
-
-<style scoped>
-</style>

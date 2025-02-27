@@ -28,12 +28,8 @@
                   </q-item-label>
                 </q-item-section>
 
-                <q-item-section side>
-                  <q-toggle dense
-                    v-model="providerConfigs[provider.id].active"
-                    :disable="!isProviderConfigValid(provider)"
-                    @click.stop
-                  />
+                <q-item-section v-if="providerConfigs[provider.id].active" side>
+                  <q-chip color="positive" :label="$t('on')" outline dense />
                 </q-item-section>
               </q-item>
             </q-list>
@@ -44,7 +40,14 @@
         <template v-slot:after>
           <q-scroll-area class="fit">
             <div class="q-pa-md" v-if="selectedProvider">
-              <div class="text-h6 q-mb-md" :class="currentProvider?.tip ? 'no-margin' : ''">{{ currentProviderName }}</div>
+              <div class="row no-wrap items-center">
+                <div class="text-h6 q-mb-md" :class="currentProvider?.tip ? 'no-margin' : ''">
+                  {{ currentProviderName }}
+                </div>
+                <q-space />
+                <q-toggle v-model="providerConfigs[selectedProvider].active" dense
+                />
+              </div>
               <div v-if="currentProvider?.tip" class="text-subtitle2 q-mb-lg text-orange">{{ currentProvider?.tip }}</div>
               <q-input
                 v-model="providerConfigs[selectedProvider].endpoint"
@@ -446,6 +449,7 @@ const handleInputBlur = () => {
 
 // 判断供应商配置是否有效
 const isProviderConfigValid = (provider) => {
+  if (!provider) return false
   const config = providerConfigs.value[provider.id]
   if (!config) return false
   

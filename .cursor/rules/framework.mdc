@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+---
+# 技术栈声明
+framework: Vue 3 + Quasar 2.x + pinia 3 + pinia-plugin-persistedstate-2
