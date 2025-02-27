@@ -5,7 +5,7 @@ const routes = [
     path: "/",
     component: () => import("layouts/TeamLayout.vue"),
     name: "teampage",
-    redirect: "/teams",
+    // redirect: "/teams",
     meta: {
       requireAuth: true,
       title: "易乎APP",

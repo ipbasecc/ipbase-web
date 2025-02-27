@@ -69,7 +69,7 @@
 </template>
 
 <script setup>
-  import { watch, computed, onMounted, onUnmounted, ref, watchEffect } from "vue";
+  import { watch, computed, onMounted, onBeforeMount, onUnmounted, ref, watchEffect } from "vue";
   import { loginAndInit } from 'src/hooks/init.js'
   import { useRoute, useRouter } from "vue-router";
   import AccountMenu from "../pages/team/components/AccountMenu.vue";
@@ -190,6 +190,12 @@
     useWatcher();
     uiStore.$pageloaded();
   });
+
+  onBeforeMount(() => {
+    if(uiStore.app) {
+      router.push(`/${uiStore.app}`)
+    }
+  })
 
   const toLogin = async () => {
     uiStore.axiosStautsCode = void 0;

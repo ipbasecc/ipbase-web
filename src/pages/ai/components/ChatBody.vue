@@ -58,7 +58,6 @@ import ChatMessage from './ChatMessage.vue'
 import ChatInput from './ChatInput.vue'
 import ChatModelSelector from './ChatModelSelector.vue'
 import { useChat } from '../composables/useChat'
-import { useAIStore } from '../../../stores/ai'
 import localforage from 'localforage'
 defineProps({
     pannelMode: {
@@ -70,7 +69,6 @@ defineProps({
 defineEmits(['toggle-drawer', 'config'])
 
 const $q = useQuasar()
-const aiStore = useAIStore()
 
 const cache = ref()
 const getCache = async () => {

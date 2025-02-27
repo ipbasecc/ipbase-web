@@ -107,6 +107,8 @@ const onMobileSessionSelect = (session) => {
     showDrawer.value = false
 }
 onBeforeMount(() => {
-    uiStore.app = 'aichat'
+    if(!pannelMode) {
+        uiStore.app = 'aichat'
+    }
 })
 </script>
