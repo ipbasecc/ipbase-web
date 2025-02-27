@@ -59,6 +59,8 @@ import ChatInput from './ChatInput.vue'
 import ChatModelSelector from './ChatModelSelector.vue'
 import { useChat } from '../composables/useChat'
 import localforage from 'localforage'
+import { useAIStore } from '../../../stores/ai'
+
 defineProps({
     pannelMode: {
         type: Boolean,
@@ -84,6 +86,8 @@ const {
     saveScrollPosition,
     loadSession
 } = useChat()
+
+const aiStore = useAIStore()
 
 // Add debugging information to check if loadSession is called
 onMounted(async() => {

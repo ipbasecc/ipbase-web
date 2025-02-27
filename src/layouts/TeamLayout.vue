@@ -192,8 +192,8 @@
   });
 
   onBeforeMount(() => {
-    if(uiStore.app) {
-      router.push(`/${uiStore.app}`)
+    if (uiStore.app && uiStore.app !== '/') {
+      router.push(`/${uiStore.app}`);
     }
   })
 

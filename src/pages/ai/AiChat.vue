@@ -43,32 +43,39 @@
 
     <!-- 移动端全屏会话列表 -->
     <div v-if="showDrawer" class="absolute-full" :class="$q.dark.mode ? 'bg-grey-10' : 'bg-grey-3'">
-        <div class="column full-height">
-            <!-- 顶部操作栏 -->
-            <div class="row items-center q-pa-md">
-                <q-btn flat round dense icon="close" @click="showDrawer = false" class="q-mr-md" />
+        <div class="column full-height">            
+            <div class="row no-wrap items-center gap-xs q-pa-sm">
+                <q-btn flat round dense icon="close" @click="showDrawer = false" class="q-mx-md" />
+                <q-btn flat rounded dense no-caps
+                    @click="aiStore.listToggler = 'assistants'" padding="sm md"
+                    :class="aiStore.listToggler === 'assistants' ? 'border' : 'border-placeholder'"
+                >
+                    <q-icon name="auto_awesome" />
+                    <span class="q-ml-sm">{{ $t('ai_assistant') }}</span>
+                </q-btn>
+                <q-btn flat rounded dense no-caps
+                    @click="aiStore.listToggler = 'topics'" padding="sm md"
+                    :class="aiStore.listToggler === 'topics' ? 'border' : 'border-placeholder'"
+                >
+                    <q-icon name="chat" />
+                    <span class="q-ml-sm">{{ $t('ai_topics') }}</span>
+                </q-btn>
+                <q-space />
+                <q-btn flat rounded dense icon="mdi-plus-circle-outline"
+                    :color="$q.dark.mode ? 'grey-5' : 'blue-1'"
+                    @click="createNewChat(aiStore.selectedAssistant)"
+                />
             </div>
-            
-            <!-- 新建对话按钮 -->
-            <div class="q-pa-md row">
-                <q-item clickable @click="createNewChat(aiStore.selectedAssistant)" class="radius-sm bg-positive">
-                    <q-item-section side>
-                        <q-icon name="mdi-message-plus" />
-                    </q-item-section>
-                    <q-item-section>
-                        新建对话
-                    </q-item-section>
-                </q-item>
-            </div>
-
-            <!-- 会话列表 -->
-            <q-scroll-area class="q-space q-pa-md">
+            <q-separator spaced inset class="op-5" />
+            <q-scroll-area class="q-space q-px-md q-py-sm">
                 <chat-session-list
-                    :sessions="aiStore.getSessionsForCurrentAssistant()"
+                    v-if="aiStore.listToggler === 'topics'"
+                    :sessions="sessions"
                     :current-session-id="currentSession?.id"
-                    @select="onMobileSessionSelect"
+                    @select="loadSession"
                     @delete="deleteSession"
                 />
+                <assistant-selector v-if="aiStore.listToggler === 'assistants'" />
             </q-scroll-area>
         </div>
     </div>
@@ -91,7 +98,12 @@ import NavigatorContainer from '../team/NavigatorContainer.vue'
 import AssistantSelector from './components/AssistantSelector.vue'
 import { uiStore } from "src/hooks/global/useStore";
 
-const { pannelMode } = defineProps(['pannelMode'])
+const { pannelMode } = defineProps({
+    pannelMode: {
+        type: Boolean,
+        default: false
+    }
+})
 const $q = useQuasar()
 const aiStore = useAIStore()
 const { currentSession, createNewChat, loadSession, deleteSession } = useChat();
