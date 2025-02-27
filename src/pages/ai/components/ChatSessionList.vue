@@ -113,9 +113,18 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { useAIStore } from '../../../stores/ai'
-import { useQuasar } from 'quasar'
 
-const $q = useQuasar()
+const { sessions, currentSessionId } = defineProps({
+    sessions: {
+        type: Array,
+        default: [],
+        required: true
+    },
+    currentSessionId: {
+        type: String,
+        default: null
+    }
+})
 const aiStore = useAIStore()
 const sessionTitle = ref('')
 const menuModels = reactive({}) // 使用对象来存储每个会话的菜单状态
@@ -140,9 +149,6 @@ const saveSessionTitle = (session) => {
         if (aiStore.currentSession?.id === session.id) {
             aiStore.currentSession.title = sessionTitle.value
         }
-        
-        // 保存更新后的会话
-        aiStore.saveChatSessions()
     }
     
     // 关闭菜单
@@ -165,7 +171,7 @@ const groupedSessions = computed(() => {
     const weekAgoSessions = [];
     const monthAgoSessions = [];
 
-    aiStore.chatSessions.forEach(session => {
+    sessions.forEach(session => {
         const createdAt = new Date(session.createdAt);
         const diffDays = Math.floor((now - createdAt) / (1000 * 60 * 60 * 24));
 
@@ -185,16 +191,6 @@ const groupedSessions = computed(() => {
     };
 });
 
-defineProps({
-    sessions: {
-        type: Array,
-        required: true
-    },
-    currentSessionId: {
-        type: String,
-        default: null
-    }
-})
 
 const emit = defineEmits(['select', 'delete'])
 </script>

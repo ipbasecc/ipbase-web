@@ -202,7 +202,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, onBeforeMount, watch, nextTick, onUnmounted } from 'vue'
+import { ref, onMounted, computed, onBeforeMount, watch, watchEffect, nextTick, onUnmounted } from 'vue'
 import {ossStore, teamStore, uiStore, discoverStore} from "src/hooks/global/useStore.js";
 import {isExternal,} from "src/pages/team/hooks/useConfig.js";
 import localforage from "localforage";
@@ -256,7 +256,7 @@ const toggleRightDrawer = (val) => {
     uiStore.projectRightDrawerContent = val;
   }
 };
-watch([uiStore.app, uiStore.projectRightDrawerContent], () => {
+watchEffect(() => {
   let rightDrawerState = uiStore.projectRightDrawer;
   if (uiStore.app === 'aichat' && uiStore.projectRightDrawerContent === 'aichat') {
     uiStore.projectRightDrawer = false;
@@ -264,7 +264,7 @@ watch([uiStore.app, uiStore.projectRightDrawerContent], () => {
   onUnmounted(() => {
     uiStore.projectRightDrawer = rightDrawerState;
   })
-},{immediate: true})
+})
 
 const checkNotification = async () => {
   if (!teamStore.team?.notification || teamStore.team?.notification === '') {

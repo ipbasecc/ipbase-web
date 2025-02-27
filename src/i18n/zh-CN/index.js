@@ -1026,5 +1026,17 @@ export default {
   'non-commercia': '非商用授权',
   educational: '教育授权',
   personal: '个人授权',
-  price_limit: '最低价格： 按文件大小，最低1元 / 每GB'
+  price_limit: '最低价格： 按文件大小，最低1元 / 每GB',
+  clear_topic: '清空会话',
+  ai_assistant: 'AI智能体',
+  ai_topics: '会话',
+  default_assistant: '默认智能体',
+  add_assistant: '新增智能体',
+  assistant_name: '智能体名称',
+  assistant_prompt: '智能体提示词',
+  enter_topic: '进入会话',
+  settings_for: '设置',
+  assistant_name: '智能体名称',
+  assistant_prompt: '智能体提示词',
+  add: '添加',
 };

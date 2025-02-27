@@ -52,13 +52,14 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import ChatMessage from './ChatMessage.vue'
 import ChatInput from './ChatInput.vue'
 import ChatModelSelector from './ChatModelSelector.vue'
 import { useChat } from '../composables/useChat'
-import { onMounted } from 'vue';
-
+import { useAIStore } from '../../../stores/ai'
+import localforage from 'localforage'
 defineProps({
     pannelMode: {
         type: Boolean,
@@ -69,7 +70,12 @@ defineProps({
 defineEmits(['toggle-drawer', 'config'])
 
 const $q = useQuasar()
+const aiStore = useAIStore()
 
+const cache = ref()
+const getCache = async () => {
+    cache.value = await localforage.getItem('ai')
+}
 const {
     currentSession,
     inputMessage,
@@ -82,13 +88,14 @@ const {
 } = useChat()
 
 // Add debugging information to check if loadSession is called
-onMounted(() => {
+onMounted(async() => {
     if (currentSession.value) {
-        console.log('Current session on mount:', currentSession.value);
+        // console.log('Current session on mount:', currentSession.value);
         loadSession(currentSession.value);
     } else {
         console.log('No current session to load.');
     }
+    await getCache()
 });
 </script>
 

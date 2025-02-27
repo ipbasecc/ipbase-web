@@ -1028,5 +1028,17 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   'non-commercial': 'Non-Commercial License',
   educational: 'Educational License',
   personal: 'Personal License',
-  price_limit: 'Minimum Price: By file size, at least 1 yuan / per GB'
+  price_limit: 'Minimum Price: By file size, at least 1 yuan / per GB',
+  clear_topic: 'Clear Topic',
+  ai_assistant: 'AI Assistant',
+  ai_topics: 'Topics',
+  default_assistant: 'Default Assistant',
+  add_assistant: 'Add Assistant',
+  assistant_name: 'Assistant Name',
+  assistant_prompt: 'Assistant Prompt',
+  enter_topic: 'Enter Topic',
+  settings_for: 'Settings for',
+  assistant_name: 'assistant name',
+  assistant_prompt: 'assistant prompt',
+  add: 'add',
 }

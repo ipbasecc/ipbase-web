@@ -1,12 +1,6 @@
 import { defineStore } from 'pinia'
 import { defaultProviders } from '../pages/ai/config/apiProviders'
 import { uid } from 'quasar'
-import localforage from 'localforage'
-
-// Initialize localforage with a specific database name
-localforage.config({
-  name: 'AIChatDatabase',
-})
 
 export const useAIStore = defineStore('ai', {
   state: () => ({
@@ -29,10 +23,15 @@ export const useAIStore = defineStore('ai', {
     ),
     showConfig: false,
     // 聊天会话相关状态
-    chatSessions: [],
-    currentSession: null,
-    scrollPosition: {} // 用于存储每个会话的滚动位置
+    chatSessions: [], // List of chat sessions
+    currentSession: null, // Currently selected session
+    scrollPosition: {}, // 用于存储每个会话的滚动位置
+    assistants: [], // List of assistants
+    selectedAssistant: null, // Currently selected assistant
+    listToggler: 'assistants',
   }),
+
+  persist: true, // Enable persistence for the entire store
 
   getters: {
     // 获取可用的供应商列表
@@ -96,40 +95,22 @@ export const useAIStore = defineStore('ai', {
       }
 
       return provider.models.find(m => m.id === state.model)
-    }
+    },
+
+    // 获取当前助手信息
+    currentAssistant: (state) => {
+      return state.assistants.find(a => a.id === state.selectedAssistant);
+    },
   },
 
   actions: {
-    // 初始化配置
-    async initConfig() {
-      const savedConfig = await localforage.getItem('aiChatConfig')
-      if (savedConfig) {
-        const config = JSON.parse(savedConfig)
-        this.provider = config.provider || ''
-        this.model = config.model || ''
-        
-        // 更新所有供应商配置
-        Object.entries(config).forEach(([id, providerConfig]) => {
-          if (this.providers[id]) {
-            this.providers[id] = {
-              ...this.providers[id],
-              ...providerConfig,
-              models: providerConfig.models || [],
-              activeModels: providerConfig.activeModels || []
-            }
-          }
-        })
-      }
-    },
-
     // 保存配置
     async saveConfig() {
       const config = {
         provider: this.provider,
         model: this.model,
-        ...this.providers
+        providers: this.providers
       }
-      await localforage.setItem('aiChatConfig', JSON.stringify(config))
     },
 
     // 更新供应商配置
@@ -236,40 +217,62 @@ export const useAIStore = defineStore('ai', {
 
     // 初始化聊天会话
     async initChatSessions() {
-      const savedSessions = await localforage.getItem('aiChatSessions')
-      if (savedSessions) {
-        this.chatSessions = JSON.parse(savedSessions)
-        if (this.chatSessions.length > 0) {
-          this.currentSession = this.chatSessions[0]
+      console.log('initChatSessions 1');
+      
+      if(this.assistants.length === 0) {
+        console.log('initChatSessions 2', this.assistants);
+        const newAssistant = {
+          id: uid(),
+          name: 'default_assistant',
+          prompt: '你是一个AI助手，请根据用户的问题给出准确的回答。',
+          last_session_id: null
+        };
+        this.assistants.push(newAssistant);
+        this.setSelectedAssistant(newAssistant.id);
+        console.log('initChatSessions 3', this.assistants);
+      }
+      console.log('initChatSessions 1.1', this.assistants);
+      if(!this.currentSession){
+        if(this.chatSessions.length > 0){
+          if(!this.selectedAssistant){
+            this.setSelectedAssistant(this.assistants[0].id)
+          }
+          const sessionsOfCurrentAssistant = this.getSessionsForCurrentAssistant()
+          if(sessionsOfCurrentAssistant.length > 0){
+            this.currentSession = sessionsOfCurrentAssistant[0]
+          }
         }
       }
     },
 
-    // 保存聊天会话到localStorage
-    async saveChatSessions() {
-      await localforage.setItem('aiChatSessions', JSON.stringify(this.chatSessions))
-    },
-
     // 创建新会话
     createNewChat() {
+      // console.log('Creating new chat session with assistantId:', this.selectedAssistant); // Debugging output
       const newSession = {
         id: uid(),
         title: '新对话',
         messages: [],
         createdAt: Date.now(),
-        updatedAt: Date.now()
+        updatedAt: Date.now(),
+        assistantId: this.selectedAssistant || this.assistants[0].id
       }
       this.chatSessions.unshift(newSession)
       this.currentSession = newSession
-      this.saveChatSessions()
     },
 
     // 加载会话
     loadSession(session) {
       if (!session) return
-      // 确保深层响应性
       this.currentSession = JSON.parse(JSON.stringify(session))
-      this.saveChatSessions()
+      const assistant = this.assistants.find(a => a.id === session.assistantId)
+      if (assistant) {
+        assistant.last_session_id = session.id
+      }
+    },
+
+    // 获取与当前助手关联的会话
+    getSessionsForCurrentAssistant() {
+      return this.chatSessions.filter(session => session.assistantId === this.selectedAssistant);
     },
 
     // 删除会话
@@ -280,7 +283,6 @@ export const useAIStore = defineStore('ai', {
         if (this.currentSession?.id === session.id) {
           this.currentSession = this.chatSessions[0] || null
         }
-        this.saveChatSessions()
       }
     },
 
@@ -300,7 +302,6 @@ export const useAIStore = defineStore('ai', {
         if (this.currentSession?.id === sessionId) {
           this.currentSession = JSON.parse(JSON.stringify(session))
         }
-        this.saveChatSessions()
       }
     },
 
@@ -314,8 +315,6 @@ export const useAIStore = defineStore('ai', {
         if (this.currentSession?.id === sessionId) {
           this.currentSession.title = newTitle
         }
-        
-        this.saveChatSessions()
       }
     },
 
@@ -326,9 +325,62 @@ export const useAIStore = defineStore('ai', {
         this.currentSession.updatedAt = Date.now()
         const index = this.chatSessions.findIndex(s => s.id === this.currentSession.id)
         if (index > -1) {
-          this.chatSessions[index] = JSON.parse(JSON.stringify(this.currentSession))
+          this.chatSessions[index] = this.currentSession
         }
-        this.saveChatSessions()
+      }
+    },
+
+    // 设置当前助手
+    setSelectedAssistant(assistantId) {
+      this.selectedAssistant = assistantId;
+      const assistant = this.assistants.find(a => a.id === assistantId);
+      if (assistant && assistant.last_session_id) {
+        const sessionToLoad = this.chatSessions.find(s => s.id === assistant.last_session_id);
+        if (sessionToLoad) {
+          this.loadSession(sessionToLoad);
+          return;
+        }
+      }
+      const sessions = this.getSessionsForCurrentAssistant();
+      if (sessions.length > 0) {
+        this.loadSession(sessions[0]);
+      } else {
+        this.currentSession = null;
+      }
+    },
+
+    // 添加助手
+    addAssistant(assistant) {
+      this.assistants.push(assistant);
+    },
+
+    // 更新助手的Prompt
+    updateAssistant(assistantId, params) {
+      const assistant = this.assistants.find(a => a.id === assistantId);
+      if (assistant) {
+        assistant.prompt = params.prompt;
+        assistant.name = params.name;
+      }
+    },
+
+    deleteAssistant(assistantId) {
+      // Remove the assistant from the list
+      this.assistants = this.assistants.filter(a => a.id !== assistantId);
+      // Remove all chat sessions associated with this assistant
+      this.chatSessions = this.chatSessions.filter(session => session.assistantId !== assistantId);
+      if(this.currentSession?.assistantId === assistantId){
+        this.currentSession = null;
+      }
+      
+      // Reinitialize chat sessions to ensure at least one assistant exists
+      this.initChatSessions();
+    },
+
+    clearSessionsForAssistant(assistantId) {
+      // Remove all chat sessions associated with this assistant
+      this.chatSessions = this.chatSessions.filter(session => session.assistantId !== assistantId);
+      if(this.currentSession?.assistantId === assistantId){
+        this.currentSession = null
       }
     }
   }

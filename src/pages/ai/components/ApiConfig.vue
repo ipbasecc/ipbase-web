@@ -249,7 +249,7 @@ const initializeConfigs = () => {
 
 // 监听props变化
 watch(() => props.modelValue, () => {
-  initializeConfigs()
+  // initializeConfigs()
 }, { deep: true })
 
 // 监听选中的供应商变化
@@ -378,7 +378,8 @@ const handleSave = () => {
       }
     }
   }
-  
+  console.log('handleSave providers', aiStore.providers)
+  console.log('handleSave assistants', aiStore.assistants)
   aiStore.showConfig = false
 }
 

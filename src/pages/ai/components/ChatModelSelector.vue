@@ -80,7 +80,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, nextTick } from 'vue'
 import { useAIStore } from '../../../stores/ai'
 
 const aiStore = useAIStore()
@@ -90,7 +90,10 @@ const providerHandler = () => {
     aiStore.showConfig = true
   }
 }
-
+onMounted(async() => {
+  await nextTick()
+  console.log('aiStore.providers', aiStore.providers)
+})
 // 使用store中的getters
 const availableProviders = computed(() => aiStore.availableProviders)
 const availableModels = computed(() => aiStore.availableModels)

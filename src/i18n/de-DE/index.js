@@ -1027,5 +1027,17 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   'non-commercial': 'Nicht-kommerzielle Lizenz',
   educational: 'Bildungslizenz',
   personal: 'Persönliche Lizenz',
-  price_limit: 'Mindestpreis: Je nach Dateigröße, mindestens 1 Yuan / pro GB'
+  price_limit: 'Mindestpreis: Je nach Dateigröße, mindestens 1 Yuan / pro GB',
+  clear_topic: 'Thema löschen',
+  ai_assistant: 'AI-Assistent',
+  ai_topics: 'Themen',
+  default_assistant: 'Standard-Assistent',
+  add_assistant: 'Assistent hinzufügen',
+  assistant_name: 'Assistentenname',
+  assistant_prompt: 'Assistenten-Prompt',
+  enter_topic: 'Thema betreten',
+  settings_for: 'Einstellungen für',
+  assistant_name: 'Assistentenname',
+  assistant_prompt: 'Assistenten-Prompt',
+  add: 'Hinzufügen',
 };

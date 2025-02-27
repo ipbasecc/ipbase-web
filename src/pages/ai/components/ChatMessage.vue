@@ -25,11 +25,23 @@
         <template v-else-if="message.reasoning_content?.length > 2">
           <q-expansion-item
             v-model="thing_expanded"
-            label="思考过程："
             dense dense-toggle
             class="border radius-xs overflow-hidden q-mt-sm full-width"
+            :class="message.content && !thing_expanded ? 'op-5' : ''"
+            expand-icon-class="q-pr-none"
             :header-class="`${thing_expanded ? 'border-bottom' : ''} font-medium font-bold-600`"
           >
+            <template #header>
+              <div class="row items-center q-space gap-sm">
+                <q-spinner-orbit
+                  v-if="!message.content"
+                  color="primary"
+                  size="1rem"
+                  :thickness="5"
+                />
+                <span>{{ message.content ? '思考过程：' : '正在思考...' }}</span>
+              </div>
+            </template>
             <div class="op-6 q-pa-md" v-html="formattedReasoning" />
           </q-expansion-item>
           <div v-if="message.content" class="message-text q-mt-lg tiptap" v-html="formattedContent" />

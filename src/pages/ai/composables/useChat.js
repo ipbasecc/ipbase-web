@@ -1,7 +1,6 @@
 import { ref, nextTick, computed, watch } from 'vue'
 import { uid } from 'quasar'
 import { useAIStore } from '../../../stores/ai'
-import localforage from 'localforage';
 
 // Debounce function to limit how often a function can be called
 function debounce(func, delay) {
@@ -42,14 +41,15 @@ export function useChat() {
 
     // 加载会话
     const loadSession = async (session) => {
-        await aiStore.loadSession(session)
+        aiStore.loadSession(session)
+        aiStore.setSelectedAssistant(session.assistantId)
         // Restore scroll position
         nextTick(() => {
             const savedPosition = aiStore.scrollPosition[session.id]; // Get from Pinia
             if (savedPosition !== undefined) {
-                messageContainer.value.setScrollPosition('vertical', savedPosition, 300);
+                messageContainer.value?.setScrollPosition('vertical', savedPosition, 300);
             } else {
-                messageContainer.value.setScrollPosition('vertical', messageContainer.value.getScroll().verticalSize);
+                messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize);
             }
         })
     }
@@ -93,7 +93,6 @@ export function useChat() {
                 // 提取用户输入的前10个字符作为会话标题
                 currentSession.value.title = inputMessage.value.slice(0, 10)
                 session.title = currentSession.value.title
-                aiStore.saveChatSessions()
             }
         }
 
@@ -129,6 +128,7 @@ export function useChat() {
                     };
                     requestBody = {
                         model: aiStore.currentModel.id,
+                        prompt: aiStore.currentAssistant.prompt,
                         messages: currentSession.value.messages.map(msg => ({
                             role: msg.role === 'user' ? 'user' : 'assistant',
                             content: msg.content
@@ -143,6 +143,7 @@ export function useChat() {
                     headers['x-api-key'] = providerConfig.apiKey;
                     requestBody = {
                         model: aiStore.currentModel.id,
+                        prompt: aiStore.currentAssistant.prompt,
                         messages: currentSession.value.messages.map(msg => ({
                             role: msg.role,
                             content: msg.content
@@ -173,6 +174,7 @@ export function useChat() {
                     
                     requestBody = {
                         model: aiStore.currentModel.id,
+                        prompt: aiStore.currentAssistant.prompt,
                         messages: messages,
                         stream: true
                     };
@@ -182,8 +184,8 @@ export function useChat() {
                 ? `${providerConfig.endpoint.replace(/\/$/, '')}/api/chat`
                 : providerConfig.endpoint;
 
-            console.log('Sending request to:', endpoint);
-            console.log('Request body:', requestBody);
+            // console.log('Sending request to:', endpoint);
+            // console.log('Request body:', requestBody);
 
             const response = await fetch(endpoint, {
                 method: 'POST',
@@ -226,9 +228,9 @@ export function useChat() {
                             // 对于Ollama，直接解析NDJSON
                             if (provider === 'ollama') {
                                 if (!line.trim()) continue
-                                console.log('Raw Ollama response line:', line);
+                                // console.log('Raw Ollama response line:', line);
                                 const json = JSON.parse(line)
-                                console.log('Parsed Ollama JSON:', json);
+                                // console.log('Parsed Ollama JSON:', json);
                                 
                                 // 获取当前chunk的内容
                                 let currentChunk = '';
@@ -254,7 +256,7 @@ export function useChat() {
                                     if (thinkContent) {
                                         assistantMessage.reasoning_content += thinkContent;
                                     }
-                                    console.log('Started think mode, reasoning:', assistantMessage.reasoning_content);
+                                    // console.log('Started think mode, reasoning:', assistantMessage.reasoning_content);
                                     continue;
                                 }
 
@@ -273,18 +275,18 @@ export function useChat() {
                                     if (remainingContent) {
                                         assistantMessage.content += remainingContent;
                                     }
-                                    console.log('Ended think mode, reasoning:', assistantMessage.reasoning_content);
-                                    console.log('Remaining content:', remainingContent);
+                                    // console.log('Ended think mode, reasoning:', assistantMessage.reasoning_content);
+                                    // console.log('Remaining content:', remainingContent);
                                 }
                                 // 如果在think模式中
                                 else if (assistantMessage.thinkMode) {
                                     assistantMessage.reasoning_content += currentChunk;
-                                    console.log('Added to reasoning:', currentChunk);
+                                    // console.log('Added to reasoning:', currentChunk);
                                 }
                                 // 如果不在think模式中，直接添加到content
                                 else {
                                     assistantMessage.content += currentChunk;
-                                    console.log('Added to content:', currentChunk);
+                                    // console.log('Added to content:', currentChunk);
                                 }
 
                                 // 更新消息
@@ -345,8 +347,6 @@ export function useChat() {
             } finally {
                 reader.releaseLock()
             }
-            
-            aiStore.saveChatSessions()
         } catch (error) {
             console.error('Error:', error)
             // 这里可以添加错误提示
