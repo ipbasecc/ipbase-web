@@ -2,7 +2,7 @@
     <q-layout view="lHh LpR fFf" container class="absolute-full">  
       <q-page-container>
         <q-page>
-            <router-view />
+            <router-view :pannelMode="false" />
         </q-page>
       </q-page-container>
   

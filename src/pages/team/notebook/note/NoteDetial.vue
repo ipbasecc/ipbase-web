@@ -1,4 +1,5 @@
 <template>
+  <q-scroll-area class="absolute-full">
     <TipTap
       v-if="teamStore.note"
       v-bind="$attrs"
@@ -6,7 +7,7 @@
       :jsonContent="teamStore.note?.jsonContent"
       :editable="isCreator"
       autofocus="all"
-      class="absolute-full"
+      class=""
       styleClass="q-pa-md"
       contentStyle="width: 100%; max-width: 46rem;"
       :withSaveBtn="true"
@@ -17,7 +18,7 @@
       @tiptapUpdate="tiptapUpdate"
       @tiptapBlur="tiptapBlur"
     >
-      <template v-slot:left-btn>
+      <template v-if="pannelMode" v-slot:left-btn>
         <q-btn flat dense size=sm icon="mdi-chevron-left" @click="backList()" />
       </template>
         <template v-slot:more_btn>
@@ -34,6 +35,7 @@
     <q-dialog v-model="showCourseDialog" persistent full-width full-height>
       <ClassPage :card="teamStore.note?.by_course" />
     </q-dialog>
+  </q-scroll-area>
 </template>
 <script setup>
 import { ref, computed, watch } from 'vue';
@@ -43,7 +45,7 @@ import { getDocument, updateDocument } from 'src/api/strapi/project.js'
 import TipTap from 'src/components/Utilits/tiptap/TipTap.vue';
 import ClassPage from '../../card/ClassPage.vue'
 
-const { active_note_id } = defineProps(['active_note_id'])
+const { active_note_id, pannelMode } = defineProps(['active_note_id', 'pannelMode'])
 const route = useRoute();
 const router = useRouter();
 const note_id = computed(() => route.params?.note_id || active_note_id);

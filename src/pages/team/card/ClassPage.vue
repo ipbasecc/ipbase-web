@@ -114,7 +114,7 @@
           </template>
           <template v-if="current_classExtend === 'class_note'">
             <NotebookList v-if="!uiStore.active_note_id" />
-            <NoteDetial v-else :active_note_id="uiStore.active_note_id" />
+            <NoteDetial v-else :active_note_id="uiStore.active_note_id" :pannelMode="true" />
           </template>
           <template v-if="current_classExtend === 'class_kanban'">
             <KanbanContainer

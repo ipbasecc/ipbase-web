@@ -118,6 +118,7 @@
         <TipTap :jsonContent="cardRef.jsonContent" :editable="useAuths('jsonContent', ['card']) && !isShared"
           :need="'json'" :square="true" :show_toolbar="false" :show_bubbleMenu="false" class="undrag"
           styleClass="q-px-md q-py-sm" :hideScroll="cardRef.expand === 'collapse'" :autofocus="false" :contentChanged
+          @isEmpty="isTipTapEmpty = $event"
           @contentChanged="contentChanged = true" @tiptapBlur="tiptapBlur" @tiptapClose="toggleOffEditting()"
           @click.stop="clickContent(useAuths('jsonContent', ['card']))" @keydown.esc="uiStore.edittingCard = void 0" />
       </q-card-section>
@@ -318,7 +319,7 @@
       <!-- 重要度、紧急度 左边框颜色标记 -->
       <div class="absolute-left full-height z-fab" :class="`${edgeStyle.highlight ? 'highlight transition' : ''}`"
         :style="`${edgeStyle.style}`"></div>
-      <q-tooltip v-if="cardRef.type === 'classroom' && !isRmptyTiptap(cardRef.jsonContent)"
+      <q-tooltip v-if="cardRef.type === 'classroom' && !isTipTapEmpty"
         class="transparent no-padding no-margin shadow-focus"
       >
         <q-card bordered style="width: 320px;" :class="$q.dark.mode ? 'text-grey-1' : 'text-grey-10'">
@@ -328,6 +329,7 @@
           <q-card-section class="q-pa-xs font-medium">
             <TipTap :jsonContent="cardRef.jsonContent" :editable="false"
               :need="'json'" :square="true" :show_toolbar="false" :show_bubbleMenu="false"
+              @isEmpty="isTipTapEmpty = $event"
               styleClass="q-px-md q-py-sm"
             />
           </q-card-section>
@@ -460,6 +462,7 @@
       },
     },
   });
+  const isTipTapEmpty = ref(true);
   const { card: cardRef, orderAuth } = toRefs(props);
   const alwaysShowCover = computed(() => {
     const _navsAlwaysShowCover = ['segment', ...$team().saleTypes];

@@ -2,7 +2,7 @@
   <div v-if="teamStore">
     <q-list v-if="isList" dense bordered class="radius-sm q-pa-xs text-no-wrap">
       <q-item
-        v-for="i in teamStore.process_status"
+        v-for="i in $team().process_status"
         :key="i.val"
         clickable
         v-close-popup
@@ -37,7 +37,7 @@
         >
           <q-list dense style="min-width: 140px">
             <q-item
-              v-for="i in teamStore.process_status"
+              v-for="i in $team().process_status"
               :key="i.val"
               clickable
               v-close-popup
@@ -61,6 +61,7 @@
 <script setup>
 import {toRef, computed } from "vue";
 import { teamStore } from "src/hooks/global/useStore.js";
+import { $team } from "src/boot/service";
 const userId = computed(() => teamStore.init?.id);
 
 const props = defineProps({
@@ -107,8 +108,7 @@ const authBase = computed(() => {
 });
 
 const _status = (status) => {
-  // console.log('teamStore.process_status',teamStore.process_status,'statusRef',statusRef.value);
-  return teamStore.process_status?.find((i) => i.val === status);
+  return $team().process_status?.find((i) => i.val === status);
 };
 // console.log(_status(statusRef.value));
 

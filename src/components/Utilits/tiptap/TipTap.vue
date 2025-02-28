@@ -3,8 +3,12 @@
 
     <template v-if="isEditable">
       <div v-if="show_toolbar && isEditable"
-        class="full-width row no-wrap gap-xs items-center justify-start q-py-xs q-px-sm"
-        :class="`${square ? '' : 'radius-xs'}${toolbar_onBottom ? 'border-top' : 'border-bottom'}`"
+        class="full-width row no-wrap gap-xs items-center justify-start q-py-xs q-px-sm fixed"
+        :class="`z-fab
+          ${square ? '' : 'radius-xs'}
+          ${toolbar_onBottom ? 'border-top' : 'border-bottom'}
+          ${$q.dark.mode ? 'bg-grey-10' : 'bg-grey-2'}
+        `"
         :style="`height: ${toolbarHeight}px`"
       >
         <slot name="left-btn"></slot>
@@ -111,15 +115,17 @@
       >
        <BubbleMenuContent :editor />
       </bubble-menu>
-      <editor-content
-        ref="dropZoneRef"
-        class="tiptapBody q-space scroll-y fit"
-        :class="styleClass ? styleClass : 'q-pa-md'"
-        :editor="editor"
-        :style="contentStyle"
-        @mouseenter="onMouseEnter"
-        @mouseleave="onMouseLeave"
-      />
+      <div class="column q-space items-center">
+        <editor-content
+          ref="dropZoneRef"
+          class="tiptapBody q-space"
+          :class="styleClass ? styleClass : 'q-pa-md'"
+          :editor="editor"
+          :style="`${contentStyle} ${show_toolbar ? 'padding-top: 43px' : ''}`"
+          @mouseenter="onMouseEnter"
+          @mouseleave="onMouseLeave"
+        />
+      </div>
     </template>
     <div
       v-else
@@ -349,7 +355,8 @@ const emit = defineEmits([
   "tiptapChanged",
   "mmMsgChange",
   "ModEnter",
-  "contentChanged"
+  "contentChanged",
+  "isEmpty"
 ]);
 
 const tiptap = ref(null);
@@ -357,15 +364,7 @@ const editor = ref();
 const dropZoneRef = ref();
 
 const tiptapContent = ref();
-const isEmpty = computed(() => {
-  const fristContent = tiptapContent.value?.content;
-  if(!fristContent || !Array.isArray(fristContent)) return
-  if(fristContent[0]?.type === 'paragraph' && !fristContent[0]?.content){
-    return true
-  } else {
-    return false
-  }
-})
+const isEmpty = computed(() => editor.value?.isEmpty())
 const cleanHtmlHandler = (val) => {
   return val.replace(/<[^>]*>?/gm, "");
 };
@@ -519,6 +518,7 @@ const init = () => {
         emit("contentChanged", true);
         tiptapUpdate();
       }
+      emit("isEmpty", isEmpty.value);
     },
     async onBlur({ editor, event }) {
       const sourceVal = JSON.stringify(sourceContent.value);
