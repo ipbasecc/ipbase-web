@@ -493,9 +493,9 @@ const enterProject = async (project) => {
     }
     return;
   }
-  if (
-    teamStore.project_id === project.id ||
-    teamStore.project?.id === project.id
+  const hasError = !!(typeof console !== "undefined" && console.error)
+  if ( // 点击的是当前打开的项目 且 浏览器也没有报错时，不需要重新跳转
+    (teamStore.project_id === project.id || teamStore.project?.id === project.id) && !hasError
   ) {
     return;
   }

@@ -274,7 +274,7 @@ const authBase = computed(() => {
   return res;
 });
 
-const limit = 5;
+const limit = 20;
 const offset = ref(0);
 const totalCount = ref();
 const hasMore = ref(false);
@@ -289,7 +289,7 @@ const getMembers = async () => {
       if(Array.isArray(teamStore.team?.members)){
         teamStore.team.members.push(...data.members)
       } else {
-        teamStore.team.members = data
+        teamStore.team.members = data.members
       }
     }
     totalCount.value = data.totalCount;
@@ -297,11 +297,12 @@ const getMembers = async () => {
   }
   if (byInfo.value?.by === "project") {
     const { data } = await getProjectMembers(byInfo.value.project_id, offset.value, limit);
-    if(data?.members){
+    if(data?.members && teamStore.project){
+      console.log('data', data)
       if(Array.isArray(teamStore.project?.project_members)){
         teamStore.project.project_members.push(...data.members)
       } else {
-        teamStore.project.project_members = data  
+        teamStore.project.project_members = data.members  
       }
     }
     totalCount.value = data.totalCount;
@@ -310,13 +311,22 @@ const getMembers = async () => {
 }
 const findMore = async () => {
   console.log('findMore')
-  offset.value = teamStore.team?.members?.length;
+  if (byInfo.value?.by === "team") {
+    offset.value = teamStore.team?.members?.length;
+  }
+  if (byInfo.value?.by === "project") {
+    offset.value = teamStore.project?.project_members?.length;
+  }
   await getMembers();
 }
 onBeforeMount(async() => {
-  // todo 待完善分页查询
-  if(byInfo.value.team_id){    
+  // 组件挂载前先重置数据，此处从服务端获取最新数据
+  if (byInfo.value?.by === "team" && byInfo.value.team_id) {
     teamStore.team.members = []
+    await getMembers();
+  }
+  if (byInfo.value?.by === "project" && byInfo.value.project_id) {
+    teamStore.project.project_members = []
     await getMembers();
   }
 })

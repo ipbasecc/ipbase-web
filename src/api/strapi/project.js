@@ -327,6 +327,9 @@ export async function groupOrder(project_id, board_id, params) {
 
 //获取某个项目
 export async function getOneProject(project_id) {
+  if(!project_id || project_id === 'undefined') {
+    throw new Error('project_id is required');
+  };
   try {
     const res = await api.get(`projects/${project_id}`);
     if (res) {
