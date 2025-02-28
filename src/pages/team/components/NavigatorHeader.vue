@@ -102,13 +102,19 @@
         </div>
         <q-space />
         <template v-if="$q.screen.gt.xs">
-          <q-btn v-if="uiStore.app !== 'aichat'" icon="auto_awesome" @click="toggleRightDrawer('aichat')"
-            flat round
-          >
-            <q-tooltip>
-              <span class="text-no-wrap">{{ $t('aichat_panel') }}</span>
-            </q-tooltip>
-          </q-btn>
+          <q-btn
+            v-if="uiStore.app !== 'aichat'"
+            flat
+            dense round
+            :color="
+              uiStore.projectRightDrawer &&
+              uiStore.projectRightDrawerContent === 'aichat'
+                ? 'green'
+                : ''
+            "
+            icon="auto_awesome"
+            @click="toggleRightDrawer('aichat')"
+          />
           <q-btn
             v-if="
               teamStore.project &&

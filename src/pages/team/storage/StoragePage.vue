@@ -17,7 +17,7 @@
         </q-toolbar>
         <q-card-section>
           <q-list dense>
-            <q-item v-for="i in uiStore.unsupportFiles" :key="i.name">
+            <q-item v-for="i in $ui().unsupportFiles" :key="i.name">
               <q-item-section>{{i.name}}</q-item-section>
             </q-item>
             <q-item class="q-mt-md op-6">
@@ -31,7 +31,7 @@
           </q-list>
         </q-card-section>
         <q-card-actions align="right" class="border-top">
-          <q-btn flat no-caps padding="xs md" :label="$t('known_it')" v-close-popup @click="uiStore.unsupportFiles = []" />
+          <q-btn flat no-caps padding="xs md" :label="$t('known_it')" v-close-popup @click="$ui().unsupportFiles = []" />
         </q-card-actions>
       </q-card>
     </q-dialog>

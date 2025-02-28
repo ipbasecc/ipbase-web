@@ -59,6 +59,7 @@ export default {
   server_deployment_description: "中服务端部署部分",
   current_server: "当前服务器",
   clear_cache: "清除缓存",
+  reload_app: "重载应用",
   this_demo: "此演示",
   upload: "上传",
   download: "下载",

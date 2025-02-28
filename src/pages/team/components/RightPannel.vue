@@ -2,9 +2,9 @@
     <q-drawer
       v-model="uiStore.projectRightDrawer"
       v-if="uiStore.projectRightDrawer && uiStore.projectRightDrawerContent"
-      bordered
       side="right"
       :width="uiStore.rightDrawerWidth"
+      class="border-left"
     >
       <AffairsContainer 
         v-if="

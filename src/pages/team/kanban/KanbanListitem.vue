@@ -64,7 +64,7 @@
               <q-separator spaced />
               <q-item class="justify-center font-large">
                 <div class="grid-container">
-                  <div v-for="i in uiStore.emojis"
+                  <div v-for="i in $ui().emojis"
                     :key="i"
                     class="grid-item cursor-pointer"
                     @click="toggleEmoji(i)"

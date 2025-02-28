@@ -2,7 +2,7 @@
   <q-item style="user-select: none" :class="styleClass">
     <q-item-section side :class="size === 'sm' ? 'q-pr-sm' : ''">
       <q-avatar :size="classInfo.avatarSize">
-        <img src="../../../public/logo.png" />
+        <img :src="$pathService('/logo.png')" />
       </q-avatar>
     </q-item-section>
     <q-item-section>

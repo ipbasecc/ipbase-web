@@ -8,7 +8,7 @@
           :class="$q.dark.mode ? 'bg-darker' : 'bg-grey-1'"
         >
           <q-item
-            v-for="i in uiStore.localeOptions"
+            v-for="i in $ui().localeOptions"
             :key="i.val"
             clickable
             v-close-popup

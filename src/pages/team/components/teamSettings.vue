@@ -32,7 +32,7 @@
                 <div class="absolute-full column flex-center">
                   <DrapUpload
                     :isOSS="true"
-                    :allowedFormats="uiStore.allowedFormatsImage"
+                    :allowedFormats="$ui().allowedFormatsImage"
                     :caption="$t('drop_or_pick_cover')"
                     tipClass="flex-center"
                     @uploaded="fileUploaded"

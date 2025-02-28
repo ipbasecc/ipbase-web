@@ -12,7 +12,7 @@
       class="row no-wrap items-center unselected q-pb-sm relative-position"
       :class="$q.platform.is.electron ? 'q-electron-drag' : ''"
     >
-      <q-img src="../../../public/logo.png"
+      <q-img :src="$pathService('/logo.png')"
         :ratio="1"
         height="30px"
         width="30px"
@@ -88,13 +88,14 @@
 import {computed, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {teamStore, uiStore} from "src/hooks/global/useStore";
+import { $ui } from "src/boot/service";
 
 import NotifyBlock from "src/components/VIewComponents/NotifyBlock.vue";
 import localforage from "localforage";
 
 const router = useRouter();
 const route = useRoute();
-const enabledApps = computed(() => uiStore.apps?.filter((i) => i.enable));
+const enabledApps = computed(() => $ui().apps?.filter((i) => i.enable));
 const to = async (i) => {
   uiStore.app = i.val;
   uiStore.deal_active_item = '';

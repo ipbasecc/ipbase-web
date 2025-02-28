@@ -6,7 +6,7 @@
             <q-item-section>
                 <div class="row no-wrap items-center gap-sm">
                     <q-icon
-                        v-for="marker in uiStore.colorMarks"
+                        v-for="marker in $ui().colorMarks"
                         :key="marker"
                         v-close-popup
                         dense

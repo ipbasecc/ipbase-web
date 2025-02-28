@@ -209,6 +209,7 @@ import BussinessMenu from '../business/BussinessMenu.vue'
 import DiscoverNavigator from './discover/DiscoverNavigator.vue'
 import DeliverNavigator from '../deliver/DeliverNavigator.vue'
 import StudioNavigation from '../studio/StudioNavigation.vue'
+import { $ui } from "src/boot/service";
 
 // 团队状态是否存在 blocked 或 unconfirmed
 const userStatus_byTeam = computed(() => teamStore.team?.status);
@@ -254,7 +255,7 @@ const openMemberManager = () => {
 }
 
 const haveSubNav = computed(() => {
-  return uiStore.can_drag_apps.includes(uiStore.app) && $q.screen.gt.xs;
+  return $ui().can_drag_apps.includes(uiStore.app) && $q.screen.gt.xs;
 });
 
 const toggleNavDrawer = () => {

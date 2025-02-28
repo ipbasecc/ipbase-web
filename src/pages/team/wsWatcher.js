@@ -11,7 +11,7 @@ import { getOneProject } from "src/api/strapi/project.js";
 import { leaveRoom } from "src/api/strapi/team.js"
 import { hasIntersection } from "src/hooks/utilits.js"
 import { toggleTeam } from "src/pages/team/hooks/useTeam.js";
-
+import { $team } from "src/boot/service";
 
 export default function useWatcher() {
   const router = useRouter();
@@ -491,7 +491,7 @@ export default function useWatcher() {
           })
         }
         if(card_id) {
-          const is_sale_type = teamStore.saleTypes.includes(data.card?.type);
+          const is_sale_type = $team().saleTypes.includes(data.card?.type);
           const is_creator = teamStore.init?.id === data.card?.creator?.id;
           // 当新增overview的卡片是课堂时，只需要更新已经打开详情的card的overviews即可，因为课堂卡片在分栏中只显示封面
           if(is_sale_type && !is_creator && teamStore.card?.id === data.card.id){
@@ -618,7 +618,7 @@ export default function useWatcher() {
         // 只需要更新正在查看详情详情内容
 
         // 当更新overviews的卡片是销售内容时，只需要更新已经打开详情的card的overviews即可，因为课堂卡片在分栏中只显示封面
-        const is_sale_type = teamStore.saleTypes.includes(data.card?.type);
+        const is_sale_type = $team().saleTypes.includes(data.card?.type);
         const is_creator = teamStore.init?.id === data.card?.creator?.id;
         if(is_sale_type && !is_creator && teamStore.card?.id === data.card.id){
           const res = await findCard(data.card.id);

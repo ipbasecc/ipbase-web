@@ -22,7 +22,7 @@
           @keydown.esc="closeCreate()"
           @keyup.enter="createTodoCard()"
         >
-          <template v-if="params.data.name && !teamStore.saleTypes.includes(type_for_create)" v-slot:append>
+          <template v-if="params.data.name && !$team().saleTypes.includes(type_for_create)" v-slot:append>
             <q-btn
               icon="check"
               dense
@@ -34,7 +34,7 @@
           </template>
         </q-input>
       </q-card-section>
-      <template v-if="teamStore.saleTypes.includes(type_for_create)">
+      <template v-if="$team().saleTypes.includes(type_for_create)">
         <q-card-section v-if="type_for_create === 'classroom'" class="q-pa-xs">
           <q-checkbox v-model="allow_discover" :label="$t('show_in_discover')" />
         </q-card-section>
@@ -102,7 +102,7 @@
       <div v-if="loading" class="absolute-full bg-black op-5 flex flex-center">
         <q-spinner-orbit color="primary" size="2em" />
       </div>
-      <template v-else-if="teamStore.saleTypes.includes(type_for_create)">
+      <template v-else-if="$team().saleTypes.includes(type_for_create)">
         <q-card-section class="border-top q-pa-sm">
           <q-btn color="primary" :label="$t('create')" class="full-width" @click="createCardFn" />
         </q-card-section>
@@ -186,6 +186,7 @@ import { board_type } from "src/pages/team/kanban/BoradsList.js";
 import { isEqual } from "lodash-es";
 import {teamStore, uiStore} from "src/hooks/global/useStore";
 import DrapUpload from 'src/components/VIewComponents/DrapUpload.vue'
+import { $team } from "src/boot/service";
 
 const props = defineProps({
   column_id: {
@@ -238,7 +239,7 @@ const type_for_create = computed(() => {
 });
 // 新建表单是不是只需要 name 字段
 const create_with_name = computed(() => {
-  const asNames = ["todo", ...teamStore.saleTypes];
+  const asNames = ["todo", ...$team().saleTypes];
   let _nameOnly = false;
   if (asNames.includes(type_for_create.value)) {
     _nameOnly = true;
@@ -264,7 +265,7 @@ watchEffect(() => {
   params.value = {
     column_id: column_idRef.value,
     data: {
-      status: teamStore.saleTypes.includes(type_for_create.value) ? 'completed' : "pending",
+      status: $team().saleTypes.includes(type_for_create.value) ? 'completed' : "pending",
       type: type_for_create.value,
       name: name.value,
       jsonContent: jsonContent.value,
@@ -334,14 +335,14 @@ const createCardFn = async () => {
   // console.log('createCardFn 5');
   let {data} = await createCard(params.value);
   if (data) {
-    if(teamStore.saleTypes.includes(type_for_create.value)){
+    if($team().saleTypes.includes(type_for_create.value)){
       emit('created', data)
     }
     closeCreate(); // 父组件关闭创建窗口
   }
 };
 const createTodoCard = () => {
-  if(teamStore.saleTypes.includes(type_for_create.value)) return;
+  if($team().saleTypes.includes(type_for_create.value)) return;
   createCardFn(); 
 }
 const closeCreate = async () => {  

@@ -23,7 +23,7 @@
               class="radius-xs"
             />
             <DrapUpload v-else :isOSS="true" class="radius-md border-xs border-dashed border-primary"
-            :allowedFormats="uiStore.allowedFormatsImage"
+            :allowedFormats="$ui().allowedFormatsImage"
             @uploaded="fileUploaded" style="min-height: 8rem;" :caption="$t('drop_or_pick_cover')" />
           </q-card-section>
           <q-card-section class="q-pt-none">

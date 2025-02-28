@@ -1,98 +1,8 @@
 import {defineStore} from "pinia";
-import {Platform,Screen} from 'quasar'
 import teamStore from './team'; // 引入 team store
 
 export default defineStore("ui", {
   state: () => ({
-    apps: [
-      {
-        val: "teams",
-        label: 'team',
-        icon: "developer_board",
-        description: 'app_team_purpose',
-        to: "teams",
-        enable: true,
-      },
-      {
-        val: "deliver",
-        label: 'deliver',
-        icon: "mdi-cards",
-        description: 'app_deliver_purpose',
-        to: "deliver",
-        enable: true,
-      },
-      {
-        val: "discover",
-        label: 'discover',
-        icon: "mdi-compass-outline",
-        description: 'app_discover_purpose',
-        to: "discover",
-        enable: true,
-      },
-      {
-        val: "affairs",
-        label: 'affairs',
-        icon: "mdi-checkbox-marked-circle-outline",
-        description: 'app_affairs_purpose',
-        to: "affairs",
-        enable: true,
-      },
-      {
-        val: "notebooks",
-        label: 'notebooks',
-        icon: "mdi-book-open-page-variant",
-        description: 'app_notebooks_purpose',
-        to: "notebooks",
-        enable: true,
-      },
-      {
-        val: "chats",
-        label: 'chats',
-        icon: "contacts",
-        description: 'app_chat_purpose',
-        to: "chats",
-        enable: true,
-      },
-      {
-        val: "threads",
-        label: 'threads',
-        icon: "mdi-message-bulleted",
-        description: 'app_threads_purpose',
-        to: "threads",
-        enable: Platform.is.mobile,
-      },
-      {
-        val: "brand",
-        label: 'brand',
-        icon: "mdi-creation",
-        description: 'app_brand_purpose',
-        to: "brand",
-        enable: false
-      },
-      {
-        val: "aichat",
-        label: 'aichat',
-        icon: "auto_awesome",
-        description: 'app_aichat_purpose',
-        to: "aichat",
-        enable: Platform.is.desktop
-      },
-    ],
-    localeOptions: [
-      { val: "zh-CN", label: "中文", flag_key: 'cn' },
-      { val: "en-US", label: "English", flag_key: 'gb' },
-      { val: "de-DE", label: "Deutsch", flag_key: 'de' },
-    ],
-    colorMarks: [
-      "primary",
-      "secondary",
-      "accent",
-      "positive",
-      "red",
-      "info",
-      "warning",
-      "clear",
-    ],
     app: void 0,
     axiosStauts: void 0,
     axiosStautsCode: void 0,
@@ -150,40 +60,10 @@ export default defineStore("ui", {
       channels: []
     },
     disableBgEffects: false,
-    no_image_url: 'https://airspace.oss-cn-shanghai.aliyuncs.com/app/no_image.jpeg',
-    supportExts: [
-      "jpg", "png", "jpeg", "gif", "bmp", "svg", "webp",
-      "mp4", "mov", "avi", "mkv", "flv", "wmv", "webm", "m4v", "mxf", "quicktime", "3gp", "3g2",
-      "mp3", "wav", "flac", "aac", "ogg",
-      "fbx", "obj", "abc", "gltf", "glb", "stl", "ply",
-      "zip", "rar", "7z", "tar", "gz", "lz4",
-      "doc", "docx", "ppt", "pptx", "xls", "xlsx", "csv", "txt", "pdf", "md", "mdx"
-    ],
-    allowedFormatsImage: ['image/jpg', 'image/jpeg', 'image/png', 'image/svg', 'image/webp'],
-    allowedFormatsVideo: ['video/mp4', 'video/m4v', 'video/mov', 'video/flv', 'video/webm'],
-    allowedFormatsFile: ['text/plain', 'application/zip', 'application/tar', 'application/gzip'],
-    unsupportFiles: [],
     showUnsupportFiles: false,
     only_electron: ['classroom'],
     split_kanban_active: void 0,
     splitterView: false,
-    emojis:[
-      "💋",
-      "🔥",
-      "💗",
-      "💢",
-      "💯",
-      "😬",
-      "😍",
-      "😇",
-      "🤔",
-      "😓",
-      "🥵",
-      "🤪",
-      "🤬",
-      "💩",
-      "",
-    ],
     chat_pannel: false,
     topPannel: false,
     columnWidth: 322,
@@ -192,11 +72,7 @@ export default defineStore("ui", {
     newsLeftDrawer: true,
     createTeam: false,
     edittingDocument: void 0,
-    colors: [
-      '#1976D2', '#26A69A', '#9C27B0', '#21BA45', '#C10015', '#31CCEC', '#F2C037'
-    ],
     active_note_id: void 0,
-    can_drag_apps: ["teams", "chats", 'affairs', 'brand', 'notebooks', 'aichat'],
     meet: void 0,
     init_meet: false,
     show_meet: false,
@@ -210,7 +86,6 @@ export default defineStore("ui", {
     talker: null,
     disable_selected: false,
   }),
-  persist: false,
   actions: {
     $syncMmUnreads() {
       const team = teamStore()?.team; // 获取 team store 实例并访问 team 属性

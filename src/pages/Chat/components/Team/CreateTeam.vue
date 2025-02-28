@@ -7,7 +7,7 @@
         <div v-if="!created" class="q-space column flex-center gap-xl" style="min-width: 50vw;">
             <div class="full-width column items-start gap-md">
                 <q-img
-                    src="../../../../../public/logo.png"
+                    :src="$pathService('/logo.png')"
                     :ratio="1"
                     spinner-color="primary"
                     spinner-size="82px"

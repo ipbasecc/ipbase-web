@@ -3,7 +3,7 @@
     :flat="!$q.dark.mode" style="min-width: 16rem;"
 >
     <q-img
-        :src="deal.cover?.url || uiStore.no_image_url"
+        :src="deal.cover?.url || $ui().no_image_url"
         :ratio="16/9"
         spinner-color="primary"
         spinner-size="82px"

@@ -224,6 +224,7 @@ import { useQuasar } from "quasar";
 
 import { onClickOutside } from "@vueuse/core";
 import { teamStore, uiStore } from "src/hooks/global/useStore.js";
+import { $ui } from "src/boot/service";
 
 const emit = defineEmits([
   "enterFolder",
@@ -363,7 +364,7 @@ const checkSupport = (file) => {
   // 根据 file 的名称提取出文件扩展
   const extension = file.name.split(".").pop().toLowerCase();
   // 检查文件扩展是否在支持的扩展列表中
-  return uiStore.supportExts.includes(extension);
+  return $ui().supportExts.includes(extension);
 };
 
 // 定义响应式数据
@@ -371,8 +372,8 @@ const files = ref([]);
 // 定义上传文件的方法
 const onDrop = async (e, storage_id) => {
   if(teamStore.shareInfo) return
-  uiStore.unsupportFiles = e.filter(i => !checkSupport(i));
-  if(uiStore.unsupportFiles?.length > 0){
+  $ui().unsupportFiles = e.filter(i => !checkSupport(i));
+  if($ui().unsupportFiles?.length > 0){
     uiStore.showUnsupportFiles = true
   }
   //storage_id: 如果上传的是文件夹，那么首先创建文件夹，再将文件上传至文件夹内，新建的文件夹即这里的storage_id

@@ -196,6 +196,7 @@ import {
 
 import { useQuasar } from "quasar";
 import {teamStore, uiStore} from 'src/hooks/global/useStore.js';
+import { $team } from "src/boot/service";
 
 import { i18n } from 'src/boot/i18n.js';
 
@@ -207,7 +208,7 @@ const route = useRoute();
 const multiple_boards = computed(() =>{
   const kanban_settings = teamStore.project?.preferences?.find(i => i.name === 'kanban_settings')?.settings;
   const multiple_boards_enable = kanban_settings?.find(i => i.val === "multiple_boards")?.enable;
-  const multiple_boards_by_type = teamStore.multipleBoardType.includes(teamStore.navigation);
+  const multiple_boards_by_type = $team().multipleBoardType.includes(teamStore.navigation);
 
   return multiple_boards_enable || multiple_boards_by_type;
 });

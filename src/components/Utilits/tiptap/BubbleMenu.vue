@@ -14,7 +14,7 @@
       <q-btn flat dense icon="mdi-format-color-text" :class="{ 'bg-primary': editor.isActive('textStyle') }">
         <q-menu>
           <div class="row gap-xs radius-sm q-pa-xs border">
-            <template v-for="i in uiStore.colors" :key="i">
+            <template v-for="i in $ui().colors" :key="i">
                 <div class="hover-op-none cursor-pointer radius-xs" style="height: 2rem; width: 2rem;" :style="`background-color: ${i}`"
                     @click="editor.chain().focus().setColor(i).run()"
                 ></div>
@@ -28,7 +28,7 @@
       <q-btn flat dense icon="mdi-format-color-fill" :class="{ 'bg-primary': editor.isActive('highlight') }">
         <q-menu>
           <div class="row gap-xs radius-sm q-pa-xs border">
-            <template v-for="i in uiStore.colors" :key="i">
+            <template v-for="i in $ui().colors" :key="i">
                 <div class="hover-op-none cursor-pointer radius-xs" style="height: 2rem; width: 2rem;" :style="`background-color: ${i}`"
                     @click="editor.chain().focus().toggleHighlight({ color: i }).run()"
                 ></div>

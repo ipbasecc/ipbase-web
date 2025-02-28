@@ -130,6 +130,7 @@ import TipTap from 'src/components/Utilits/tiptap/TipTap.vue'
 import PayButton from 'src/components/order/PayButton.vue'
 import { useI18n } from 'vue-i18n';
 import MediaViewer from 'src/components/VIewComponents/MediaViewer.vue'
+import { $team } from "src/boot/service";
 
 const { t } = useI18n();
 const {card_id} = defineProps(['card_id']);
@@ -149,7 +150,7 @@ const isCreator = computed(() => teamStore.card?.creator?.id === teamStore.init?
 const overview_name = computed(() => overview.value?.name);
 const overviews = computed(() => teamStore.card?.overviews || []);
 const cover = computed(() => teamStore.card?.cover?.url);
-const resource_type = computed(() => teamStore.resourceType[0]);
+const resource_type = computed(() => $team().resourceType[0]);
 const auth_type_of_buy = computed(() => teamStore.card?.authed_type || []);
 
 const getOneDiscover = async (card_id) => {

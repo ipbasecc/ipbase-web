@@ -43,7 +43,7 @@
 <script setup>
 import { ref, nextTick } from 'vue';
 import CreateChannel from '../../components/CreateChannel.vue';
-import { teamStore } from 'src/hooks/global/useStore';
+
 const showCreate = ref(false);
 const toggleShowCreate = () => {
   showCreate.value = !showCreate.value;

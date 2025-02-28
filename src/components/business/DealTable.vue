@@ -82,6 +82,7 @@
     import { createTransferOrder, tax } from "src/api/strapi.js";
     import { teamStore, uiStore } from "src/hooks/global/useStore";
     import { useRouter } from 'vue-router';
+import { $ui } from "src/boot/service";
 
     const router = useRouter();
     const { deals, pageInfo, partner_info, platform } = defineProps(["deals", "pageInfo", "partner_info", "platform"]);
@@ -110,7 +111,7 @@
             res.push({
                 id: deal.id,
                 name: deal.name,
-                cover: deal.cover?.url || uiStore.no_image_url,
+                cover: deal.cover?.url || $ui().no_image_url,
                 completedAt: date.formatDate(deal.completedAt, 'DD日 HH:mm'),
                 party_a: deal.party_a,
                 amount: deal.amount / 100,

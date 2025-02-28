@@ -429,6 +429,7 @@
   import MediaViewer from 'src/components/VIewComponents/MediaViewer.vue'
   import useSocket from "src/pages/team/card/hooks/useSocket.js";
   import { isRmptyTiptap } from "src/hooks/utilits.js"
+  import { $team } from "src/boot/service";
 
   const $q = useQuasar();
   const route = useRoute();
@@ -461,7 +462,7 @@
   });
   const { card: cardRef, orderAuth } = toRefs(props);
   const alwaysShowCover = computed(() => {
-    const _navsAlwaysShowCover = ['segment', ...teamStore.saleTypes];
+    const _navsAlwaysShowCover = ['segment', ...$team().saleTypes];
     return _navsAlwaysShowCover.includes(teamStore.navigation);
   });
 
@@ -510,7 +511,7 @@
       return false
     }
   })
-  const isSale = computed(() => teamStore.saleTypes.includes(cardRef.value?.type))
+  const isSale = computed(() => $team().saleTypes.includes(cardRef.value?.type))
   const cardMembers = computed(() => cardRef.value?.card_members || []);
   const { _isCreator } = useMember();
   const isCreator = computed(() => {

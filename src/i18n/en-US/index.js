@@ -59,6 +59,7 @@ export default {
   server_deployment_description: "Server deployment guide",
   current_server: "Current server",
   clear_cache: "Clear cache",
+  reload_app: "Reload app",
   this_demo: "This demo",
   upload: "Upload",
   download: "Download",

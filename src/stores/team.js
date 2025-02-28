@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { $team } from "src/boot/service";
 
 export default defineStore("team", {
   state: () => ({
@@ -34,28 +35,6 @@ export default defineStore("team", {
     create_folder_ing: false,
     active_folder: null,
     selected: null,
-    process_status: [
-      {
-        name: "待处理",
-        val: "pending",
-        icon: "radio_button_unchecked",
-        color: "grey",
-      },
-      {
-        name: "处理中",
-        val: "processing",
-        icon: "change_circle",
-        color: "primary",
-      },
-      {
-        name: "遇阻",
-        val: "blocked",
-        icon: "radio_button_checked",
-        color: "red",
-      },
-      { name: "待审核", val: "review", icon: "fact_check", color: "orange" },
-      { name: "已完成", val: "completed", icon: "task_alt", color: "green" },
-    ],
     thread: null,
     isExternal: false,
     isFocusMode: false,
@@ -81,34 +60,11 @@ export default defineStore("team", {
     singal_file_limit: null,
     storageCapacityExceeded: false,
     cardNumberExceeded: false,
-    teamMembersExceeded: false,
-    multipleBoardType: ['classroom', 'resource'],
-    saleTypes: ['classroom', 'resource'],
-    authType: ['exclusive', 'commercial', 'non-commercia', 'educational', 'personal'],
-    resourceType: [
-      {
-        label: 'video',
-        value: 'video',
-        description: 'resource_video_description',
-        icon: 'mdi-video'
-      },
-      {
-        label: 'audio',
-        value: 'audio',
-        description: 'resource_audio_description',
-        icon: 'mdi-music'
-      },
-      {
-        label: 'file',
-        value: 'file',
-        description: 'resource_file_description',
-        icon: 'mdi-file'
-      }
-    ]
+    teamMembersExceeded: false
   }),
   getters: {
     $isMultipleBoard(state) {
-      return state.multipleBoardType.includes(state.navigation);
+      return $team().multipleBoardType.includes(state.navigation);
     },
     $level_detail: (state) => {
       return state.team?.level_detail; // 计算属性

@@ -125,7 +125,7 @@
                 <q-item-section side>
                   <q-icon name="mdi-refresh" />
                 </q-item-section>
-                <q-item-section>{{ $t('clear_cache') }}</q-item-section>
+                <q-item-section>{{ $t('reload_app') }}</q-item-section>
               </q-item>
               <q-item
                 v-if="!confirmOut"

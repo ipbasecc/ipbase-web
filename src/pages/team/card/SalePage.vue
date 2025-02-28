@@ -49,7 +49,7 @@
                             <q-item
                                 :class="{ 'bg-negative radius-sm border': requireds.find(i => i.key === 'name').value }">
                                 <q-item-section>
-                                    <q-select filled v-model="resource_type" :options="teamStore.resourceType"
+                                    <q-select filled v-model="resource_type" :options="$team().resourceType"
                                         :label="$t('resource_type')" :disable="!!teamStore.card.resource_type"
                                         color="deep-orange" popup-content-class="border q-pa-xs radius-sm"
                                         options-selected-class="text-deep-orange"
@@ -243,6 +243,7 @@
     import TipTap from 'src/components/Utilits/tiptap/TipTap.vue'
     import { useQuasar } from 'quasar';
     import { useI18n } from 'vue-i18n';
+    import { $team } from "src/boot/service";
 
     const { t } = useI18n();
     const $q = useQuasar();
@@ -274,7 +275,7 @@
     const overview_name = computed(() => overview.value?.name);
     const overviews = ref([]);
     const cover = ref();
-    const resource_type = ref(teamStore.resourceType[0]);
+    const resource_type = ref($team().resourceType[0]);
 
     const getCard = async (card_id) => {
         if (loading.value) return
