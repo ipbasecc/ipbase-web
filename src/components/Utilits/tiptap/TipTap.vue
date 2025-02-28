@@ -3,7 +3,7 @@
 
     <template v-if="isEditable">
       <div v-if="show_toolbar && isEditable"
-        class="full-width row no-wrap gap-xs items-center justify-start q-py-xs q-px-sm fixed"
+        class="full-width fixed row no-wrap gap-xs items-center justify-start q-py-xs q-px-sm"
         :class="`z-fab
           ${square ? '' : 'radius-xs'}
           ${toolbar_onBottom ? 'border-top' : 'border-bottom'}
@@ -153,7 +153,8 @@ import {
   watch,
   computed,
   nextTick,
-  watchEffect
+  watchEffect,
+  useTemplateRef
 } from "vue";
 import useTiptap from './useTiptap.js'
 import { isEmptyLine } from './useTiptap.js'
@@ -214,6 +215,7 @@ import jsonLang from 'highlight.js/lib/languages/json'
 import typescript from 'highlight.js/lib/languages/typescript'
 import bash from 'highlight.js/lib/languages/bash'
 import sql from 'highlight.js/lib/languages/sql'
+import { isRmptyTiptap } from 'src/hooks/utilits.js'
 
 import 'highlight.js/styles/atom-one-dark.css'
 import { startImageUpload, handleImageUpload } from "./plugins/upload-images";
@@ -337,6 +339,8 @@ const props = defineProps({
   },
 });
 
+const agentRef = useTemplateRef('agentRef')
+
 const contentRef = toRef(props, "content");
 const jsonContentRef = toRef(props, "jsonContent");
 const withSaveBtnRef = toRef(props, "withSaveBtn");
@@ -364,7 +368,7 @@ const editor = ref();
 const dropZoneRef = ref();
 
 const tiptapContent = ref();
-const isEmpty = computed(() => editor.value?.isEmpty())
+const isEmpty = computed(() => isRmptyTiptap(editor.value?.getJSON()))
 const cleanHtmlHandler = (val) => {
   return val.replace(/<[^>]*>?/gm, "");
 };
@@ -432,7 +436,7 @@ const init = () => {
   editor.value = new Editor({
     content: tiptapContent.value,
     editable: isEditable.value,
-    autofocus: autofocus.value && isEmpty.value,
+    autofocus: autofocus.value,
     editorProps: {
       handleKeyDown: (view, event) => {
         // 检查是否是 Ctrl+Enter 或 Cmd+Enter
@@ -536,6 +540,11 @@ const init = () => {
     },
   });
 };
+
+const insert = (content) => {
+  console.log('insert', content);
+  editor.value.commands.insertContent(content)
+}
 
 
 const getClipboardData = (event) => {

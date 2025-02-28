@@ -17,7 +17,6 @@
     :autofocus="!islocked"
     :contentChanged
     _for="document"
-    class="items-center"
     @contentChanged="contentChanged = true"
     @tiptapUpdate="tiptapUpdate"
     @tiptapBlur="tiptapBlur"

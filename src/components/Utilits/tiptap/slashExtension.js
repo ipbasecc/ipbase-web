@@ -20,8 +20,10 @@ import SlashCommandList from "./CommandsList.vue";
 import { startImageUpload } from "./plugins/upload-images";
 import {i18n} from 'src/boot/i18n.js';
 import { uiStore } from "src/hooks/global/useStore";
+import { ref, watch } from "vue";
 
 const $t = i18n.global.t;
+export const showAgentCard = ref(false);
 
 const Command = Extension.create({
   name: "slash-command",
@@ -52,6 +54,15 @@ const getSuggestionItems = ({ query }) => {
       title: 'tiptap_slash_menu_text',
       icon: 'mdi-cursor-text',
       children: [
+        {
+          value: 'ai',
+          title: 'AI 生成',
+          description: '使用您当前的 AI 设置生成内容',
+          searchTerms: ["p", "paragraph"],
+          icon: Sparkles,
+          command: ({ editor, range }) => {
+          },
+        },
         {
           title: $t('tiptap_menu_Text'),
           description: $t('tiptap_menu_Text_description'),
@@ -225,6 +236,15 @@ const renderItems = () => {
     }
   };
 
+  // 监听 showAgentCard 的变化
+  watch(showAgentCard, (newValue) => {
+    if (popup) {
+      popup[0].setProps({
+        hideOnClick: !newValue, // 更新 hideOnClick 属性
+      });
+    }
+  });
+
   return {
     onStart: (props) => {
       currentEditor = props.editor;
@@ -255,20 +275,36 @@ const renderItems = () => {
       }
 
       popup = tippy("body", {
+        // 设置参考元素的客户端矩形
         getReferenceClientRect: props.clientRect,
+        // 将tippy追加到文档的body元素
         appendTo: () => document.body,
+        // 设置tippy的内容为组件的元素
         content: component.element,
+        // 初始时不隐藏tippy
+        hideOnClick: !showAgentCard.value, 
+        // 创建时显示tippy
         showOnCreate: true,
+        // 使tippy交互式
         interactive: true,
+        // 手动触发tippy
         trigger: "manual",
+        // 设置tippy的位置为元素的下方开始
         placement: "bottom-start",
+        // 当tippy显示时执行的回调
         onShow() {
+          showAgentCard.value = false;
+          // 设置延迟以确保tippy已显示，然后聚焦搜索输入框
           setTimeout(() => {
             component?.ref?.searchInput?.focus();
           }, 0);
         },
+        // 当tippy隐藏时执行的回调
         onHidden() {
+          showAgentCard.value = false;
+          // 移除全局的键盘事件监听器
           document.removeEventListener('keydown', handleGlobalEscape);
+          // 关闭tippy
           handleClose();
         }
       });

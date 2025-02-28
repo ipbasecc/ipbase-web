@@ -15,6 +15,9 @@ import useChatStore from "src/stores/chat.js";
 import useStudioStore from "src/stores/studio.js";
 import useProjectStore from "src/stores/project.js";
 
+
+import { useAIStore } from 'src/stores/ai.js'
+
 export const uiStore = useUIStore();
 export const mm_wsStore = useMmws();
 export const workStore = useWorkStore();
@@ -30,3 +33,4 @@ export const discoverStore = useDiscoverStore();
 export const notifyStore = useNotifyStore();
 export const chatStore = useChatStore();
 export const studioStore = useStudioStore();
+export const aiStore = useAIStore()

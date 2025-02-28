@@ -38,10 +38,13 @@ export const useAIStore = defineStore('ai', {
     availableProviders: (state) => {
       return defaultProviders.filter(provider => {
         const config = state.providers[provider.id]
+        console.log('availableProviders', config);
+        
         if (!config || !config.active || !config.endpoint) return false
         
         // 检查是否有可用的激活模型
         const hasActiveModels = Array.isArray(config.activeModels) && config.activeModels.length > 0
+        console.log('hasActiveModels', hasActiveModels);
         
         // Ollama不需要apiKey
         if (provider.id === 'ollama') {
@@ -100,6 +103,11 @@ export const useAIStore = defineStore('ai', {
     // 获取当前助手信息
     currentAssistant: (state) => {
       return state.assistants.find(a => a.id === state.selectedAssistant);
+    },
+
+    availableProvidersWithModels: (state) => {
+      const providers = state.providers
+      return Object.keys(providers).filter(key => providers[key].active).map(key => ({ name: key, ...providers[key] }))
     },
   },
 
@@ -258,6 +266,18 @@ export const useAIStore = defineStore('ai', {
       }
       this.chatSessions.unshift(newSession)
       this.currentSession = newSession
+    },
+    // 创建新会话
+    createSingleChat() {
+      // console.log('Creating new chat session with assistantId:', this.selectedAssistant); // Debugging output
+      return {
+        id: uid(),
+        title: '新对话',
+        messages: [],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        assistantId: this.selectedAssistant || this.assistants[0].id
+      }
     },
 
     // 加载会话

@@ -1,5 +1,6 @@
 <template>
-  <q-card bordered class="row no-wrap gap-sm q-pa-xs">
+  <AgentCard v-if="showAgentCard" @insert="aiInsert" />
+  <q-card v-else v-bind="$attrs" bordered class="row no-wrap gap-sm q-pa-xs">
     <q-list dense class="q-pa-xs radius-sm">
       <q-item v-for="(item, index) in items" :key="index" clickable v-ripple
       class="radius-xs"
@@ -52,11 +53,13 @@
         </q-list>
       </q-scroll-area>
     </div>
-</q-card>
+  </q-card>
 </template>
 
 <script setup>
 import { ref, watch, computed, onMounted, nextTick } from "vue";
+import { showAgentCard } from "./slashExtension.js";
+import AgentCard from './AgentCard.vue'
 
 // Props 定义
 const props = defineProps({
@@ -87,6 +90,11 @@ const searchInput = ref(null);
 
 // 事件发射器
 const emit = defineEmits(['filter', 'close']);
+
+const aiInsert = (content) => {
+  props.editor.chain().focus().deleteRange(props.range).run();
+  props.editor.chain().focus().insertContent(content).run();
+}
 
 // 计算属性
 const filteredItems = computed(() => {
@@ -174,7 +182,11 @@ function onKeyDown(event) {
     const { parentIndex, childIndex } = currentSelection.value;
     const selectedItem = props.items[parentIndex].children[childIndex];
     if (selectedItem) {
-      props.command(selectedItem);
+      if(selectedItem.value === 'ai') { 
+        showAgentCard.value = true;
+      } else {
+        props.command(selectedItem);
+      }
     }
   }
 }
@@ -195,7 +207,11 @@ function handleInputKeydown(event) {
 }
 
 function selectFilteredItem(item) {
-  if (item) {
+  showAgentCard.value = true;
+  
+  if(item.value === 'ai') {
+    showAgentCard.value = true;
+  } else {
     props.command(item);
   }
 }
@@ -229,6 +245,7 @@ watch(() => props.items, () => {
 onMounted(() => {
   nextTick(() => {
     searchInput.value?.focus();
+    showAgentCard.value = false;
   });
 });
 

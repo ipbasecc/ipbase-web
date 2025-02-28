@@ -6,7 +6,7 @@
       :key="teamStore.note?.id"
       :jsonContent="teamStore.note?.jsonContent"
       :editable="isCreator"
-      autofocus="all"
+      :autofocus="true"
       class=""
       styleClass="q-pa-md"
       contentStyle="width: 100%; max-width: 46rem;"

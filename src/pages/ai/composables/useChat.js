@@ -34,6 +34,8 @@ export function useChat() {
     const chatSessions = computed(() => aiStore.chatSessions)
     const currentSession = computed(() => aiStore.currentSession)
 
+    const signalSession = ref()
+
     // 创建新会话
     const createNewChat = () => {
         aiStore.createNewChat()
@@ -69,12 +71,17 @@ export function useChat() {
     }
 
     // 发送消息
-    const sendMessage = async () => {
+    const sendMessage = async (chatMode = 'sessions') => {
+        const singleMode = chatMode === 'single'
         if (!inputMessage.value.trim() || loading.value) return
         
-        if (!currentSession.value) {
+        if (!currentSession.value && !singleMode) {
             createNewChat()
         }
+        if (singleMode) {
+            signalSession.value = aiStore.createSingleChat()
+        }
+        const activeSession = singleMode ? signalSession.value : currentSession.value
 
         const userMessage = {
             id: uid(),
@@ -84,15 +91,19 @@ export function useChat() {
         }
 
         // 添加用户消息到当前会话
-        aiStore.addMessageToCurrentSession(userMessage)
+        if(!singleMode) {
+            aiStore.addMessageToCurrentSession(userMessage)
+        } else {
+            signalSession.value.messages.push(userMessage)
+        }
         
         // 如果是第一条消息，使用前10个字符作为会话标题
-        if (currentSession.value.messages.length === 1) {
-            const session = aiStore.chatSessions.find(s => s.id === currentSession.value.id)
+        if (activeSession.messages.length === 1) {
+            const session = aiStore.chatSessions.find(s => s.id === activeSession.id)
             if (session) {
                 // 提取用户输入的前10个字符作为会话标题
-                currentSession.value.title = inputMessage.value.slice(0, 10)
-                session.title = currentSession.value.title
+                activeSession.title = inputMessage.value.slice(0, 10)
+                session.title = activeSession.title
             }
         }
 
@@ -129,7 +140,7 @@ export function useChat() {
                     requestBody = {
                         model: aiStore.currentModel.id,
                         prompt: aiStore.currentAssistant.prompt,
-                        messages: currentSession.value.messages.map(msg => ({
+                        messages: activeSession.messages.map(msg => ({
                             role: msg.role === 'user' ? 'user' : 'assistant',
                             content: msg.content
                         })),
@@ -144,7 +155,7 @@ export function useChat() {
                     requestBody = {
                         model: aiStore.currentModel.id,
                         prompt: aiStore.currentAssistant.prompt,
-                        messages: currentSession.value.messages.map(msg => ({
+                        messages: activeSession.messages.map(msg => ({
                             role: msg.role,
                             content: msg.content
                         })).slice(-20), // Anthropic模型限制上下文数量
@@ -159,8 +170,8 @@ export function useChat() {
                     const messages = [];
                     
                     // 从最新的消息开始，累计计算token长度（这里用字符长度简单估算）
-                    for (let i = currentSession.value.messages.length - 1; i >= 0; i--) {
-                        const msg = currentSession.value.messages[i];
+                    for (let i = activeSession.messages.length - 1; i >= 0; i--) {
+                        const msg = activeSession.messages[i];
                         const estimatedTokens = (msg.content.length + msg.reasoning_content?.length || 0) / 4;
                         if (totalLength + estimatedTokens > contextLimit) {
                             break;
@@ -207,10 +218,16 @@ export function useChat() {
             }
 
             // 添加AI消息到当前会话
-            aiStore.addMessageToCurrentSession(assistantMessage)
+            if(!singleMode) {
+                aiStore.addMessageToCurrentSession(assistantMessage)
+            } else {
+                signalSession.value.messages.push(assistantMessage)
+            }
             
             await nextTick()
-            messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize)
+            if(chatMode === 'single') {
+                messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize)
+            }
             
             const reader = response.body.getReader()
             const decoder = new TextDecoder()
@@ -290,12 +307,18 @@ export function useChat() {
                                 }
 
                                 // 更新消息
-                                const updatedMessages = [...currentSession.value.messages]
+                                const updatedMessages = [...activeSession.messages]
                                 updatedMessages[updatedMessages.length - 1] = { ...assistantMessage }
-                                aiStore.updateSessionMessages(currentSession.value.id, updatedMessages)
+                                if(!singleMode) {
+                                    aiStore.updateSessionMessages(activeSession.id, updatedMessages)
+                                } else {
+                                    signalSession.value.messages = updatedMessages
+                                }
                                 
                                 await nextTick()
-                                messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize)
+                                if(chatMode === 'single') {
+                                    messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize)
+                                }
                                 continue
                             }
                             
@@ -326,12 +349,18 @@ export function useChat() {
                                 }
                                 
                                 // 更新消息
-                                const updatedMessages = [...currentSession.value.messages]
+                                const updatedMessages = [...activeSession.messages]
                                 updatedMessages[updatedMessages.length - 1] = { ...assistantMessage }
-                                aiStore.updateSessionMessages(currentSession.value.id, updatedMessages)
+                                if(!singleMode) {
+                                    aiStore.updateSessionMessages(activeSession.id, updatedMessages)
+                                } else {
+                                    signalSession.value.messages = updatedMessages
+                                }
                                 
                                 await nextTick()
-                                messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize)
+                                if(chatMode === 'single') {
+                                    messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize)
+                                }
                             }
                         } catch (e) {
                             console.error('Error parsing message:', e, 'Line:', line)
@@ -359,6 +388,7 @@ export function useChat() {
     return {
         chatSessions,
         currentSession,
+        signalSession,
         inputMessage,
         loading,
         messageContainer,
