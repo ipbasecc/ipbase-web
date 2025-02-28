@@ -1,7 +1,16 @@
+import { ref } from 'vue';
 import { Platform } from 'quasar';
 
 export function useConfig() {
+  const serverStatus = ref({
+    resfused: false,
+    axiosStauts: void 0,
+    axiosStautsCode: void 0,
+    axiosError: void 0,
+    serverResfused: false,
+  })
   return {
+    serverStatus,
     ui: {
         apps: [
           {

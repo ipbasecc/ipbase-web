@@ -1,7 +1,8 @@
 import { boot } from "quasar/wrappers";
 import axios from "axios";
-import { uiStore, teamStore } from "src/hooks/global/useStore";
+import { teamStore } from "src/hooks/global/useStore";
 import { $server } from 'src/boot/server.js'
+import { $serverStatus } from 'src/boot/service.js';
 
 // Be careful when using SSR for cross-request state pollution
 // due to creating a Singleton instance here;
@@ -114,7 +115,7 @@ export default boot(async ({ app, router }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
   api.interceptors.request.use(
     async (config) => {
-      uiStore.axiosStauts = 'pending';
+      $serverStatus().axiosStauts = 'pending';
       config.headers['X-Fingerprint'] = window.fingerprint;
       if(teamStore?.team?.id){
         config.headers['X-Teamid'] = teamStore?.team?.id;
@@ -164,15 +165,15 @@ export default boot(async ({ app, router }) => {
     (response) => {
       // 如果响应返回的状态码为200，说明token鉴权成功，直接返回响应数据
       // 将拿到的结果发布给其他相同的接口
-      uiStore.axiosStauts = 'complete';
+      $serverStatus().axiosStauts = 'complete';
       handleSuccessResponse_limit(response);
       // console.log('response', response)
       return response;
     },
     (error) => {
       if (error.response) {
-        uiStore.axiosStauts = 'error';
-        uiStore.axiosError = error;
+        $serverStatus().axiosStauts = 'error';
+        $serverStatus().axiosError = error;
         
         // 处理 401 错误
         if (error.response.status === 401 && !localStorage.getItem("jwt")) {
@@ -186,7 +187,7 @@ export default boot(async ({ app, router }) => {
         }
       }
       if (error.code === 'ERR_NETWORK') {
-        uiStore.serverResfused = true;
+        $serverStatus().resfused = true;
       }
       // 如果是其他错误，继续抛出
       return handleErrorResponse_limit(error);

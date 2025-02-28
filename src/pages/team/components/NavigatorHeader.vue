@@ -105,7 +105,8 @@
           <q-btn
             v-if="uiStore.app !== 'aichat'"
             flat
-            dense round
+            dense
+            round
             :color="
               uiStore.projectRightDrawer &&
               uiStore.projectRightDrawerContent === 'aichat'

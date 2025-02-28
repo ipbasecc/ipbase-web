@@ -1,7 +1,7 @@
 import { boot } from "quasar/wrappers";
 import { Platform } from "quasar";
 import { useConfig } from 'src/hooks/useConfig.js';
-const { ui, team, project } = useConfig();
+const { ui, team, project, serverStatus } = useConfig();
 
 export function $pathService(_path) {
   const appURI = import.meta.env.VITE_APP_URI;
@@ -31,6 +31,10 @@ export function $project() {
   return project;
 }
 
+export function $serverStatus() {
+  return serverStatus.value;
+}
+
 export default boot(({ app }) => {
   app.mixin({
     methods: {
@@ -39,6 +43,7 @@ export default boot(({ app }) => {
       $ui,
       $team,
       $project,
+      $serverStatus,
       /**
        * 
        * @param {String} url 

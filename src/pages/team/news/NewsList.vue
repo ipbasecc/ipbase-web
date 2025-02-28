@@ -1,5 +1,5 @@
 <template>
-  <q-infinite-scroll @load="onLoad" :offset="50" :disable="!hasMore || uiStore.axiosStauts === 'pending'">
+  <q-infinite-scroll @load="onLoad" :offset="50" :disable="!hasMore || $serverStatus().axiosStauts === 'pending'">
       <div class="relative-position">
         <q-pull-to-refresh
           @refresh="refresh"

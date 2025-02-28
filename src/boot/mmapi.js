@@ -3,7 +3,7 @@
 import { boot } from "quasar/wrappers";
 import axios from "axios";
 import { $server } from 'src/boot/server.js'
-import {uiStore} from "src/hooks/global/useStore";
+import { $serverStatus } from 'src/boot/service.js';
 
 // Be careful when using SSR for cross-request state pollution
 // due to creating a Singleton instance here;
@@ -46,12 +46,12 @@ export default boot(async ({ app }) => {
     (response) => {
       // 如果响应返回的状态码为200，说明token鉴权成功，直接返回响应数据
       // 将拿到的结果发布给其他相同的接口
-      uiStore.axiosStauts = 'complete';
+      $serverStatus().axiosStauts = 'complete';
       return response;
     },
     (error) => {
       console.log('error', error)
-      uiStore.axiosError = error;
+      $serverStatus().axiosError = error;
     }
   );
 

@@ -6,7 +6,7 @@ import { ApolloClients } from '@vue/apollo-composable'
 import { provideApolloClient } from "@vue/apollo-composable";
 import { boot } from 'quasar/wrappers'
 import { $server } from 'src/boot/server.js'
-import { uiStore } from "src/hooks/global/useStore";
+import { $serverStatus } from 'src/boot/service.js';
 
 // import { getClientOptions } from 'src/apollo'
 
@@ -47,7 +47,7 @@ export default boot(
       if (networkError) {
         console.error('[Network error]:', networkError);
         // 在这里，你可以根据networkError的信息来判断是否是连接被拒绝的错误
-        uiStore.serverResfused = true;
+        $serverStatus.resfused = true;
       }
     });
     const GRAPHQL_URI = await setAPI();

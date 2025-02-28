@@ -94,6 +94,7 @@
   import AgreementCard from '../components/VIewComponents/AgreementCard.vue'
   import { updateUser } from 'src/api/strapi.js'
   import { clearCache } from 'src/hooks/utilits';
+  import { $serverStatus } from "src/boot/service";
 
   useSocket();
 
@@ -198,7 +199,7 @@
   })
 
   const toLogin = async () => {
-    uiStore.axiosStautsCode = void 0;
+    $serverStatus().axiosStautsCode = void 0;
     await clearLocalDB('TeamLayout.vue');
     window.location.reload();
   };
@@ -219,8 +220,8 @@
     teamStore.init.initialization = val;
   }
   const needLogin = computed(() =>
-    uiStore.axiosError?.response?.data?.id === 'api.context.session_expired.app_error'
-    || uiStore.axiosError?.response?.data?.error?.name === 'UnauthorizedError'
+    $serverStatus().axiosError?.response?.data?.id === 'api.context.session_expired.app_error'
+    || $serverStatus().axiosError?.response?.data?.error?.name === 'UnauthorizedError'
   );
 
   const need_show_footer = ["teams", "AffairsPage", "team_threads_homepage", "ChatsPage", "NotebookPage", "NotebookDetial"];
@@ -233,10 +234,10 @@
     uiStore.hide_top = !need_show_top.includes(routeName.value);
   });
 
-  const connect_refused = computed(() => uiStore.serverResfused);
+  const connect_refused = computed(() => $serverStatus().resfused);
   const serverRefusedHandler = async () => {
     localStorage.clear();
-    uiStore.axiosStautsCode = void 0;
+    $serverStatus().axiosStautsCode = void 0;
     await clearCache();
     router.push('/login')
   }

@@ -4,10 +4,6 @@ import teamStore from './team'; // 引入 team store
 export default defineStore("ui", {
   state: () => ({
     app: void 0,
-    axiosStauts: void 0,
-    axiosStautsCode: void 0,
-    axiosError: void 0,
-    serverResfused: false,
     pageLoaded: false,
     pageTitle: null,
     message: null,

@@ -185,6 +185,38 @@ export async function removeUser(project_id, params) {
     return error;
   }
 }
+// 获取指定项目成员
+/**
+ * 
+ * @param {Number} project_id  //项目ID
+ * @param {Number} offset  //起始索引
+ * @param {Number} limit //页大小
+ * @returns 
+    *  return {
+        members,
+        totalCount,
+        hasMore
+      };
+ */
+export async function getProjectMembers(project_id, offset, limit) {
+  try {
+    const res = await api.get(`projects/${project_id}/members`, {
+      params: {
+        offset,
+        limit
+      }
+    });
+    if (res?.data) {
+      return res;
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return error;
+    } else {
+      console.log(error);
+    }
+  }
+}
 // 设置角色
 export async function setRole(project_id, params) {
   try {

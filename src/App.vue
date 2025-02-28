@@ -104,9 +104,10 @@
 import {ref, provide, computed, watchEffect, onMounted} from 'vue';
 import AppLoading from "./components/VIewComponents/AppLoading.vue";
 import {useMeta, useQuasar} from "quasar";
+import { useI18n } from 'vue-i18n'
+import { $serverStatus } from 'src/boot/service.js';
 import useOss from "./stores/oss.js";
 import useUIStore from "./stores/ui.js";
-import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
@@ -119,7 +120,7 @@ const detectFetching = ref(false);
 const isFetching = () => {
   detectFetching.value = true
   setTimeout(() => {
-    if(uiStore.axiosStauts === 'pending'){
+    if($serverStatus().axiosStauts === 'pending'){
       fetching.value = true
       detectFetching.value = false
     }

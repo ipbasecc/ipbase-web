@@ -20,7 +20,7 @@
         spinner-color="primary"
         spinner-size="22px"
         class="loader"
-        :class="{ 'loading': uiStore.axiosStauts === 'pending' }"
+        :class="{ 'loading': $serverStatus().axiosStauts === 'pending' }"
       />
       <span class="radius-xs bg-black border absolute-top-right" style="font-size: 0.5rem; transform: translateX(7px)">Alpha</span>
       <!-- <BrandMenu :offset="[0, -24]" /> -->

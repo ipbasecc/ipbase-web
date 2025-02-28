@@ -532,6 +532,16 @@ export function mediaType(url) {
 
 export const clearCache = async () => {
   try {
+    // 删除所有IndexedDB数据库
+    if (window.indexedDB) {
+      const dbNames = await indexedDB.databases();
+      dbNames.forEach(db => {
+        const request = indexedDB.deleteDatabase(db.name);
+        request.onblocked = () => console.log('Database is currently in use');
+        request.onerror = () => console.error('Error deleting database:', db.name);
+        request.onsuccess = () => console.log('Database deleted:', db.name);
+      });
+    }
     // 清除 Service Worker
     if ('serviceWorker' in navigator) {
       const registrations = await navigator.serviceWorker.getRegistrations();

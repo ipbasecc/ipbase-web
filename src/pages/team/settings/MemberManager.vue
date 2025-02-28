@@ -180,6 +180,7 @@ import {
 } from "./MemberManager.js";
 
 import { getTeamMembers } from "src/api/strapi/team.js"
+import { getProjectMembers } from "src/api/strapi/project.js"
 
 import { __dict } from "src/hooks/dict.js";
 import UserAvatar from "src/pages/team/components/user/UserAvatar.vue";
@@ -273,7 +274,7 @@ const authBase = computed(() => {
   return res;
 });
 
-const limit = 20;
+const limit = 5;
 const offset = ref(0);
 const totalCount = ref();
 const hasMore = ref(false);
@@ -282,16 +283,30 @@ async function onLoad(index,done){
   done();
 }
 const getMembers = async () => {
-  const { data } = await getTeamMembers(byInfo.value.team_id, offset.value, limit);
-  if(data?.members){
-    if(Array.isArray(teamStore.team?.members)){
-      teamStore.team.members.push(...data.members)
-    } else {
-      teamStore.team.members = data
+  if (byInfo.value?.by === "team") {
+    const { data } = await getTeamMembers(byInfo.value.team_id, offset.value, limit);
+    if(data?.members){
+      if(Array.isArray(teamStore.team?.members)){
+        teamStore.team.members.push(...data.members)
+      } else {
+        teamStore.team.members = data
+      }
     }
+    totalCount.value = data.totalCount;
+    hasMore.value = data.hasMore
   }
-  totalCount.value = data.totalCount;
-  hasMore.value = data.hasMore
+  if (byInfo.value?.by === "project") {
+    const { data } = await getProjectMembers(byInfo.value.project_id, offset.value, limit);
+    if(data?.members){
+      if(Array.isArray(teamStore.project?.project_members)){
+        teamStore.project.project_members.push(...data.members)
+      } else {
+        teamStore.project.project_members = data  
+      }
+    }
+    totalCount.value = data.totalCount;
+    hasMore.value = data.hasMore
+  }
 }
 const findMore = async () => {
   console.log('findMore')
@@ -381,7 +396,7 @@ const __members = computed(() => {
 
 watchEffect(
   () => {
-    console.log('__members', __members);
+    console.log('__members', __members.value);
     
     const adminRole = member_roles.value?.find((i) => i.subject === "admin");
     admin_members.value = adminRole?.id

@@ -25,7 +25,7 @@
   import { clearLocalDB } from 'src/pages/team/hooks/useUser';
   import { useFetchAvatar } from 'src/pages/Chat/hooks/useFetchAvatar';
   import { login as strapi_login } from 'src/api/strapi.js';
-
+  import { $serverStatus } from 'src/boot/service.js';
   // 组件导入
   import LoginForm from './components/LoginForm.vue';
   import LoadingStatus from './components/LoadingStatus.vue';
@@ -62,7 +62,7 @@
   let timer = null;
 
   // 计算属性
-  const connect_refused = computed(() => uiStore.serverResfused);
+  const connect_refused = computed(() => $serverStatus().resfused);
   const isLoggedIn = computed(() => {
     return !!localStorage.getItem('jwt') && !!localStorage.getItem('mmtoken');
   });
@@ -94,7 +94,7 @@
         handleLogout();
       },
       [ERROR_TYPES.NETWORK]: () => {
-        uiStore.serverResfused = true;
+        $serverStatus().resfused = true;
         errorStats.value = ERROR_TYPES.NETWORK;
       },
       default: () => {
@@ -179,12 +179,12 @@
   };
 
   const resetError = () => {
-    uiStore.axiosStauts = undefined;
-    uiStore.axiosStautsCode = undefined;
-    uiStore.axiosError = undefined;
+    $serverStatus().axiosStauts = undefined;
+    $serverStatus().axiosStautsCode = undefined;
+    $serverStatus().axiosError = undefined;
     errorStats.value = null;
     hasError.value = false;
-    uiStore.serverResfused = false;
+    $serverStatus().resfused = false;
   };
 
   const setServer = () => {
