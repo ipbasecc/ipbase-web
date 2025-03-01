@@ -2,114 +2,161 @@
   <q-card flat bordered class="column" :class="$q.screen.gt.xs ? 'w-min-800 h-600' : 'fit'">
     <q-card-section class="border-bottom">
       <div class="text-h6">API 供应商配置</div>
+      <q-tabs
+        v-model="configTab"
+        dense
+        class="text-grey"
+        active-color="primary"
+        indicator-color="primary"
+        align="left"
+        narrow-indicator
+      >
+        <q-tab name="llm" label="LLM 模型" />
+        <q-tab name="search" label="搜索服务" />
+      </q-tabs>
     </q-card-section>
 
     <!-- 桌面端布局 -->
     <q-card-section class="q-pa-none q-space" v-if="$q.screen.gt.xs">
-      <q-splitter v-model="splitterModel" class="fit">
-        <!-- 左侧供应商列表 -->
-        <template v-slot:before>
-          <q-scroll-area class="fit">
-            <q-list class="column gap-xs q-pa-md" dense>
-              <q-item
-                v-for="provider in providers"
-                :key="provider.id"
-                clickable
-                :active="selectedProvider === provider.id"
-                @click="selectedProvider = provider.id"
-                v-ripple
-                class="radius-xs"
-                :class="selectedProvider === provider.id ? $q.dark.mode ? 'bg-grey-10 border' : 'bg-grey-3 border' : 'border-placeholder'"
-              >
-                <q-item-section>
-                  <q-item-label>{{ provider.name }}</q-item-label>
-                  <q-item-label caption :class="isProviderActive(provider) ? 'text-primary' : 'op-5'">
-                    {{ isProviderActive(provider) ? '已配置' : '未配置' }}
-                  </q-item-label>
-                </q-item-section>
+      <q-tab-panels v-model="configTab" animated class="fit">
+        <q-tab-panel name="llm" class="q-pa-none">
+          <q-splitter v-model="splitterModel" class="fit">
+            <!-- 左侧供应商列表 -->
+            <template v-slot:before>
+              <q-scroll-area class="fit">
+                <q-list class="column gap-xs q-pa-md" dense>
+                  <q-item
+                    v-for="provider in providers"
+                    :key="provider.id"
+                    clickable
+                    :active="selectedProvider === provider.id"
+                    @click="selectedProvider = provider.id"
+                    v-ripple
+                    class="radius-xs"
+                    :class="selectedProvider === provider.id ? $q.dark.mode ? 'bg-grey-10 border' : 'bg-grey-3 border' : 'border-placeholder'"
+                  >
+                    <q-item-section>
+                      <q-item-label>{{ provider.name }}</q-item-label>
+                      <q-item-label caption :class="isProviderActive(provider) ? 'text-primary' : 'op-5'">
+                        {{ isProviderActive(provider) ? '已配置' : '未配置' }}
+                      </q-item-label>
+                    </q-item-section>
 
-                <q-item-section v-if="providerConfigs[provider.id].active" side>
-                  <q-chip color="positive" :label="$t('on')" outline dense />
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-scroll-area>
-        </template>
+                    <q-item-section v-if="providerConfigs[provider.id].active" side>
+                      <q-chip color="positive" :label="$t('on')" outline dense />
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-scroll-area>
+            </template>
 
-        <!-- 右侧配置详情 -->
-        <template v-slot:after>
-          <q-scroll-area class="fit">
-            <div class="q-pa-md" v-if="selectedProvider">
-              <div class="row no-wrap items-center">
-                <div class="text-h6 q-mb-md" :class="currentProvider?.tip ? 'no-margin' : ''">
-                  {{ currentProviderName }}
+            <!-- 右侧配置详情 -->
+            <template v-slot:after>
+              <q-scroll-area class="fit">
+                <div class="q-pa-md" v-if="selectedProvider">
+                  <div class="row no-wrap items-center">
+                    <div class="text-h6 q-mb-md" :class="currentProvider?.tip ? 'no-margin' : ''">
+                      {{ currentProviderName }}
+                    </div>
+                    <q-space />
+                    <q-toggle v-model="providerConfigs[selectedProvider].active" dense
+                    />
+                  </div>
+                  <div v-if="currentProvider?.tip" class="text-subtitle2 q-mb-lg text-orange">{{ currentProvider?.tip }}</div>
+                  <q-input
+                    v-model="providerConfigs[selectedProvider].endpoint"
+                    dense outlined
+                    label="API Endpoint"
+                    :placeholder="currentProvider?.defaultEndpoint"
+                    class="q-mb-md"
+                  />
+                  
+                  <q-input
+                    v-model="providerConfigs[selectedProvider].apiKey"
+                    dense outlined
+                    label="API Key"
+                    class="q-mb-md"
+                    :type="showApiKey ? 'text' : 'password'"
+                  >
+                    <template v-slot:append>
+                      <q-icon
+                        :name="showApiKey ? 'visibility_off' : 'visibility'"
+                        class="cursor-pointer"
+                        @click="showApiKey = !showApiKey"
+                      />
+                    </template>
+                  </q-input>
+
+                  <div class="text-subtitle2 q-mb-sm">可用模型</div>
+                  <div class="column q-gutter-y-md">
+                    <div class="row items-center border radius-xs q-pa-xs" style="min-height: 42px;">
+                      <q-chip v-for="modelId in providerConfigs[selectedProvider].models"
+                        :key="modelId"
+                        :label="modelId"
+                        removable square clickable
+                        class="border q-ma-xs"
+                        :color="isModelActive(modelId) ? 'primary' : undefined"
+                        :text-color="isModelActive(modelId) ? 'white' : undefined"
+                        @click="toggleModelActive(modelId)"
+                        @remove="removeProviderModel(modelId)"
+                        :disable="isLastActiveModel(selectedProvider, modelId)"
+                      />
+                      <q-input 
+                        v-if="showModelInput"
+                        v-model="customProviderModel" 
+                        type="text"
+                        aria-placeholder="请输入模型名称"
+                        borderless 
+                        dense
+                        autofocus
+                        class="q-px-xs col"
+                        style="min-width: 100px;"
+                        @keyup.enter="handleAddModel"
+                        @blur="handleInputBlur"
+                      />
+                      <span v-else class="cursor-pointer q-pa-sm text-primary" @click="showModelInput = true" >添加模型</span>
+                    </div>
+                  </div>
                 </div>
+                <div v-else class="text-center q-pa-md text-grey">
+                  请选择一个供应商进行配置
+                </div>
+              </q-scroll-area>
+            </template>
+          </q-splitter>
+        </q-tab-panel>
+
+        <q-tab-panel name="search" class="q-pa-md">
+          <div class="text-h6 q-mb-md">搜索服务配置</div>
+          <p class="text-caption q-mb-md">
+            配置搜索服务可以让AI助手获取实时的互联网信息，提供更准确的回答。
+          </p>
+          
+          <q-card v-for="provider in searchProviders" :key="provider.id" flat bordered class="q-mb-md">
+            <q-card-section>
+              <div class="row items-center">
+                <div class="text-h6">{{ provider.name }}</div>
                 <q-space />
-                <q-toggle v-model="providerConfigs[selectedProvider].active" dense
-                />
+                <q-toggle v-model="aiStore.searchProvider[provider.id].active" dense />
               </div>
-              <div v-if="currentProvider?.tip" class="text-subtitle2 q-mb-lg text-orange">{{ currentProvider?.tip }}</div>
-              <q-input
-                v-model="providerConfigs[selectedProvider].endpoint"
-                dense outlined
-                label="API Endpoint"
-                :placeholder="currentProvider?.defaultEndpoint"
-                class="q-mb-md"
+              <p class="text-caption">{{ provider.description }}</p>
+            </q-card-section>
+            
+            <q-card-section>
+              <q-input 
+                v-model="aiStore.searchProvider[provider.id].apiKey" 
+                label="API Key" 
+                outlined 
+                dense
+                :disable="!aiStore.searchProvider[provider.id].active"
               />
-              
-              <q-input
-                v-model="providerConfigs[selectedProvider].apiKey"
-                dense outlined
-                label="API Key"
-                class="q-mb-md"
-                :type="showApiKey ? 'text' : 'password'"
-              >
-                <template v-slot:append>
-                  <q-icon
-                    :name="showApiKey ? 'visibility_off' : 'visibility'"
-                    class="cursor-pointer"
-                    @click="showApiKey = !showApiKey"
-                  />
-                </template>
-              </q-input>
-
-              <div class="text-subtitle2 q-mb-sm">可用模型</div>
-              <div class="column q-gutter-y-md">
-                <div class="row items-center border radius-xs q-pa-xs" style="min-height: 42px;">
-                  <q-chip v-for="modelId in providerConfigs[selectedProvider].models"
-                    :key="modelId"
-                    :label="modelId"
-                    removable square clickable
-                    class="border q-ma-xs"
-                    :color="isModelActive(modelId) ? 'primary' : undefined"
-                    :text-color="isModelActive(modelId) ? 'white' : undefined"
-                    @click="toggleModelActive(modelId)"
-                    @remove="removeProviderModel(modelId)"
-                    :disable="isLastActiveModel(selectedProvider, modelId)"
-                  />
-                  <q-input 
-                    v-if="showModelInput"
-                    v-model="customProviderModel" 
-                    type="text"
-                    aria-placeholder="请输入模型名称"
-                    borderless 
-                    dense
-                    autofocus
-                    class="q-px-xs col"
-                    style="min-width: 100px;"
-                    @keyup.enter="handleAddModel"
-                    @blur="handleInputBlur"
-                  />
-                  <span v-else class="cursor-pointer q-pa-sm text-primary" @click="showModelInput = true" >添加模型</span>
-                </div>
+              <div class="text-caption q-mt-sm">
+                您可以在 <a href="https://tavily.com" target="_blank">Tavily官网</a> 获取API密钥。
               </div>
-            </div>
-            <div v-else class="text-center q-pa-md text-grey">
-              请选择一个供应商进行配置
-            </div>
-          </q-scroll-area>
-        </template>
-      </q-splitter>
+            </q-card-section>
+          </q-card>
+        </q-tab-panel>
+      </q-tab-panels>
     </q-card-section>
 
     <!-- 移动端布局 -->
@@ -204,7 +251,8 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { defaultProviders } from '../config/apiProviders'
+import { useQuasar } from 'quasar'
+import { defaultProviders, searchProviders } from '../config/apiProviders'
 import { useAIStore } from '../../../stores/ai'
 
 const props = defineProps({
@@ -215,13 +263,14 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue', 'save'])
+const $q = useQuasar()
 const aiStore = useAIStore()
-
-const splitterModel = ref(25) // 左侧宽度比例
+const splitterModel = ref(25)
+const selectedProvider = ref('')
 const showApiKey = ref(false)
+const configTab = ref('llm')
 const customProviderModel = ref('')
 const providers = ref(defaultProviders)
-const selectedProvider = ref(null)
 const showModelInput = ref(false)
 
 // 初始化供应商配置

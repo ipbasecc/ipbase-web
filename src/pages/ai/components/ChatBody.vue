@@ -18,10 +18,12 @@
         <div class="chat-container">
             <q-scroll-area ref="messageContainer" class="col q-pa-md tiptap" @scroll="saveScrollPosition">
                 <q-list class="column items-center">
+                    <!-- 所有消息，根据archived属性应用不同样式 -->
                     <chat-message v-for="msg in currentSession?.messages" 
                         :key="msg.id" 
                         :message="msg"
                         style="width: 100%; max-width: 960px;"
+                        :class="{ 'op-5': msg.archived }"
                     />
                 </q-list>
             </q-scroll-area>
@@ -31,11 +33,11 @@
                     color="grey-7"
                     flat
                     round
-                    icon="stop"
-                    class="stop-button shadow-23"
-                    @click="stopGenerating"
+                    icon="mdi-close"
+                    class="stop-button shadow-23 q-ml-sm"
+                    @click="cancelResponse"
                 >
-                    <q-tooltip>停止生成</q-tooltip>
+                    <q-tooltip>取消并恢复问题</q-tooltip>
                 </q-btn>
             </div>
         </div>
@@ -45,8 +47,9 @@
             <chat-input 
                 v-model="inputMessage" 
                 :loading="loading"
+                :session-id="currentSession?.id"
                 style="width: 100%; max-width: 960px;"
-                @send="sendMessage" />
+                @send="handleSendMessage" />
         </div>
     </div>
 </template>
@@ -82,12 +85,17 @@ const {
     loading,
     messageContainer,
     sendMessage,
-    stopGenerating,
+    cancelResponse,
     saveScrollPosition,
     loadSession
 } = useChat()
 
 const aiStore = useAIStore()
+
+// 处理发送消息，支持搜索参数
+const handleSendMessage = (options) => {
+    sendMessage(options)
+}
 
 // Add debugging information to check if loadSession is called
 onMounted(async() => {

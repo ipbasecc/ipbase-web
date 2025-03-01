@@ -2,6 +2,18 @@ import { Dark } from "quasar"
 
 const theme = Dark.isActive ? 'dark' : 'light'
 const logoCdnPerfix = `https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/${theme}`
+
+// 搜索服务提供商
+export const searchProviders = [
+    {
+        id: 'tavily',
+        name: 'Tavily',
+        defaultEndpoint: 'https://api.tavily.com/search',
+        logo: 'https://tavily.com/favicon.ico',
+        description: 'Tavily是一个强大的搜索API，可以为AI助手提供实时的互联网搜索能力。'
+    }
+]
+
 export const defaultProviders = [
     {
         id: 'deepseek',

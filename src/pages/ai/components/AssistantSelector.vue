@@ -13,7 +13,7 @@
               <q-list dense bordered class="q-pa-xs radius-sm column gap-xs" style="min-width: 10rem;">
                 <q-item clickable v-close-popup class="radius-xs" @click.stop="aiStore.listToggler = 'topics'">
                   <q-item-section side>
-                    <q-icon name="mdi-message-text-outline" />
+                    <q-icon name="mdi-login-variant" />
                   </q-item-section>
                   <q-item-section>
                     <q-item-label>{{ $t('enter_topic') }}</q-item-label>

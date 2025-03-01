@@ -22,6 +22,13 @@ export const useAIStore = defineStore('ai', {
       ])
     ),
     showConfig: false,
+    // 搜索服务配置
+    searchProvider: {
+      tavily: {
+        apiKey: '',
+        active: false
+      }
+    },
     // 聊天会话相关状态
     chatSessions: [], // List of chat sessions
     currentSession: null, // Currently selected session
@@ -227,6 +234,9 @@ export const useAIStore = defineStore('ai', {
     async initChatSessions() {
       console.log('initChatSessions 1');
       
+      // 确保所有会话都有archived_messages字段
+      this.migrateSessionsStructure();
+      
       if(this.assistants.length === 0) {
         console.log('initChatSessions 2', this.assistants);
         const newAssistant = {
@@ -253,6 +263,67 @@ export const useAIStore = defineStore('ai', {
       }
     },
 
+    // 迁移会话结构，确保所有会话都有archived_messages字段
+    migrateSessionsStructure() {
+      if (this.chatSessions && this.chatSessions.length > 0) {
+        this.chatSessions.forEach(session => {
+          // 处理旧版本中的archived_messages字段
+          if (Array.isArray(session.archived_messages) && session.archived_messages.length > 0) {
+            // 标记所有已归档消息
+            const archivedMessages = session.archived_messages.map(msg => ({
+              ...msg,
+              archived: true
+            }));
+            
+            // 如果有归档消息，添加一个分隔符
+            if (archivedMessages.length > 0) {
+              session.messages.push({
+                id: uid(),
+                role: 'system',
+                content: '--- 上下文已清空 ---',
+                isContextDivider: true,
+                timestamp: Date.now() - 1000 // 稍早于当前时间
+              });
+            }
+            
+            // 将归档消息添加到当前消息数组
+            session.messages = [...session.messages, ...archivedMessages];
+            
+            // 删除旧的archived_messages字段
+            delete session.archived_messages;
+          }
+        });
+      }
+      
+      // 如果当前会话存在，确保它的结构也被更新
+      if (this.currentSession) {
+        if (Array.isArray(this.currentSession.archived_messages) && this.currentSession.archived_messages.length > 0) {
+          // 标记所有已归档消息
+          const archivedMessages = this.currentSession.archived_messages.map(msg => ({
+            ...msg,
+            archived: true
+          }));
+          
+          // 如果有归档消息，添加一个分隔符
+          if (archivedMessages.length > 0) {
+            this.currentSession.messages.push({
+              id: uid(),
+              role: 'system',
+              content: '--- 上下文已清空 ---',
+              isContextDivider: true,
+              timestamp: Date.now() - 1000 // 稍早于当前时间
+            });
+          }
+          
+          // 将归档消息添加到当前消息数组
+          this.currentSession.messages = [...this.currentSession.messages, ...archivedMessages];
+          
+          // 删除旧的archived_messages字段
+          delete this.currentSession.archived_messages;
+        }
+      }
+    },
+
     // 创建新会话
     createNewChat() {
       // console.log('Creating new chat session with assistantId:', this.selectedAssistant); // Debugging output
@@ -262,7 +333,8 @@ export const useAIStore = defineStore('ai', {
         messages: [],
         createdAt: Date.now(),
         updatedAt: Date.now(),
-        assistantId: this.selectedAssistant || this.assistants[0].id
+        assistantId: this.selectedAssistant || this.assistants[0].id,
+        searchEnabled: false // 添加搜索状态字段，默认关闭
       }
       this.chatSessions.unshift(newSession)
       this.currentSession = newSession
@@ -276,7 +348,8 @@ export const useAIStore = defineStore('ai', {
         messages: [],
         createdAt: Date.now(),
         updatedAt: Date.now(),
-        assistantId: this.selectedAssistant || this.assistants[0].id
+        assistantId: this.selectedAssistant || this.assistants[0].id,
+        searchEnabled: false // 添加搜索状态字段，默认关闭
       }
     },
 
@@ -334,6 +407,77 @@ export const useAIStore = defineStore('ai', {
         
         if (this.currentSession?.id === sessionId) {
           this.currentSession.title = newTitle
+        }
+      }
+    },
+
+    // 更新会话的搜索状态
+    updateSessionSearchEnabled(sessionId, searchEnabled) {
+      const session = this.chatSessions.find(s => s.id === sessionId)
+      if (session) {
+        session.searchEnabled = searchEnabled
+        session.updatedAt = Date.now()
+        
+        if (this.currentSession?.id === sessionId) {
+          this.currentSession.searchEnabled = searchEnabled
+        }
+      }
+    },
+
+    // 清空会话消息
+    clearSessionMessages(sessionId) {
+      const session = this.chatSessions.find(s => s.id === sessionId)
+      if (session) {
+        // 保存当前标题和搜索状态
+        const currentTitle = session.title
+        const searchEnabled = session.searchEnabled
+        
+        // 清空消息
+        session.messages = []
+        session.updatedAt = Date.now()
+        
+        // 确保标题和搜索状态不变
+        session.title = currentTitle
+        session.searchEnabled = searchEnabled
+        
+        if (this.currentSession?.id === sessionId) {
+          this.currentSession = JSON.parse(JSON.stringify(session))
+        }
+      }
+    },
+
+    // 归档会话消息（清空上下文）
+    archiveSessionMessages(sessionId) {
+      const session = this.chatSessions.find(s => s.id === sessionId)
+      if (session) {
+        // 保存当前标题和搜索状态
+        const currentTitle = session.title
+        const searchEnabled = session.searchEnabled
+        
+        // 将当前消息标记为已归档
+        if (Array.isArray(session.messages)) {
+          session.messages.forEach(msg => {
+            msg.archived = true
+          })
+        }
+        
+        // 添加一个分隔消息
+        session.messages.push({
+          id: uid(),
+          role: 'system',
+          content: '--- 上下文已清空 ---',
+          isContextDivider: true,
+          timestamp: Date.now()
+        })
+        
+        session.updatedAt = Date.now()
+        
+        // 确保标题和搜索状态不变
+        session.title = currentTitle
+        session.searchEnabled = searchEnabled
+        
+        if (this.currentSession?.id === sessionId) {
+          this.currentSession = JSON.parse(JSON.stringify(session))
         }
       }
     },
