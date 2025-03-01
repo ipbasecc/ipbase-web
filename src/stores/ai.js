@@ -29,6 +29,8 @@ export const useAIStore = defineStore('ai', {
         active: false
       }
     },
+    // 搜索关键词提取模型
+    searchKeywordModel: '',
     // 聊天会话相关状态
     chatSessions: [], // List of chat sessions
     currentSession: null, // Currently selected session

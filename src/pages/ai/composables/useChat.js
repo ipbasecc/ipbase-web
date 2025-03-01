@@ -27,6 +27,9 @@ export function useChat() {
             // console.log('saveScrollPosition', aiStore.scrollPosition);
         }
     }, 100); // Adjust the delay as needed
+    const scrollToBottom = () => {
+        messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize, 300);
+    }
 
     // 初始化时加载配置
     aiStore.initChatSessions();
@@ -52,7 +55,7 @@ export function useChat() {
             if (savedPosition !== undefined) {
                 messageContainer.value?.setScrollPosition('vertical', savedPosition, 300);
             } else {
-                messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize);
+                scrollToBottom()
             }
         })
     }
@@ -64,7 +67,7 @@ export function useChat() {
 
     // 停止生成
     const abort = () => {
-        // 中断搜索请求
+        // 中断搜索相关请求（包括关键词提取和搜索）
         if (searchAbortController) {
             try {
                 searchAbortController.abort()
@@ -163,6 +166,9 @@ export function useChat() {
             content: inputMessage.value,
             timestamp: Date.now()
         }
+        
+        // 定义searchQuery变量，确保在所有代码路径中都可用
+        let searchQuery = userMessage.content
 
         // 添加用户消息到当前会话
         if(!singleMode) {
@@ -183,28 +189,214 @@ export function useChat() {
 
         inputMessage.value = ''
         loading.value = true
+        const assistantMessage = {
+            id: uid(),
+            role: 'assistant',
+            status: '',
+            content: '',
+            reasoning_content: '',
+            search: {
+                keyword: '',
+                feedback: '',
+                results: [],
+                error: ''
+            },
+            timestamp: Date.now()
+        }
+
+        // 添加AI消息到当前会话
+        if(!singleMode) {
+            aiStore.addMessageToCurrentSession(assistantMessage)
+        } else {
+            signalSession.value.messages.push(assistantMessage)
+        }
+        await nextTick()
+        scrollToBottom();
+        const index = aiStore.currentSession.messages.findIndex(i => i.id === assistantMessage.id)
+        if (index !== -1) {
+            aiStore.currentSession.messages[index] = assistantMessage
+        }
 
         // 如果启用了搜索功能，先进行搜索
         let searchResults = null
         if (useSearch && aiStore.searchProvider.tavily.active && aiStore.searchProvider.tavily.apiKey) {
-            try {
-                // 创建一个临时消息，显示正在搜索
-                const searchingMessage = {
-                    id: uid(),
-                    role: 'assistant',
-                    content: '正在搜索互联网获取最新信息...',
-                    isTemporary: true,
-                    timestamp: Date.now()
-                }
-                
-                if(!singleMode) {
-                    aiStore.addMessageToCurrentSession(searchingMessage)
-                } else {
-                    signalSession.value.messages.push(searchingMessage)
-                }
-                
+            try {                
                 // 创建新的 AbortController 用于搜索请求
                 searchAbortController = new AbortController()
+                
+                // 如果配置了搜索关键词提取模型，则使用该模型提取关键词
+                if (aiStore.searchKeywordModel) {
+                    try {
+                        // 更新临时消息
+                        assistantMessage.status = 'keyword generating'
+                        if(!singleMode) {
+                            aiStore.updateSessionMessages(activeSession.id, [...activeSession.messages])
+                        } else {
+                            signalSession.value.messages = [...signalSession.value.messages]
+                        }
+                        
+                        // 获取模型所属的供应商
+                        const modelId = aiStore.searchKeywordModel
+                        let providerId = null
+                        let provider = null
+                        
+                        // 遍历所有供应商，查找包含该模型的供应商
+                        for (const pid in aiStore.providers) {
+                            if (aiStore.providers[pid].activeModels?.includes(modelId)) {
+                                providerId = pid
+                                break
+                            }
+                        }
+                        
+                        if (!providerId) {
+                            throw new Error('未找到搜索关键词提取模型所属的供应商')
+                        }
+                        
+                        const providerConfig = aiStore.providers[providerId]
+                        if (!providerConfig || !providerConfig.endpoint) {
+                            throw new Error('搜索关键词提取模型的供应商未配置')
+                        }
+                        
+                        // 构建请求
+                        let requestBody
+                        let headers = {
+                            'Content-Type': 'application/json'
+                        }
+                        
+                        // 根据不同的供应商构建不同的请求
+                        switch (providerId) {
+                            case 'ollama':
+                                headers = {
+                                    'Content-Type': 'application/json'
+                                }
+
+                                let ollamaMessages = activeSession.messages.map(msg => ({
+                                    role: msg.role === 'user' ? 'user' : 'assistant',
+                                    content: msg.content
+                                }));
+                                ollamaMessages.push({
+                                    role: 'user',
+                                    content: `请从以下问题中提取出最适合用于搜索引擎的关键词，直接返回关键词，不要包含任何解释或其他内容：\n\n${userMessage.content}`
+                                })
+                                
+                                requestBody = {
+                                    model: modelId,
+                                    prompt: "你是一个搜索关键词提取助手。你的任务是从用户的问题中提取出最适合用于搜索引擎的关键词。请只返回关键词，不要包含任何解释或其他内容。",
+                                    messages: ollamaMessages,
+                                    stream: false,
+                                    options: {
+                                        temperature: 0.1
+                                    }
+                                }
+                                break
+                            case 'anthropic':
+                                headers['x-api-key'] = providerConfig.apiKey
+
+                                let anthropicMessages = activeSession.messages.map(msg => ({
+                                    role: msg.role === 'user' ? 'user' : 'assistant',
+                                    content: msg.content
+                                }));
+                                anthropicMessages.push({
+                                    role: 'user',
+                                    content: `请从以下问题中提取出最适合用于搜索引擎的关键词，直接返回关键词，不要包含任何解释或其他内容：\n\n${userMessage.content}`
+                                })
+                                
+                                requestBody = {
+                                    model: modelId,
+                                    messages: anthropicMessages,
+                                    stream: false,
+                                    max_tokens: 100
+                                }
+                                break
+                            default:
+                                // OpenAI, DeepSeek等
+                                headers['Authorization'] = 'Bearer ' + providerConfig.apiKey
+                                
+                                let searchMessages = activeSession.messages.map(msg => ({
+                                    role: msg.role === 'user' ? 'user' : 'assistant',
+                                    content: msg.content
+                                }));
+                                searchMessages.push({
+                                    role: 'user',
+                                    content: `请从以下问题中提取出最适合用于搜索引擎的关键词，直接返回关键词，不要包含任何解释或其他内容：\n\n${userMessage.content}`
+                                })
+
+                                requestBody = {
+                                    model: modelId,
+                                    messages: searchMessages,
+                                    stream: false,
+                                    max_tokens: 100,
+                                    temperature: 0.1
+                                }
+                        }
+                        
+                        const endpoint = providerId === 'ollama' 
+                            ? `${providerConfig.endpoint.replace(/\/$/, '')}/api/chat`
+                            : providerConfig.endpoint
+                        
+                        // 发送请求提取关键词
+                        const keywordResponse = await fetch(endpoint, {
+                            method: 'POST',
+                            headers,
+                            body: JSON.stringify(requestBody),
+                            signal: searchAbortController.signal
+                        })
+                        
+                        if (!keywordResponse.ok) {
+                            throw new Error(`提取关键词请求失败: ${keywordResponse.status}`)
+                        }
+                        
+                        const keywordData = await keywordResponse.json()
+                        let extractedKeywords = ''
+                        
+                        // 根据不同的供应商解析响应
+                        switch (providerId) {
+                            case 'ollama':
+                                extractedKeywords = keywordData.message?.content || keywordData.response || ''
+                                break
+                            case 'anthropic':
+                                extractedKeywords = keywordData.content?.[0]?.text || ''
+                                break
+                            default:
+                                // OpenAI, DeepSeek等
+                                extractedKeywords = keywordData.choices?.[0]?.message?.content || ''
+                        }
+                        
+                        // 清理提取的关键词（去除可能的引号、多余空格等）
+                        searchQuery = extractedKeywords.trim().replace(/^["']|["']$/g, '')
+                        // 如果提取的关键词为空，则使用原始问题
+                        if (!searchQuery) {
+                            searchQuery = userMessage.content
+                        }
+                        
+                        // 更新临时消息
+                        assistantMessage.search.feedback = `正在搜索互联网获取最新信息...\n关键词: ${searchQuery}`
+                        if(!singleMode) {
+                            aiStore.updateSessionMessages(activeSession.id, [...activeSession.messages])
+                        } else {
+                            signalSession.value.messages = [...signalSession.value.messages]
+                        }
+                    } catch (error) {
+                        console.error('提取搜索关键词失败:', error)
+                        // 如果提取关键词失败，使用原始问题进行搜索
+                        searchQuery = userMessage.content
+                        
+                        // 更新临时消息
+                        assistantMessage.search.feedback = '正在搜索互联网获取最新信息...'
+                        if(!singleMode) {
+                            aiStore.updateSessionMessages(activeSession.id, [...activeSession.messages])
+                        } else {
+                            signalSession.value.messages = [...signalSession.value.messages]
+                        }
+                    }
+                    assistantMessage.search.keyword = searchQuery
+                    assistantMessage.status = 'searching'
+                    if(!singleMode) {
+                        aiStore.updateSessionMessages(activeSession.id, [...activeSession.messages])
+                    } else {
+                        signalSession.value.messages = [...signalSession.value.messages]
+                    }
+                }
                 
                 // 调用Tavily API进行搜索
                 const searchResponse = await fetch('https://api.tavily.com/search', {
@@ -214,7 +406,7 @@ export function useChat() {
                         'Authorization': `Bearer ${aiStore.searchProvider.tavily.apiKey}`
                     },
                     body: JSON.stringify({
-                        query: userMessage.content,
+                        query: searchQuery,
                         search_depth: 'advanced',
                         include_domains: [],
                         exclude_domains: [],
@@ -227,28 +419,25 @@ export function useChat() {
                 searchAbortController = null
                 
                 if (!searchResponse.ok) {
+                    assistantMessage.search.error = `搜索请求失败: ${searchResponse.status}`
                     throw new Error(`搜索请求失败: ${searchResponse.status}`)
                 }
                 
                 searchResults = await searchResponse.json()
                 
-                // 移除临时消息
-                if(!singleMode) {
-                    const tempIndex = activeSession.messages.findIndex(m => m.id === searchingMessage.id)
-                    if (tempIndex > -1) {
-                        activeSession.messages.splice(tempIndex, 1)
-                    }
-                } else {
-                    const tempIndex = signalSession.value.messages.findIndex(m => m.id === searchingMessage.id)
-                    if (tempIndex > -1) {
-                        signalSession.value.messages.splice(tempIndex, 1)
-                    }
-                }
-                
                 // 保存搜索结果，不进行格式化
                 searchResults = {
                     raw: searchResults
                 }
+                assistantMessage.search.results = searchResults.raw.results
+                assistantMessage.status = 'thinking'
+                if(!singleMode) {
+                    aiStore.updateSessionMessages(activeSession.id, [...activeSession.messages])
+                } else {
+                    signalSession.value.messages = [...signalSession.value.messages]
+                }
+                await nextTick()
+                scrollToBottom();
                 
                 // 检查是否在搜索过程中被中断
                 // 检查活动会话中是否有任何消息被标记为中断
@@ -469,40 +658,15 @@ export function useChat() {
                 body: JSON.stringify(requestBody),
                 signal: abortController.signal
             })
+            assistantMessage.status = 'generating'
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-
-            const assistantMessage = {
-                id: uid(),
-                role: 'assistant',
-                content: '',
-                reasoning_content: '',
-                timestamp: Date.now()
-            }
-
-            // 如果有搜索结果，添加到searching字段
-            if (searchResults) {
-                if (searchResults.error) {
-                    assistantMessage.searching = {
-                        error: searchResults.error
-                    };
-                } else {
-                    assistantMessage.searching = searchResults.raw;
-                }
-            }
-
-            // 添加AI消息到当前会话
-            if(!singleMode) {
-                aiStore.addMessageToCurrentSession(assistantMessage)
-            } else {
-                signalSession.value.messages.push(assistantMessage)
-            }
             
             await nextTick()
-            if(chatMode === 'single') {
-                messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize)
+            if(!singleMode) {
+                scrollToBottom();
             }
             
             const reader = response.body.getReader()
@@ -540,12 +704,14 @@ export function useChat() {
                                 if (!assistantMessage.thinkMode) {
                                     assistantMessage.thinkMode = false;
                                 }
+                                // console.log('currentChunk', currentChunk);
 
                                 // 检查当前chunk中是否包含<think>开始标签
                                 if (currentChunk.includes('<think>') && !assistantMessage.thinkMode) {
                                     assistantMessage.thinkMode = true;
                                     const startIndex = currentChunk.indexOf('<think>') + 7;
                                     const thinkContent = currentChunk.slice(startIndex);
+                                    // console.log('thinkContent', thinkContent);
                                     if (thinkContent) {
                                         assistantMessage.reasoning_content += thinkContent;
                                     }
@@ -574,14 +740,14 @@ export function useChat() {
                                 // 如果在think模式中
                                 else if (assistantMessage.thinkMode) {
                                     assistantMessage.reasoning_content += currentChunk;
-                                    // console.log('Added to reasoning:', currentChunk);
+                                    // console.log('assistantMessage.reasoning_content:', assistantMessage.reasoning_content);
                                 }
                                 // 如果不在think模式中，直接添加到content
                                 else {
                                     assistantMessage.content += currentChunk;
-                                    // console.log('Added to content:', currentChunk);
+                                    // console.log('assistantMessage.content:', assistantMessage.content);
                                 }
-
+                                
                                 // 更新消息
                                 const updatedMessages = [...activeSession.messages]
                                 updatedMessages[updatedMessages.length - 1] = { ...assistantMessage }
@@ -589,11 +755,6 @@ export function useChat() {
                                     aiStore.updateSessionMessages(activeSession.id, updatedMessages)
                                 } else {
                                     signalSession.value.messages = updatedMessages
-                                }
-                                
-                                await nextTick()
-                                if(chatMode === 'single') {
-                                    messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize)
                                 }
                                 continue
                             }
@@ -632,11 +793,11 @@ export function useChat() {
                                 } else {
                                     signalSession.value.messages = updatedMessages
                                 }
-                                
-                                await nextTick()
-                                if(chatMode === 'single') {
-                                    messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize)
-                                }
+                            }
+                            
+                            await nextTick()
+                            if(!singleMode) {
+                                scrollToBottom();
                             }
                         } catch (error) {
                             if (error.name === 'AbortError') {

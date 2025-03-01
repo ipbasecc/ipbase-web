@@ -22,24 +22,12 @@
                     <chat-message v-for="msg in currentSession?.messages" 
                         :key="msg.id" 
                         :message="msg"
+                        :session="currentSession"
                         style="width: 100%; max-width: 960px;"
                         :class="{ 'op-5': msg.archived }"
                     />
                 </q-list>
             </q-scroll-area>
-            <!-- 停止按钮 -->
-            <div v-if="loading" class="stop-button-container z-fab">
-                <q-btn 
-                    color="grey-7"
-                    flat
-                    round
-                    icon="mdi-close"
-                    class="stop-button shadow-23 q-ml-sm"
-                    @click="cancelResponse"
-                >
-                    <q-tooltip>取消并恢复问题</q-tooltip>
-                </q-btn>
-            </div>
         </div>
 
         <!-- 输入区域 -->
@@ -49,6 +37,7 @@
                 :loading="loading"
                 :session-id="currentSession?.id"
                 style="width: 100%; max-width: 960px;"
+                @cancel="cancelResponse"
                 @send="handleSendMessage" />
         </div>
     </div>
@@ -62,7 +51,6 @@ import ChatInput from './ChatInput.vue'
 import ChatModelSelector from './ChatModelSelector.vue'
 import { useChat } from '../composables/useChat'
 import localforage from 'localforage'
-import { useAIStore } from '../../../stores/ai'
 
 defineProps({
     pannelMode: {
@@ -89,8 +77,6 @@ const {
     saveScrollPosition,
     loadSession
 } = useChat()
-
-const aiStore = useAIStore()
 
 // 处理发送消息，支持搜索参数
 const handleSendMessage = (options) => {

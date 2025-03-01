@@ -126,35 +126,72 @@
           </q-splitter>
         </q-tab-panel>
 
-        <q-tab-panel name="search" class="q-pa-md">
-          <div class="text-h6 q-mb-md">搜索服务配置</div>
-          <p class="text-caption q-mb-md">
-            配置搜索服务可以让AI助手获取实时的互联网信息，提供更准确的回答。
-          </p>
-          
-          <q-card v-for="provider in searchProviders" :key="provider.id" flat bordered class="q-mb-md">
-            <q-card-section>
-              <div class="row items-center">
-                <div class="text-h6">{{ provider.name }}</div>
-                <q-space />
-                <q-toggle v-model="aiStore.searchProvider[provider.id].active" dense />
-              </div>
-              <p class="text-caption">{{ provider.description }}</p>
-            </q-card-section>
+        <q-tab-panel name="search" class="q-pa-none">
+          <q-scroll-area class="fit q-pa-md">
+            <div class="text-h6 q-mb-md">搜索服务配置</div>
+            <p class="text-caption q-mb-md">
+              配置搜索服务可以让AI助手获取实时的互联网信息，提供更准确的回答。
+            </p>
+            <q-card v-for="provider in searchProviders" :key="provider.id" flat bordered class="q-mb-md">
+              <q-card-section>
+                <div class="row items-center">
+                  <div class="text-h6">{{ provider.name }}</div>
+                  <q-space />
+                  <q-toggle v-model="aiStore.searchProvider[provider.id].active" dense />
+                </div>
+                <p class="text-caption">{{ provider.description }}</p>
+              </q-card-section>
+              
+              <q-card-section>
+                <q-input 
+                  v-model="aiStore.searchProvider[provider.id].apiKey" 
+                  label="API Key" 
+                  outlined 
+                  dense
+                  :disable="!aiStore.searchProvider[provider.id].active"
+                />
+                <div class="text-caption q-mt-sm">
+                  您可以在 <a href="https://tavily.com" target="_blank">Tavily官网</a> 获取API密钥。
+                </div>
+              </q-card-section>
+            </q-card>
             
-            <q-card-section>
-              <q-input 
-                v-model="aiStore.searchProvider[provider.id].apiKey" 
-                label="API Key" 
-                outlined 
-                dense
-                :disable="!aiStore.searchProvider[provider.id].active"
-              />
-              <div class="text-caption q-mt-sm">
-                您可以在 <a href="https://tavily.com" target="_blank">Tavily官网</a> 获取API密钥。
-              </div>
-            </q-card-section>
-          </q-card>
+            <!-- 搜索关键词提取模型设置 -->
+            <q-card flat class="q-mb-md">
+              <q-card-section class="q-px-none">
+                <div class="text-h6">搜索关键词提取模型</div>
+                <p class="text-caption">
+                  选择一个模型用于从用户问题中提取搜索关键词，以提高搜索结果的相关性。
+                </p>
+              </q-card-section>
+              
+              <q-card-section>
+                <q-select
+                  v-model="aiStore.searchKeywordModel"
+                  :options="allAvailableModels"
+                  option-value="id"
+                  option-label="name"
+                  emit-value
+                  map-options
+                  outlined
+                  dense
+                  label="选择模型"
+                  :disable="!hasAvailableModels"
+                >
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        请先在LLM模型选项卡中配置并激活至少一个模型
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+                <div class="text-caption q-mt-sm">
+                  此模型将用于从用户问题中提取搜索关键词，建议选择响应速度快的模型。
+                </div>
+              </q-card-section>
+            </q-card>
+          </q-scroll-area>
         </q-tab-panel>
       </q-tab-panels>
     </q-card-section>
@@ -535,4 +572,48 @@ const fetchOllamaModels = async (endpoint) => {
     providerConfigs.value.ollama.activeModels = []
   }
 }
+
+// 获取所有可用的模型（用于搜索关键词提取模型选择）
+const allAvailableModels = computed(() => {
+  const models = []
+  
+  // 遍历所有供应商
+  Object.keys(providerConfigs.value).forEach(providerId => {
+    const config = providerConfigs.value[providerId]
+    const provider = providers.value.find(p => p.id === providerId)
+    
+    // 检查供应商是否激活且有API密钥（Ollama除外）
+    if (config.active && config.endpoint && (providerId === 'ollama' || config.apiKey)) {
+      // 检查是否有激活的模型
+      if (Array.isArray(config.activeModels) && config.activeModels.length > 0) {
+        // 对于Ollama，直接使用activeModels
+        if (providerId === 'ollama') {
+          config.activeModels.forEach(modelId => {
+            models.push({
+              id: modelId,
+              name: `${provider.name}: ${modelId}`
+            })
+          })
+        } else {
+          // 对于其他供应商，从provider.models中获取模型信息
+          provider.models
+            .filter(model => config.activeModels.includes(model.id))
+            .forEach(model => {
+              models.push({
+                id: model.id,
+                name: `${provider.name}: ${model.name}`
+              })
+            })
+        }
+      }
+    }
+  })
+  
+  return models
+})
+
+// 检查是否有可用的模型
+const hasAvailableModels = computed(() => {
+  return allAvailableModels.value.length > 0
+})
 </script>

@@ -27,7 +27,7 @@
             </q-tooltip>
           </q-btn>
           <q-btn flat dense round
-            icon="mdi-message-bulleted-off"
+            icon="cleaning_services"
             @click="clearChat"
           >
             <q-tooltip class="no-padding shadow-24">
@@ -52,23 +52,26 @@
           </q-btn>
           <q-space />
           <q-btn flat padding="xs" round
-            :icon="searchEnabled ? 'search' : 'search_off'"
-            :color="searchEnabled ? 'primary' : void 0"
+            icon="language"
+            :color="localSearchEnabled ? 'primary' : void 0"
             @click="toggleSearch"
           >
             <q-tooltip class="no-padding shadow-24">
               <q-card bordered>
                 <q-card-section class="q-pa-sm font-medium">
-                  {{ searchEnabled ? '已启用网络搜索' : '点击启用网络搜索' }}
+                  {{ localSearchEnabled ? '已启用网络搜索' : '点击启用网络搜索' }}
                 </q-card-section>
               </q-card>
             </q-tooltip>
           </q-btn>
-          <q-btn flat icon="send" class="border" padding="xs md"
+          <q-btn v-if="!loading" flat icon="send" class="border" padding="xs md"
             :color="localMessage.trim() ? 'positive' : void 0"
-            :loading="loading"
             :disable="!localMessage.trim()"
             @click="onSend"
+          />
+          <q-btn v-else flat icon="pause" class="border" padding="xs"
+            color="negative"
+            @click="onCancel"
           />
         </div>
       </div>
@@ -86,6 +89,8 @@ const emit = defineEmits(['update:modelValue', 'send'])
 const aiStore = useAIStore()
 const $q = useQuasar()
 const localMessage = ref(modelValue)
+// 本地搜索状态，用于在没有当前会话时控制搜索状态
+const localSearchEnabled = ref(false)
 
 // 从当前会话中获取搜索状态
 const currentSession = computed(() => {
@@ -104,6 +109,14 @@ const searchEnabled = computed({
     }
   }
 })
+
+// 监听当前会话变化，同步搜索状态
+watch(currentSession, (newSession) => {
+  if (newSession) {
+    // 如果有新会话，将本地搜索状态同步为会话的搜索状态
+    localSearchEnabled.value = newSession.searchEnabled || false
+  }
+}, { immediate: true })
 
 // 清空当前对话
 const clearChat = () => {
@@ -149,7 +162,7 @@ watch(() => modelValue, (newVal) => {
 
 const toggleSearch = () => {
   // 检查是否配置了Tavily API
-  if (!searchEnabled.value && !aiStore.searchProvider.tavily.active) {
+  if (!localSearchEnabled.value && !aiStore.searchProvider.tavily.active) {
     $q.notify({
       message: '请先在设置中配置Tavily搜索API',
       color: 'warning',
@@ -160,7 +173,7 @@ const toggleSearch = () => {
     return
   }
   
-  if (!searchEnabled.value && !aiStore.searchProvider.tavily.apiKey) {
+  if (!localSearchEnabled.value && !aiStore.searchProvider.tavily.apiKey) {
     $q.notify({
       message: '请先在设置中配置Tavily API密钥',
       color: 'warning',
@@ -171,15 +184,34 @@ const toggleSearch = () => {
     return
   }
   
+  // 检查是否配置了搜索关键词提取模型
+  if (!localSearchEnabled.value && !aiStore.searchKeywordModel) {
+    $q.notify({
+      message: '建议在设置中配置搜索关键词提取模型，以提高搜索结果的相关性',
+      color: 'info',
+      icon: 'info',
+      position: 'top',
+      timeout: 5000
+    })
+  }
+  
   // 更新搜索状态
-  searchEnabled.value = !searchEnabled.value
+  localSearchEnabled.value = !localSearchEnabled.value
+  
+  // 如果当前有会话，同时更新会话的搜索状态
+  if (currentSession.value?.id) {
+    searchEnabled.value = localSearchEnabled.value
+  }
 }
 
 const onSend = () => {
   if (localMessage.value.trim() && !loading) {
-    emit('send', { useSearch: searchEnabled.value })
+    emit('send', { useSearch: localSearchEnabled.value })
     // 不再自动关闭搜索功能，保持用户的选择
   }
+}
+const onCancel = () => {
+  emit('cancel')
 }
 
 const onEnter = (e) => {
