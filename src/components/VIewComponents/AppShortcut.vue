@@ -28,6 +28,21 @@ const shortcuts = [
     shortcut: "ESC",
     props: t("cancel_quick_create_card_props"),
   },
+  {
+    description: t("window_zoomin"),
+    shortcut: "Ctrl / Command + Shift + +",
+    props: t("window_zoomin_props"),
+  },
+  {
+    description: t("window_zoomout"),
+    shortcut: "Ctrl / Command + Shift + -",
+    props: t("window_zoomout_props"),
+  },
+  {
+    description: t("window_zoom_rest"),
+    shortcut: "Ctrl / Command + Shift + 0",
+    props: t("window_zoom_rest_props"),
+  },
 ];
 </script>
 

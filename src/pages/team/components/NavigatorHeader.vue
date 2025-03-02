@@ -326,7 +326,13 @@ const isMax = ref(false);
 onMounted(async () => {
   await nextTick();
   if (isElectron.value) {
-    isMax.value = window.windowAPI?.isMaximized();
+    // 初始化时获取状态
+    isMax.value = window.windowAPI.isMaximized();
+    
+    // 添加窗口状态变化监听
+    window.windowAPI.onWindowStateChange((state) => {
+      isMax.value = state === 'maximized';
+    });
   }
 });
 function minimize() {

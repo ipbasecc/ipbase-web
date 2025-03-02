@@ -108,6 +108,12 @@ export default {
   quick_create_card_props: "",
   cancel_quick_create_card: "Cancel creating card",
   cancel_quick_create_card_props: "Creating card",
+  window_zoomin: 'Zoom in interface',
+  window_zoomin_props: 'Zooms in interface elements, font size',
+  window_zoomout: 'Zoom out interface',
+  window_zoomout_props: 'Zooms out interface elements, font size',
+  window_zoom_rest: 'Reset zoom',
+  window_zoom_rest_props: 'Resets interface elements, font size to initial value',
 
   save: "Save",
   saving: "Saving...",

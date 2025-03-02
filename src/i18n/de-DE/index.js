@@ -108,6 +108,12 @@ export default {
   quick_create_card_props: "",
   cancel_quick_create_card: "Karten-Erstellung abbrechen",
   cancel_quick_create_card_props: "Wird gerade erstellt",
+  window_zoomin: 'Schnittstelle vergrößern',
+  window_zoomin_props: 'Vergrößert die Schnittstellelemente und die Schriftgröße',
+  window_zoomout: 'Schnittstelle verkleinern',
+  window_zoomout_props: 'Verkleinert die Schnittstellelemente und die Schriftgröße',
+  window_zoom_rest: 'Zoom zurücksetzen',
+  window_zoom_rest_props: 'Setzt die Schnittstellelemente und die Schriftgröße auf den Anfangswert zurück',
 
   save: "Speichern",
   saving: "Wird gespeichert...",

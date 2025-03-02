@@ -7,10 +7,11 @@ contextBridge.exposeInMainWorld("windowAPI", {
     BrowserWindow.getFocusedWindow().minimize();
   },
 
-  isMaximized() {
+  isMaximized: () => {
     const win = BrowserWindow.getFocusedWindow();
-    return win.isMaximized();
+    return win ? win.isMaximized() : false;
   },
+
   toggleMaximize() {
     const win = BrowserWindow.getFocusedWindow();
     if (win.isMaximized()) {
@@ -49,7 +50,36 @@ contextBridge.exposeInMainWorld("windowAPI", {
   logout() {
     ipcRenderer.send("clearCache");
   },
+
+  // 添加窗口状态变化监听器
+  onWindowStateChange: (callback) => {
+    ipcRenderer.on('window-state-changed', (event, state) => {
+      callback(state);
+    });
+  },
 });
+
+// 添加缩放控制API
+contextBridge.exposeInMainWorld("zoomAPI", {
+  // 获取当前缩放因子
+  getZoomFactor: () => ipcRenderer.invoke('get-zoom-factor'),
+  
+  // 设置缩放因子
+  setZoomFactor: (zoom) => ipcRenderer.invoke('set-zoom-factor', zoom),
+  
+  // 监听本地快捷键设置请求
+  onSetupLocalShortcuts: (callback) => {
+    ipcRenderer.on('setup-local-shortcuts', (event, shortcuts) => {
+      callback(shortcuts);
+    });
+  },
+  
+  // 触发本地快捷键事件
+  triggerLocalShortcut: (shortcut) => {
+    ipcRenderer.send(`local-shortcut-${shortcut}`);
+  }
+});
+
 contextBridge.exposeInMainWorld("pathAPI", {
   pathService(_path) {
     let __path;

@@ -53,6 +53,7 @@ function saveZoomFactor(zoom) {
   const configPath = path.resolve(userDataPath, "config.json");
   fs.writeFileSync(configPath, JSON.stringify({ zoom }));
 }
+
 function registerGlobalShortcuts() {
   function setAndSaveZoomFactor(zoom) {
     if (!mainWindow || !mainWindow.webContents) {
@@ -72,8 +73,15 @@ function registerGlobalShortcuts() {
     // 先确保之前的快捷键已经取消注册
     unregisterGlobalShortcuts();
     
-    // 注册 Ctrl + = 缩放增加
-    const registerPlusResult = globalShortcut.register("CommandOrControl+=", () => {
+    // 使用更具体的快捷键组合，避免与系统或其他应用冲突
+    const shortcuts = {
+      zoomIn: 'CommandOrControl+Shift+=',     // 改为Ctrl+Shift+=
+      zoomOut: 'CommandOrControl+Shift+-',    // 改为Ctrl+Shift+-
+      zoomReset: 'CommandOrControl+Shift+0'   // 改为Ctrl+Shift+0
+    };
+    
+    // 注册缩放增加快捷键
+    const registerPlusResult = globalShortcut.register(shortcuts.zoomIn, () => {
       if (mainWindow && mainWindow.webContents) {
         const currentZoom = mainWindow.webContents.getZoomFactor();
         const zoom = Math.min(currentZoom + 0.1, 3.0); // 设置最大缩放限制
@@ -82,11 +90,11 @@ function registerGlobalShortcuts() {
     });
     
     if (!registerPlusResult) {
-      console.error('注册 CommandOrControl+= 快捷键失败');
+      console.error(`注册 ${shortcuts.zoomIn} 快捷键失败`);
     }
 
-    // 注册 Ctrl + - 缩减少
-    const registerMinusResult = globalShortcut.register("CommandOrControl+-", () => {
+    // 注册缩放减少快捷键
+    const registerMinusResult = globalShortcut.register(shortcuts.zoomOut, () => {
       if (mainWindow && mainWindow.webContents) {
         const currentZoom = mainWindow.webContents.getZoomFactor();
         const zoom = Math.max(currentZoom - 0.1, 0.5); // 设置最小缩放限制
@@ -95,39 +103,88 @@ function registerGlobalShortcuts() {
     });
     
     if (!registerMinusResult) {
-      console.error('注册 CommandOrControl+- 快捷键失败');
+      console.error(`注册 ${shortcuts.zoomOut} 快捷键失败`);
     }
 
-    // 注册 Ctrl + 0 重置缩放
-    const registerZeroResult = globalShortcut.register("CommandOrControl+0", () => {
+    // 注册重置缩放快捷键
+    const registerZeroResult = globalShortcut.register(shortcuts.zoomReset, () => {
       if (mainWindow && mainWindow.webContents) {
         setAndSaveZoomFactor(1);
       }
     });
     
     if (!registerZeroResult) {
-      console.error('注册 CommandOrControl+0 快捷键失败');
+      console.error(`注册 ${shortcuts.zoomReset} 快捷键失败`);
     }
     
     console.log('全局快捷键注册状态:', {
-      'CommandOrControl+=': registerPlusResult,
-      'CommandOrControl+-': registerMinusResult,
-      'CommandOrControl+0': registerZeroResult
+      [shortcuts.zoomIn]: registerPlusResult,
+      [shortcuts.zoomOut]: registerMinusResult,
+      [shortcuts.zoomReset]: registerZeroResult
     });
+    
+    // 如果所有快捷键都注册失败，尝试使用本地快捷键
+    if (!registerPlusResult && !registerMinusResult && !registerZeroResult) {
+      console.log('全局快捷键注册失败，将使用本地快捷键作为备选方案');
+      setupLocalShortcuts();
+    }
   } catch (error) {
     console.error('注册全局快捷键时出错:', error);
+    // 出错时尝试使用本地快捷键
+    setupLocalShortcuts();
   }
+}
+
+// 添加本地快捷键作为备选方案
+function setupLocalShortcuts() {
+  if (!mainWindow) return;
+  
+  // 使用本地快捷键（仅在应用程序窗口聚焦时有效）
+  const localShortcuts = {
+    'CommandOrControl+=': () => {
+      if (mainWindow && mainWindow.webContents) {
+        const currentZoom = mainWindow.webContents.getZoomFactor();
+        const zoom = Math.min(currentZoom + 0.1, 3.0);
+        mainWindow.webContents.setZoomFactor(zoom);
+        saveZoomFactor(zoom);
+      }
+    },
+    'CommandOrControl+-': () => {
+      if (mainWindow && mainWindow.webContents) {
+        const currentZoom = mainWindow.webContents.getZoomFactor();
+        const zoom = Math.max(currentZoom - 0.1, 0.5);
+        mainWindow.webContents.setZoomFactor(zoom);
+        saveZoomFactor(zoom);
+      }
+    },
+    'CommandOrControl+0': () => {
+      if (mainWindow && mainWindow.webContents) {
+        mainWindow.webContents.setZoomFactor(1);
+        saveZoomFactor(1);
+      }
+    }
+  };
+  
+  // 通过IPC向渲染进程发送消息，让渲染进程设置本地快捷键
+  mainWindow.webContents.send('setup-local-shortcuts', Object.keys(localShortcuts));
+  
+  // 监听渲染进程触发的快捷键事件
+  Object.entries(localShortcuts).forEach(([shortcut, handler]) => {
+    ipcMain.on(`local-shortcut-${shortcut}`, handler);
+  });
+  
+  console.log('已设置本地快捷键作为备选方案');
 }
 
 function unregisterGlobalShortcuts() {
   try {
-    // 取消注册全局快捷键
+    // 取消注册全局快捷键，包括新的带Shift的组合
     globalShortcut.unregister("CommandOrControl+=");
     globalShortcut.unregister("CommandOrControl+-");
-    globalShortcut.unregister("CommandOrControl+0"); // 添加对CommandOrControl+0的取消注册
-    
-    // 如果需要确保所有快捷键都被取消注册，可以使用以下方法
-    // globalShortcut.unregisterAll();
+    globalShortcut.unregister("CommandOrControl+0");
+    globalShortcut.unregister("CommandOrControl+Shift+=");
+    globalShortcut.unregister("CommandOrControl+Shift+-");
+    globalShortcut.unregister("CommandOrControl+Shift+0");
     
     console.log('全局快捷键已取消注册');
   } catch (error) {
@@ -284,6 +341,20 @@ function createWindow() {
 
   // 初始注册全局快捷键
   registerGlobalShortcuts();
+
+  mainWindow.on('maximize', () => {
+    mainWindow.webContents.send('window-state-changed', 'maximized');
+  });
+  
+  mainWindow.on('unmaximize', () => {
+    mainWindow.webContents.send('window-state-changed', 'unmaximized');
+  });
+  
+  // 添加窗口焦点状态同步
+  mainWindow.on('focus', () => {
+    const state = mainWindow.isMaximized() ? 'maximized' : 'unmaximized';
+    mainWindow.webContents.send('window-state-changed', state);
+  });
 }
 
 app.on("window-all-closed", () => {
@@ -327,6 +398,24 @@ app.on("ready", () => {
       }
     );
   }
+  
+  // 添加IPC处理器来处理渲染进程的快捷键请求
+  ipcMain.handle('get-zoom-factor', () => {
+    if (mainWindow && mainWindow.webContents) {
+      return mainWindow.webContents.getZoomFactor();
+    }
+    return 1;
+  });
+  
+  ipcMain.handle('set-zoom-factor', (event, zoom) => {
+    if (mainWindow && mainWindow.webContents) {
+      mainWindow.webContents.setZoomFactor(zoom);
+      saveZoomFactor(zoom);
+      return true;
+    }
+    return false;
+  });
+  
   createWindow();
 });
 

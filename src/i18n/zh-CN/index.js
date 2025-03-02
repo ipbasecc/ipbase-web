@@ -108,6 +108,12 @@ export default {
   quick_create_card_props: "",
   cancel_quick_create_card: "取消创建卡片",
   cancel_quick_create_card_props: "正在创建卡片",
+  window_zoomin: '界面放大',
+  window_zoomin_props: '放大界面元素，字号',
+  window_zoomout: '界面缩小',
+  window_zoomout_props: '缩小界面元素、字号',
+  window_zoom_rest: '重置缩放',
+  window_zoom_rest_props: '重置界面元素、字号到初始值',
 
   save: "保存",
   saving: "保存中...",

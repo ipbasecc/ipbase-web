@@ -1,6 +1,8 @@
 <template>
   <router-view :class="`${uiStore?.draging ? 'unselected' : ''}`" />
-  <div v-if="!$q.platform.is.mac && !isWin11 && $q.platform.is.electron" class="absolute-full z-max border app_edge pointer-cross" />
+  <div v-if="!$q.platform.is.mac && !isWin11 && $q.platform.is.electron && !isMaximized"
+    class="absolute-full z-max border app_edge pointer-cross"
+  />
   <transition>
     <div v-if="!uiStore.pageLoaded"
       class="absolute-full column flex-center z-unfab q-electron-drag"
@@ -101,13 +103,15 @@
 </template>
 
 <script setup>
-import {ref, provide, computed, watchEffect, onMounted} from 'vue';
+import {ref, provide, computed, watchEffect, onMounted, onBeforeUnmount} from 'vue';
 import AppLoading from "./components/VIewComponents/AppLoading.vue";
 import {useMeta, useQuasar} from "quasar";
 import { useI18n } from 'vue-i18n'
 import { $serverStatus } from 'src/boot/service.js';
 import useOss from "./stores/oss.js";
 import useUIStore from "./stores/ui.js";
+import { onKeyStroke } from "@vueuse/core"
+
 
 const { t } = useI18n()
 
@@ -221,9 +225,50 @@ const fileTabs = [
 ]
 const downloadFiles = ref([]);
 const isWin11 = ref(false);
-// 在组件挂载后订阅下载进度事件
+
+// 使用onKeyStroke设置快捷键
+if ($q.platform.is.electron) {
+  // 处理放大快捷键 (Ctrl/Cmd + =)
+  onKeyStroke(['=', '+'], (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
+      e.preventDefault()
+      window.zoomAPI.triggerLocalShortcut('CommandOrControl+=')
+      console.log('触发放大快捷键')
+    }
+  })
+
+  // 处理缩小快捷键 (Ctrl/Cmd + -)
+  onKeyStroke('-', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
+      e.preventDefault()
+      window.zoomAPI.triggerLocalShortcut('CommandOrControl+-')
+      console.log('触发缩小快捷键')
+    }
+  })
+
+  // 处理重置快捷键 (Ctrl/Cmd + 0)
+  onKeyStroke('0', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
+      e.preventDefault()
+      window.zoomAPI.triggerLocalShortcut('CommandOrControl+0')
+      console.log('触发重置快捷键')
+    }
+  })
+}
+const isMaximized = ref(false);
+
+// 在组件挂载后设置快捷键监听
 onMounted(async() => {
   if($q.platform.is.electron){
+    // 初始化时获取状态
+    isMaximized.value = window.windowAPI.isMaximized();
+    
+    // 添加窗口状态变化监听
+    window.windowAPI.onWindowStateChange((state) => {
+      isMaximized.value = state === 'maximized';
+    });
+    
+    // 监听下载进度事件
     window.windowAPI.downloadMessage('download-progress', (fileInfo) => {
       ossStore.showList = true;
       fileTab.value = 'download';
@@ -236,13 +281,20 @@ onMounted(async() => {
         downloadFiles.value.push(fileInfo);
       }
     });
+    
     window.windowAPI.downloadMessage('download-completed', (fileInfo) => {
       downloadFiles.value = downloadFiles.value.map(i => ({
         ...i,
         percent: i.path === fileInfo.path ? 100 : i.percent
       }));
     });
-    isWin11.value = await window.isWin11
+    
+    isWin11.value = await window.osAPI.isWin11();
+    
+    // 监听本地快捷键设置请求
+    window.zoomAPI.onSetupLocalShortcuts((shortcuts) => {
+      console.log('主进程请求设置本地快捷键:', shortcuts);
+    });
   }
 });
 
@@ -284,6 +336,8 @@ if ("serviceWorker" in navigator) {
       });
   });
 }
+
+
 </script>
 <style lang="sass">
 @keyframes autofill
