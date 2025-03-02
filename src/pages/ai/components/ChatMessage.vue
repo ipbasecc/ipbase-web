@@ -122,7 +122,7 @@
             </q-expansion-item>
             
             <!-- AI回复内容 -->
-            <div v-if="message.content" class="message-text q-mt-lg tiptap" v-html="formattedContent" />
+            <div v-if="message.content" class="message-text tiptap" v-html="formattedContent" />
           </template>
         </q-item-label>
       </q-item-section>

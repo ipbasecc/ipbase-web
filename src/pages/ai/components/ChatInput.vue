@@ -126,7 +126,7 @@ const currentSession = computed(() => {
   }
   return aiStore.currentSession
 })
-const hasMessages = computed(() => currentSession?.messages?.length > 0)
+const hasMessages = computed(() => currentSession.value?.messages?.length > 0)
 
 // 使用计算属性获取和设置搜索状态
 const searchEnabled = computed({
