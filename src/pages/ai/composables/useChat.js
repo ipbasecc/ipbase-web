@@ -5,7 +5,7 @@ import { useAIStore } from '../../../stores/ai'
 // Debounce function to limit how often a function can be called
 function debounce(func, delay) {
     let timeout;
-    return function(...args) {
+    return function (...args) {
         clearTimeout(timeout);
         timeout = setTimeout(() => func.apply(this, args), delay);
     };
@@ -16,29 +16,30 @@ export function useChat() {
     const loading = ref(false)
     const messageContainer = ref(null)
     let abortController = null
-    let searchAbortController = null // 添加搜索请求的 AbortController
+    let searchAbortController = null // 用于搜索请求的中断控制
     const aiStore = useAIStore()
-
-    // Initialize the debounce function for saving scroll position
-    const saveScrollPosition = debounce(async () => {
-        if (currentSession.value) {
-            const position = messageContainer.value.getScroll().verticalPosition; // Get the current scroll position
-            aiStore.scrollPosition[currentSession.value.id] = position; // Save to Pinia
-            // console.log('saveScrollPosition', aiStore.scrollPosition);
-        }
-    }, 100); // Adjust the delay as needed
-    const scrollToBottom = () => {
-        messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize, 300);
-    }
 
     // 初始化时加载配置
     aiStore.initChatSessions();
 
-    // 计算属性：从store获取会话列表和当前会话
+    // 计算属性：从 store 获取会话列表和当前会话
     const chatSessions = computed(() => aiStore.chatSessions)
     const currentSession = computed(() => aiStore.currentSession)
 
     const signalSession = ref()
+
+    // Debounce 保存滚动位置
+    const saveScrollPosition = debounce(async () => {
+        if (currentSession.value) {
+            const position = messageContainer.value.getScroll().verticalPosition; // 获取当前滚动位置
+            aiStore.scrollPosition[currentSession.value.id] = position; // 保存到 Pinia
+        }
+    }, 100);
+
+    const scrollToBottom = async () => {
+        await nextTick();
+        messageContainer.value?.setScrollPosition('vertical', messageContainer.value?.getScroll().verticalSize, 300);
+    }
 
     // 创建新会话
     const createNewChat = () => {
@@ -49,9 +50,9 @@ export function useChat() {
     const loadSession = async (session) => {
         aiStore.loadSession(session)
         aiStore.setSelectedAssistant(session.assistantId)
-        // Restore scroll position
+        // 恢复滚动位置
         nextTick(() => {
-            const savedPosition = aiStore.scrollPosition[session.id]; // Get from Pinia
+            const savedPosition = aiStore.scrollPosition[session.id];
             if (savedPosition !== undefined) {
                 messageContainer.value?.setScrollPosition('vertical', savedPosition, 300);
             } else {
@@ -66,8 +67,9 @@ export function useChat() {
     }
 
     // 停止生成
+    const isAbort = ref(false)
     const abort = () => {
-        // 中断搜索相关请求（包括关键词提取和搜索）
+        // 中断搜索请求
         if (searchAbortController) {
             try {
                 searchAbortController.abort()
@@ -76,7 +78,7 @@ export function useChat() {
             }
             searchAbortController = null
         }
-        
+
         // 中断模型请求
         if (abortController) {
             try {
@@ -85,750 +87,616 @@ export function useChat() {
                 // 忽略中断错误
             }
             abortController = null
-            loading.value = false
         }
-            
-        // 获取当前活动会话
-        const activeSession = signalSession.value || currentSession.value
-        if (activeSession?.messages?.length > 0) {
-            // 查找最后一条消息
-            const lastMessage = activeSession.messages[activeSession.messages.length - 1]
-            
-            // 直接标记最后一条消息为中断状态，无需判断消息类型
-            lastMessage.wasInterrupted = true
-        }
+
+        isAbort.value = true
     }
+
+    // 清理会话状态
+    const cleanupSession = (singleMode, activeSession) => {
+        // 如果最后一条消息是空的助手消息，则移除它
+        if (activeSession && activeSession.messages && activeSession.messages.length > 0) {
+            const lastMessage = activeSession.messages[activeSession.messages.length - 1];
+            if (lastMessage.role === 'assistant' && 
+                (!lastMessage.content || lastMessage.content.trim() === '') && 
+                (!lastMessage.reasoning_content || lastMessage.reasoning_content.trim() === '')) {
+                activeSession.messages.pop();
+                updateMessages(singleMode, activeSession, [...activeSession.messages]);
+            }
+        }
+        // 重置状态
+        loading.value = false;
+        abortController = null;
+        searchAbortController = null;
+        isAbort.value = false;
+    };
 
     // 取消响应
     const cancelResponse = () => {
-        // 停止生成
-        abort()
-        
-        // 获取当前活动会话
-        const activeSession = signalSession.value || currentSession.value
-        if (!activeSession || !activeSession.messages || activeSession.messages.length === 0) return
-        
-        // 查找最后一条消息
-        let lastMessage = activeSession.messages[activeSession.messages.length - 1]
+        abort();
+        const activeSession = getActiveSession(false);
+        if (!activeSession || !activeSession.messages || activeSession.messages.length === 0) return;
 
-        const MessagesPop = () => {
-            activeSession.messages.pop()                
-            // 更新会话
-            if (signalSession.value) {
-                // 单会话模式
-                signalSession.value.messages = [...activeSession.messages]
-            } else {
-                // 多会话模式
-                aiStore.updateSessionMessages(activeSession.id, [...activeSession.messages])
+        // 先使用 cleanupSession 清理空的助手消息
+        cleanupSession(false, activeSession);
+        
+        // 如果最后一条消息是用户消息，将其内容恢复到输入框并移除
+        if (activeSession.messages.length > 0) {
+            const lastMessage = activeSession.messages[activeSession.messages.length - 1];
+            if (lastMessage && lastMessage.role === 'user') {
+                inputMessage.value = lastMessage.content;
+                activeSession.messages.pop();
+                updateMessages(false, activeSession, [...activeSession.messages]);
             }
         }
+    }
+
+    // 获取活动会话
+    const getActiveSession = (singleMode) => {
+        return singleMode ? signalSession.value : currentSession.value;
+    };
+
+    // 更新消息数组
+    const updateMessages = (singleMode, activeSession, messages) => {
+        if (singleMode) {
+            signalSession.value.messages = messages;
+        } else {
+            aiStore.updateSessionMessages(activeSession.id, messages);
+        }
+    };
+
+    // 构建请求体和头信息
+    const buildRequest = (provider, providerConfig, messages, searchResults, singleMode) => {
+        let requestBody;
+        let headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'text/event-stream'
+        };
+        // 创建消息数组的副本，而不是直接修改原始数组
+        const messagesCopy = [...messages];
         
-        // 如果最后一条消息是助手消息，删除它
-        if (lastMessage.role === 'assistant') {
-            MessagesPop()
-            lastMessage = activeSession.messages[activeSession.messages.length - 1]
+        // 检查最后一条消息是否是空的助手消息，如果是则移除
+        const lastMessage = messagesCopy.length > 0 ? messagesCopy[messagesCopy.length - 1] : null;
+        if (lastMessage && 
+            lastMessage.role === 'assistant' && 
+            (!lastMessage.content || lastMessage.content.trim() === '') && 
+            (!lastMessage.reasoning_content || lastMessage.reasoning_content.trim() === '')) {
+            // 只有当最后一条消息是空的助手消息时才移除
+            messagesCopy.pop();
+        }
+
+        switch (provider) {
+            case 'ollama':
+                headers['Accept'] = 'application/x-ndjson';
+                let ollamaMessages = messagesCopy.map(msg => ({
+                    role: msg.role === 'user' ? 'user' : 'assistant',
+                    content: msg.content
+                }));
+                if (searchResults?.raw?.results) {
+                    console.log('searchResults', searchResults);
+                    
+                    const searchContent = searchResults.raw.results.map((result, index) => {
+                        return `[${index + 1}] ${result.title}\n${result.content}\n来源: ${result.url}`;
+                    }).join('\n\n');
+                    console.log('searchContent', searchContent);
+                    ollamaMessages.unshift({
+                        role: 'system',
+                        content: `以下是与用户问题相关的搜索结果，请在回答时参考这些信息：\n\n${searchContent}`
+                    });
+                }
+                if (currentSession.value.prompt && !singleMode){
+                    ollamaMessages.unshift({
+                        role: 'system',
+                        content: currentSession.value.prompt
+                    });
+                }
+                console.log('ollamaMessages', ollamaMessages);
+                requestBody = {
+                    model: aiStore.currentModel.id,
+                    prompt: aiStore.currentAssistant.prompt,
+                    messages: ollamaMessages,
+                    stream: true,
+                    options: { temperature: 0.7 }
+                };
+                break;
+            case 'anthropic':
+                headers['x-api-key'] = providerConfig.apiKey;
+                let anthropicMessages = messagesCopy.map(msg => ({
+                    role: msg.role,
+                    content: msg.content
+                })).slice(-20);
+                if (searchResults?.raw?.results) {
+                    const searchContent = searchResults.raw.results.map((result, index) => {
+                        return `[${index + 1}] ${result.title}\n${result.content}\n来源: ${result.url}`;
+                    }).join('\n\n');
+                    anthropicMessages.unshift({
+                        role: 'assistant',
+                        content: `以下是与用户问题相关的搜索结果，请在回答时参考这些信息：\n\n${searchContent}`
+                    });
+                }
+                if (currentSession.value.prompt && !singleMode){
+                    anthropicMessages.unshift({
+                        role: 'system',
+                        content: currentSession.value.prompt
+                    });
+                }
+                requestBody = {
+                    model: aiStore.currentModel.id,
+                    prompt: aiStore.currentAssistant.prompt,
+                    messages: anthropicMessages,
+                    stream: true
+                };
+                break;
+            default:
+                headers['Authorization'] = 'Bearer ' + providerConfig.apiKey;
+                const contextLimit = 4096;
+                let totalLength = 0;
+                const limitedMessages = [];
+                for (let i = messagesCopy.length - 1; i >= 0; i--) {
+                    const msg = messagesCopy[i];
+                    const estimatedTokens = (msg.content.length + (msg.reasoning_content?.length || 0)) / 4;
+                    if (totalLength + estimatedTokens > contextLimit) break;
+                    totalLength += estimatedTokens;
+                    limitedMessages.unshift({ role: msg.role, content: msg.content });
+                }
+                if (searchResults?.raw?.results) {
+                    const searchContent = searchResults.raw.results.map((result, index) => {
+                        return `[${index + 1}] ${result.title}\n${result.content}\n来源: ${result.url}`;
+                    }).join('\n\n');
+                    limitedMessages.unshift({
+                        role: 'system',
+                        content: `以下是与用户问题相关的搜索结果，请在回答时参考这些信息：\n\n${searchContent}`
+                    });
+                }
+                if (currentSession.value.prompt && !singleMode){
+                    limitedMessages.unshift({
+                        role: 'system',
+                        content: currentSession.value.prompt
+                    });
+                }
+                requestBody = {
+                    model: aiStore.currentModel.id,
+                    prompt: aiStore.currentAssistant.prompt,
+                    messages: limitedMessages,
+                    stream: true
+                };
+        }
+        return { requestBody, headers };
+    };
+
+    // 处理流式响应
+    const processStreamResponse = async (provider, reader, assistantMessage, activeSession, singleMode) => {
+        const decoder = new TextDecoder();
+        let lastScrollPosition = 0;
+        let userHasScrolled = false;
+        let scrollUpdatePending = false;
+        let lastScrollTime = 0; // 记录上次滚动时间
+        
+        // 检测用户是否手动滚动
+        const checkUserScroll = () => {
+            if (!messageContainer.value) return;
+            const container = messageContainer.value;
+            const { verticalPosition, verticalSize, verticalContainerSize } = container.getScroll();
+            
+            // 如果用户向上滚动超过20px，认为用户已手动滚动
+            const isAtBottom = verticalSize - verticalPosition - verticalContainerSize < 20;
+            userHasScrolled = !isAtBottom;
+            lastScrollPosition = verticalPosition;
+        };
+        
+        // 添加滚动事件监听
+        if (messageContainer.value && !singleMode) {
+            messageContainer.value.$el.addEventListener('scroll', checkUserScroll);
         }
         
-        // 如果找到用户消息，将其内容恢复到输入框
-        if (lastMessage && lastMessage.role === 'user') {
-            inputMessage.value = lastMessage.content
-            MessagesPop()
-        }
+        // 智能滚动函数 - 每3秒最多触发一次
+        const smartScroll = async () => {
+            if (scrollUpdatePending) return;
+            
+            const currentTime = Date.now();
+            // 如果距离上次滚动不足3秒，则不执行滚动
+            if (currentTime - lastScrollTime < 3000) return;
+            
+            scrollUpdatePending = true;
+            lastScrollTime = currentTime;
+            
+            await nextTick();
+            if (!messageContainer.value || userHasScrolled) {
+                scrollUpdatePending = false;
+                return;
+            }
+            
+            // 只有当用户没有手动滚动时，才自动滚动到底部
+            messageContainer.value.setScrollPosition('vertical', messageContainer.value.getScroll().verticalSize, 300);
+            
+            // 延迟重置scrollUpdatePending标志，确保3秒内不会再次触发
+            setTimeout(() => {
+                scrollUpdatePending = false;
+            }, 300); // 滚动动画完成后重置
+        };
         
-        // 确保 loading 状态被重置
-        loading.value = false
+        try {
+            while (true) {
+                if (isAbort.value) {
+                    loading.value = false;
+                    return;
+                }
+                const { done, value } = await reader.read();
+                if (done) break;
+                const chunk = decoder.decode(value);
+                const lines = chunk.split('\n').filter(line => line.trim() !== '');
+                for (const line of lines) {
+                    if (provider === 'ollama') {
+                        if (!line.trim()) continue;
+                        const json = JSON.parse(line);
+                        let currentChunk = json.message?.content || json.response || '';
+                        if (!currentChunk) continue;
+
+                        if (!assistantMessage.thinkMode) assistantMessage.thinkMode = false;
+                        if (currentChunk.includes('<think>') && !assistantMessage.thinkMode) {
+                            assistantMessage.thinkMode = true;
+                            const startIndex = currentChunk.indexOf('<think>') + 7;
+                            const thinkContent = currentChunk.slice(startIndex);
+                            if (thinkContent) assistantMessage.reasoning_content += thinkContent;
+                            continue;
+                        }
+                        if (currentChunk.includes('</think>') && assistantMessage.thinkMode) {
+                            const endIndex = currentChunk.indexOf('</think>');
+                            const thinkContent = currentChunk.slice(0, endIndex);
+                            if (thinkContent) assistantMessage.reasoning_content += thinkContent;
+                            assistantMessage.thinkMode = false;
+                            const remainingContent = currentChunk.slice(endIndex + 8).trim();
+                            if (remainingContent) assistantMessage.content += remainingContent;
+                        } else if (assistantMessage.thinkMode) {
+                            assistantMessage.reasoning_content += currentChunk;
+                        } else {
+                            assistantMessage.content += currentChunk;
+                        }
+                    } else {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            if (data === '[DONE]') continue;
+                            const json = JSON.parse(data);
+                            let content = '';
+                            let reasoningContent = '';
+                            switch (provider) {
+                                case 'anthropic':
+                                    content = json.delta?.text || '';
+                                    break;
+                                default:
+                                    content = json.choices[0]?.delta?.content || '';
+                                    reasoningContent = json.choices[0]?.delta?.reasoning_content || '';
+                            }
+                            if (reasoningContent) assistantMessage.reasoning_content += reasoningContent;
+                            if (content) assistantMessage.content += content;
+                        }
+                    }
+                    const updatedMessages = [...activeSession.messages];
+                    // 确保最后一条消息是我们要更新的助手消息
+                    if (updatedMessages.length > 0 && 
+                        updatedMessages[updatedMessages.length - 1].role === 'assistant' &&
+                        updatedMessages[updatedMessages.length - 1].id === assistantMessage.id) {
+                        updatedMessages[updatedMessages.length - 1] = { ...assistantMessage };
+                        updateMessages(singleMode, activeSession, updatedMessages);
+                        if (!singleMode) smartScroll();
+                    }
+                }
+            }
+            
+            // 消息接收完成后，执行最后一次滚动到底部
+            if (!singleMode && !userHasScrolled && messageContainer.value) scrollToBottom();
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                console.log('请求被中断');
+            } else {
+                console.error('Error:', error);
+            }
+        } finally {
+            // 移除滚动事件监听
+            if (messageContainer.value && !singleMode) {
+                messageContainer.value.$el.removeEventListener('scroll', checkUserScroll);
+            }
+        }
+    };
+
+    // 处理搜索逻辑
+    const handleSearch = async (userMessage, assistantMessage, activeSession, singleMode) => {
+        let searchQuery = userMessage.content;
+        let searchResults = null;
+        try {
+            searchAbortController = new AbortController();
+    
+            // 如果配置了搜索关键词提取模型，则使用该模型提取关键词
+            if (aiStore.searchKeywordModel) {
+                try {
+                    assistantMessage.status = 'keyword generating';
+                    updateMessages(singleMode, activeSession, [...activeSession.messages]);
+    
+                    const modelId = aiStore.searchKeywordModel;
+                    let providerId = null;
+                    for (const pid in aiStore.providers) {
+                        if (aiStore.providers[pid].activeModels?.includes(modelId)) {
+                            providerId = pid;
+                            break;
+                        }
+                    }
+                    if (!providerId) throw new Error('未找到搜索关键词提取模型所属的供应商');
+    
+                    const providerConfig = aiStore.providers[providerId];
+                    if (!providerConfig || !providerConfig.endpoint) throw new Error('搜索关键词提取模型的供应商未配置');
+    
+                    let requestBody;
+                    let headers = { 'Content-Type': 'application/json' };
+    
+                    switch (providerId) {
+                        case 'ollama':
+                            let ollamaMessages = activeSession.messages.map(msg => ({
+                                role: msg.role === 'user' ? 'user' : 'assistant',
+                                content: msg.content
+                            }));
+                            ollamaMessages.push({
+                                role: 'user',
+                                content: `请从以下问题中提取出最适合用于搜索引擎的关键词，直接返回关键词，不要包含任何解释或其他内容：\n\n${userMessage.content}`
+                            });
+                            requestBody = {
+                                model: modelId,
+                                prompt: "你是一个搜索关键词提取助手。你的任务是从用户的问题中提取出最适合用于搜索引擎的关键词。请只返回关键词，不要包含任何解释或其他内容。",
+                                messages: ollamaMessages,
+                                stream: false,
+                                options: { temperature: 0.1 }
+                            };
+                            break;
+                        case 'anthropic':
+                            headers['x-api-key'] = providerConfig.apiKey;
+                            let anthropicMessages = activeSession.messages.map(msg => ({
+                                role: msg.role === 'user' ? 'user' : 'assistant',
+                                content: msg.content
+                            }));
+                            anthropicMessages.push({
+                                role: 'user',
+                                content: `请从以下问题中提取出最适合用于搜索引擎的关键词，直接返回关键词，不要包含任何解释或其他内容：\n\n${userMessage.content}`
+                            });
+                            requestBody = {
+                                model: modelId,
+                                messages: anthropicMessages,
+                                stream: false,
+                                max_tokens: 100
+                            };
+                            break;
+                        default:
+                            headers['Authorization'] = 'Bearer ' + providerConfig.apiKey;
+                            let searchMessages = activeSession.messages.map(msg => ({
+                                role: msg.role === 'user' ? 'user' : 'assistant',
+                                content: msg.content
+                            }));
+                            searchMessages.push({
+                                role: 'user',
+                                content: `请从以下问题中提取出最适合用于搜索引擎的关键词，直接返回关键词，不要包含任何解释或其他内容：\n\n${userMessage.content}`
+                            });
+                            requestBody = {
+                                model: modelId,
+                                messages: searchMessages,
+                                stream: false,
+                                max_tokens: 100,
+                                temperature: 0.1
+                            };
+                    }
+    
+                    const endpoint = providerId === 'ollama' ? `${providerConfig.endpoint.replace(/\/$/, '')}/api/chat` : providerConfig.endpoint;
+                    const keywordResponse = await fetch(endpoint, {
+                        method: 'POST',
+                        headers,
+                        body: JSON.stringify(requestBody),
+                        signal: searchAbortController.signal
+                    });
+                    // 检查是否已被中断
+                    if (!searchAbortController || isAbort.value) {
+                        console.log('关键词提取请求已被中断');
+                        return null;
+                    }
+    
+                    if (!keywordResponse.ok) throw new Error(`提取关键词请求失败: ${keywordResponse.status}`);
+    
+                    const keywordData = await keywordResponse.json();
+                    let extractedKeywords = '';
+    
+                    switch (providerId) {
+                        case 'ollama':
+                            extractedKeywords = keywordData.message?.content || keywordData.response || '';
+                            break;
+                        case 'anthropic':
+                            extractedKeywords = keywordData.content?.[0]?.text || '';
+                            break;
+                        default:
+                            extractedKeywords = keywordData.choices?.[0]?.message?.content || '';
+                    }
+    
+                    searchQuery = extractedKeywords.trim().replace(/^["']|["']$/g, '') || userMessage.content;
+                    assistantMessage.search.feedback = `正在搜索互联网获取最新信息...\n关键词: ${searchQuery}`;
+                    updateMessages(singleMode, activeSession, [...activeSession.messages]);
+                } catch (error) {
+                    if (error.name === 'AbortError') {
+                        console.log('搜索请求被中断');
+                        return null;
+                    }
+                    console.error('提取搜索关键词失败:', error);
+                    searchQuery = userMessage.content;
+                    assistantMessage.search.feedback = '正在搜索互联网获取最新信息...';
+                    updateMessages(singleMode, activeSession, [...activeSession.messages]);
+                }
+            }
+            // 再次检查是否已被中断
+            if (!searchAbortController || isAbort.value) {
+                console.log('搜索过程已被中断');
+                return null;
+            }
+    
+            assistantMessage.search.keyword = searchQuery;
+            assistantMessage.status = 'searching';
+            updateMessages(singleMode, activeSession, [...activeSession.messages]);
+    
+            const searchResponse = await fetch('https://api.tavily.com/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${aiStore.searchProvider.tavily.apiKey}`
+                },
+                body: JSON.stringify({
+                    query: searchQuery,
+                    search_depth: 'advanced',
+                    max_results: 5
+                }),
+                signal: searchAbortController.signal
+            });
+            // 再次检查是否已被中断
+            if (!searchAbortController || isAbort.value) {
+                console.log('搜索过程已被中断');
+                return null;
+            }
+    
+            searchAbortController = null;
+            if (!searchResponse.ok) throw new Error(`搜索请求失败: ${searchResponse.status}`);
+    
+            searchResults = await searchResponse.json();
+            searchResults = { raw: searchResults };
+            assistantMessage.search.results = searchResults.raw.results;
+            assistantMessage.status = 'thinking';
+            updateMessages(singleMode, activeSession, [...activeSession.messages]);
+            scrollToBottom();
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                console.log('搜索请求被中断');
+                return null;
+            }
+            console.error('搜索失败:', error);
+            assistantMessage.search.error = error.message;
+            searchResults = { error: error.message };
+        }
+        return searchResults;
+    };
+
+    const generateSessionTitle = (activeSession) => {
+        if (activeSession.messages.length === 1) {
+            const session = aiStore.chatSessions.find(s => s.id === activeSession.id);
+            if (session) {
+                activeSession.title = inputMessage.value.slice(0, 10);
+                session.title = activeSession.title + '...';
+            }
+        }
     }
 
     // 发送消息
     const sendMessage = async (options = {}) => {
+        isAbort.value = false;
+        // chatMode：对话模式 - sessions；Tiptap编辑器中生成内容是单次模式 - single
         const { chatMode = 'sessions', useSearch = false } = typeof options === 'object' ? options : { chatMode: options };
-        const singleMode = chatMode === 'single'
-        if (!inputMessage.value.trim() || loading.value) return
-        
-        if (!currentSession.value && !singleMode) {
-            createNewChat()
-        }
-        if (singleMode) {
-            signalSession.value = aiStore.createSingleChat()
-        }
-        const activeSession = singleMode ? signalSession.value : currentSession.value
+        const singleMode = chatMode === 'single';
+        if (!inputMessage.value.trim() || loading.value) return;
 
-        // 更新会话的搜索状态
+        if (!currentSession.value && !singleMode) createNewChat();
+        if (singleMode) signalSession.value = aiStore.createSingleChat();
+        const activeSession = getActiveSession(singleMode);
+
         if (!singleMode && activeSession.id) {
-            aiStore.updateSessionSearchEnabled(activeSession.id, useSearch)
+            aiStore.updateSessionSearchEnabled(activeSession.id, useSearch);
         } else if (singleMode) {
-            signalSession.value.searchEnabled = useSearch
+            signalSession.value.searchEnabled = useSearch;
         }
 
-        const userMessage = {
-            id: uid(),
-            role: 'user',
-            content: inputMessage.value,
-            timestamp: Date.now()
-        }
-        
-        // 定义searchQuery变量，确保在所有代码路径中都可用
-        let searchQuery = userMessage.content
+        const userMessage = { id: uid(), role: 'user', content: inputMessage.value, timestamp: Date.now() };
+        // 将用户消息添加到对话消息中
+        // 此时UI中出现用户消息
+        updateMessages(singleMode, activeSession, [...activeSession.messages, userMessage]);
 
-        // 添加用户消息到当前会话
-        if(!singleMode) {
-            aiStore.addMessageToCurrentSession(userMessage)
-        } else {
-            signalSession.value.messages.push(userMessage)
-        }
-        
-        // 如果是第一条消息，使用前10个字符作为会话标题
-        if (activeSession.messages.length === 1) {
-            const session = aiStore.chatSessions.find(s => s.id === activeSession.id)
-            if (session) {
-                // 提取用户输入的前10个字符作为会话标题
-                activeSession.title = inputMessage.value.slice(0, 10)
-                session.title = activeSession.title
-            }
-        }
+        // 自动修改对话标题
+        generateSessionTitle(activeSession);
 
-        inputMessage.value = ''
-        loading.value = true
+        inputMessage.value = '';
+        loading.value = true;
         const assistantMessage = {
             id: uid(),
             role: 'assistant',
             status: '',
             content: '',
             reasoning_content: '',
-            search: {
-                keyword: '',
-                feedback: '',
-                results: [],
-                error: ''
-            },
+            search: { keyword: '', feedback: '', results: [], error: '' },
             timestamp: Date.now()
-        }
-
-        // 添加AI消息到当前会话
-        if(!singleMode) {
-            aiStore.addMessageToCurrentSession(assistantMessage)
-        } else {
-            signalSession.value.messages.push(assistantMessage)
-        }
-        await nextTick()
+        };
+        // 将初始化的AI消息添加到对话中
+        // 此时对话列表中出现AI返回消息，但没有内容
+        updateMessages(singleMode, activeSession, [...activeSession.messages, assistantMessage]);
         scrollToBottom();
-        const index = aiStore.currentSession.messages.findIndex(i => i.id === assistantMessage.id)
-        if (index !== -1) {
-            aiStore.currentSession.messages[index] = assistantMessage
-        }
 
-        // 如果启用了搜索功能，先进行搜索
-        let searchResults = null
+        let searchResults = null;
+        // 如果当前对话用户启用了联网，进入联网方法
         if (useSearch && aiStore.searchProvider.tavily.active && aiStore.searchProvider.tavily.apiKey) {
-            try {                
-                // 创建新的 AbortController 用于搜索请求
-                searchAbortController = new AbortController()
-                
-                // 如果配置了搜索关键词提取模型，则使用该模型提取关键词
-                if (aiStore.searchKeywordModel) {
-                    try {
-                        // 更新临时消息
-                        assistantMessage.status = 'keyword generating'
-                        if(!singleMode) {
-                            aiStore.updateSessionMessages(activeSession.id, [...activeSession.messages])
-                        } else {
-                            signalSession.value.messages = [...signalSession.value.messages]
-                        }
-                        
-                        // 获取模型所属的供应商
-                        const modelId = aiStore.searchKeywordModel
-                        let providerId = null
-                        let provider = null
-                        
-                        // 遍历所有供应商，查找包含该模型的供应商
-                        for (const pid in aiStore.providers) {
-                            if (aiStore.providers[pid].activeModels?.includes(modelId)) {
-                                providerId = pid
-                                break
-                            }
-                        }
-                        
-                        if (!providerId) {
-                            throw new Error('未找到搜索关键词提取模型所属的供应商')
-                        }
-                        
-                        const providerConfig = aiStore.providers[providerId]
-                        if (!providerConfig || !providerConfig.endpoint) {
-                            throw new Error('搜索关键词提取模型的供应商未配置')
-                        }
-                        
-                        // 构建请求
-                        let requestBody
-                        let headers = {
-                            'Content-Type': 'application/json'
-                        }
-                        
-                        // 根据不同的供应商构建不同的请求
-                        switch (providerId) {
-                            case 'ollama':
-                                headers = {
-                                    'Content-Type': 'application/json'
-                                }
-
-                                let ollamaMessages = activeSession.messages.map(msg => ({
-                                    role: msg.role === 'user' ? 'user' : 'assistant',
-                                    content: msg.content
-                                }));
-                                ollamaMessages.push({
-                                    role: 'user',
-                                    content: `请从以下问题中提取出最适合用于搜索引擎的关键词，直接返回关键词，不要包含任何解释或其他内容：\n\n${userMessage.content}`
-                                })
-                                
-                                requestBody = {
-                                    model: modelId,
-                                    prompt: "你是一个搜索关键词提取助手。你的任务是从用户的问题中提取出最适合用于搜索引擎的关键词。请只返回关键词，不要包含任何解释或其他内容。",
-                                    messages: ollamaMessages,
-                                    stream: false,
-                                    options: {
-                                        temperature: 0.1
-                                    }
-                                }
-                                break
-                            case 'anthropic':
-                                headers['x-api-key'] = providerConfig.apiKey
-
-                                let anthropicMessages = activeSession.messages.map(msg => ({
-                                    role: msg.role === 'user' ? 'user' : 'assistant',
-                                    content: msg.content
-                                }));
-                                anthropicMessages.push({
-                                    role: 'user',
-                                    content: `请从以下问题中提取出最适合用于搜索引擎的关键词，直接返回关键词，不要包含任何解释或其他内容：\n\n${userMessage.content}`
-                                })
-                                
-                                requestBody = {
-                                    model: modelId,
-                                    messages: anthropicMessages,
-                                    stream: false,
-                                    max_tokens: 100
-                                }
-                                break
-                            default:
-                                // OpenAI, DeepSeek等
-                                headers['Authorization'] = 'Bearer ' + providerConfig.apiKey
-                                
-                                let searchMessages = activeSession.messages.map(msg => ({
-                                    role: msg.role === 'user' ? 'user' : 'assistant',
-                                    content: msg.content
-                                }));
-                                searchMessages.push({
-                                    role: 'user',
-                                    content: `请从以下问题中提取出最适合用于搜索引擎的关键词，直接返回关键词，不要包含任何解释或其他内容：\n\n${userMessage.content}`
-                                })
-
-                                requestBody = {
-                                    model: modelId,
-                                    messages: searchMessages,
-                                    stream: false,
-                                    max_tokens: 100,
-                                    temperature: 0.1
-                                }
-                        }
-                        
-                        const endpoint = providerId === 'ollama' 
-                            ? `${providerConfig.endpoint.replace(/\/$/, '')}/api/chat`
-                            : providerConfig.endpoint
-                        
-                        // 发送请求提取关键词
-                        const keywordResponse = await fetch(endpoint, {
-                            method: 'POST',
-                            headers,
-                            body: JSON.stringify(requestBody),
-                            signal: searchAbortController.signal
-                        })
-                        
-                        if (!keywordResponse.ok) {
-                            throw new Error(`提取关键词请求失败: ${keywordResponse.status}`)
-                        }
-                        
-                        const keywordData = await keywordResponse.json()
-                        let extractedKeywords = ''
-                        
-                        // 根据不同的供应商解析响应
-                        switch (providerId) {
-                            case 'ollama':
-                                extractedKeywords = keywordData.message?.content || keywordData.response || ''
-                                break
-                            case 'anthropic':
-                                extractedKeywords = keywordData.content?.[0]?.text || ''
-                                break
-                            default:
-                                // OpenAI, DeepSeek等
-                                extractedKeywords = keywordData.choices?.[0]?.message?.content || ''
-                        }
-                        
-                        // 清理提取的关键词（去除可能的引号、多余空格等）
-                        searchQuery = extractedKeywords.trim().replace(/^["']|["']$/g, '')
-                        // 如果提取的关键词为空，则使用原始问题
-                        if (!searchQuery) {
-                            searchQuery = userMessage.content
-                        }
-                        
-                        // 更新临时消息
-                        assistantMessage.search.feedback = `正在搜索互联网获取最新信息...\n关键词: ${searchQuery}`
-                        if(!singleMode) {
-                            aiStore.updateSessionMessages(activeSession.id, [...activeSession.messages])
-                        } else {
-                            signalSession.value.messages = [...signalSession.value.messages]
-                        }
-                    } catch (error) {
-                        console.error('提取搜索关键词失败:', error)
-                        // 如果提取关键词失败，使用原始问题进行搜索
-                        searchQuery = userMessage.content
-                        
-                        // 更新临时消息
-                        assistantMessage.search.feedback = '正在搜索互联网获取最新信息...'
-                        if(!singleMode) {
-                            aiStore.updateSessionMessages(activeSession.id, [...activeSession.messages])
-                        } else {
-                            signalSession.value.messages = [...signalSession.value.messages]
-                        }
-                    }
-                    assistantMessage.search.keyword = searchQuery
-                    assistantMessage.status = 'searching'
-                    if(!singleMode) {
-                        aiStore.updateSessionMessages(activeSession.id, [...activeSession.messages])
-                    } else {
-                        signalSession.value.messages = [...signalSession.value.messages]
-                    }
-                }
-                
-                // 调用Tavily API进行搜索
-                const searchResponse = await fetch('https://api.tavily.com/search', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${aiStore.searchProvider.tavily.apiKey}`
-                    },
-                    body: JSON.stringify({
-                        query: searchQuery,
-                        search_depth: 'advanced',
-                        include_domains: [],
-                        exclude_domains: [],
-                        max_results: 5
-                    }),
-                    signal: searchAbortController.signal
-                })
-                
-                // 搜索完成后，将 searchAbortController 设置为 null
-                searchAbortController = null
-                
-                if (!searchResponse.ok) {
-                    assistantMessage.search.error = `搜索请求失败: ${searchResponse.status}`
-                    throw new Error(`搜索请求失败: ${searchResponse.status}`)
-                }
-                
-                searchResults = await searchResponse.json()
-                
-                // 保存搜索结果，不进行格式化
-                searchResults = {
-                    raw: searchResults
-                }
-                assistantMessage.search.results = searchResults.raw.results
-                assistantMessage.status = 'thinking'
-                if(!singleMode) {
-                    aiStore.updateSessionMessages(activeSession.id, [...activeSession.messages])
-                } else {
-                    signalSession.value.messages = [...signalSession.value.messages]
-                }
-                await nextTick()
-                scrollToBottom();
-                
-                // 检查是否在搜索过程中被中断
-                // 检查活动会话中是否有任何消息被标记为中断
-                const wasInterrupted = activeSession.messages.some(msg => msg.wasInterrupted);
-                
-                if (wasInterrupted) {
-                    // 如果搜索过程被中断，不继续发送模型请求
-                    loading.value = false
-                    return
-                }
-            } catch (error) {
-                // 检查是否是中断错误
-                if (error.name === 'AbortError') {
-                    console.log('搜索请求被中断')
-                    loading.value = false
-                    return
-                }
-                
-                console.error('搜索失败:', error)
-                // 保存搜索错误信息
-                searchResults = {
-                    error: error.message
-                }
+            searchResults = await handleSearch(userMessage, assistantMessage, activeSession, singleMode);
+            
+            // 如果搜索过程被中断，清理会话状态并返回
+            if (isAbort.value || !searchResults) {
+                cleanupSession(singleMode, activeSession);
+                return;
             }
         }
 
         try {
-            // 检查是否有任何消息被标记为中断
-            const wasInterrupted = activeSession.messages.some(msg => msg.wasInterrupted);
-            if (wasInterrupted) {
-                // 如果有消息被标记为中断，不继续发送模型请求
-                loading.value = false
-                return
-            }
-            
-            const provider = aiStore.provider
-            if (!provider) {
-                throw new Error('No provider selected')
+            // 再次检查是否已被中断
+            if (isAbort.value) {
+                cleanupSession(singleMode, activeSession);
+                return;
             }
 
-            const providerConfig = aiStore.providers[provider]
-            if (!providerConfig || !providerConfig.endpoint) {
-                throw new Error('Provider not configured')
-            }
+            const provider = aiStore.provider;
+            if (!provider) throw new Error('No provider selected');
+            const providerConfig = aiStore.providers[provider];
+            if (!providerConfig || !providerConfig.endpoint) throw new Error('Provider not configured');
 
-            // 创建新的 AbortController
-            abortController = new AbortController()
-
-            let requestBody;
-            let headers = {
-                'Content-Type': 'application/json',
-                'Accept': 'text/event-stream'
-            };
-
-            // 根据不同的供应商构建不同的请求
-            switch (provider) {
-                case 'ollama':
-                    headers = {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/x-ndjson'
-                    };
-                    
-                    // 准备消息数组
-                    let ollamaMessages = activeSession.messages.map(msg => ({
-                        role: msg.role === 'user' ? 'user' : 'assistant',
-                        content: msg.content
-                    }));
-                    
-                    // 如果有搜索结果，添加到请求中
-                    if (searchResults && searchResults.raw && searchResults.raw.results) {
-                        const searchContent = searchResults.raw.results.map((result, index) => {
-                            return `[${index + 1}] ${result.title}\n${result.content}\n来源: ${result.url}`;
-                        }).join('\n\n');
-                        
-                        ollamaMessages.unshift({
-                            role: 'system',
-                            content: `以下是与用户问题相关的搜索结果，请在回答时参考这些信息：\n\n${searchContent}`
-                        });
-                    }
-                    
-                    requestBody = {
-                        model: aiStore.currentModel.id,
-                        prompt: aiStore.currentAssistant.prompt,
-                        messages: ollamaMessages,
-                        stream: true,
-                        options: {
-                            temperature: 0.7
-                        }
-                    };
-                    break;
-                case 'anthropic':
-                    headers['x-api-key'] = providerConfig.apiKey;
-                    
-                    // 准备消息数组
-                    let anthropicMessages = activeSession.messages.map(msg => ({
-                        role: msg.role,
-                        content: msg.content
-                    })).slice(-20); // Anthropic模型限制上下文数量
-                    
-                    // 如果有搜索结果，添加到请求中
-                    if (searchResults && searchResults.raw && searchResults.raw.results) {
-                        const searchContent = searchResults.raw.results.map((result, index) => {
-                            return `[${index + 1}] ${result.title}\n${result.content}\n来源: ${result.url}`;
-                        }).join('\n\n');
-                        
-                        // Anthropic使用system消息的方式可能不同，这里使用assistant消息
-                        anthropicMessages.unshift({
-                            role: 'assistant',
-                            content: `以下是与用户问题相关的搜索结果，请在回答时参考这些信息：\n\n${searchContent}`
-                        });
-                    }
-                    
-                    requestBody = {
-                        model: aiStore.currentModel.id,
-                        prompt: aiStore.currentAssistant.prompt,
-                        messages: anthropicMessages,
-                        stream: true
-                    };
-                    break;
-                default:
-                    // OpenAI, DeepSeek等
-                    headers['Authorization'] = 'Bearer ' + providerConfig.apiKey;
-                    const contextLimit = 4096; // 默认上下文长度限制
-                    let totalLength = 0;
-                    const messages = [];
-                    
-                    // 从最新的消息开始，累计计算token长度（这里用字符长度简单估算）
-                    for (let i = activeSession.messages.length - 1; i >= 0; i--) {
-                        const msg = activeSession.messages[i];
-                        const estimatedTokens = (msg.content.length + msg.reasoning_content?.length || 0) / 4;
-                        if (totalLength + estimatedTokens > contextLimit) {
-                            break;
-                        }
-                        totalLength += estimatedTokens;
-                        messages.unshift({
-                            role: msg.role,
-                            content: msg.content
-                        });
-                    }
-                    
-                    // 如果有搜索结果，添加到请求中
-                    if (searchResults && searchResults.raw && searchResults.raw.results) {
-                        const searchContent = searchResults.raw.results.map((result, index) => {
-                            return `[${index + 1}] ${result.title}\n${result.content}\n来源: ${result.url}`;
-                        }).join('\n\n');
-                        
-                        messages.unshift({
-                            role: 'system',
-                            content: `以下是与用户问题相关的搜索结果，请在回答时参考这些信息：\n\n${searchContent}`
-                        });
-                    }
-                    
-                    // 针对Deepseek模型的特殊处理
-                    if (provider === 'deepseek') {
-                        // Deepseek模型要求严格的一问一答交替形式
-                        // 不能有连续的相同角色消息（如连续的用户问题或连续的AI回答）
-                        
-                        // 首先提取所有系统消息（如搜索结果），这些消息应该保留
-                        const systemMessages = messages.filter(msg => msg.role === 'system');
-                        
-                        // 然后处理用户和助手消息，确保它们严格交替
-                        const userAssistantMessages = messages.filter(msg => msg.role !== 'system');
-                        const processedMessages = [];
-                        
-                        // 从最后一条消息开始，确保交替模式
-                        let lastRole = null;
-                        
-                        // 从后向前处理消息，确保最新的消息被保留
-                        for (let i = userAssistantMessages.length - 1; i >= 0; i--) {
-                            const currentMessage = userAssistantMessages[i];
-                            
-                            // 如果是第一条消息或者角色与上一条不同，则添加
-                            if (lastRole === null || currentMessage.role !== lastRole) {
-                                processedMessages.unshift(currentMessage);
-                                lastRole = currentMessage.role;
-                            }
-                        }
-                        
-                        // 将系统消息添加到处理后的消息数组的开头
-                        processedMessages.unshift(...systemMessages);
-                        
-                        // 确保最后一条消息是用户消息
-                        const nonSystemMessages = processedMessages.filter(msg => msg.role !== 'system');
-                        if (nonSystemMessages.length === 0 || nonSystemMessages[nonSystemMessages.length - 1].role !== 'user') {
-                            // 如果没有非系统消息，或者最后一条非系统消息不是用户消息，则添加当前用户消息
-                            // 这确保了Deepseek可以生成回复
-                            processedMessages.push({
-                                role: 'user',
-                                content: userMessage.content // 使用当前用户发送的消息
-                            });
-                        }
-                        
-                        // 使用处理后的消息数组
-                        messages.length = 0;
-                        messages.push(...processedMessages);
-                        
-                        console.log('Deepseek processed messages:', processedMessages);
-                    }
-                    
-                    requestBody = {
-                        model: aiStore.currentModel.id,
-                        prompt: aiStore.currentAssistant.prompt,
-                        messages: messages,
-                        stream: true
-                    };
-            }
-
-            const endpoint = provider === 'ollama' 
-                ? `${providerConfig.endpoint.replace(/\/$/, '')}/api/chat`
-                : providerConfig.endpoint;
-
-            // console.log('Sending request to:', endpoint);
-            // console.log('Request body:', requestBody);
+            abortController = new AbortController();
+            const { requestBody, headers } = buildRequest(provider, providerConfig, activeSession.messages, searchResults, singleMode);
+            const endpoint = provider === 'ollama' ? `${providerConfig.endpoint.replace(/\/$/, '')}/api/chat` : providerConfig.endpoint;
 
             const response = await fetch(endpoint, {
                 method: 'POST',
                 headers,
                 body: JSON.stringify(requestBody),
                 signal: abortController.signal
-            })
-            assistantMessage.status = 'generating'
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            });
+            
+            // 检查请求是否被中断
+            if (isAbort.value) {
+                cleanupSession(singleMode, activeSession);
+                return;
             }
             
-            await nextTick()
-            if(!singleMode) {
-                scrollToBottom();
-            }
+            assistantMessage.status = 'generating';
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const reader = response.body.getReader();
+            await processStreamResponse(provider, reader, assistantMessage, activeSession, singleMode);
             
-            const reader = response.body.getReader()
-            const decoder = new TextDecoder()
-            
-            try {
-                while (true) {
-                    const { done, value } = await reader.read()
-                    if (done) break
-                    
-                    const chunk = decoder.decode(value)
-                    const lines = chunk.split('\n').filter(line => line.trim() !== '')
-                    
-                    for (const line of lines) {
-                        try {
-                            // 对于Ollama，直接解析NDJSON
-                            if (provider === 'ollama') {
-                                if (!line.trim()) continue
-                                // console.log('Raw Ollama response line:', line);
-                                const json = JSON.parse(line)
-                                // console.log('Parsed Ollama JSON:', json);
-                                
-                                // 获取当前chunk的内容
-                                let currentChunk = '';
-                                if (json.message?.content) {
-                                    currentChunk = json.message.content;
-                                } else if (json.response) {
-                                    currentChunk = json.response;
-                                }
-                                
-                                // 如果内容为空，跳过
-                                if (!currentChunk) continue;
-
-                                // 静态变量用于跟踪think标签状态
-                                if (!assistantMessage.thinkMode) {
-                                    assistantMessage.thinkMode = false;
-                                }
-                                // console.log('currentChunk', currentChunk);
-
-                                // 检查当前chunk中是否包含<think>开始标签
-                                if (currentChunk.includes('<think>') && !assistantMessage.thinkMode) {
-                                    assistantMessage.thinkMode = true;
-                                    const startIndex = currentChunk.indexOf('<think>') + 7;
-                                    const thinkContent = currentChunk.slice(startIndex);
-                                    // console.log('thinkContent', thinkContent);
-                                    if (thinkContent) {
-                                        assistantMessage.reasoning_content += thinkContent;
-                                    }
-                                    // console.log('Started think mode, reasoning:', assistantMessage.reasoning_content);
-                                    continue;
-                                }
-
-                                // 检查当前chunk中是否包含</think>结束标签
-                                if (currentChunk.includes('</think>') && assistantMessage.thinkMode) {
-                                    const endIndex = currentChunk.indexOf('</think>');
-                                    // 添加结束标签前的内容到reasoning_content
-                                    const thinkContent = currentChunk.slice(0, endIndex);
-                                    if (thinkContent) {
-                                        assistantMessage.reasoning_content += thinkContent;
-                                    }
-                                    assistantMessage.thinkMode = false;
-                                    
-                                    // 处理结束标签后的内容
-                                    const remainingContent = currentChunk.slice(endIndex + 8).trim();
-                                    if (remainingContent) {
-                                        assistantMessage.content += remainingContent;
-                                    }
-                                    // console.log('Ended think mode, reasoning:', assistantMessage.reasoning_content);
-                                    // console.log('Remaining content:', remainingContent);
-                                }
-                                // 如果在think模式中
-                                else if (assistantMessage.thinkMode) {
-                                    assistantMessage.reasoning_content += currentChunk;
-                                    // console.log('assistantMessage.reasoning_content:', assistantMessage.reasoning_content);
-                                }
-                                // 如果不在think模式中，直接添加到content
-                                else {
-                                    assistantMessage.content += currentChunk;
-                                    // console.log('assistantMessage.content:', assistantMessage.content);
-                                }
-                                
-                                // 更新消息
-                                const updatedMessages = [...activeSession.messages]
-                                updatedMessages[updatedMessages.length - 1] = { ...assistantMessage }
-                                if(!singleMode) {
-                                    aiStore.updateSessionMessages(activeSession.id, updatedMessages)
-                                } else {
-                                    signalSession.value.messages = updatedMessages
-                                }
-                                continue
-                            }
-                            
-                            // 对于其他供应商，处理SSE格式
-                            if (line.startsWith('data: ')) {
-                                const data = line.slice(6)
-                                if (data === '[DONE]') continue
-                                
-                                const json = JSON.parse(data)
-                                let content = '';
-                                let reasoningContent = '';
-
-                                switch (provider) {
-                                    case 'anthropic':
-                                        content = json.delta?.text || '';
-                                        break;
-                                    default:
-                                        // OpenAI, DeepSeek等
-                                        content = json.choices[0]?.delta?.content || '';
-                                        reasoningContent = json.choices[0]?.delta?.reasoning_content || '';
-                                }
-                                
-                                if (reasoningContent) {
-                                    assistantMessage.reasoning_content += reasoningContent
-                                }
-                                if (content) {
-                                    assistantMessage.content += content
-                                }
-                                
-                                // 更新消息
-                                const updatedMessages = [...activeSession.messages]
-                                updatedMessages[updatedMessages.length - 1] = { ...assistantMessage }
-                                if(!singleMode) {
-                                    aiStore.updateSessionMessages(activeSession.id, updatedMessages)
-                                } else {
-                                    signalSession.value.messages = updatedMessages
-                                }
-                            }
-                            
-                            await nextTick()
-                            if(!singleMode) {
-                                scrollToBottom();
-                            }
-                        } catch (error) {
-                            if (error.name === 'AbortError') {
-                                console.log('请求被中断')
-                            } else {
-                                console.error('读取响应流时出错:', error)
-                            }
-                        }
-                    }
-                }
-            } catch (error) {
-                if (error.name === 'AbortError') {
-                    console.log('请求被中断')
-                } else {
-                    console.error('Error:', error)
-                    // 这里可以添加错误提示
-                }
-            } finally {
-                reader.releaseLock()
+            // 检查生成的内容是否为空
+            if (assistantMessage.content.trim() === '' && assistantMessage.reasoning_content.trim() === '') {
+                assistantMessage.content = '抱歉，生成过程中出现了问题，请重试。';
+                updateMessages(singleMode, activeSession, [...activeSession.messages]);
             }
         } catch (error) {
             if (error.name === 'AbortError') {
-                console.log('请求被中断')
+                console.log('请求被中断');
+                cleanupSession(singleMode, activeSession);
+                return;
             } else {
-                console.error('Error:', error)
-                // 这里可以添加错误提示
+                console.error('Error:', error);
+                // 如果发生错误，添加错误消息
+                if (activeSession.messages.length > 0 && 
+                    activeSession.messages[activeSession.messages.length - 1].role === 'assistant') {
+                    const errorMessage = activeSession.messages[activeSession.messages.length - 1];
+                    errorMessage.content = `生成回复时出错: ${error.message}`;
+                    errorMessage.status = 'error';
+                    updateMessages(singleMode, activeSession, [...activeSession.messages]);
+                }
             }
         } finally {
-            loading.value = false
-            abortController = null
-            searchAbortController = null
+            cleanupSession(singleMode, activeSession);
         }
     }
 
@@ -844,6 +712,6 @@ export function useChat() {
         deleteSession,
         sendMessage,
         cancelResponse,
-        saveScrollPosition // Expose the saveScrollPosition method
+        saveScrollPosition
     }
-} 
+}

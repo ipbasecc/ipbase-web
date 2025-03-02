@@ -1147,8 +1147,8 @@ body.body--dark .bg-message {
 .q-dialog-plugin {
   background: transparent;
   border: 1px solid rgb(191 191 191);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(100px);
+  backdrop-filter: blur(100px);
 }
 .q-splitter__separator {
   background-color: rgb(0 0 0 / 5%);

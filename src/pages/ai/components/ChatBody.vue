@@ -22,6 +22,7 @@
                     <chat-message v-for="msg in currentSession?.messages" 
                         :key="msg.id" 
                         :message="msg"
+                        :loading="loading"
                         :session="currentSession"
                         style="width: 100%; max-width: 960px;"
                         :class="{ 'op-5': msg.archived }"

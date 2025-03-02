@@ -31,6 +31,7 @@ export const useAIStore = defineStore('ai', {
     },
     // 搜索关键词提取模型
     searchKeywordModel: '',
+    enableExtractKeyword: false,
     // 聊天会话相关状态
     chatSessions: [], // List of chat sessions
     currentSession: null, // Currently selected session
@@ -395,7 +396,9 @@ export const useAIStore = defineStore('ai', {
         session.title = currentTitle
         
         if (this.currentSession?.id === sessionId) {
-          this.currentSession = JSON.parse(JSON.stringify(session))
+          this.currentSession.messages = messages;
+          this.currentSession.updatedAt = Date.now();
+          this.currentSession.title = currentTitle; // 确保当前会话的标题也被保留
         }
       }
     },
@@ -415,7 +418,9 @@ export const useAIStore = defineStore('ai', {
 
     // 更新会话的搜索状态
     updateSessionSearchEnabled(sessionId, searchEnabled) {
+      console.log('updateSessionSearchEnabled');
       const session = this.chatSessions.find(s => s.id === sessionId)
+      console.log('updateSessionSearchEnabled session', session);
       if (session) {
         session.searchEnabled = searchEnabled
         session.updatedAt = Date.now()
@@ -424,6 +429,23 @@ export const useAIStore = defineStore('ai', {
           this.currentSession.searchEnabled = searchEnabled
         }
       }
+      console.log('updateSessionSearchEnabled session 2', session);
+    },
+    // 更新会话的 prompt
+    updateSessionPrompt(sessionId, prompt) {
+      console.log('updateSessionPrompt');
+      
+      const session = this.chatSessions.find(s => s.id === sessionId)
+      console.log('updateSessionPrompt session', session);
+      if (session) {
+        session.prompt = prompt
+        session.updatedAt = Date.now()
+        
+        if (this.currentSession?.id === sessionId) {
+          this.currentSession.prompt = prompt
+        }
+      }
+      console.log('updateSessionPrompt session 2', session);
     },
 
     // 清空会话消息

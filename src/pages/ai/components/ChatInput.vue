@@ -3,6 +3,7 @@
     <q-item-section avatar />
     <q-item-section class="border q-pa-sm radius-sm">
       <div class="column no-wrap gap-xs">
+        prompt: {{ currentSession.prompt }}
         <q-input
           v-model="localMessage"
           type="text"
@@ -22,6 +23,15 @@
               <q-card bordered>
                 <q-card-section class="q-pa-sm font-medium">
                   新建会话
+                </q-card-section>
+              </q-card>
+            </q-tooltip>
+          </q-btn>
+          <q-btn flat dense round icon="flip" @click="toggleUpdateSessionPrompt = !toggleUpdateSessionPrompt">
+            <q-tooltip class="no-padding shadow-24">
+              <q-card bordered>
+                <q-card-section class="q-pa-sm font-medium">
+                  修改AI角色提示词
                 </q-card-section>
               </q-card>
             </q-tooltip>
@@ -76,6 +86,24 @@
         </div>
       </div>
     </q-item-section>
+    <q-dialog v-model="toggleUpdateSessionPrompt" persistent>
+      <q-card bordered style="width: 40%;min-width: 460px;">
+        <q-card-section class="border-bottom">
+          修改当前对话的 AI 角色提示词（Prompt）
+        </q-card-section>
+        <q-card-section class="q-pa-none">
+          <q-input dense autofocus v-model="promptInput" type="textarea"
+            input-class="q-px-md"
+            @keyup.enter="updateSessionPrompt(promptInput)"
+          />
+        </q-card-section>
+        <q-card-section class="row no-wrap items-center border-top q-pa-sm">
+          <q-btn flat dense padding="xs md" label="取消" v-close-popup />
+          <q-space />
+          <q-btn dense padding="xs md" color="primary" label="确认" @click="updateSessionPrompt(promptInput)" />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-item>
 </template>
 
@@ -117,6 +145,16 @@ watch(currentSession, (newSession) => {
     localSearchEnabled.value = newSession.searchEnabled || false
   }
 }, { immediate: true })
+
+const promptInput = ref('');
+const toggleUpdateSessionPrompt = ref(false);
+const updateSessionPrompt = (prompt) => {
+  aiStore.updateSessionPrompt(currentSession.value.id, prompt);
+  toggleUpdateSessionPrompt.value = false
+}
+onMounted(() => {
+  promptInput.value = currentSession.value.prompt || null
+})
 
 // 清空当前对话
 const clearChat = () => {

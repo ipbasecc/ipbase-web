@@ -2,23 +2,22 @@
   <q-card flat bordered class="column" :class="$q.screen.gt.xs ? 'w-min-800 h-600' : 'fit'">
     <q-card-section class="border-bottom">
       <div class="text-h6">API 供应商配置</div>
-      <q-tabs
-        v-model="configTab"
-        dense
-        class="text-grey"
-        active-color="primary"
-        indicator-color="primary"
-        align="left"
-        narrow-indicator
-      >
-        <q-tab name="llm" label="LLM 模型" />
-        <q-tab name="search" label="搜索服务" />
-      </q-tabs>
     </q-card-section>
 
     <!-- 桌面端布局 -->
-    <q-card-section class="q-pa-none q-space" v-if="$q.screen.gt.xs">
-      <q-tab-panels v-model="configTab" animated class="fit">
+    <q-card-section class="column q-pa-none q-space" v-if="$q.screen.gt.xs">
+      <q-toolbar class="transparnt">
+        <q-tabs
+          v-model="configTab"
+          dense shrink
+          content-class="gap-xs"
+          active-class="bg-primary text-white"
+          align="left"
+        >
+          <q-tab v-for="i in configTabs" :key="i.name" :name="i.name" :label="i.label" class="radius-xs overflow-hidden" />
+        </q-tabs>
+      </q-toolbar>
+      <q-tab-panels v-model="configTab" animated class="q-space">
         <q-tab-panel name="llm" class="q-pa-none">
           <q-splitter v-model="splitterModel" class="fit">
             <!-- 左侧供应商列表 -->
@@ -139,7 +138,7 @@
                   <q-space />
                   <q-toggle v-model="aiStore.searchProvider[provider.id].active" dense />
                 </div>
-                <p class="text-caption">{{ provider.description }}</p>
+                <p class="text-caption op-5">{{ provider.description }}</p>
               </q-card-section>
               
               <q-card-section>
@@ -157,15 +156,19 @@
             </q-card>
             
             <!-- 搜索关键词提取模型设置 -->
-            <q-card flat class="q-mb-md">
-              <q-card-section class="q-px-none">
-                <div class="text-h6">搜索关键词提取模型</div>
-                <p class="text-caption">
+            <q-card flat bordered class="q-mb-md">
+              <q-card-section class="column">
+                <div class="row no-wrap items-center">
+                  <div class="text-h6">根据对话内容，优化联网内容获取</div>
+                  <q-space />
+                  <q-toggle v-model="aiStore.enableExtractKeyword" dense />
+                </div>
+                <p class="text-caption op-5">
                   选择一个模型用于从用户问题中提取搜索关键词，以提高搜索结果的相关性。
                 </p>
               </q-card-section>
               
-              <q-card-section>
+              <q-card-section v-if="aiStore.enableExtractKeyword">
                 <q-select
                   v-model="aiStore.searchKeywordModel"
                   :options="allAvailableModels"
@@ -186,7 +189,7 @@
                     </q-item>
                   </template>
                 </q-select>
-                <div class="text-caption q-mt-sm">
+                <div class="text-caption q-mt-sm op-5">
                   此模型将用于从用户问题中提取搜索关键词，建议选择响应速度快的模型。
                 </div>
               </q-card-section>
@@ -305,7 +308,11 @@ const aiStore = useAIStore()
 const splitterModel = ref(25)
 const selectedProvider = ref('')
 const showApiKey = ref(false)
-const configTab = ref('llm')
+const configTab = ref('llm');
+const configTabs = [
+  { name: 'llm', label: 'LLM 模型' },
+  { name: 'search', label: '搜索服务' },
+]
 const customProviderModel = ref('')
 const providers = ref(defaultProviders)
 const showModelInput = ref(false)
