@@ -55,38 +55,84 @@ function saveZoomFactor(zoom) {
 }
 function registerGlobalShortcuts() {
   function setAndSaveZoomFactor(zoom) {
-    mainWindow.webContents.setZoomFactor(zoom);
-    saveZoomFactor(zoom);
+    if (!mainWindow || !mainWindow.webContents) {
+      console.error('无法设置缩放因子：mainWindow或webContents不存在');
+      return;
+    }
+    try {
+      mainWindow.webContents.setZoomFactor(zoom);
+      saveZoomFactor(zoom);
+      console.log(`缩放因子已设置为: ${zoom}`);
+    } catch (error) {
+      console.error('设置缩放因子时出错:', error);
+    }
   }
-  // 注册 Ctrl + = 缩放增加
-  globalShortcut.register("CommandOrControl+=", () => {
-    if (mainWindow) {
-      const currentZoom = mainWindow.webContents.getZoomFactor();
-      const zoom = currentZoom + 0.1;
-      setAndSaveZoomFactor(zoom);
+  
+  try {
+    // 先确保之前的快捷键已经取消注册
+    unregisterGlobalShortcuts();
+    
+    // 注册 Ctrl + = 缩放增加
+    const registerPlusResult = globalShortcut.register("CommandOrControl+=", () => {
+      if (mainWindow && mainWindow.webContents) {
+        const currentZoom = mainWindow.webContents.getZoomFactor();
+        const zoom = Math.min(currentZoom + 0.1, 3.0); // 设置最大缩放限制
+        setAndSaveZoomFactor(zoom);
+      }
+    });
+    
+    if (!registerPlusResult) {
+      console.error('注册 CommandOrControl+= 快捷键失败');
     }
-  });
 
-  // 注册 Ctrl + - 缩减少
-  globalShortcut.register("CommandOrControl+-", () => {
-    if (mainWindow) {
-      const currentZoom = mainWindow.webContents.getZoomFactor();
-      const zoom = currentZoom - 0.1;
-      setAndSaveZoomFactor(zoom);
+    // 注册 Ctrl + - 缩减少
+    const registerMinusResult = globalShortcut.register("CommandOrControl+-", () => {
+      if (mainWindow && mainWindow.webContents) {
+        const currentZoom = mainWindow.webContents.getZoomFactor();
+        const zoom = Math.max(currentZoom - 0.1, 0.5); // 设置最小缩放限制
+        setAndSaveZoomFactor(zoom);
+      }
+    });
+    
+    if (!registerMinusResult) {
+      console.error('注册 CommandOrControl+- 快捷键失败');
     }
-  });
 
-  globalShortcut.register("CommandOrControl+0", () => {
-    if (mainWindow) {
-      setAndSaveZoomFactor(1);
+    // 注册 Ctrl + 0 重置缩放
+    const registerZeroResult = globalShortcut.register("CommandOrControl+0", () => {
+      if (mainWindow && mainWindow.webContents) {
+        setAndSaveZoomFactor(1);
+      }
+    });
+    
+    if (!registerZeroResult) {
+      console.error('注册 CommandOrControl+0 快捷键失败');
     }
-  });
+    
+    console.log('全局快捷键注册状态:', {
+      'CommandOrControl+=': registerPlusResult,
+      'CommandOrControl+-': registerMinusResult,
+      'CommandOrControl+0': registerZeroResult
+    });
+  } catch (error) {
+    console.error('注册全局快捷键时出错:', error);
+  }
 }
 
 function unregisterGlobalShortcuts() {
-  // 取消注册全局快捷键
-  globalShortcut.unregister("CommandOrControl+=");
-  globalShortcut.unregister("CommandOrControl+-");
+  try {
+    // 取消注册全局快捷键
+    globalShortcut.unregister("CommandOrControl+=");
+    globalShortcut.unregister("CommandOrControl+-");
+    globalShortcut.unregister("CommandOrControl+0"); // 添加对CommandOrControl+0的取消注册
+    
+    // 如果需要确保所有快捷键都被取消注册，可以使用以下方法
+    // globalShortcut.unregisterAll();
+    
+    console.log('全局快捷键已取消注册');
+  } catch (error) {
+    console.error('取消注册全局快捷键时出错:', error);
+  }
 }
 
 app.commandLine.appendSwitch(
@@ -214,33 +260,39 @@ function createWindow() {
   });
 
   mainWindow.on("closed", () => {
+    console.log('窗口关闭，取消注册快捷键并清空mainWindow引用');
+    unregisterGlobalShortcuts();
     mainWindow = null;
   });
-
+  
   mainWindowState.manage(mainWindow);
   // Save window position and size when it is moved or resized.
   mainWindow.on("moved", () => mainWindowState.manage(mainWindow));
   mainWindow.on("resized", () => mainWindowState.manage(mainWindow));
-
-  // 当窗口被关闭时，取消注册全局快捷键
-  mainWindow.on("closed", () => {
-    unregisterGlobalShortcuts();
-  });
-  mainWindow.on("will-quit", () => {
-    unregisterGlobalShortcuts();
-  });
+  
+  // 窗口失去焦点时取消注册快捷键
   mainWindow.on("blur", () => {
+    console.log('窗口失去焦点，取消注册快捷键');
     unregisterGlobalShortcuts();
   });
+  
+  // 窗口获得焦点时重新注册快捷键
   mainWindow.on("focus", () => {
+    console.log('窗口获得焦点，重新注册快捷键');
     registerGlobalShortcuts();
   });
 
-  // 注册全局快捷键
+  // 初始注册全局快捷键
   registerGlobalShortcuts();
 }
 
 app.on("window-all-closed", () => {
+  console.log('所有窗口已关闭');
+  // 移除IPC处理器
+  ipcMain.removeHandler(SCREEN_SHARE_GET_SOURCES);
+  ipcMain.removeHandler("ScreenCapture");
+  
+  // 在非macOS平台上退出应用
   if (platform !== "darwin") {
     app.quit();
   }
@@ -303,17 +355,6 @@ ipcMain.handle("ScreenCapture", async (_event, options) => {
       code: error.code
     };
   }
-});
-
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
-  ipcMain.removeHandler(SCREEN_SHARE_GET_SOURCES);
-  ipcMain.removeHandler("ScreenCapture");
 });
 
 app.on("activate", () => {
@@ -428,4 +469,10 @@ function getWindowsVersion() {
 // 将方法暴露给渲染进程
 ipcMain.on("get-windows-version", (event) => {
   event.returnValue = getWindowsVersion();
+});
+
+// 应用退出前取消注册快捷键
+app.on("will-quit", () => {
+  console.log('应用即将退出，取消注册所有快捷键');
+  unregisterGlobalShortcuts();
 });
