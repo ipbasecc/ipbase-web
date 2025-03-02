@@ -3,15 +3,14 @@
     <q-item-section avatar />
     <q-item-section class="border q-pa-sm radius-sm">
       <div class="column no-wrap gap-xs">
-        prompt: {{ currentSession.prompt }}
         <q-input
           v-model="localMessage"
-          type="text"
-          autogrow
+          :type="hasMessages ? 'text' : 'textarea'"
+          :autogrow="hasMessages"
           dense
           borderless
           :disable="loading"
-          placeholder="输入消息..."
+          :placeholder="hasMessages ? '输入消息...' : '你想问点什么？'"
           :rows="3"
           input-class="q-px-sm"
           @keypress.enter.prevent="onEnter"
@@ -127,6 +126,7 @@ const currentSession = computed(() => {
   }
   return aiStore.currentSession
 })
+const hasMessages = computed(() => currentSession?.messages?.length > 0)
 
 // 使用计算属性获取和设置搜索状态
 const searchEnabled = computed({
@@ -153,7 +153,7 @@ const updateSessionPrompt = (prompt) => {
   toggleUpdateSessionPrompt.value = false
 }
 onMounted(() => {
-  promptInput.value = currentSession.value.prompt || null
+  promptInput.value = currentSession.value?.prompt || null
 })
 
 // 清空当前对话

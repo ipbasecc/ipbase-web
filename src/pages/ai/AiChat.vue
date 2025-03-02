@@ -5,17 +5,17 @@
             <div class="full-height column">
                 <div class="row no-wrap items-center gap-xs q-pa-sm">
                     <q-btn flat rounded dense no-caps
-                        @click="aiStore.listToggler = 'assistants'" padding="sm md"
+                        @click="aiStore.listToggler = 'assistants'" padding="xs sm"
                         :class="aiStore.listToggler === 'assistants' ? 'border' : 'border-placeholder'"
                     >
-                        <q-icon name="auto_awesome" />
+                        <q-icon name="auto_awesome" size="xs" />
                         <span class="q-ml-sm">{{ $t('ai_assistant') }}</span>
                     </q-btn>
                     <q-btn flat rounded dense no-caps
-                        @click="aiStore.listToggler = 'topics'" padding="sm md"
+                        @click="aiStore.listToggler = 'topics'" padding="xs sm"
                         :class="aiStore.listToggler === 'topics' ? 'border' : 'border-placeholder'"
                     >
-                        <q-icon name="chat" />
+                        <q-icon name="chat" size="xs" />
                         <span class="q-ml-sm">{{ $t('ai_topics') }}</span>
                     </q-btn>
                     <q-space />
@@ -40,7 +40,6 @@
         <ChatBody :pannelMode="pannelMode" @toggle-drawer="showDrawer = true" @config="showConfig = true" />
     </NavigatorContainer>
     <ChatBody v-else v-bind="$attrs" :pannelMode="pannelMode" @toggle-drawer="showDrawer = true" @config="showConfig = true" />
-
     <!-- 移动端全屏会话列表 -->
     <div v-if="showDrawer" class="absolute-full" :class="$q.dark.mode ? 'bg-grey-10' : 'bg-grey-3'">
         <div class="column full-height">            

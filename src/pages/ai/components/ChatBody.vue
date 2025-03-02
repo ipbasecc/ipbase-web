@@ -1,5 +1,5 @@
 <template>
-    <div class="absolute-full column chat_body">
+    <div class="absolute-full column chat_body" :class="!currentModel ? 'flex-center' : ''">
         <!-- 模型选择器和会话列表按钮 -->
         <div class="q-pa-md row items-center">
             <q-btn
@@ -14,44 +14,49 @@
             <chat-model-selector />
         </div>
 
-        <!-- 消息列表 -->
-        <div class="chat-container">
-            <q-scroll-area ref="messageContainer" class="col q-pa-md tiptap" @scroll="saveScrollPosition">
-                <q-list class="column items-center">
-                    <!-- 所有消息，根据archived属性应用不同样式 -->
-                    <chat-message v-for="msg in currentSession?.messages" 
-                        :key="msg.id" 
-                        :message="msg"
-                        :loading="loading"
-                        :session="currentSession"
-                        style="width: 100%; max-width: 960px;"
-                        :class="{ 'op-5': msg.archived }"
-                    />
-                </q-list>
-            </q-scroll-area>
-        </div>
+        <template v-if="currentModel">
+            <!-- 消息列表 -->
+            <div v-if="currentSession?.messages?.length > 0" class="chat-container">
+                <q-scroll-area ref="messageContainer" class="col q-pa-md tiptap" @scroll="saveScrollPosition">
+                    <q-list class="column items-center">
+                        <!-- 所有消息，根据archived属性应用不同样式 -->
+                        <chat-message v-for="msg in currentSession?.messages" 
+                            :key="msg.id" 
+                            :message="msg"
+                            :loading="loading"
+                            :session="currentSession"
+                            style="width: 100%; max-width: 960px;"
+                            :class="{ 'op-5': msg.archived }"
+                        />
+                    </q-list>
+                </q-scroll-area>
+            </div>
 
-        <!-- 输入区域 -->
-        <div class="q-px-md q-pb-md column items-center">
-            <chat-input 
-                v-model="inputMessage" 
-                :loading="loading"
-                :session-id="currentSession?.id"
-                style="width: 100%; max-width: 960px;"
-                @cancel="cancelResponse"
-                @send="handleSendMessage" />
-        </div>
+            <!-- 输入区域 -->
+            <div class="q-px-md q-pb-md column" :class="currentSession?.messages?.length > 0 ? 'items-center' : 'q-space flex-center'">
+                <chat-input 
+                    v-model="inputMessage" 
+                    :loading="loading"
+                    :session-id="currentSession?.id"
+                    style="width: 100%; max-width: 960px;"
+                    @cancel="cancelResponse"
+                    @send="handleSendMessage"
+                />
+            </div>
+        </template>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import ChatMessage from './ChatMessage.vue'
 import ChatInput from './ChatInput.vue'
 import ChatModelSelector from './ChatModelSelector.vue'
 import { useChat } from '../composables/useChat'
 import localforage from 'localforage'
+
+import { aiStore } from "src/hooks/global/useStore";
 
 defineProps({
     pannelMode: {
@@ -61,6 +66,10 @@ defineProps({
 })
 
 defineEmits(['toggle-drawer', 'config'])
+const availableProviders = computed(() => aiStore.availableProviders)
+const availableModels = computed(() => aiStore.availableModels)
+const currentProvider = computed(() => aiStore.currentProvider)
+const currentModel = computed(() => aiStore.currentModel)
 
 const $q = useQuasar()
 

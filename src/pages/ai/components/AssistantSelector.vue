@@ -2,7 +2,7 @@
   <div>
     <q-list v-if="assistants.length > 0" class="column gap-xs">
       <q-item v-for="assistant in assistants" :key="assistant.id" clickable
-        class="radius-md hovered-item"
+        class="radius-xs hovered-item"
         :class="{ 'active-listitem': assistant.id === aiStore.selectedAssistant }"
         @click="selectAssistant(assistant.id)"
       >

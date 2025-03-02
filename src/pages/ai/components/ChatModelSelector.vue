@@ -102,12 +102,12 @@ const currentModel = computed(() => aiStore.currentModel)
 
 // 当前选中的供应商名称
 const currentProviderName = computed(() => {
-  return currentProvider.value?.name || '选择供应商'
+  return currentProvider.value?.name || '配置 AI 服务'
 })
 
 // 当前选中的模型名称
 const currentModelName = computed(() => {
-  return currentModel.value?.name || '选择模型'
+  return currentModel.value?.name || '选择 AI 模型'
 })
 
 // 选择供应商

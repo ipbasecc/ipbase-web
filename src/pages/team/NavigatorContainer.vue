@@ -279,11 +279,11 @@ const handleMouseDown = (side) => {
   dragWidth.value = true;
   if(side === 'left') {
     _ori_width.value = uiStore.navDrawerWidth;
-    navDrawerMinWidth.value = 180;
-    navDrawerMaxWidth.value = 340;
+    navDrawerMinWidth.value = 240;
+    navDrawerMaxWidth.value = 460;
   } else {
     _ori_width.value = uiStore.rightDrawerWidth;
-    navDrawerMinWidth.value = 240;
+    navDrawerMinWidth.value = 320;
     navDrawerMaxWidth.value = 860;
   }
   uiStore.dragging = true;

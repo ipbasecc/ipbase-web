@@ -3,7 +3,7 @@
       clickable 
       @click="emit('select', session)"
       v-ripple
-      class="hovered-item radius-md q-pr-sm"
+      class="hovered-item radius-xs q-pr-sm"
       :class="currentSessionId === session.id ? 'active-listitem border' : 'border-placeholder'">
       <q-item-section>
         <q-item-label lines="1">{{ session.title }}</q-item-label>
