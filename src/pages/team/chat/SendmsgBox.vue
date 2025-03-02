@@ -5,6 +5,7 @@
         <TipTap
           :toolbar_onBottom="true"
           :disable_btn="disable_btn"
+          :isMessageInput="true"
           need="md"
           ref="tiptapRef"
           for="chat"

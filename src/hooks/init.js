@@ -19,7 +19,6 @@ const process = (res) => {
     userStore.me = res
     userStore.todogroups = res.todogroups;
     teamStore.need_refecth_projects = false;
-    JSON.stringify(res);
 };
 export async function loginAndInit () {
   const _mm_me = await fetch_MmMe();

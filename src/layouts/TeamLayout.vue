@@ -70,7 +70,7 @@
 
 <script setup>
   import { watch, computed, onMounted, onBeforeMount, onUnmounted, ref, watchEffect } from "vue";
-  import { loginAndInit } from 'src/hooks/init.js'
+  import { loginAndInit, refetchUser } from 'src/hooks/init.js'
   import { useRoute, useRouter } from "vue-router";
   import AccountMenu from "../pages/team/components/AccountMenu.vue";
   import AppList from "components/VIewComponents/AppList.vue";
@@ -137,6 +137,9 @@
         await loginAndInit();
         await restoreDefaultTeam();
         dealStore.verified = teamStore.init.by_certification?.verified || false
+      } else {
+        // 由于pinia数据被持久化了，因此上个逻辑一般不会被执行，此处必须忽略缓存fetch一次，以触发后端加入ws房间事件
+        await refetchUser()
       }
 
       if(!teamStore.init.agreeAgreementAt) {

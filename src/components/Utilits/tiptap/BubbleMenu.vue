@@ -1,5 +1,5 @@
 <template>
-    <q-card bordered class="q-pa-xs row gap-xs no-wrap">
+    <q-card :bordered="bordered" :square="square" :flat="flat" class="q-pa-xs row gap-xs no-wrap">
       <q-btn-dropdown flat dense :label="$t('field_title')" icon="mdi-format-title" :class="{ 'bg-primary': editor.isActive('heading') }">
         <q-list bordered class="radius-sm q-pa-xs tiptap">
             <template v-for="i in 6" :key="i">
@@ -76,9 +76,24 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { uiStore, userStore } from "src/hooks/global/useStore";
-
-const { editor } = defineProps(['editor'])
+const { editor, square, bordered, flat } = defineProps({
+  editor: {
+    type: Object,
+    require: true,
+  },
+  square: {
+    type: Boolean,
+    default: false
+  },
+  bordered: {
+    type: Boolean,
+    default: true
+  },
+  flat: {
+    type: Boolean,
+    default: false
+  },
+})
 
 // 定义标题选项
 const headingOptions = [
