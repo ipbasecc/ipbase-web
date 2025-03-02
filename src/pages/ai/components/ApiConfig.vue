@@ -1,285 +1,361 @@
 <template>
-  <q-card flat bordered class="column" :class="$q.screen.gt.xs ? 'w-min-800 h-600' : 'fit'">
-    <q-card-section class="border-bottom">
-      <div class="text-h6">API 供应商配置</div>
-    </q-card-section>
+  <q-card flat bordered class="column no-wrap" :class="$q.screen.gt.xs ? 'w-min-800 h-600' : 'fit'">
+    <template v-if="$q.screen.gt.xs">
+      <q-card-section class="border-bottom">
+        <div class="text-h6">API 服务配置</div>
+      </q-card-section>
 
-    <!-- 桌面端布局 -->
-    <q-card-section class="column q-pa-none q-space" v-if="$q.screen.gt.xs">
-      <q-toolbar class="transparnt">
-        <q-tabs
-          v-model="configTab"
-          dense shrink
-          content-class="gap-xs"
-          active-class="bg-primary text-white"
-          align="left"
-        >
-          <q-tab v-for="i in configTabs" :key="i.name" :name="i.name" :label="i.label" class="radius-xs overflow-hidden" />
-        </q-tabs>
-      </q-toolbar>
-      <q-tab-panels v-model="configTab" animated class="q-space">
-        <q-tab-panel name="llm" class="q-pa-none">
-          <q-splitter v-model="splitterModel" class="fit">
-            <!-- 左侧供应商列表 -->
-            <template v-slot:before>
-              <q-scroll-area class="fit">
-                <q-list class="column gap-xs q-pa-md" dense>
-                  <q-item
-                    v-for="provider in providers"
-                    :key="provider.id"
-                    clickable
-                    :active="selectedProvider === provider.id"
-                    @click="selectedProvider = provider.id"
-                    v-ripple
-                    class="radius-xs"
-                    :class="selectedProvider === provider.id ? $q.dark.mode ? 'bg-grey-10 border' : 'bg-grey-3 border' : 'border-placeholder'"
-                  >
-                    <q-item-section>
-                      <q-item-label>{{ provider.name }}</q-item-label>
-                      <q-item-label caption :class="isProviderActive(provider) ? 'text-primary' : 'op-5'">
-                        {{ isProviderActive(provider) ? '已配置' : '未配置' }}
-                      </q-item-label>
-                    </q-item-section>
+      <!-- 桌面端布局 -->
+      <q-card-section class="column q-pa-none q-space">
+        <q-toolbar class="transparnt">
+          <q-tabs
+            v-model="configTab"
+            dense shrink
+            content-class="gap-xs"
+            active-class="bg-primary text-white"
+            align="left"
+          >
+            <q-tab v-for="i in configTabs" :key="i.name" :name="i.name" :label="i.label" class="radius-xs overflow-hidden" />
+          </q-tabs>
+        </q-toolbar>
+        <q-tab-panels v-model="configTab" animated class="q-space">
+          <q-tab-panel name="llm" class="q-pa-none">
+            <q-splitter v-model="splitterModel" class="fit">
+              <!-- 左侧供应商列表 -->
+              <template v-slot:before>
+                <q-scroll-area class="fit">
+                  <q-list class="column gap-xs q-pa-md" dense>
+                    <q-item
+                      v-for="provider in providers"
+                      :key="provider.id"
+                      clickable
+                      :active="selectedProvider === provider.id"
+                      @click="selectedProvider = provider.id"
+                      v-ripple
+                      class="radius-xs"
+                      :class="selectedProvider === provider.id ? $q.dark.mode ? 'bg-grey-10 border' : 'bg-grey-3 border' : 'border-placeholder'"
+                    >
+                      <q-item-section>
+                        <q-item-label>{{ provider.name }}</q-item-label>
+                        <q-item-label caption :class="isProviderActive(provider) ? 'text-primary' : 'op-5'">
+                          {{ isProviderActive(provider) ? '已配置' : '未配置' }}
+                        </q-item-label>
+                      </q-item-section>
 
-                    <q-item-section v-if="providerConfigs[provider.id].active" side>
-                      <q-chip color="positive" :label="$t('on')" outline dense />
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-scroll-area>
-            </template>
-
-            <!-- 右侧配置详情 -->
-            <template v-slot:after>
-              <q-scroll-area class="fit">
-                <div class="q-pa-md" v-if="selectedProvider">
-                  <div class="row no-wrap items-center">
-                    <div class="text-h6 q-mb-md" :class="currentProvider?.tip ? 'no-margin' : ''">
-                      {{ currentProviderName }}
-                    </div>
-                    <q-space />
-                    <q-toggle v-model="providerConfigs[selectedProvider].active" dense
-                    />
-                  </div>
-                  <div v-if="currentProvider?.tip" class="text-subtitle2 q-mb-lg text-orange">{{ currentProvider?.tip }}</div>
-                  <q-input
-                    v-model="providerConfigs[selectedProvider].endpoint"
-                    dense outlined
-                    label="API Endpoint"
-                    :placeholder="currentProvider?.defaultEndpoint"
-                    class="q-mb-md"
-                  />
-                  
-                  <q-input
-                    v-model="providerConfigs[selectedProvider].apiKey"
-                    dense outlined
-                    label="API Key"
-                    class="q-mb-md"
-                    :type="showApiKey ? 'text' : 'password'"
-                  >
-                    <template v-slot:append>
-                      <q-icon
-                        :name="showApiKey ? 'visibility_off' : 'visibility'"
-                        class="cursor-pointer"
-                        @click="showApiKey = !showApiKey"
-                      />
-                    </template>
-                  </q-input>
-
-                  <div class="text-subtitle2 q-mb-sm">可用模型</div>
-                  <div class="column q-gutter-y-md">
-                    <div class="row items-center border radius-xs q-pa-xs" style="min-height: 42px;">
-                      <q-chip v-for="modelId in providerConfigs[selectedProvider].models"
-                        :key="modelId"
-                        :label="modelId"
-                        removable square clickable
-                        class="border q-ma-xs"
-                        :color="isModelActive(modelId) ? 'primary' : undefined"
-                        :text-color="isModelActive(modelId) ? 'white' : undefined"
-                        @click="toggleModelActive(modelId)"
-                        @remove="removeProviderModel(modelId)"
-                        :disable="isLastActiveModel(selectedProvider, modelId)"
-                      />
-                      <q-input 
-                        v-if="showModelInput"
-                        v-model="customProviderModel" 
-                        type="text"
-                        aria-placeholder="请输入模型名称"
-                        borderless 
-                        dense
-                        autofocus
-                        class="q-px-xs col"
-                        style="min-width: 100px;"
-                        @keyup.enter="handleAddModel"
-                        @blur="handleInputBlur"
-                      />
-                      <span v-else class="cursor-pointer q-pa-sm text-primary" @click="showModelInput = true" >添加模型</span>
-                    </div>
-                  </div>
-                </div>
-                <div v-else class="text-center q-pa-md text-grey">
-                  请选择一个供应商进行配置
-                </div>
-              </q-scroll-area>
-            </template>
-          </q-splitter>
-        </q-tab-panel>
-
-        <q-tab-panel name="search" class="q-pa-none">
-          <q-scroll-area class="fit q-pa-md">
-            <div class="text-h6 q-mb-md">搜索服务配置</div>
-            <p class="text-caption q-mb-md">
-              配置搜索服务可以让AI助手获取实时的互联网信息，提供更准确的回答。
-            </p>
-            <q-card v-for="provider in searchProviders" :key="provider.id" flat bordered class="q-mb-md">
-              <q-card-section>
-                <div class="row items-center">
-                  <div class="text-h6">{{ provider.name }}</div>
-                  <q-space />
-                  <q-toggle v-model="aiStore.searchProvider[provider.id].active" dense />
-                </div>
-                <p class="text-caption op-5">{{ provider.description }}</p>
-              </q-card-section>
-              
-              <q-card-section>
-                <q-input 
-                  v-model="aiStore.searchProvider[provider.id].apiKey" 
-                  label="API Key" 
-                  outlined 
-                  dense
-                  :disable="!aiStore.searchProvider[provider.id].active"
-                />
-                <div class="text-caption q-mt-sm">
-                  您可以在 <a href="https://tavily.com" target="_blank">Tavily官网</a> 获取API密钥。
-                </div>
-              </q-card-section>
-            </q-card>
-            
-            <!-- 搜索关键词提取模型设置 -->
-            <q-card flat bordered class="q-mb-md">
-              <q-card-section class="column">
-                <div class="row no-wrap items-center">
-                  <div class="text-h6">根据对话内容，优化联网内容获取</div>
-                  <q-space />
-                  <q-toggle v-model="aiStore.enableExtractKeyword" dense />
-                </div>
-                <p class="text-caption op-5">
-                  选择一个模型用于从用户问题中提取搜索关键词，以提高搜索结果的相关性。
-                </p>
-              </q-card-section>
-              
-              <q-card-section v-if="aiStore.enableExtractKeyword">
-                <q-select
-                  v-model="aiStore.searchKeywordModel"
-                  :options="allAvailableModels"
-                  option-value="id"
-                  option-label="name"
-                  emit-value
-                  map-options
-                  outlined
-                  dense
-                  label="选择模型"
-                  :disable="!hasAvailableModels"
-                >
-                  <template v-slot:no-option>
-                    <q-item>
-                      <q-item-section class="text-grey">
-                        请先在LLM模型选项卡中配置并激活至少一个模型
+                      <q-item-section v-if="providerConfigs[provider.id].active" side>
+                        <q-chip color="positive" :label="$t('on')" outline dense />
                       </q-item-section>
                     </q-item>
+                  </q-list>
+                </q-scroll-area>
+              </template>
+
+              <!-- 右侧配置详情 -->
+              <template v-slot:after>
+                <q-scroll-area class="fit">
+                  <div class="q-pa-md" v-if="selectedProvider">
+                    <div class="row no-wrap items-center">
+                      <div class="text-h6 q-mb-md" :class="currentProvider?.tip ? 'no-margin' : ''">
+                        {{ currentProviderName }}
+                      </div>
+                      <q-space />
+                      <q-toggle v-model="providerConfigs[selectedProvider].active" dense
+                      />
+                    </div>
+                    <div v-if="currentProvider?.tip" class="text-subtitle2 q-mb-lg text-orange">{{ currentProvider?.tip }}</div>
+                    <q-input
+                      v-model="providerConfigs[selectedProvider].endpoint"
+                      dense outlined
+                      label="API Endpoint"
+                      :placeholder="currentProvider?.defaultEndpoint"
+                      class="q-mb-md"
+                    />
+                    
+                    <q-input
+                      v-model="providerConfigs[selectedProvider].apiKey"
+                      dense outlined
+                      label="API Key"
+                      class="q-mb-md"
+                      :type="showApiKey ? 'text' : 'password'"
+                    >
+                      <template v-slot:append>
+                        <q-icon
+                          :name="showApiKey ? 'visibility_off' : 'visibility'"
+                          class="cursor-pointer"
+                          @click="showApiKey = !showApiKey"
+                        />
+                      </template>
+                    </q-input>
+
+                    <div class="text-subtitle2 q-mb-sm">可用模型</div>
+                    <div class="column q-gutter-y-md">
+                      <div class="row items-center border radius-xs q-pa-xs" style="min-height: 42px;">
+                        <q-chip v-for="modelId in providerConfigs[selectedProvider].models"
+                          :key="modelId"
+                          :label="modelId"
+                          removable square clickable
+                          class="border q-ma-xs"
+                          :color="isModelActive(modelId) ? 'primary' : undefined"
+                          :text-color="isModelActive(modelId) ? 'white' : undefined"
+                          @click="toggleModelActive(modelId)"
+                          @remove="removeProviderModel(modelId)"
+                          :disable="isLastActiveModel(selectedProvider, modelId)"
+                        />
+                        <q-input 
+                          v-if="showModelInput"
+                          v-model="customProviderModel" 
+                          type="text"
+                          aria-placeholder="请输入模型名称"
+                          borderless 
+                          dense
+                          autofocus
+                          class="q-px-xs col"
+                          style="min-width: 100px;"
+                          @keyup.enter="handleAddModel"
+                          @blur="handleInputBlur"
+                        />
+                        <span v-else class="cursor-pointer q-pa-sm text-primary" @click="showModelInput = true" >添加模型</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-else class="text-center q-pa-md text-grey">
+                    请选择一个供应商进行配置
+                  </div>
+                </q-scroll-area>
+              </template>
+            </q-splitter>
+          </q-tab-panel>
+
+          <q-tab-panel name="search" class="q-pa-none">
+            <q-scroll-area class="fit q-pa-md">
+              <div class="text-h6 q-mb-md">搜索服务配置</div>
+              <p class="text-caption q-mb-md">
+                配置搜索服务可以让AI助手获取实时的互联网信息，提供更准确的回答。
+              </p>
+              <q-card v-for="provider in searchProviders" :key="provider.id" flat bordered class="q-mb-md">
+                <q-card-section>
+                  <div class="row items-center">
+                    <div class="text-h6">{{ provider.name }}</div>
+                    <q-space />
+                    <q-toggle v-model="aiStore.searchProvider[provider.id].active" dense />
+                  </div>
+                  <p class="text-caption op-5">{{ provider.description }}</p>
+                </q-card-section>
+                
+                <q-card-section>
+                  <q-input 
+                    v-model="aiStore.searchProvider[provider.id].apiKey" 
+                    label="API Key" 
+                    outlined 
+                    dense
+                    :disable="!aiStore.searchProvider[provider.id].active"
+                  />
+                  <div class="text-caption q-mt-sm">
+                    您可以在 <a href="https://tavily.com" target="_blank">Tavily官网</a> 获取API密钥。
+                  </div>
+                </q-card-section>
+              </q-card>
+              
+              <!-- 搜索关键词提取模型设置 -->
+              <q-card flat bordered class="q-mb-md">
+                <q-card-section class="column">
+                  <div class="row no-wrap items-center">
+                    <div class="text-h6">根据对话内容，优化联网内容获取</div>
+                    <q-space />
+                    <q-toggle v-model="aiStore.enableExtractKeyword" dense />
+                  </div>
+                  <p class="text-caption op-5">
+                    选择一个模型用于从用户问题中提取搜索关键词，以提高搜索结果的相关性。
+                  </p>
+                </q-card-section>
+                
+                <q-card-section v-if="aiStore.enableExtractKeyword">
+                  <q-select
+                    v-model="aiStore.searchKeywordModel"
+                    :options="allAvailableModels"
+                    option-value="id"
+                    option-label="name"
+                    emit-value
+                    map-options
+                    outlined
+                    dense
+                    label="选择模型"
+                    :disable="!hasAvailableModels"
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey">
+                          请先在LLM模型选项卡中配置并激活至少一个模型
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
+                  <div class="text-caption q-mt-sm op-5">
+                    此模型将用于从用户问题中提取搜索关键词，建议选择响应速度快的模型。
+                  </div>
+                </q-card-section>
+              </q-card>
+            </q-scroll-area>
+          </q-tab-panel>
+        </q-tab-panels>
+      </q-card-section>
+    </template>
+
+    <!-- 移动端布局 -->
+     <q-scroll-area class="q-space" v-else>
+      <q-card-section class="q-pa-none">
+        <q-list class="q-pa-none column no-wrap">
+          <div class="text-h6 q-mb-md q-px-md">API 服务配置</div>
+          <q-expansion-item
+            v-for="provider in providers"
+            :key="provider.id"
+            :label="provider.name"
+            :caption="isProviderActive(provider) ? '已配置' : '未配置'"
+            :class="isProviderActive(provider) ? 'text-primary' : ''"
+            dense-toggle
+            class="border-bottom"
+          >
+            <q-card>
+              <q-card-section>
+                <div class="row items-center justify-between q-mb-md">
+                  <div class="text-subtitle2">启用状态</div>
+                  <q-toggle dense
+                    v-model="providerConfigs[provider.id].active"
+                    :disable="!isProviderConfigValid(provider)"
+                  />
+                </div>
+                
+                <q-input
+                  v-model="providerConfigs[provider.id].endpoint"
+                  dense outlined
+                  label="API Endpoint"
+                  :placeholder="provider.defaultEndpoint"
+                  class="q-mb-md"
+                />
+                
+                <q-input
+                  v-model="providerConfigs[provider.id].apiKey"
+                  dense outlined
+                  label="API Key"
+                  class="q-mb-md"
+                  :type="showApiKey ? 'text' : 'password'"
+                >
+                  <template v-slot:append>
+                    <q-icon
+                      :name="showApiKey ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      @click="showApiKey = !showApiKey"
+                    />
                   </template>
-                </q-select>
-                <div class="text-caption q-mt-sm op-5">
-                  此模型将用于从用户问题中提取搜索关键词，建议选择响应速度快的模型。
+                </q-input>
+
+                <div class="text-subtitle2 q-mb-sm">可用模型</div>
+                <div class="column q-gutter-y-md">
+                  <div class="row items-center wrap border radius-xs q-px-xs" style="min-height: 42px;">
+                    <q-chip v-for="modelId in providerConfigs[provider.id].models"
+                      :key="modelId"
+                      :label="modelId"
+                      removable square clickable
+                      class="border q-ma-xs"
+                      :color="isModelActive(modelId) ? 'primary' : undefined"
+                      :text-color="isModelActive(modelId) ? 'white' : undefined"
+                      @click="toggleModelActive(modelId)"
+                      @remove="removeProviderModel(modelId)"
+                      :disable="isLastActiveModel(provider.id, modelId)"
+                    />
+                    <q-input 
+                      v-if="showModelInput && selectedProvider === provider.id"
+                      v-model="customProviderModel" 
+                      type="text"
+                      aria-placeholder="请输入模型名称"
+                      borderless 
+                      dense
+                      autofocus
+                      class="q-px-xs col"
+                      style="min-width: 100px;"
+                      @keyup.enter="handleAddModel"
+                      @blur="handleInputBlur"
+                    />
+                    <span v-else class="cursor-pointer q-pa-sm" @click="showModelInput = true; selectedProvider = provider.id" >添加模型</span>
+                  </div>
                 </div>
               </q-card-section>
             </q-card>
-          </q-scroll-area>
-        </q-tab-panel>
-      </q-tab-panels>
-    </q-card-section>
-
-    <!-- 移动端布局 -->
-    <q-card-section class="q-pa-none" v-else>
-      <q-list class="q-pa-none">
-        <q-expansion-item
-          v-for="provider in providers"
-          :key="provider.id"
-          :label="provider.name"
-          :caption="isProviderActive(provider) ? '已配置' : '未配置'"
-          :class="isProviderActive(provider) ? 'text-primary' : ''"
-          dense-toggle
-          class="border-bottom"
-        >
+          </q-expansion-item>
           <q-card>
             <q-card-section>
-              <div class="row items-center justify-between q-mb-md">
-                <div class="text-subtitle2">启用状态</div>
-                <q-toggle dense
-                  v-model="providerConfigs[provider.id].active"
-                  :disable="!isProviderConfigValid(provider)"
-                />
-              </div>
-              
-              <q-input
-                v-model="providerConfigs[provider.id].endpoint"
-                dense outlined
-                label="API Endpoint"
-                :placeholder="provider.defaultEndpoint"
-                class="q-mb-md"
-              />
-              
-              <q-input
-                v-model="providerConfigs[provider.id].apiKey"
-                dense outlined
-                label="API Key"
-                class="q-mb-md"
-                :type="showApiKey ? 'text' : 'password'"
-              >
-                <template v-slot:append>
-                  <q-icon
-                    :name="showApiKey ? 'visibility_off' : 'visibility'"
-                    class="cursor-pointer"
-                    @click="showApiKey = !showApiKey"
-                  />
-                </template>
-              </q-input>
-
-              <div class="text-subtitle2 q-mb-sm">可用模型</div>
-              <div class="column q-gutter-y-md">
-                <div class="row items-center wrap border radius-xs q-px-xs" style="min-height: 42px;">
-                  <q-chip v-for="modelId in providerConfigs[provider.id].models"
-                    :key="modelId"
-                    :label="modelId"
-                    removable square clickable
-                    class="border q-ma-xs"
-                    :color="isModelActive(modelId) ? 'primary' : undefined"
-                    :text-color="isModelActive(modelId) ? 'white' : undefined"
-                    @click="toggleModelActive(modelId)"
-                    @remove="removeProviderModel(modelId)"
-                    :disable="isLastActiveModel(provider.id, modelId)"
-                  />
+              <div class="text-h6 q-mb-md">搜索服务配置</div>
+              <p class="text-caption q-mb-md">
+                配置搜索服务可以让AI助手获取实时的互联网信息，提供更准确的回答。
+              </p>
+              <q-card v-for="provider in searchProviders" :key="provider.id" flat bordered class="q-mb-md">
+                <q-card-section>
+                  <div class="row items-center">
+                    <div class="text-h6">{{ provider.name }}</div>
+                    <q-space />
+                    <q-toggle v-model="aiStore.searchProvider[provider.id].active" dense />
+                  </div>
+                  <p class="text-caption op-5">{{ provider.description }}</p>
+                </q-card-section>
+                
+                <q-card-section>
                   <q-input 
-                    v-if="showModelInput && selectedProvider === provider.id"
-                    v-model="customProviderModel" 
-                    type="text"
-                    aria-placeholder="请输入模型名称"
-                    borderless 
+                    v-model="aiStore.searchProvider[provider.id].apiKey" 
+                    label="API Key" 
+                    outlined 
                     dense
-                    autofocus
-                    class="q-px-xs col"
-                    style="min-width: 100px;"
-                    @keyup.enter="handleAddModel"
-                    @blur="handleInputBlur"
+                    :disable="!aiStore.searchProvider[provider.id].active"
                   />
-                  <span v-else class="cursor-pointer q-pa-sm" @click="showModelInput = true; selectedProvider = provider.id" >添加模型</span>
-                </div>
-              </div>
+                  <div class="text-caption q-mt-sm">
+                    您可以在 <a href="https://tavily.com" target="_blank">Tavily官网</a> 获取API密钥。
+                  </div>
+                </q-card-section>
+              </q-card>
+              
+              <!-- 搜索关键词提取模型设置 -->
+              <q-card flat bordered class="q-mb-md">
+                <q-card-section class="column">
+                  <div class="row no-wrap items-center">
+                    <div class="text-h6">根据对话内容，优化联网内容获取</div>
+                    <q-space />
+                    <q-toggle v-model="aiStore.enableExtractKeyword" dense />
+                  </div>
+                  <p class="text-caption op-5">
+                    选择一个模型用于从用户问题中提取搜索关键词，以提高搜索结果的相关性。
+                  </p>
+                </q-card-section>
+                
+                <q-card-section v-if="aiStore.enableExtractKeyword">
+                  <q-select
+                    v-model="aiStore.searchKeywordModel"
+                    :options="allAvailableModels"
+                    option-value="id"
+                    option-label="name"
+                    emit-value
+                    map-options
+                    outlined
+                    dense
+                    label="选择模型"
+                    :disable="!hasAvailableModels"
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey">
+                          请先在LLM模型选项卡中配置并激活至少一个模型
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
+                  <div class="text-caption q-mt-sm op-5">
+                    此模型将用于从用户问题中提取搜索关键词，建议选择响应速度快的模型。
+                  </div>
+                </q-card-section>
+              </q-card>
             </q-card-section>
           </q-card>
-        </q-expansion-item>
-      </q-list>
-    </q-card-section>
+        </q-list>
+      </q-card-section>
+     </q-scroll-area>
 
     <q-card-actions align="right" :class="!$q.screen.gt.xs ? 'q-mt-lg' : 'border-top'">
       <q-btn flat dense label="取消" v-close-popup />

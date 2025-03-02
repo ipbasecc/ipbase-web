@@ -4,27 +4,29 @@
             <!-- 左侧会话列表 - 在大屏幕显示 -->
             <div class="full-height column">
                 <div class="row no-wrap items-center gap-xs q-pa-sm">
-                    <q-btn flat rounded dense no-caps
-                        @click="aiStore.listToggler = 'assistants'" padding="xs sm"
-                        :class="aiStore.listToggler === 'assistants' ? 'border' : 'border-placeholder'"
+                    <q-tabs
+                        v-model="aiStore.listToggler" 
+                        dense inline-label shrink
+                        content-class="gap-xs"
+                        align="left"
                     >
-                        <q-icon name="auto_awesome" size="xs" />
-                        <span class="q-ml-sm">{{ $t('ai_assistant') }}</span>
-                    </q-btn>
-                    <q-btn flat rounded dense no-caps
-                        @click="aiStore.listToggler = 'topics'" padding="xs sm"
-                        :class="aiStore.listToggler === 'topics' ? 'border' : 'border-placeholder'"
-                    >
-                        <q-icon name="chat" size="xs" />
-                        <span class="q-ml-sm">{{ $t('ai_topics') }}</span>
-                    </q-btn>
+                        <q-tab name="assistant" class="radius-xs overflow-hidden"
+                            :class="aiStore.listToggler === 'assistant' ? 'border' : 'border-placeholder'">
+                            <q-icon name="auto_awesome" size="xs" />
+                            <span class="q-pl-sm">{{ $t('ai_assistant') }}</span>
+                        </q-tab>
+                        <q-tab name="topics" class="radius-xs overflow-hidden"
+                            :class="aiStore.listToggler === 'topics' ? 'border' : 'border-placeholder'">
+                            <q-icon name="chat" size="xs" />
+                            <span class="q-pl-sm">{{ $t('topics') }}</span>
+                        </q-tab>
+                    </q-tabs>
                     <q-space />
                     <q-btn flat rounded dense icon="mdi-plus-circle-outline"
                         :color="$q.dark.mode ? 'grey-5' : 'blue-1'"
                         @click="createNewChat(aiStore.selectedAssistant)"
                     />
                 </div>
-                <q-separator spaced inset class="op-5" />
                 <q-scroll-area class="q-space q-px-md q-py-sm">
                     <chat-session-list
                         v-if="aiStore.listToggler === 'topics'"
