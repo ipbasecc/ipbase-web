@@ -13,7 +13,6 @@
           :placeholder="hasMessages ? '输入消息...' : '你想问点什么？'"
           :rows="3"
           input-class="q-px-sm"
-          @keypress.enter.prevent="onEnter"
           hide-bottom-space
         />
         <div class="row no-wrap items-center gap-sm">

@@ -1,7 +1,7 @@
 <template>
   <DocumentTiptap v-if="teamStore.active_document" :key="teamStore.active_document.id"
     class="fit" :class="$q.screen.gt.xs ? 'limit' : ''"
-    :document="teamStore.active_document" :by_info :showClose="true" @close="close"
+    :document="teamStore.active_document" :by_info :showClose="showClose" @close="close"
   />
 </template>
 
@@ -30,9 +30,13 @@ const props = defineProps({
       };
     },
   },
+  showClose: {
+    type: Boolean,
+    default: false
+  }
 });
 
-const { by_info } = toRefs(props);
+const { by_info, showClose } = toRefs(props);
 
 watchEffect(async () => {
   if (by_info.value.by === "project") {
@@ -54,6 +58,7 @@ onBeforeUnmount(() => {
 <style lang="scss">
 .limit .tiptapBody div {
   max-width: 64rem;
+  width: 100%;
   margin: 0 auto;
 }
 </style>

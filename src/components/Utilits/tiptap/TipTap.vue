@@ -24,7 +24,8 @@
       >
        <BubbleMenuContent :editor />
       </bubble-menu>
-      <div class="column q-space items-center">
+      <div class="column q-space items-center"
+      :class="`${show_toolbar && isEditable && !toolbar_onBottom ? 'has_toolbar' : ''}`">
         <editor-content
           ref="dropZoneRef"
           class="tiptapBody q-space"
@@ -858,6 +859,9 @@ watch(
 </script>
 
 <style lang="scss">
+.has_toolbar {
+  padding-top: 43px;
+}
 .tiptap {
   min-height: 2rem;
 }

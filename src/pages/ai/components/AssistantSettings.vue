@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch, defineProps } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useAIStore } from 'src/stores/ai.js';
 
 const props = defineProps(['assistantId']);

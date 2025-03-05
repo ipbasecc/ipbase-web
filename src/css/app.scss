@@ -798,6 +798,12 @@ input:-internal-autofill-selected {
   opacity: 0.3;
 }
 
+.limit .tiptapBody {
+  max-width: 64rem;
+  width: 100%;
+  margin: 0 auto;
+}
+
 .card h1,
 .card h2,
 .card h3,

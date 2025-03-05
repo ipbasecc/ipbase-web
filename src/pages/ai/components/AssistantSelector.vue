@@ -52,11 +52,11 @@
           </q-btn>
         </q-item-section>
       </q-item>
-      <q-btn flat rounded icon="mdi-plus"
-        :label="$t('add_assistant')" class="q-mt-sm hover-highlight"
-        @click="showAddAssistantDialog" align="left" no-caps
-      />
     </q-list>
+    <q-btn flat rounded icon="mdi-plus"
+      :label="$t('add_assistant')" class="q-mt-sm hover-highlight"
+      @click="showAddAssistantDialog" align="left" no-caps
+    />
     <q-dialog v-model="addAssistantDialog" persistent>
       <q-card bordered style="min-width: 400px;">
         <q-card-section>

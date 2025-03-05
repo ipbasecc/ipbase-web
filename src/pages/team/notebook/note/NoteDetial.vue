@@ -21,16 +21,16 @@
       <template v-if="pannelMode" v-slot:left-btn>
         <q-btn flat dense size=sm icon="mdi-chevron-left" @click="backList()" />
       </template>
-        <template v-slot:more_btn>
-          <template v-if="teamStore.note?.by_course && uiStore.app === 'notebooks'">
-            <q-separator spaced inset vertical />
-            <q-btn dense flat no-caps :label="$t('open_related_course')" @click="showCourseDialog = true" />
-          </template>
-          <div v-if="saving" class="row no-wrap gap-sm flex-center q-px-md">
-              <q-spinner size="1em" :thickness="2" />
-              {{ $t('saving') }}
-          </div>
+      <template v-slot:more_btn>
+        <template v-if="teamStore.note?.by_course && uiStore.app === 'notebooks'">
+          <q-separator spaced inset vertical />
+          <q-btn dense flat no-caps :label="$t('open_related_course')" @click="showCourseDialog = true" />
         </template>
+        <div v-if="saving" class="row no-wrap gap-sm flex-center q-px-md">
+            <q-spinner size="1em" :thickness="2" />
+            {{ $t('saving') }}
+        </div>
+      </template>
     </TipTap>
     <q-dialog v-model="showCourseDialog" persistent full-width full-height>
       <ClassPage :card="teamStore.note?.by_course" />

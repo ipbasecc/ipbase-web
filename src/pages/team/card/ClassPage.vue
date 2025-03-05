@@ -137,6 +137,7 @@
                 :withSaveBtn="true"
                 :withImageBtn="true"
                 :by_info="byInfo"
+                :showClose="true"
               />
               <DocumentList
                 v-else
