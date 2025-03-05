@@ -299,9 +299,9 @@ importers:
       pinia:
         specifier: ^3.0.1
         version: 3.0.1(typescript@5.6.3)(vue@3.5.12(typescript@5.6.3))
-      pinia-plugin-persistedstate-2:
-        specifier: ^2.0.28
-        version: 2.0.28(pinia@3.0.1(typescript@5.6.3)(vue@3.5.12(typescript@5.6.3)))
+      pinia-plugin-state-persistence:
+        specifier: ^1.10.1
+        version: 1.10.1(pinia@3.0.1(typescript@5.6.3)(vue@3.5.12(typescript@5.6.3)))
       prismjs:
         specifier: ^1.29.0
         version: 1.29.0
@@ -6888,10 +6888,10 @@ packages:
     resolution: {integrity: sha512-udgsAY+fTnvv7kI7aaxbqwWNb0AHiB0qBO89PZKPkoTmGOgdbrHDKD+0B2X4uTfJ/FT1R09r9gTsjUjNJotuog==}
     engines: {node: '>=0.10.0'}
 
-  pinia-plugin-persistedstate-2@2.0.28:
-    resolution: {integrity: sha512-IrX64xs21iARzKC2SzBguZhMzjwqLCyA32DBEGl2j4N4NAI/l0NQ82ZslQI/fuZr7Fo98/8PN7ki6mTMyGo5Cg==}
+  pinia-plugin-state-persistence@1.10.1:
+    resolution: {integrity: sha512-HstifL8aF7EvkTHCEOhR6ROaOam890QfeT6lQrG+ZiYn+7F1BD4pwQXk8z1v7MzcbT6e8+zRq+2Xkb4pdIW7qg==}
     peerDependencies:
-      pinia: ^2.3.0
+      pinia: ^2.3.0 || ^3.0.0
 
   pinia@3.0.1:
     resolution: {integrity: sha512-WXglsDzztOTH6IfcJ99ltYZin2mY8XZCXujkYWVIJlBjqsP6ST7zw+Aarh63E1cDVYeyUcPCxPHzJpEOmzB6Wg==}
@@ -7858,9 +7858,6 @@ packages:
 
   shiki@1.29.2:
     resolution: {integrity: sha512-njXuliz/cP+67jU2hukkxCNuH1yUi4QfdZZY+sMr5PPrIyXSu5iTb/qYC4BiWWB0vZ+7TbdvYUCeL23zpwCfbg==}
-
-  shvl@3.0.0:
-    resolution: {integrity: sha512-5IomAM3ykE/g9K9L6lhODc+TpCuN03rrhlboegeKyyfh66DDdpRD5JN37DYhNHH+RaYjiIDx64K/Ms/xQYOR5w==}
 
   side-channel@1.0.6:
     resolution: {integrity: sha512-fDW/EZ6Q9RiO8eFG8Hj+7u/oW+XrPTIChwCOM2+th2A6OblDtYYIpve9m+KvI9Z4C9qSEXlaGR6bTEYHReuglA==}
@@ -17060,10 +17057,9 @@ snapshots:
 
   pify@2.3.0: {}
 
-  pinia-plugin-persistedstate-2@2.0.28(pinia@3.0.1(typescript@5.6.3)(vue@3.5.12(typescript@5.6.3))):
+  pinia-plugin-state-persistence@1.10.1(pinia@3.0.1(typescript@5.6.3)(vue@3.5.12(typescript@5.6.3))):
     dependencies:
       pinia: 3.0.1(typescript@5.6.3)(vue@3.5.12(typescript@5.6.3))
-      shvl: 3.0.0
 
   pinia@3.0.1(typescript@5.6.3)(vue@3.5.12(typescript@5.6.3)):
     dependencies:
@@ -18342,8 +18338,6 @@ snapshots:
       '@shikijs/types': 1.29.2
       '@shikijs/vscode-textmate': 10.0.2
       '@types/hast': 3.0.4
-
-  shvl@3.0.0: {}
 
   side-channel@1.0.6:
     dependencies:

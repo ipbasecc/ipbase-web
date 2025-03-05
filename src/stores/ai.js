@@ -235,6 +235,7 @@ export const useAIStore = defineStore('ai', {
 
     // 初始化聊天会话
     async initChatSessions() {
+      await this.$restore()
       console.log('initChatSessions 1');
       
       // 确保所有会话都有archived_messages字段

@@ -1,9 +1,7 @@
 import { store } from 'quasar/wrappers'
 import { createPinia } from 'pinia'
 import localforage from 'localforage'
-
-// 当前持久化插件支持异步，因此使用 pinia-plugin-persistedstate-2
-import { createPersistedStatePlugin } from 'pinia-plugin-persistedstate-2'
+import { createStatePersistence } from 'pinia-plugin-state-persistence'
 
 /*
  * If not building with SSR mode, you can
@@ -23,10 +21,10 @@ localforage.config({
 // Create a new instance of Pinia
 const pinia = createPinia()
 
-
-// 配置持久化插件
-pinia.use(createPersistedStatePlugin({
-  // 全局存储配置
+const persist = createStatePersistence({
+  key: '', // Acts as a prefix for all store keys when persisting data
+  debug: false, // Debugging disabled
+  overwrite: true, // Do not overwrite existing state
   storage: {
     getItem: async (key) => {
       return await localforage.getItem(key) // Use localforage to get the item
@@ -36,9 +34,16 @@ pinia.use(createPersistedStatePlugin({
     },
     removeItem: async (key) => {
       return await localforage.removeItem(key) // Use localforage to remove the item
-    }
-  }
-}))
+    },
+  },
+  serialize: JSON.stringify, // Default serialization
+  deserialize: JSON.parse, // Default deserialization
+  deepCopy: false, // Default deepCopy
+})
+pinia.use(
+  persist
+)
+
 
 export default store(() => {
   return pinia
