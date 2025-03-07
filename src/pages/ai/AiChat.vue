@@ -3,7 +3,6 @@
         <template #left_drawer>
             <!-- 左侧会话列表 - 在大屏幕显示 -->
             <div class="full-height column">
-                {{ aiStore.listToggler }}
                 <div class="row no-wrap items-center gap-xs q-pa-sm">
                     <q-tabs
                         v-model="aiStore.listToggler" 

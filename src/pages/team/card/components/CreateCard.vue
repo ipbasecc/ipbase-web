@@ -70,9 +70,12 @@
         <q-card-section class="column no-wrap q-space q-pa-none card no-padding">
           <TipTap
             :square="true"
+            :miniToolbar="true"
             need="json"
             :toolbarHeight="34"
             :contentChanged
+            :autofocus="true"
+            styleClass="fit q-pa-md"
             @contentChanged="contentChanged = true"
             @tiptapBlur="tiptapBlur"
             @tiptapUpdate="tiptapUpdate"

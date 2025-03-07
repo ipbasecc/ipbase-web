@@ -62,7 +62,7 @@
         </span>
         <div
           v-html="html"
-          class="message_body"
+          class="message_body tiptap"
           :class="`
             ${!msg?.root_id && msg.props?.strapi?.event !== 'class_publish' && isChatMode ? 'cursor-pointer' : ''}
             ${msg.props.strapi ? 'text-grey-6' : ''}
@@ -209,15 +209,16 @@ import showFile from "src/pages/Chat/components/wigets/showFile.vue";
 import {deleteUserPreferences, followThread, pinPost, unpinPost, updateUserPreferences,} from "src/api/mattermost.js";
 import {fetch_userPreferences} from "src/hooks/mattermost/useMattermost.js";
 import { useQuasar } from "quasar";
+import { useImagePreview } from 'src/hooks/useImagePreview.js'
 
-import {marked} from "marked";
 import {mmstore, mmUser, teamStore} from "src/hooks/global/useStore.js";
 import TimeAgo from "pages/team/components/widgets/TimeAgo.vue";
 import { useDrag, useBoolean } from 'vue-hooks-plus'
 import { useAuths } from "../hooks/useAuths";
+import { marked } from 'marked';
 
-import { useImagePreview } from 'src/hooks/useImagePreview.js'
 const { preview } = useImagePreview()
+
 
 const props = defineProps({
   msg: {

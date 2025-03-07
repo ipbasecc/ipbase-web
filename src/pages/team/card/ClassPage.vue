@@ -91,7 +91,7 @@
             :class="drawerOverlay ? 'op-5' : ''"
           />
         </q-bar>
-        <div class="q-space relative-position">
+        <q-scroll-area class="q-space relative-position">
           <template v-if="current_classExtend === 'class_overview'">
             <KeepAlive>
               <OverView wasAttached_to="card" class="absolute-full"
@@ -141,6 +141,7 @@
               />
               <DocumentList
                 v-else
+                class="absolute-full"
                 :documents="teamStore.card.card_documents"
                 :by_info="byInfo"
                 :sortAuth="useAuths('modify', ['card'])"
@@ -158,22 +159,22 @@
           >
             <StoragePage :storage_id="teamStore.card.storage.id" by="card" />
           </template>
-        </div>
-        <div v-if="$q.screen.gt.xs"
-          class="absolute-left full-height hover-col-resize flex flex-center toggle-container z-max"
-          :class="dragWidth ? 'bg-primary ' : ''"
-          :style="dragWidth ? 'width: 3px' : 'width: 10px'"
-          @mousedown="handleMouseDown"
-        >
-          <q-icon
-            :name="`mdi-chevron-${!rightDrawerOpen ? 'left' : 'right'}`"
-            color="primary"
-            size="sm"
-            @click="toggleRightDrawer"
-            class="cursor-pointer toggle-btn transition z-max"
-            :style="`transform: translateX(-16px)`"
-          />
-        </div>
+          <div v-if="$q.screen.gt.xs"
+            class="absolute-left full-height hover-col-resize flex flex-center toggle-container z-max"
+            :class="dragWidth ? 'bg-primary ' : ''"
+            :style="dragWidth ? 'width: 3px' : 'width: 10px'"
+            @mousedown="handleMouseDown"
+          >
+            <q-icon
+              :name="`mdi-chevron-${!rightDrawerOpen ? 'left' : 'right'}`"
+              color="primary"
+              size="sm"
+              @click="toggleRightDrawer"
+              class="cursor-pointer toggle-btn transition z-max"
+              :style="`transform: translateX(-16px)`"
+            />
+          </div>
+        </q-scroll-area>
       </q-drawer>
 
       <q-page-container>

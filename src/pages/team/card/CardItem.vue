@@ -116,7 +116,7 @@
         class="q-space column no-wrap card overflow-hidden no-padding"
         :style="cardRef.expand === 'collapse' ? 'max-height: 6rem' : ''" @click="expandCard(cardRef)">
         <TipTap :jsonContent="cardRef.jsonContent" :editable="useAuths('jsonContent', ['card']) && !isShared"
-          :need="'json'" :square="true" :show_toolbar="false" :show_bubbleMenu="false" class="undrag"
+          :need="'json'" :square="true" :show_toolbar="false" :miniToolbar="true" :show_bubbleMenu="true" class="undrag"
           styleClass="q-px-md q-py-sm" :hideScroll="cardRef.expand === 'collapse'" :autofocus="false" :contentChanged
           @isEmpty="isTipTapEmpty = $event"
           @contentChanged="contentChanged = true" @tiptapBlur="tiptapBlur" @tiptapClose="toggleOffEditting()"

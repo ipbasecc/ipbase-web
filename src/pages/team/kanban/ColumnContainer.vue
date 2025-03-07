@@ -100,8 +100,8 @@
 
       <CreateCard v-if="
         createCard_in === columnRef.id && useAuths('create', ['card'])
-      " :column_id="columnRef.id" :DefaultCreateCardType="DefaultCreateCardType" @created="created"
-        @createCannel="createCannel" @closeCreate="closeCreate" />
+      " :column_id="columnRef.id" :DefaultCreateCardType="DefaultCreateCardType"
+        @created="created" @createCannel="createCannel" @closeCreate="closeCreate" />
       <q-scroll-area v-if="$q.screen.gt.xs" class="full-width q-space scroll-container flex-content" :id="columnRef.id"
         ref="columnScrollRef" @mouseenter="setMouseWheelScroll">
         <VueDraggable v-model="filteredCards" :animation="200" :forceFallback="true" :fallbackOnBody="true"

@@ -12,6 +12,7 @@
           <span>{{ msg.profile?.username }}</span>
           <div
             v-if="msg.message"
+            class="tiptap"
             v-html="marked.parse(msg.message)"
             style="line-height: 1.25"
           ></div>

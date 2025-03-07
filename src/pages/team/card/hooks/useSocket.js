@@ -39,7 +39,7 @@ export default function useSocket(cardRef){
         }
         
         if(val.value.event === 'todo:created'){
-          const index = cardRef.value.todogroups.findIndex(i => i.id === Number(todogroup_id));
+          const index = cardRef.value.todogroups?.findIndex(i => i.id === Number(todogroup_id));
           if(index > -1){
             const { position } = val.value?.data;
             if(position?.after){
@@ -63,7 +63,7 @@ export default function useSocket(cardRef){
           }
         }
         if(val.value.event === 'todo:removed'){
-          const index = cardRef.value.todogroups.findIndex(i => i.id === Number(todogroup_id));
+          const index = cardRef.value.todogroups?.findIndex(i => i.id === Number(todogroup_id));
           if(index > -1){
             const todoIndex = cardRef.value.todogroups[index].todos.findIndex(i => i.id === Number(data.removed_todo_id));
             if(todoIndex > -1){
