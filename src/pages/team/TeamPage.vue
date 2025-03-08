@@ -119,7 +119,7 @@
             <router-view v-show="$q.screen.gt.xs || !uiStore.showMainContentList" />
             <template v-if="!$q.screen.gt.xs && uiStore.showMainContentList">
               <BoradsList v-if="showBoard" />
-              <template v-if="teamStore.navigation === 'chat'">
+              <template v-if="teamStore.navigation === 'chat' && teamStore.project">
                 <ChatList />
               </template>
               <StorageList v-if="teamStore.navigation === 'storage' && teamStore.project?.storages"

@@ -2,17 +2,20 @@
   <div class="column no-wrap" :class="toolbar_onBottom ? 'reverse' : ''" ref="tiptap">
     <template v-if="isEditable">
       <div v-if="show_toolbar && isEditable"
-        class="radius-top-xs full-width row no-wrap gap-xs items-center justify-start q-py-xs q-px-sm"
+        class="full-width row no-wrap gap-xs items-center justify-start q-py-xs q-px-sm"
         :class="`z-fab
           ${!square ? 'radius-xs' : ''}
           ${isMessageInput ? 'radius-bottom-xs' : ''}
           ${toolbar_onBottom ? 'border-top' : `${miniToolbar ? '' : 'fixed'} border-bottom`}
           ${$q.dark.mode ? 'bg-grey-10' : 'bg-grey-2'}
+          ${toolbarClass}
         `"
         :style="`height: ${toolbarHeight}px`"
       >
         <slot name="left-btn"></slot>
-        <BubbleMenuContent v-if="!miniToolbar" :editor :square="true" :bordered="false" :flat="true" class="transparent shadow-none" />
+        <BubbleMenuContent v-if="!miniToolbar"
+          :editor :square="true" :bordered="false" :flat="true" class="transparent shadow-none"
+        />
         <template v-else>
           <MiniToolbar
             :menu
@@ -218,6 +221,10 @@ const props = defineProps({
   contentStyle: {
     type: String,
     default: "",
+  },
+  toolbarClass: {
+    type: String,
+    default: null,
   },
   asDocument: {
     type: Boolean,

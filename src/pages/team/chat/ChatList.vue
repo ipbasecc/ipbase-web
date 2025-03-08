@@ -119,7 +119,6 @@ const project_users = computed(() => {
 });
 
 const limit = 5;
-let offset = teamStore.project?.project_members?.length || 0
 // if(!teamStore.project?.project_members){
 //   teamStore.project.project_members = []
 // }
@@ -127,6 +126,7 @@ const hasMore = ref(true);
 const getMembers = async () => {
   if(!teamStore?.project) return
   // console.log('getMembers 2');  
+  let offset = teamStore.project?.project_members?.length || 0
   const { data } = await getProjectMembers(teamStore?.project?.id, offset, limit);
   if(data){
     hasMore.value = data.hasMore;
@@ -134,7 +134,6 @@ const getMembers = async () => {
   }
 }
 async function onLoad(index, done) {
-  offset = teamStore.project?.project_members?.length || 0;
   await getMembers();
   done();
 }

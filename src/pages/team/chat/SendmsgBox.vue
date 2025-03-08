@@ -10,6 +10,7 @@
           ref="tiptapRef"
           for="chat"
           class="message_sender"
+          toolbarClass="radius-bottom-xs"
           :contentChanged="true"
           @ModEnter="sendMsg(msg)"
           @tiptapUpdate="tiptapUpdate"
