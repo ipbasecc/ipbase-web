@@ -122,6 +122,9 @@ export const useAIStore = defineStore('ai', {
   },
 
   actions: {
+    async $waitRestore(){
+      await this.$restore();
+    },
     // 保存配置
     async saveConfig() {
       const config = {

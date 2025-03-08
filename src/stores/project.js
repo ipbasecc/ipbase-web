@@ -56,7 +56,11 @@ export default defineStore("project", {
     navigation: "",
     schedule: null,
   }),
+  persist: true,
   actions: {
+    async $waitRestore(){
+      await this.$restore();
+    },
     $isMultipleBoard(type) {
       return this.multipleBoardType.includes(type);
     },

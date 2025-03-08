@@ -5,6 +5,7 @@
         class="radius-xs hovered-item"
         :class="{ 'active-listitem': assistant.id === aiStore.selectedAssistant }"
         @click="selectAssistant(assistant.id)"
+        @dblclick="enterAssistant(assistant.id)"
       >
         <q-item-section>{{ assistant.name === 'default_assistant' ? $t('default_assistant') : assistant.name }}</q-item-section>
         <q-item-section side class="hover-show">
@@ -95,6 +96,10 @@ const selectedAssistantId = ref(null);
 
 function selectAssistant(assistantId) {
   aiStore.setSelectedAssistant(assistantId);
+}
+function enterAssistant(assistantId) {
+  selectAssistant(assistantId);
+  aiStore.listToggler = 'topics'
 }
 
 function showAddAssistantDialog() {

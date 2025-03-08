@@ -1,6 +1,6 @@
 <template>
   <q-item>
-    <q-item-section avatar />
+    <q-item-section v-if="!pannelMode" avatar />
     <q-item-section>
       <div class="column no-wrap gap-xs">
         <q-input
@@ -110,7 +110,7 @@ import { ref, watch, onMounted, computed } from 'vue'
 import { useAIStore } from 'src/stores/ai'
 import { useQuasar } from 'quasar'
 
-const { modelValue, loading, sessionId } = defineProps(['modelValue', 'loading', 'sessionId'])
+const { modelValue, loading, sessionId, pannelMode } = defineProps(['modelValue', 'loading', 'sessionId', 'pannelMode'])
 const emit = defineEmits(['update:modelValue', 'send'])
 const aiStore = useAIStore()
 const $q = useQuasar()

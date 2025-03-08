@@ -3,7 +3,7 @@
         <!-- 模型选择器和会话列表按钮 -->
         <div class="q-pa-md row items-center">
             <q-btn
-                v-if="!$q.screen.gt.xs || pannelMode"
+                v-if="(!$q.screen.gt.xs || pannelMode) && currentModel"
                 flat
                 round
                 dense
@@ -36,12 +36,14 @@
             <div class="q-px-md q-pb-md column" :class="currentSession?.messages?.length > 0 ? 'items-center' : 'q-space flex-center'">
                 <chat-input 
                     v-model="inputMessage" 
+                    :pannelMode="pannelMode"
                     :loading="loading"
                     :session-id="currentSession?.id"
                     style="width: 100%; max-width: 960px;"
                     @cancel="cancelResponse"
                     @send="handleSendMessage"
                 />
+                <div v-if="!currentSession || currentSession?.messages?.length === 0" class="col-5" />
             </div>
         </template>
     </div>

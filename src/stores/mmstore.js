@@ -22,7 +22,11 @@ export default defineStore("mmstore", {
     Deleted_channel: null,
     fetch_status_mm_user_ids: [],
   }),
+  persist: true,
   actions: {
+    async $waitRestore(){
+      await this.$restore();
+    },
     $reset() {
       this.team = null;
       this.channel = null;

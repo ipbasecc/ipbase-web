@@ -82,7 +82,11 @@ export default defineStore("ui", {
     talker: null,
     disable_selected: false,
   }),
+  persist: true,
   actions: {
+    async $waitRestore(){
+      await this.$restore();
+    },
     $syncMmUnreads() {
       const team = teamStore()?.team; // 获取 team store 实例并访问 team 属性
       if (!team) return;

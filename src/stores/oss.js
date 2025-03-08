@@ -10,6 +10,7 @@ export default defineStore("oss", {
     ossConfig: null,
     client: void 0,
   }),
+  persist: false,
   actions: {
     $reset() {
       this.process = [];

@@ -183,7 +183,7 @@
 </template>
 
 <script setup>
-import {computed, reactive, ref, watch, onMounted } from "vue";
+import {computed, reactive, ref, watch } from "vue";
 import {useRoute} from "vue-router";
 
 import CreateTeam from "src/pages/team/components/CreateTeam.vue";
@@ -266,6 +266,16 @@ const dragSide = ref('left');
 const { x } = useMouse({ touch: false });
 const navDrawerMinWidth = ref(180);
 const navDrawerMaxWidth = ref(340);
+const app = computed(() => uiStore.app);
+watch(app, () => {  
+  if(app.value === 'aichat'){
+    if(uiStore.navDrawerWidth < 250){
+      uiStore.navDrawerWidth = 250
+    }
+    navDrawerMinWidth.value = 250
+    navDrawerMaxWidth.value = 460
+  }
+},{immediate: true})
 const _ori_width = ref();
 const dragWidth = ref(false);
 const position = reactive({
@@ -279,8 +289,6 @@ const handleMouseDown = (side) => {
   dragWidth.value = true;
   if(side === 'left') {
     _ori_width.value = uiStore.navDrawerWidth;
-    navDrawerMinWidth.value = 240;
-    navDrawerMaxWidth.value = 460;
   } else {
     _ori_width.value = uiStore.rightDrawerWidth;
     navDrawerMinWidth.value = 320;

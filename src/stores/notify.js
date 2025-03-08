@@ -13,7 +13,11 @@ export default defineStore('notify', {
     state: () => ({
         messages: []
     }),
+    persist: true,
     actions: {
+        async $waitRestore(){
+          await this.$restore();
+        },
         async addMessage(message) {
             this.messages.unshift(message);
             try {

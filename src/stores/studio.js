@@ -6,7 +6,11 @@ export default defineStore('studio',{
         works: [],
         cv: null,
     }),
+    persist: true,
     actions: {
+        async $waitRestore(){
+          await this.$restore();
+        },
         $reset() {
             this.nav = 'works';
             this.works = [];

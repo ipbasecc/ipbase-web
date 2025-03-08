@@ -89,7 +89,11 @@ export default defineStore("user", {
     affairsFilters: null,
     affairsFilterIDs: [],
   }),
+  persist: true,
   actions: {
+    async $waitRestore(){
+      await this.$restore();
+    },
     $reset() {
       this.logged = false;
       this.needRefetch = false;

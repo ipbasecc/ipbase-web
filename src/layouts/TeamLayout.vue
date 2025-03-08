@@ -69,7 +69,7 @@
 </template>
 
 <script setup>
-  import { watch, computed, onMounted, onBeforeMount, onUnmounted, ref, watchEffect } from "vue";
+  import { watch, computed, onMounted, onBeforeMount, onUnmounted, ref, watchEffect, nextTick } from "vue";
   import { loginAndInit, refetchUser } from 'src/hooks/init.js'
   import { useRoute, useRouter } from "vue-router";
   import AccountMenu from "../pages/team/components/AccountMenu.vue";
@@ -81,7 +81,15 @@
   import AppUtils from "src/components/VIewComponents/AppUtils.vue";
   import { clearLocalDB } from "pages/team/hooks/useUser";
   import InitializationUser from 'src/pages/team/settings/initialization/InitializationUser.vue'
-  import { teamStore, uiStore, dealStore, mm_wsStore, chatStore } from "src/hooks/global/useStore";
+  import {
+    teamStore,
+    uiStore,
+    dealStore,
+    mm_wsStore,
+    chatStore,
+    aiStore,
+    discoverStore
+  } from "src/hooks/global/useStore";
   import { serverInfo } from 'src/boot/server.js'
   import localforage from "localforage";
   import { toggleTeam } from "src/pages/team/hooks/useTeam.js";
@@ -187,18 +195,45 @@
     closeWs();
   });
 
-  onMounted(() => {
+  onMounted(async() => {
     setupWatchers();
     shortcut();
     _ws();
     useWatcher();
+    await uiStore.$waitRestore();
+    if(!uiStore.app) uiStore.app = 'teams';
+    if (uiStore.app && uiStore.app !== '/') {
+      if(uiStore.app === 'teams'){
+        await teamStore.$waitRestore();
+      }
+      if(uiStore.app === 'deliver'){
+        await dealStore.$waitRestore();
+      }
+      if(uiStore.app === 'discover'){
+        await discoverStore.$waitRestore();
+      }
+      if(uiStore.app === 'affairs'){
+        await teamStore.$waitRestore();
+      }
+      if(uiStore.app === 'notebooks'){
+        await teamStore.$waitRestore();
+      }
+      if(uiStore.app === 'threads'){
+        await teamStore.$waitRestore();
+      }
+      if(uiStore.app === 'brand'){
+        await teamStore.$waitRestore();
+      }
+      if(uiStore.app === 'aichat'){
+        await aiStore.$waitRestore();
+      }
+      router.push(`/${uiStore.app}`);
+    }
     uiStore.$pageloaded();
+    await mm_wsStore.$waitRestore();
   });
 
   onBeforeMount(() => {
-    if (uiStore.app && uiStore.app !== '/') {
-      router.push(`/${uiStore.app}`);
-    }
   })
 
   const toLogin = async () => {

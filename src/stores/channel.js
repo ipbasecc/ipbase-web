@@ -9,7 +9,11 @@ export default defineStore('channel',{
         needRefetch: false,
         newReply: null
     }),
+    persist: true,
     actions: {
+        async $waitRestore(){
+          await this.$restore();
+        },
         $reset() {
             this.channel_id = null;
             this.matedata = null;

@@ -15,7 +15,11 @@ export default defineStore("mmws", {
     log: [],
     online: false,
   }),
+  persist: true,
   actions: {
+    async $waitRestore(){
+      await this.$restore();
+    },
     $reset() {
       this.event = {
         data: {

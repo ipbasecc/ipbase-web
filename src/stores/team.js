@@ -62,6 +62,7 @@ export default defineStore("team", {
     cardNumberExceeded: false,
     teamMembersExceeded: false
   }),
+  persist: true,
   getters: {
     $isMultipleBoard(state) {
       return $team().multipleBoardType.includes(state.navigation);
@@ -90,6 +91,9 @@ export default defineStore("team", {
     },
   },
   actions: {
+    async $waitRestore(){
+      await this.$restore();
+    },
     $reset() {
       this.teams = null;
       this.team = null;
