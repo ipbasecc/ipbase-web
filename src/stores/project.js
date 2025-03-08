@@ -56,7 +56,7 @@ export default defineStore("project", {
     navigation: "",
     schedule: null,
   }),
-  persist: true,
+  persist: false,
   actions: {
     async $waitRestore(){
       await this.$restore();

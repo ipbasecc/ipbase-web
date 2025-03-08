@@ -8,6 +8,20 @@ export default function useMember(){
 
         return userMemberRoles?.includes(creatorRolesId)
     };
+    const _isOwner = (user_id,members,roles) => {
+
+        const creatorRolesId = roles.find(i => i.subject === 'owner')?.id;
+        const userMemberRoles = members?.filter((i) => i.by_user.id === user_id)?.map(j => j.id)
+
+        return userMemberRoles?.includes(creatorRolesId)
+    };
+    const _isExecutor = (user_id,members,roles) => {
+
+        const creatorRolesId = roles.find(i => i.subject === 'executor')?.id;
+        const userMemberRoles = members?.filter((i) => i.by_user.id === user_id)?.map(j => j.id)
+
+        return userMemberRoles?.includes(creatorRolesId)
+    };
     const _isCurTeamCreator = () => {
         // console.log(teamStore.team);
         const adminRole = teamStore.team.member_roles.find(i => i.subject === 'admin');
@@ -18,6 +32,8 @@ export default function useMember(){
     }
     return {
         _isCreator,
-        _isCurTeamCreator
+        _isOwner,
+        _isCurTeamCreator,
+        _isExecutor
     }
 }

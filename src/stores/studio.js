@@ -6,7 +6,7 @@ export default defineStore('studio',{
         works: [],
         cv: null,
     }),
-    persist: true,
+    persist: false,
     actions: {
         async $waitRestore(){
           await this.$restore();

@@ -12,7 +12,7 @@ export default defineStore('mmuser',{
         pinneds: [],
         current_user_avatar: ''
     }),
-    persist: true,
+    persist: false,
     actions: {
         async $waitRestore(){
           await this.$restore();

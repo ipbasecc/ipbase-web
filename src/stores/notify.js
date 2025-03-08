@@ -13,7 +13,7 @@ export default defineStore('notify', {
     state: () => ({
         messages: []
     }),
-    persist: true,
+    persist: false,
     actions: {
         async $waitRestore(){
           await this.$restore();

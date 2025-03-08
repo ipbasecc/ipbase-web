@@ -7,7 +7,7 @@ export default defineStore("discover", {
     list_element: 'card',
     actived: null,
   }),
-  persist: true,
+  persist: false,
   actions: {
     async $waitRestore(){
       await this.$restore();

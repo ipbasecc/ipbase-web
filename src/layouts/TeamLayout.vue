@@ -69,7 +69,7 @@
 </template>
 
 <script setup>
-  import { watch, computed, onMounted, onBeforeMount, onUnmounted, ref, watchEffect, nextTick } from "vue";
+  import { watch, computed, onMounted, onBeforeMount, onUnmounted, ref, watchEffect } from "vue";
   import { loginAndInit, refetchUser } from 'src/hooks/init.js'
   import { useRoute, useRouter } from "vue-router";
   import AccountMenu from "../pages/team/components/AccountMenu.vue";
@@ -87,8 +87,7 @@
     dealStore,
     mm_wsStore,
     chatStore,
-    aiStore,
-    discoverStore
+    aiStore
   } from "src/hooks/global/useStore";
   import { serverInfo } from 'src/boot/server.js'
   import localforage from "localforage";
@@ -195,7 +194,7 @@
     closeWs();
   });
 
-  onMounted(async() => {
+  onBeforeMount(async() => {
     setupWatchers();
     shortcut();
     _ws();
@@ -203,38 +202,13 @@
     await uiStore.$waitRestore();
     if(!uiStore.app) uiStore.app = 'teams';
     if (uiStore.app && uiStore.app !== '/') {
-      if(uiStore.app === 'teams'){
-        await teamStore.$waitRestore();
-      }
-      if(uiStore.app === 'deliver'){
-        await dealStore.$waitRestore();
-      }
-      if(uiStore.app === 'discover'){
-        await discoverStore.$waitRestore();
-      }
-      if(uiStore.app === 'affairs'){
-        await teamStore.$waitRestore();
-      }
-      if(uiStore.app === 'notebooks'){
-        await teamStore.$waitRestore();
-      }
-      if(uiStore.app === 'threads'){
-        await teamStore.$waitRestore();
-      }
-      if(uiStore.app === 'brand'){
-        await teamStore.$waitRestore();
-      }
       if(uiStore.app === 'aichat'){
         await aiStore.$waitRestore();
       }
       router.push(`/${uiStore.app}`);
     }
     uiStore.$pageloaded();
-    await mm_wsStore.$waitRestore();
   });
-
-  onBeforeMount(() => {
-  })
 
   const toLogin = async () => {
     $serverStatus().axiosStautsCode = void 0;

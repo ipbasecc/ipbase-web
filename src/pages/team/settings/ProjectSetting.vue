@@ -97,6 +97,8 @@ import EnableSetting from "./EnableSetting.vue";
 import OverView from "src/pages/team/components/OverView.vue";
 import { teamStore } from "src/hooks/global/useStore.js";
 import ServiceContent from './initialization/ServiceContent.vue'
+import useMember from 'src/hooks/team/useMember.js'
+const { _isCreator, _isOwner, _isExecutor } = useMember();
 
 const props = defineProps({
   settingfor: {
@@ -107,6 +109,7 @@ const props = defineProps({
 const settingforRef = ref("basic");
 const members = computed(() => teamStore.project?.project_members);
 const roles = computed(() => teamStore.project?.member_roles);
+const curUserId = computed(() => teamStore.init?.id);
 
 const byInfo = ref({
   by: "project",
@@ -115,19 +118,28 @@ const byInfo = ref({
 
 const setting_items = ref([
   { val: "basic", label: "project_setting_basic", icon: "mdi-information-outline" },
-  { val: "enable", label: "project_setting_enable", icon: "toggle_on" },
-  { val: "preferences", label: "project_setting_preferences", icon: "tune" },
-  { val: "role", label: "project_setting_role", icon: "add_moderator" },
-  { val: "members", label: "project_setting_members", icon: "manage_accounts" },
-  { val: "more", label: "project_setting_more", icon: "more_horiz" },
 ]);
+
 const loading = ref(false);
 onMounted(() => {
-  if(teamStore.project?.type === 'service'){
-    const item = {
-      val: "serviceContent", label: "project_service_content", icon: "info"
+  const isCreator = _isCreator(curUserId.value, members.value, roles.value);
+  const isOwner = _isOwner(curUserId.value, members.value, roles.value);
+  const isExecutor = _isExecutor(curUserId.value, members.value, roles.value);
+  if(isCreator || isOwner || isExecutor){
+    const pushItems = [
+      { val: "enable", label: "project_setting_enable", icon: "toggle_on" },
+      { val: "preferences", label: "project_setting_preferences", icon: "tune" },
+      { val: "role", label: "project_setting_role", icon: "add_moderator" },
+      { val: "members", label: "project_setting_members", icon: "manage_accounts" },
+      { val: "more", label: "project_setting_more", icon: "more_horiz" },
+    ]
+    setting_items.push(...pushItems)
+    if(teamStore.project?.type === 'service'){
+      const item = {
+        val: "serviceContent", label: "project_service_content", icon: "info"
+      }
+      setting_items.value.splice(1, 0, item)
     }
-    setting_items.value.splice(1, 0, item)
   }
 });
 </script>

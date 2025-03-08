@@ -89,7 +89,7 @@ export default defineStore("user", {
     affairsFilters: null,
     affairsFilterIDs: [],
   }),
-  persist: true,
+  persist: false,
   actions: {
     async $waitRestore(){
       await this.$restore();

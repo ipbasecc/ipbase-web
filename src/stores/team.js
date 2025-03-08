@@ -62,7 +62,7 @@ export default defineStore("team", {
     cardNumberExceeded: false,
     teamMembersExceeded: false
   }),
-  persist: true,
+  persist: false,
   getters: {
     $isMultipleBoard(state) {
       return $team().multipleBoardType.includes(state.navigation);

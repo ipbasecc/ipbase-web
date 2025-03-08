@@ -45,8 +45,11 @@
   watchEffect(() => {
     preferences.value = teamStore.project?.preferences;
     enable_settings.value = preferences.value.find(i => i.name === 'enable_settings')?.settings;
+    enable_settings.value.forEach(setting => {
+      if (setting.member_enable === null) setting.member_enable = false;
+      if (setting.staff_enable === null) setting.staff_enable = false;
+    });
   })
-
 
   const loading = ref(false);
   const updatePreferences = async () => {

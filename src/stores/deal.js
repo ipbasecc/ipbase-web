@@ -10,7 +10,7 @@ export default defineStore('deal',{
         talkers: [],
         verified: false
     }),
-    persist: true,
+    persist: false,
     actions: {
         async $waitRestore(){
           await this.$restore();

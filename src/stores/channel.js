@@ -9,7 +9,7 @@ export default defineStore('channel',{
         needRefetch: false,
         newReply: null
     }),
-    persist: true,
+    persist: false,
     actions: {
         async $waitRestore(){
           await this.$restore();
