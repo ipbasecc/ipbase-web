@@ -1,63 +1,65 @@
 <template>
   <q-scroll-area class="fit q-pa-xs">
-    <q-list dense class="column">
-      <q-item
-        clickable
-        v-ripple
-        @click="gotoChannel(project_mm_channel)"
-        class="radius-xs overflow-hidden q-mb-xs"
-        :class="mm_channel_id === project_mm_channel?.id ? 'border active-sublistitem' : ''"
-      >
-        <q-item-section avatar>
-          <q-avatar square :size="`32`" class="radius-xs">
-            <q-img
-              :src="projectCover"
-              :ratio="1"
-              spinner-color="primary"
-              spinner-size="22px"
-            />
-          </q-avatar>
-        </q-item-section>
-        <q-item-section>{{ $t('all_members_group') }}</q-item-section>
-        <q-item-section v-if="project_mm_channel?.unread > 0" side>
-          <q-chip :label="project_mm_channel?.unread" />
-        </q-item-section>
-        <div v-if="mm_channel_id === project_mm_channel?.id"
-          class="absolute-left bg-primary"
-          style="width: 3px"
-        ></div>
-      </q-item>
-      <template v-if="project_users?.length > 0">
-        <q-item v-for="(i, index) in project_users"
-          :key="i.id"
+    <q-infinite-scroll @load="onLoad" :offset="50" :disable="!hasMore">
+      <q-list dense class="column">
+        <q-item
           clickable
           v-ripple
-          @click="clickUserHandler(i)"
+          @click="gotoChannel(project_mm_channel)"
           class="radius-xs overflow-hidden q-mb-xs"
-          :class="directTargetID === i.mm_profile?.id ? 'border active-sublistitem' : ''"
-          :style="`order: ${project_users.length + (getMsgUser?.id === i.id ? -getMsgCount : index)};`"
+          :class="mm_channel_id === project_mm_channel?.id ? 'border active-sublistitem' : ''"
         >
           <q-item-section avatar>
-            <UserAvatar
-              :image="i.wechat_profile?.avatar"
-              :user_id="i.mm_profile?.id"
-              :size="32"
-              :disable_card="true"
-              :square="true"
-            />
+            <q-avatar square :size="`32`" class="radius-xs">
+              <q-img
+                :src="projectCover"
+                :ratio="1"
+                spinner-color="primary"
+                spinner-size="22px"
+              />
+            </q-avatar>
           </q-item-section>
-          <q-item-section>{{ i.username }}</q-item-section>
-          <q-item-section v-if="i.unread > 0" side>
-            <q-chip color="negative" dense :label="i.unread" />
+          <q-item-section>{{ $t('all_members_group') }}</q-item-section>
+          <q-item-section v-if="project_mm_channel?.unread > 0" side>
+            <q-chip :label="project_mm_channel?.unread" />
           </q-item-section>
-          <div
-            v-if="directTargetID === i.mm_profile?.id"
+          <div v-if="mm_channel_id === project_mm_channel?.id"
             class="absolute-left bg-primary"
             style="width: 3px"
           ></div>
         </q-item>
-      </template>
-    </q-list>
+        <template v-if="project_users?.length > 0">
+          <q-item v-for="(i, index) in project_users"
+            :key="i.id"
+            clickable
+            v-ripple
+            @click="clickUserHandler(i)"
+            class="radius-xs overflow-hidden q-mb-xs"
+            :class="directTargetID === i.mm_profile?.id ? 'border active-sublistitem' : ''"
+            :style="`order: ${project_users.length + (getMsgUser?.id === i.id ? -getMsgCount : index)};`"
+          >
+            <q-item-section avatar>
+              <UserAvatar
+                :image="i.wechat_profile?.avatar"
+                :user_id="i.mm_profile?.id"
+                :size="32"
+                :disable_card="true"
+                :square="true"
+              />
+            </q-item-section>
+            <q-item-section>{{ i.username }}</q-item-section>
+            <q-item-section v-if="i.unread > 0" side>
+              <q-chip color="negative" dense :label="i.unread" />
+            </q-item-section>
+            <div
+              v-if="directTargetID === i.mm_profile?.id"
+              class="absolute-left bg-primary"
+              style="width: 3px"
+            ></div>
+          </q-item>
+        </template>
+      </q-list>
+    </q-infinite-scroll>
     <q-dialog v-model="addFriendDlg" persistent>
       <AddFriendCard
         :strapi_member="project.project_members?.find(i => i.by_user?.id === addFriendUser?.id)"
@@ -68,7 +70,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, nextTick, onBeforeMount } from "vue";
+import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { uniqueById } from "src/hooks/utilits.js";
 import { createDirect, getChannelByID } from "src/api/mattermost.js";
@@ -76,6 +78,7 @@ import UserAvatar from "src/pages/team/components/user/UserAvatar.vue";
 import { setLastChannel } from "src/pages/team/chat/TeamChat.js";
 import {teamStore, uiStore, mm_wsStore} from 'src/hooks/global/useStore.js';
 import AddFriendCard from './components/AddFriendCard.vue'
+import { getProjectMembers } from 'src/api/strapi/project.js'
 
 const router = useRouter();
 const route = useRoute();
@@ -114,6 +117,32 @@ const project_users = computed(() => {
   }
   return users;
 });
+
+const limit = 5;
+let offset = teamStore.project?.project_members?.length || 0
+// if(!teamStore.project?.project_members){
+//   teamStore.project.project_members = []
+// }
+const hasMore = ref(true);
+const getMembers = async () => {
+  if(!teamStore?.project) return
+  // console.log('getMembers 2');  
+  const { data } = await getProjectMembers(teamStore?.project?.id, offset, limit);
+  if(data){
+    hasMore.value = data.hasMore;
+    teamStore.project.project_members = [...teamStore.project.project_members, ...data.members]
+  }
+}
+async function onLoad(index, done) {
+  offset = teamStore.project?.project_members?.length || 0;
+  await getMembers();
+  done();
+}
+onMounted(() => {
+  setTimeout(async() => {
+    await getMembers();
+  }, 100);
+})
 
 const My_MMID = ref(localStorage.getItem("mmUserId"));
 const channels = ref([
