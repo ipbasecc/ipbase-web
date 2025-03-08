@@ -810,6 +810,139 @@ input:-internal-autofill-selected {
   margin: 0 auto;
 }
 
+.has_toolbar {
+  padding-top: 43px;
+}
+.tiptap {
+  min-height: 2rem;
+}
+/* Basic editor styles */
+.tiptap {
+  > * + * {
+    margin-top: 0.75em;
+  }
+}
+.tiptap:focus {
+  outline: none;
+}
+
+input[type="checkbox"] {
+  margin-right: 4px;
+}
+
+.mention {
+  border: 1px solid #000;
+  border-radius: 0.4rem;
+  padding: 0.1rem 0.3rem;
+  box-decoration-break: clone;
+}
+.tiptap mark {
+  background-color: #faf594;
+  border-radius: .4rem;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding: .1rem .3rem;
+}
+ul[data-type="taskList"] {
+  list-style: none;
+  padding: 0;
+
+  p {
+    margin: 0;
+  }
+
+  li {
+    display: flex;
+
+    > label {
+      flex: 0 0 auto;
+      margin-right: 0.5rem;
+      user-select: none;
+    }
+
+    > div {
+      flex: 1 1 auto;
+    }
+
+    ul li,
+    ol li {
+      display: list-item;
+    }
+
+    ul[data-type="taskList"] > li {
+      display: flex;
+    }
+  }
+}
+code {
+  background-color: var(--$primary);
+  border-radius: 3px;
+  padding: 2px 6px;
+  border: 1px solid #b5b5b5;
+  margin: 0 4px
+}
+body.body--dark code {
+  border: 1px solid #505050;
+}
+body.body--dark pre>code, pre>code {
+  background-color: unset;
+  border-radius: unset;
+  padding: unset;
+  border: unset;
+  margin: unset;
+}
+mark {
+  color: white !important;
+}
+
+.code-block {
+  background: #282c34;
+  border-radius: 0.5rem;
+  color: #abb2bf;
+  font-family: 'JetBrainsMono', monospace;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  
+  pre {
+    background: none;
+    color: inherit;
+    font-size: 0.875rem;
+    padding: 0;
+    margin: 0;
+  }
+  
+  code {
+    background: none;
+    color: inherit;
+    font-size: inherit;
+    padding: 0;
+    border: none;
+  }
+}
+
+.code-block::before {
+  content: attr(data-language);
+  color: #666;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  position: relative;
+  top: -0.5rem;
+}
+
+.code-block pre {
+  overflow-x: auto;
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #282c34;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #4b5263;
+    border-radius: 2px;
+  }
+}
+
 .card h1,
 .card h2,
 .card h3,

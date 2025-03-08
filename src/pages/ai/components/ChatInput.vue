@@ -1,19 +1,19 @@
 <template>
   <q-item>
     <q-item-section avatar />
-    <q-item-section class="border q-pa-sm radius-sm">
+    <q-item-section>
       <div class="column no-wrap gap-xs">
         <q-input
           v-model="localMessage"
-          :type="hasMessages ? 'text' : 'textarea'"
-          :autogrow="hasMessages"
-          dense
-          borderless
+          type="textarea"
+          autogrow
           :disable="loading"
-          :placeholder="hasMessages ? '输入消息...' : '你想问点什么？'"
+          :placeholder="hasMessages ? '输入消息，Ctrl + Enter 提交，Shift + Enter 换行。' : '你想问点什么？'"
           :rows="3"
-          input-class="q-px-sm"
+          input-class="q-px-md"
+          class="border radius-sm overflow-hidden"
           hide-bottom-space
+          @keydown.ctrl.enter="onSend"
         />
         <div class="row no-wrap items-center gap-sm">
           <q-btn flat dense round icon="mdi-plus-circle" @click="aiStore.createNewChat()">

@@ -1,6 +1,5 @@
 <template>
   <div class="column no-wrap" :class="toolbar_onBottom ? 'reverse' : ''" ref="tiptap">
-
     <template v-if="isEditable">
       <div v-if="show_toolbar && isEditable"
         class="radius-top-xs full-width row no-wrap gap-xs items-center justify-start q-py-xs q-px-sm"
@@ -15,100 +14,13 @@
         <slot name="left-btn"></slot>
         <BubbleMenuContent v-if="!miniToolbar" :editor :square="true" :bordered="false" :flat="true" class="transparent shadow-none" />
         <template v-else>
-          <template v-for="(i, index) in menu" :key="index">
-            <q-separator
-              v-if="i.type === '|' && i.always_show"
-              spaced
-              inset
-              vertical
-            />
-            <q-btn
-              v-else-if="
-                i.type === 'Botton' &&
-                i.always_show &&
-                !i.disable &&
-                !disable_btn.includes(i.label)
-              "
-              dense
-              flat
-              padding="xs"
-              @click="i.handler"
-            >
-              <q-icon size="xs" v-if="i.icon" :name="i.icon" />
-              <template v-else-if="i.label">{{ i.label }}</template>
-              <template v-else
-                ><q-icon size="xs" name="radio_button_checked"
-              /></template>
-            </q-btn>
-            <q-btn
-              v-else-if="i.type === 'menu' && i.always_show"
-              dense
-              flat
-              padding="xs"
-            >
-              <q-icon size="xs" v-if="i.icon" :name="i.icon" />
-              <template v-else-if="i.label">{{ i.label }}</template>
-              <template v-else
-                ><q-icon size="xs" name="radio_button_checked"
-              /></template>
-              <q-menu>
-                <q-list dense style="max-width: 600px">
-                  <template v-for="(item, index) in i.children" :key="index">
-                    <q-item clickable v-close-popup @click="item.handler">
-                      <q-item-section
-                        class="q-px-md"
-                        :class="item.class ? item.class : ''"
-                        >{{ item.label }}</q-item-section
-                      >
-                    </q-item>
-                  </template>
-                </q-list>
-              </q-menu>
-            </q-btn>
-            <q-btn
-              v-else-if="i.type === 'set_color' && i.always_show"
-              dense
-              flat
-              padding="xs"
-            >
-              <q-icon size="xs" v-if="i.icon" :name="i.icon" />
-              <template v-else-if="i.label">{{ i.label }}</template>
-              <template v-else
-                ><q-icon size="xs" name="radio_button_checked"
-              /></template>
-              <q-popup-proxy>
-                <q-card
-                  class="row gap-xs q-pa-sm border"
-                  style="max-width: 256px"
-                >
-                  <template v-for="(item, index) in i.children" :key="index">
-                    <div
-                      class="cursor-pointer"
-                      :style="`width: 2rem;height: 2rem;background-color: ${item.color};padding:1px`"
-                      v-close-popup
-                      @click="item.handler"
-                    />
-                  </template>
-                  <div
-                    class="col-12 font-small q-pa-xs cursor-pointer q-pt-sm"
-                    @click="editor.chain().focus().unsetColor().run()"
-                  >
-                    {{ $t('clean_color') }}
-                  </div>
-                </q-card>
-              </q-popup-proxy>
-            </q-btn>
-
-            <q-btn v-else-if="i.type === 'save' && i.always_show" flat dense size="sm" class="q-mr-md"
-            :color="saving ? 'primary' : ''" :disable="saving" @click="tiptapSave">
-              <q-spinner-dots v-if="saving"
-                size="1em"
-                :thickness="2"
-              />
-              <q-icon v-else name="save" />
-            </q-btn>
-            <q-space v-else-if="i.type === 'space'" />
-          </template>
+          <MiniToolbar
+            :menu
+            :editor
+            :disable_btn
+            :saving
+            :tiptapSave
+          />
         </template>
         <q-space />
         <slot name="more_btn"></slot>
@@ -227,6 +139,7 @@ import { isRmptyTiptap } from 'src/hooks/utilits.js'
 import 'highlight.js/styles/atom-one-dark.css'
 import { startImageUpload, handleImageUpload } from "./plugins/upload-images";
 import { TextSelection } from 'prosemirror-state'
+import MiniToolbar from './MiniToolbar.vue'
 
 const lowlight = createLowlight(common)
 
@@ -358,6 +271,7 @@ const contentRef = toRef(props, "content");
 const jsonContentRef = toRef(props, "jsonContent");
 const withSaveBtnRef = toRef(props, "withSaveBtn");
 const isEditable = toRef(props, "editable");
+const needRef = toRef(props, "need");
 const {
   withImageBtn,
   withAttachBtb,
@@ -369,7 +283,6 @@ const {
   miniToolbar
 } = toRefs(props);
 
-const needRef = toRef(props, "need");
 const emit = defineEmits([
   "tiptapReady",
   "tiptapDestroy",
@@ -390,9 +303,7 @@ const dropZoneRef = ref();
 
 const tiptapContent = ref();
 const isEmpty = computed(() => isRmptyTiptap(editor.value?.getJSON()))
-const cleanHtmlHandler = (val) => {
-  return val.replace(/<[^>]*>?/gm, "");
-};
+
 const tiptapReadyCount = ref(0);
 const isSlashCommand = ref(false)
 const init = () => {
@@ -562,12 +473,6 @@ const init = () => {
   });
 };
 
-const insert = (content) => {
-  console.log('insert', content);
-  editor.value.commands.insertContent(content)
-}
-
-
 const getClipboardData = (event) => {
   console.log('getClipboardData', event);
   
@@ -695,39 +600,6 @@ const debounce = (fn, delay = 100) => {
 let insertPos = null
 let isBetweenLines = false // 标记是否在两行之间
 
-// 新增状态追踪
-let lastY = null
-let direction = 'none' // 'up' | 'down' | 'none'
-let currentBlock = null
-let nextBlock = null
-
-// 安全获取文档位置的方法
-const getSafePosition = (view, rawPos) => {
-  const docSize = view.state.doc.content.size
-  // 确保位置在合法范围内
-  return Math.max(0, Math.min(rawPos, docSize - 1))
-}
-
-// 修改后的块边界检测
-const getTrueBlockBoundaries = (view, pos) => {
-  const safePos = getSafePosition(view, pos)
-  const $pos = view.state.doc.resolve(safePos)
-  
-  let depth = $pos.depth
-  while (depth > 0 && !$pos.node(depth).type.isBlock) {
-    depth--
-  }
-
-  const start = $pos.start(depth)
-  const end = Math.min($pos.end(depth), view.state.doc.content.size - 1)
-
-  return {
-    start,
-    end,
-    depth,
-    type: $pos.node(depth).type.name
-  }
-}
 
 // 增强版处理函数
 const handleDragMove = (event) => {
@@ -963,137 +835,3 @@ watch(
 );
 </script>
 
-<style lang="scss">
-.has_toolbar {
-  padding-top: 43px;
-}
-.tiptap {
-  min-height: 2rem;
-}
-/* Basic editor styles */
-.tiptap {
-  > * + * {
-    margin-top: 0.75em;
-  }
-}
-.tiptap:focus {
-  outline: none;
-}
-
-input[type="checkbox"] {
-  margin-right: 4px;
-}
-
-.mention {
-  border: 1px solid #000;
-  border-radius: 0.4rem;
-  padding: 0.1rem 0.3rem;
-  box-decoration-break: clone;
-}
-.tiptap mark {
-  background-color: #faf594;
-  border-radius: .4rem;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-  padding: .1rem .3rem;
-}
-ul[data-type="taskList"] {
-  list-style: none;
-  padding: 0;
-
-  p {
-    margin: 0;
-  }
-
-  li {
-    display: flex;
-
-    > label {
-      flex: 0 0 auto;
-      margin-right: 0.5rem;
-      user-select: none;
-    }
-
-    > div {
-      flex: 1 1 auto;
-    }
-
-    ul li,
-    ol li {
-      display: list-item;
-    }
-
-    ul[data-type="taskList"] > li {
-      display: flex;
-    }
-  }
-}
-code {
-  background-color: var(--$primary);
-  border-radius: 3px;
-  padding: 2px 6px;
-  border: 1px solid #b5b5b5;
-  margin: 0 4px
-}
-body.body--dark code {
-  border: 1px solid #505050;
-}
-body.body--dark pre>code, pre>code {
-  background-color: unset;
-  border-radius: unset;
-  padding: unset;
-  border: unset;
-  margin: unset;
-}
-mark {
-  color: white !important;
-}
-
-.code-block {
-  background: #282c34;
-  border-radius: 0.5rem;
-  color: #abb2bf;
-  font-family: 'JetBrainsMono', monospace;
-  padding: 0.75rem 1rem;
-  margin: 0.5rem 0;
-  
-  pre {
-    background: none;
-    color: inherit;
-    font-size: 0.875rem;
-    padding: 0;
-    margin: 0;
-  }
-  
-  code {
-    background: none;
-    color: inherit;
-    font-size: inherit;
-    padding: 0;
-    border: none;
-  }
-}
-
-.code-block::before {
-  content: attr(data-language);
-  color: #666;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  position: relative;
-  top: -0.5rem;
-}
-
-.code-block pre {
-  overflow-x: auto;
-  &::-webkit-scrollbar {
-    height: 4px;
-  }
-  &::-webkit-scrollbar-track {
-    background: #282c34;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #4b5263;
-    border-radius: 2px;
-  }
-}
-</style>

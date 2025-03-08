@@ -18,7 +18,7 @@
                         <q-tab name="topics" class="radius-xs overflow-hidden"
                             :class="aiStore.listToggler === 'topics' ? 'border' : 'border-placeholder'">
                             <q-icon name="chat" size="xs" />
-                            <span class="q-pl-sm">{{ $t('topics') }}</span>
+                            <span class="q-pl-sm">{{ $t('ai_topics') }}</span>
                         </q-tab>
                     </q-tabs>
                     <q-space />

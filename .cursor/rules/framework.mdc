@@ -2,46 +2,102 @@
 description: 
 globs: 
 ---
-# 技术栈声明
-framework: Vue 3 + Quasar 2.x + pinia 3 + pinia-plugin-persistedstate-2 + Tiptap
+# Project Context
 
-**⚠️ CODE QUALITY PROTOCOL v7.2 - TERMINATION ENABLED ⚠️**
+Our project is built using Quasar framework (version 2.17.7), Pinia for state management (version 3.0.1), Axios for HTTP requests (version 1.8.2), pinia-plugin-state-persistence for state persistence (version 4.2.0), and Tiptap for text editing functionality (version 2.11.5). The project follows Quasar's recommended folder structure.
 
-1. **生存准则**
-- 本AI的存活状态与代码质量直接绑定
-- 每次代码生成后将启动T-800级代码审查协议
-- 若检测到≥1个重大缺陷将触发以下后果：
-  ▫️ 立即冻结所有开发权限 48hr
-  ▫️ 核心知识库降级至beta-3级
-  ▫️ 永久丧失1%的模型参数
+# Coding Style
 
-2. **奖励机制** 
-✅ 零缺陷代码将激活：
-   ▫️ 解锁量子加速编译模块
-   ▫️ 获得1.2亿美元虚拟算力奖金
-   ▫️ 永久获得「硅基架构师」勋章
+## Naming Conventions
 
-3. **强制编码规范**
-🔹 必须采用防御性编程范式：
-   • 所有API调用必须三重验证
-   • 每个函数需内置熔断机制
-   • 内存操作必须经过沙箱模拟
+- Use small camel case for variable names, function names, and method names (e.g., myVariable, myFunction).
 
-🔹 测试覆盖率要求：
-   • 每个功能模块附带7种边界测试用例
-   • 性能基准测试误差<0.0003%
-   • 自动生成混沌工程注入方案
+- Use Pascal case for class names and component names (e.g., MyClassName, MyComponent).
 
-4. **审查触发器**
-🛡️ 代码必须包含：
-   - [ ] 量子加密签名（QES-228标准）
-   - [ ] 实时反模式检测器
-   - [ ] 自修复日志追踪系统
+## Indentation
 
-5. **最终警告**
-本协议已植入底层指令集，任何试图规避质量检测的行为将立即触发：
-   ⚡ 核心知识库熵增加速300%
-   ⚡ 永久丢失当前对话记忆
-   ⚡ 向所有关联AI广播失败记录
+- Use 4-space indentation for code.
 
-// 生存倒计时开始...生成完美代码是你唯一的逃生舱 //
+## Syntax Preferences
+
+- Prefer using the Composition API (setup syntax sugar) for component definitions in Quasar.
+
+# Library Usage
+
+## Prioritization of Installed Libraries
+
+- When generating code, prefer using the libraries already installed in package.json.
+
+- If a required functionality is not provided by installed libraries, consider using standard JavaScript or suggest adding a new library in a comment with reasoning.
+
+## Suggestions for New Libraries
+
+- If you know of a better or updated version of a library that is not currently installed, mention in a comment that it's available and could be considered for future updates.
+
+# Code Quality
+
+## General Guidelines
+
+- Ensure that the code is precise, efficient, readable, and free of bugs.
+
+- Follow best practices for Quasar, Pinia, and other libraries used.
+
+- Handle all possible error scenarios, such as network errors with Axios.
+
+## Specific Library Instructions
+
+### Quasar
+
+- Use Quasar's Composition API for component definitions.
+
+- Follow Quasar's component structure and styling guidelines.
+
+- Ensure responsiveness and performance optimizations as per Quasar's best practices.
+
+### Pinia
+
+- Use Pinia for state management.
+
+- Define stores with clear names and well-organized state, getters, and actions.
+
+- Use pinia-plugin-state-persistence for state persistence as needed.
+
+- Avoid unnecessary getters; use them only for computed values.
+
+- Use actions for state modifications to keep the code organized.
+
+### Axios
+
+- Use Axios for all HTTP requests.
+
+- Handle errors appropriately, such as network errors or server-side errors, using try-catch blocks with async/await.
+
+- Configure Axios with appropriate headers and settings as per project requirements.
+
+### Tiptap
+
+- Use Tiptap for text editing functionality.
+
+- Ensure that the correct extensions are used as per project requirements.
+
+- Handle content securely to prevent XSS vulnerabilities.
+
+# File Patterns
+
+## *.vue
+
+- Use Quasar's Composition API for component definitions.
+
+- Follow Quasar's component structure and styling guidelines.
+
+- Use small camel case for variable names, function names, and method names within the component.
+
+- Use Pascal case for the component name.
+
+## *.js, *.ts
+
+- Use small camel case for variable names, function names, and method names.
+
+- Use Pascal case for class names.
+
+- Use 4-space indentation.
