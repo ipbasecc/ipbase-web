@@ -770,6 +770,7 @@ enable_settings_budget_description: 'Record income and expenditure during the pr
   field_marker_todos: 'Mark Todos',
   field_price: 'Service Price',
   field_approve_join_request: 'Approve Join Request',
+  field_service_info: 'Edit Service Plan',
 
   role_name: 'Role Name',
   permission_autoset_tip: 'Permissions are automatically set based on the category field configuration',

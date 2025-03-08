@@ -768,6 +768,7 @@ export default {
   field_marker_todos: '标记待办',
   field_price: '服务价格',
   field_approve_join_request: '批准加入请求',
+  field_service_info: '修改服务方案',
 
   role_name: '角色名称',
   permission_autoset_tip: '此处根据分类字段的配置权限自动设置',

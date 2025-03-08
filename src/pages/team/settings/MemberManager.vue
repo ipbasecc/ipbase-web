@@ -284,6 +284,7 @@ async function onLoad(index,done){
 }
 const getMembers = async () => {
   if (byInfo.value?.by === "team") {
+    offset.value = teamStore.team?.members?.length || 0;
     const { data } = await getTeamMembers(byInfo.value.team_id, offset.value, limit);
     if(data?.members){
       if(Array.isArray(teamStore.team?.members)){
@@ -296,6 +297,7 @@ const getMembers = async () => {
     hasMore.value = data.hasMore
   }
   if (byInfo.value?.by === "project") {
+    offset.value = teamStore.project?.project_members?.length || 0;
     const { data } = await getProjectMembers(byInfo.value.project_id, offset.value, limit);
     if(data?.members && teamStore.project){
       console.log('data', data)
@@ -310,26 +312,8 @@ const getMembers = async () => {
   }
 }
 const findMore = async () => {
-  console.log('findMore')
-  if (byInfo.value?.by === "team") {
-    offset.value = teamStore.team?.members?.length;
-  }
-  if (byInfo.value?.by === "project") {
-    offset.value = teamStore.project?.project_members?.length;
-  }
   await getMembers();
 }
-onBeforeMount(async() => {
-  // 组件挂载前先重置数据，此处从服务端获取最新数据
-  if (byInfo.value?.by === "team" && byInfo.value.team_id) {
-    teamStore.team.members = []
-    await getMembers();
-  }
-  if (byInfo.value?.by === "project" && byInfo.value.project_id) {
-    teamStore.project.project_members = []
-    await getMembers();
-  }
-})
 
 const addFromTeam = ref(false);
 const toggleAddFromeTeam = () => {

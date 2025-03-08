@@ -18,7 +18,7 @@
         <div class="row no-wrap items-center gap-sm">
           <q-btn flat dense round icon="mdi-plus-circle" @click="aiStore.createNewChat()">
             <q-tooltip class="no-padding shadow-24">
-              <q-card bordered>
+              <q-card bordered :class="$q.dark.mode ? 'bg-grey-2' : 'bg-grey-9'">
                 <q-card-section class="q-pa-sm font-medium">
                   新建会话
                 </q-card-section>
@@ -27,7 +27,7 @@
           </q-btn>
           <q-btn flat dense round icon="flip" @click="toggleUpdateSessionPrompt = !toggleUpdateSessionPrompt">
             <q-tooltip class="no-padding shadow-24">
-              <q-card bordered>
+              <q-card bordered :class="$q.dark.mode ? 'bg-grey-2' : 'bg-grey-9'">
                 <q-card-section class="q-pa-sm font-medium">
                   修改AI角色提示词
                 </q-card-section>
@@ -39,7 +39,7 @@
             @click="clearChat"
           >
             <q-tooltip class="no-padding shadow-24">
-              <q-card bordered>
+              <q-card bordered :class="$q.dark.mode ? 'bg-grey-2' : 'bg-grey-9'">
                 <q-card-section class="q-pa-sm font-medium">
                   清空对话
                 </q-card-section>
@@ -51,7 +51,7 @@
             @click="archiveChat"
           >
             <q-tooltip class="no-padding shadow-24">
-              <q-card bordered>
+              <q-card bordered :class="$q.dark.mode ? 'bg-grey-2' : 'bg-grey-9'">
                 <q-card-section class="q-pa-sm font-medium">
                   清空上下文（归档当前消息）
                 </q-card-section>
@@ -65,7 +65,7 @@
             @click="toggleSearch"
           >
             <q-tooltip class="no-padding shadow-24">
-              <q-card bordered>
+              <q-card bordered :class="$q.dark.mode ? 'bg-grey-2' : 'bg-grey-9'">
                 <q-card-section class="q-pa-sm font-medium">
                   {{ localSearchEnabled ? '已启用网络搜索' : '点击启用网络搜索' }}
                 </q-card-section>

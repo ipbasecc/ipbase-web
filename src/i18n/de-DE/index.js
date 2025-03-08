@@ -769,6 +769,7 @@ enable_settings_budget_description: 'Erfassen von Einnahmen und Ausgaben währen
   field_marker_todos: 'Aufgaben markieren',
   field_price: 'Preis',
   field_approve_join_request: 'Beitrittsanfrage genehmigen',
+  field_service_info: 'Serviceplan bearbeiten',
 
   role_name: 'Rollenname',
   permission_autoset_tip: 'Die Berechtigungen werden hier automatisch basierend auf den Einstellungen des Feldes festgelegt',
