@@ -1,5 +1,4 @@
 <template>
-  count: {{ count }}
   <TipTap
     v-if="current_documentRef"
     :jsonContent="current_documentRef?.jsonContent"

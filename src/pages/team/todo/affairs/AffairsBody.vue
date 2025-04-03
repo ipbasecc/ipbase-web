@@ -17,7 +17,7 @@
         @todogroupDeleted="todogroupDeleted"
       />
     </template>
-    <CreateColumn :createStyle="todogroups?.length > 0 ? 'normal' : 'init_create'" @todogroupCreated=todogroupCreated />
+    <CreateColumn layout="row" :createStyle="todogroups?.length > 0 ? 'normal' : 'init_create'" @todogroupCreated=todogroupCreated />
   </VueDraggable>
 </template>
 

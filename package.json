@@ -19,6 +19,7 @@
     "test:component:ci": "cross-env NODE_ENV=test cypress run --component",
     "coverage:report": "nyc report --reporter=text-summary"
   },
+  "type": "module", 
   "dependencies": {
     "@apollo/client": "^3.11.8",
     "@blocksuite/blocks": "^0.14.0",
@@ -27,8 +28,9 @@
     "@coleqiu/vue-drag-select": "^2.0.5",
     "@electron/remote": "^2.1.2",
     "@lobehub/icons": "^1.76.0",
-    "@quasar/app-vite": "2.0.0-beta.21",
-    "@quasar/extras": "^1.16.12",
+    "@quasar/app-vite": "2.1.4",
+    "@quasar/cli": "^2.5.0",
+    "@quasar/extras": "^1.16.17",
     "@syncfusion/ej2-base": "^26.2.10",
     "@syncfusion/ej2-icons": "^26.2.10",
     "@syncfusion/ej2-locale": "^27.1.55",
@@ -122,7 +124,7 @@
     "prismjs": "^1.29.0",
     "prosemirror-state": "^1.4.3",
     "qrcode.vue": "^3.4.1",
-    "quasar": "^2.16.11",
+    "quasar": "^2.18.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "register-service-worker": "^1.7.2",
