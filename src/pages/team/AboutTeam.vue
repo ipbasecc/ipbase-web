@@ -27,6 +27,8 @@
                 :square="true"
                 :withSaveBtn="true"
                 :withImageBtn="true"
+                :show_toolbar="false"
+                :autofocus="true"
                 :contentChanged
                 @contentChanged="contentChanged = true"
                 contentStyle="max-height: unset"

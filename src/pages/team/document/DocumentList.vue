@@ -12,16 +12,13 @@
           <q-item
             clickable
             v-ripple
-            class="col radius-xs hovered-item overflow-hidden q-pa-sm"
+            class="col radius-xs hovered-item overflow-hidden q-pa-sm dragBar"
             :class="actived_id === element.id ? 'border' : 'border-placeholder op-7'"
             :active-class="`${$q.dark.mode ? 'text-grey-3' : 'text-grey-9'}`"
             :active="actived_id === element.id"
             style="min-height: 40px;"
             @click="enterDocument(element)"
           >
-            <q-item-section side top class="dragBar q-pr-sm">
-              <q-icon :name="findIcon_byType(element.type)"> </q-icon>
-            </q-item-section>
             <q-item-section>
               {{ element.title }}
             </q-item-section>
@@ -223,7 +220,7 @@ const enterDocument = async (element) => {
   if (unEnter.value) return;
   const res = await fetchDocument(element.id);
   element = res;
-  teamStore.active_document = res;
+  teamStore.active_document = res;  
   if(!teamStore.card) {
     router.push(`/teams/projects/${teamStore.project?.id}/document/${element.id}`);
     uiStore.showMainContentList = false;

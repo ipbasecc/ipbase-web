@@ -684,9 +684,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if(teamStore.active_document){
-    teamStore.active_document = null;
-  }
   document.removeEventListener('dragover', (e) => {
     e.preventDefault() // 必须阻止默认行为
     debouncedMouseHandler(e) // 复用相同的处理逻辑

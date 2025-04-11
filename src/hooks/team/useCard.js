@@ -363,6 +363,7 @@ export async function leaveCard() {
   teamStore.showCards = false;
   teamStore.activedCard_id = null;
   teamStore.card = null;
+  teamStore.active_document = null
   teamStore.cards = [];
 }
 
