@@ -977,22 +977,4 @@ export default function useWatcher() {
     }
   },{ immediate: true, deep: true });
 
-  const handleVisibilityChange = (val) => {
-    if(!val) return;
-      teamStore.active_document = val;
-    if (window.document.visibilityState === 'hidden') {
-    }
-  }
-    // 监听标签页的可见性变化
-  let visibilityListenerAdded = false;
-  onMounted(() => {
-    window.document.addEventListener('visibilitychange', handleVisibilityChange);
-    visibilityListenerAdded = true;
-  });
-
-  onUnmounted(() => {
-    if (visibilityListenerAdded) {
-      window.document.removeEventListener('visibilitychange', handleVisibilityChange);
-    }
-  });
 }

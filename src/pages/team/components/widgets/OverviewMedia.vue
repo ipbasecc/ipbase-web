@@ -8,7 +8,7 @@
       class="q-mx-auto"
     >
       <div class="absolute-full flex flex-center q-pa-xl border-bottom">
-        No Media
+        {{ $t('no_media') }}
       </div>
     </q-responsive>
     <template v-if="activeVersion?.media">
@@ -22,7 +22,7 @@
           spinner-color="primary"
           spinner-size="82px"
           class="cursor-pointer"
-          @click="$hevueImgPreview(activeVersion?.media?.url)"
+          @click="$hevueImgPreview(showImage(activeVersion?.media?.url))"
         />
       </template>
       <q-responsive v-if="quality[0]?.url && filetype(quality[0].url) === 'video'"
@@ -91,14 +91,11 @@
       <div class="absolute-full flex flex-center q-pa-xl">
         <q-card bordered flat style="min-width: 22rem">
           <template v-if="!isClassroom || isCreator">
-            <StrapiUpload
-              :label="upload_label"
-              :max-files="1"
-              :readonly="!auth"
-              :accept="$ui().allowedFormatsVideo"
-              class="full-width"
-              @uploaded="fileUploaded"
-            ></StrapiUpload>
+            <q-card-section>
+              <DrapUpload :isOSS="true" class="full-width radius-sm border-xs border-dashed border-primary q-py-md"
+              :allowedFormats="allowedFormats"
+              @uploaded="fileUploaded" :caption="$t('drop_or_pick_cover')" />
+            </q-card-section>
             <q-card-section class="row no-wrap q-pa-xs border-top">
               <q-btn
                 flat
@@ -121,12 +118,12 @@
 
 <script setup>
 import { ref, toRefs, computed } from "vue";
-import StrapiUpload from "src/components/Utilits/StrapiUpload.vue";
 import Artplayer from "src/components/VIewComponents/ArtPlayer.vue";
 import filetype from "src/hooks/global/filetype.js";
 import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 import { i18n } from 'src/boot/i18n.js';
 import useOverview from 'src/pages/team/hooks/useOverview.js'
+import DrapUpload from 'src/components/VIewComponents/DrapUpload.vue'
 
 const $t = i18n.global.t;
 
@@ -172,11 +169,11 @@ const player_options = {
 }
 
 const isCreator = computed(() => teamStore.card?.creator?.id === teamStore.init?.id)
+const allowedFormats = computed(() => teamStore.card?.type === 'classroom' ? $ui().allowedFormatsVideo : [...$ui().allowedFormatsVideo, ...$ui().allowedFormatsImage])
 
 const media_change_ing = ref(false);
-const fileUploaded = (files) => {
-  // console.log("接收到文件", files);
-  let file = files[0];
+const fileUploaded = (file) => {
+  console.log("接收到文件", file);
   updateVersionFn(file.id, file);
   media_change_ing.value = false;
 };
@@ -184,5 +181,13 @@ const fileUploaded = (files) => {
 const emit = defineEmits(["mediaChanged"]);
 const updateVersionFn = async (media_id, media) => {
   emit("mediaChanged", activeVersion.value, media_id, media);
+};
+
+
+const showImage = (url) => {
+  return {
+    url: url,
+    clickMaskCLose: true,
+  };
 };
 </script>
