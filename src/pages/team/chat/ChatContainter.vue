@@ -416,6 +416,7 @@ const fetchMore = async () => {
 const resMsgs = ref();
 const fetchCount = ref(0);
 const initMsgs = async () => {
+  messages.value = []
   resMsgs.value = await getPosts();
   if (resMsgs.value) {
     merageMsg(resMsgs.value)
@@ -428,16 +429,24 @@ const view = async () => {
     await __viewChannel(_channel_id.value);
   }
 }
-onBeforeMount(async() => {
-  await initMsgs();
-  uiStore.hide_footer = true
-  // 如果通过连接直接访问到聊天界面，需要获取Strapi频道、Mattermost频道
-  if(!teamStore.mm_channel && _channel_id.value){
+const initMmChannel = async () => {
+  if(_channel_id.value){
     const res = await getMmChannelByID(_channel_id.value);
     if(res?.data){
       teamStore.mm_channel = res.data;
     }
+    await initMsgs();
   }
+}
+onBeforeMount(async() => {
+  uiStore.hide_footer = true
+  // 如果通过连接直接访问到聊天界面，需要获取Strapi频道、Mattermost频道
+  if(!teamStore.mm_channel && _channel_id.value){
+    await initMmChannel();
+  }
+})
+watch(_channel_id, async () => {
+  await initMmChannel();
 })
 onMounted(async () => {
   await view();

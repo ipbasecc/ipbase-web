@@ -493,7 +493,6 @@ const getClipboardData = (event) => {
   return []
 }
 const setupPasteHandler = () => {
-  console.log('setupPasteHandler');
   const handlePaste = async (event) => {
     console.log('handlePaste', event);
     // if (!editor.value.isFocused) return
