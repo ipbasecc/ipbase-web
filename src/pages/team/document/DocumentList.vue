@@ -110,9 +110,6 @@
               @keydown.esc="cancelCreate()"
               @keyup.enter="create()"
             >
-              <template v-slot:prepend>
-                <q-icon name="article" size="sm" />
-              </template>
               <template v-if="createDocument_title" v-slot:append>
                 <q-btn
                   flat
