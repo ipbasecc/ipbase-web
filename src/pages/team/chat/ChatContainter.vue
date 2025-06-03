@@ -416,7 +416,6 @@ const fetchMore = async () => {
 const resMsgs = ref();
 const fetchCount = ref(0);
 const initMsgs = async () => {
-  messages.value = []
   resMsgs.value = await getPosts();
   if (resMsgs.value) {
     merageMsg(resMsgs.value)
@@ -446,8 +445,9 @@ onBeforeMount(async() => {
   }
 })
 watch(_channel_id, async () => {
+  messages.value = []
   await initMmChannel();
-})
+},{immediate: true})
 onMounted(async () => {
   await view();
   await scroll_bottom()
