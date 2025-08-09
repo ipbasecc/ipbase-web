@@ -495,7 +495,21 @@ const getClipboardData = (event) => {
 const setupPasteHandler = () => {
   const handlePaste = async (event) => {
     console.log('handlePaste', event);
-    // if (!editor.value.isFocused) return
+    console.log('editor.value.isFocused:', editor.value?.isFocused);
+    console.log('event.target:', event.target);
+    console.log('editor DOM:', editor.value?.view?.dom);
+
+    // 检查是否是当前编辑器或其子元素触发的粘贴事件
+    const editorDom = editor.value?.view?.dom;
+    const isTargetInEditor = editorDom && (
+      event.target === editorDom ||
+      editorDom.contains(event.target) ||
+      editor.value.isFocused
+    );
+
+    console.log('isTargetInEditor:', isTargetInEditor);
+
+    if (!isTargetInEditor) return
 
     const items = getClipboardData(event)
     console.log('items', items);

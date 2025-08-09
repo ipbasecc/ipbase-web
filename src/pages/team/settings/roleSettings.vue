@@ -1,5 +1,5 @@
 <template>
-  <div v-if="authBase" class="absolute-full q-space column no-wrap q-pb-lg">
+  <div v-if="authBase" class="fit q-space column no-wrap q-pb-lg">
     <template
       v-if="useAuths('manageRole', [authBase?.collection])"
     >

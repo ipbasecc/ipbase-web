@@ -124,6 +124,7 @@ import { teamStore, uiStore } from "src/hooks/global/useStore.js";
 import { i18n } from 'src/boot/i18n.js';
 import useOverview from 'src/pages/team/hooks/useOverview.js'
 import DrapUpload from 'src/components/VIewComponents/DrapUpload.vue'
+import { $ui } from "src/boot/service";
 
 const $t = i18n.global.t;
 
